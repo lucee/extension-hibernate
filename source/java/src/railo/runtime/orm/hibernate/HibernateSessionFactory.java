@@ -130,7 +130,7 @@ public class HibernateSessionFactory {
 		configuration
         
         // Database connection settings
-        .setProperty("hibernate.connection.driver_class", ds.getClazz().getName())
+        .setProperty("hibernate.connection.driver_class", ds.getClassDefinition().getClassName())
     	.setProperty("hibernate.connection.url", ds.getDsnTranslated());
 		if(!Util.isEmpty(ds.getUsername())) {
 			configuration.setProperty("hibernate.connection.username", ds.getUsername());

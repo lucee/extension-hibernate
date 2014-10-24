@@ -106,7 +106,7 @@ public class Dialect {
 	 * @return
 	 */
 	public static String getDialect(DataSource ds){
-		String name=ds.getClazz().getName();
+		String name=ds.getClassDefinition().getClassName();
 		if("net.sourceforge.jtds.jdbc.Driver".equalsIgnoreCase(name)){
 			String dsn=ds.getDsnTranslated();
 			if(dsn.toLowerCase().indexOf("sybase")!=-1)
