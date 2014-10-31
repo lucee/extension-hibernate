@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Export-Package: org.opencfmlfoundation.extension.orm.hibernate,
+ org.opencfmlfoundation.extension.orm.hibernate.event,
+ org.opencfmlfoundation.extension.orm.hibernate.naming,
+ org.opencfmlfoundation.extension.orm.hibernate.tuplizer,
+ org.opencfmlfoundation.extension.orm.hibernate.tuplizer.accessors,
+ org.opencfmlfoundation.extension.orm.hibernate.tuplizer.proxy,
+ rasia.extension.orm.naming
+Require-Bundle: hibernate;bundle-version=3.5.5,
+ antlr;bundle-version=2.7.6,
+ dom4j;bundle-version=1.6.1,
+ javassist;bundle-version=3.9.0,
+ jta;bundle-version=1.1.0,
+ slf4j.api;bundle-version=1.6.4
+Require-Bundle-Fragment: slf4j.nop;bundle-version=1.6.4
+Bundle-ManifestVersion: 2

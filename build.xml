@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="clean" basedir="." name="hibernate-extension">
+	<description>
+        Build Hibernate Extension
+    </description>
+    <!-- set global properties for this build -->
+  <property name="bundlename" value="hibernate.extension"/>
+  <property name="bundleversion" value="1.0.0."/>
+  
+  <property name="railoLoader" location="/Users/mic/Projects/Railo/Source2/railo/railo-java/railo-loader/bin"/>
+  <property name="lib" location="source/java/libs"/>
+  <property name="temp" location="temp"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+  <property name="src" location="source/java/src"/>
+  <property name="railoLib" location="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs"/>
+  
+  
+
+  <path id="classpath">
+    <pathelement location="${railoLoader}" />
+    <fileset dir="${lib}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${railoLib}">
+      <include name="**/*.jar" />
+    </fileset>
+  </path>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    
+    <delete dir="${temp}"/>
+    <delete dir="${dist}/extension/jars"/>
+    <delete dir="${dist}/extension/META-INF"/>
+
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${temp}"/>
+    <mkdir dir="${build}"/>
+    <mkdir dir="${dist}/extension/jars"/>
+  </target>
+
+
+  <target name="copy" depends="init" description="copy source file to temp" >
+    <!-- copy the source -->
+    <copy todir="${temp}">
+      <fileset dir="${src}">
+        <include name="**/*.java"/>
+      </fileset>
+    </copy>
+
+
+    <tstamp>
+     <format property="NOW" pattern="yyyy-MM-dd HH:mm:ss" />
+    </tstamp>
+    <tstamp>
+     <format property="TIME" pattern="yyyyMMddHHmmss" />
+    </tstamp>
+
+    <echo file="${dist}/extension/META-INF/MANIFEST.MF">Manifest-Version: 1.0
+Built-Date: ${NOW}
+version: "1.0"
+id: "FAD1E8CB-4F45-4184-86359145767C29DE"
+name: "Hibernate ORM Engine"
+railo-core-version: "5.0.0.018"
+orm: "[{'class':'org.opencfmlfoundation.extension.orm.hibernate.HibernateORMEngine','name':'${bundlename}','version':'${bundleversion}${TIME}'}]"
+</echo>
+
+
+  </target>
+  
+
+
+  <target name="compile" depends="copy"
+        description="compile the source " >
+    <!-- Compile ACF-Infinspan source -->
+    <javac srcdir="${temp}" target="1.6" destdir="${build}">
+      <classpath refid="classpath" />
+    </javac>
+  </target>
+
+  <target name="dist" depends="compile"
+        description="generate the distribution" >
+    
+ 
+    <!-- Put everything in ${build} into .jar file -->
+    <jar 
+    	jarfile="${dist}/extension/jars/rasia-hibernate.jar" basedir="${build}"  manifest="${src}/META-INF/MANIFEST.MF">
+      <manifest>
+        <attribute name="Bundle-Version" value="${bundleversion}${TIME}"/>
+        <attribute name="Built-Date" value="${NOW}"/>
+        <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
+
+      </manifest>
+    </jar>
+
+
+
+    <!-- copy the jars necessary -->
+    <copy todir="${dist}/extension/jars">
+      <fileset dir="${lib}">
+        <include name="**/*.jar"/>
+        <exclude name="**/javax.servlet.jar"/>
+      </fileset>
+    </copy>
+
+    <!-- Zip everything  -->
+     <zip destfile="${dist}/rasia-hibernate.zip">
+        <zipfileset dir="${dist}/extension"/>
+    </zip>
+		
+  </target>
+
+	<target name="clean"  depends="dist" description="clean up" >
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete dir="${build}"/>
+		<delete dir="${temp}"/>
+	</target>
+
+</project>
