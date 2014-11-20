@@ -15,6 +15,7 @@
   <property name="src" location="source/java/src"/>
   <property name="railoLib" location="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs"/>
   
+  <buildnumber file="build.number"/>
   
 
   <path id="classpath">
@@ -54,9 +55,7 @@
     <tstamp>
      <format property="NOW" pattern="yyyy-MM-dd HH:mm:ss" />
     </tstamp>
-    <tstamp>
-     <format property="TIME" pattern="yyyyMMddHHmmss" />
-    </tstamp>
+ 
 
     <echo file="${dist}/extension/META-INF/MANIFEST.MF">Manifest-Version: 1.0
 Built-Date: ${NOW}
@@ -64,7 +63,8 @@ version: "1.0"
 id: "FAD1E8CB-4F45-4184-86359145767C29DE"
 name: "Hibernate ORM Engine"
 railo-core-version: "5.0.0.018"
-orm: "[{'class':'org.opencfmlfoundation.extension.orm.hibernate.HibernateORMEngine','name':'${bundlename}','version':'${bundleversion}${TIME}'}]"
+start-bundles: false
+orm: "[{'class':'org.opencfmlfoundation.extension.orm.hibernate.HibernateORMEngine','name':'${bundlename}','version':'${bundleversion}${build.number}'}]"
 </echo>
 
 
@@ -75,7 +75,7 @@ orm: "[{'class':'org.opencfmlfoundation.extension.orm.hibernate.HibernateORMEngi
   <target name="compile" depends="copy"
         description="compile the source " >
     <!-- Compile ACF-Infinspan source -->
-    <javac srcdir="${temp}" target="1.6" destdir="${build}">
+    <javac srcdir="${temp}" target="1.6" destdir="${build}" debug="true" debuglevel="lines,vars,source">
       <classpath refid="classpath" />
     </javac>
   </target>
@@ -88,7 +88,7 @@ orm: "[{'class':'org.opencfmlfoundation.extension.orm.hibernate.HibernateORMEngi
     <jar 
     	jarfile="${dist}/extension/jars/rasia-hibernate.jar" basedir="${build}"  manifest="${src}/META-INF/MANIFEST.MF">
       <manifest>
-        <attribute name="Bundle-Version" value="${bundleversion}${TIME}"/>
+        <attribute name="Bundle-Version" value="${bundleversion}${build.number}"/>
         <attribute name="Built-Date" value="${NOW}"/>
         <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
 
@@ -106,7 +106,7 @@ orm: "[{'class':'org.opencfmlfoundation.extension.orm.hibernate.HibernateORMEngi
     </copy>
 
     <!-- Zip everything  -->
-     <zip destfile="${dist}/rasia-hibernate.zip">
+     <zip destfile="${dist}/rasia-hibernate.re">
         <zipfileset dir="${dist}/extension"/>
     </zip>
 		
