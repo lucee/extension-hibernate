@@ -3,6 +3,7 @@ package org.opencfmlfoundation.extension.orm.hibernate;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -11,14 +12,22 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.cache.RegionFactory;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
+import org.hibernate.connection.ConnectionProvider;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
+import org.opencfmlfoundation.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
+import org.opencfmlfoundation.extension.orm.hibernate.jdbc.ConnectionProviderProxy;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.BundleReference;
 import org.w3c.dom.Document;
 
 import railo.commons.io.log.Log;
@@ -33,13 +42,13 @@ import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
+import railo.runtime.db.ClassDefinition;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.util.ResourceUtil;
 import railo.runtime.util.TemplateUtil;
 
 
@@ -96,8 +105,8 @@ public class HibernateSessionFactory {
 		
 		if(Util.isEmpty(cacheProvider) || "EHCache".equalsIgnoreCase(cacheProvider)) {
 			regionFactory=net.sf.ehcache.hibernate.EhCacheRegionFactory.class;
-			cacheProvider=regionFactory.getName();//"org.hibernate.cache.EhCacheProvider";
-					
+			// regionFactory=(Class<? extends RegionFactory>) CFMLEngineFactory.getInstance().getClassUtil().loadClass("net.sf.ehcache.hibernate.EhCacheRegionFactory");
+			cacheProvider=regionFactory.getName();
 		}
 		else if("JBossCache".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.TreeCacheProvider";
 		else if("HashTable".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.HashtableCacheProvider";
@@ -127,23 +136,39 @@ public class HibernateSessionFactory {
 			throw ExceptionUtil.createException(data,null, me);
 		}
 		
+
+		// make sure the connection provider has the DBUtil instance, this is a little bit of a mess but the only way to make our pool availbale without importing the railo core 
+		// providing reference to connection pool here.
+		
+		
 		configuration
-        
         // Database connection settings
-        .setProperty("hibernate.connection.driver_class", ds.getClassDefinition().getClassName())
+		.setProperty("hibernate.connection.datasource_name", ds.getName())// uded by custom connctionprovider
+		.setProperty("hibernate.connection.datasource_id", ds.id())// uded by custom connctionprovider
+		
+    	.setProperty("hibernate.connection.driver_class", ds.getClassDefinition().getClassName())
+        
     	.setProperty("hibernate.connection.url", ds.getDsnTranslated());
 		if(!Util.isEmpty(ds.getUsername())) {
-			configuration.setProperty("hibernate.connection.username", ds.getUsername());
+			configuration.setProperty(Environment.USER, ds.getUsername());
 			if(!Util.isEmpty(ds.getPassword()))
-				configuration.setProperty("hibernate.connection.password", ds.getPassword());
+				configuration.setProperty(Environment.PASS, ds.getPassword());
 		}
+		
+		
+		ConnectionProviderProxy.provider=new ConnectionProviderImpl();
     	//.setProperty("hibernate.connection.release_mode", "after_transaction")
     	configuration.setProperty("hibernate.transaction.flush_before_completion", "false")
     	.setProperty("hibernate.transaction.auto_close_session", "false")
     	
-    	// JDBC connection pool (use the built-in)
     	//.setProperty("hibernate.connection.pool_size", "2")//MUST
     	
+    	// use Railo connection pool to avoid dynamic-import:*
+    	.setProperty(Environment.CONNECTION_PROVIDER, 
+    			//org.hibernate.ejb.connection.InjectedDataSourceConnectionProvider.class.getName()
+    			ConnectionProviderProxy.class.getName()
+    			// "org.opencfmlfoundation.extension.orm.hibernate.jdbc.ConnectionProviderProxy"
+    			)
     	
     	// SQL dialect
     	.setProperty("hibernate.dialect", dialect)
@@ -165,7 +190,7 @@ public class HibernateSessionFactory {
 		if(!Util.isEmpty(ormConf.getSchema()))
 			configuration.setProperty("hibernate.default_schema",ormConf.getSchema());
 		
-		
+		try{
 		if(ormConf.secondaryCacheEnabled()){
 			if(cacheConfig!=null && cacheConfig.isFile())
 				configuration.setProperty("hibernate.cache.provider_configuration_file_resource_path",cacheConfig.getAbsolutePath());
@@ -177,6 +202,10 @@ public class HibernateSessionFactory {
 			configuration.setProperty("hibernate.cache.use_query_cache", "true");
 	    	
 	    	//hibernate.cache.provider_class=org.hibernate.cache.EhCacheProvider
+		}
+		}
+		catch(Throwable t){
+			t.printStackTrace();
 		}
 		
 		/*

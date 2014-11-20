@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
+import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
+import org.opencfmlfoundation.extension.orm.hibernate.HibernateCaster;
 
 import railo.runtime.Component;
 import railo.runtime.exp.PageException;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernateCaster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 

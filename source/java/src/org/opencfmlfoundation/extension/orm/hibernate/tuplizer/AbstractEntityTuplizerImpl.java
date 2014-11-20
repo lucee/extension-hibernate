@@ -17,19 +17,19 @@ import org.hibernate.proxy.ProxyFactory;
 import org.hibernate.tuple.Instantiator;
 import org.hibernate.tuple.entity.AbstractEntityTuplizer;
 import org.hibernate.tuple.entity.EntityMetamodel;
+import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
+import org.opencfmlfoundation.extension.orm.hibernate.HBMCreator;
+import org.opencfmlfoundation.extension.orm.hibernate.HibernateCaster;
+import org.opencfmlfoundation.extension.orm.hibernate.HibernateUtil;
+import org.opencfmlfoundation.extension.orm.hibernate.tuplizer.accessors.CFCAccessor;
+import org.opencfmlfoundation.extension.orm.hibernate.tuplizer.proxy.CFCHibernateProxyFactory;
 
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.Util;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.exp.PageException;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
-import org.opencfmlfoundation.extension.orm.hibernate.HBMCreator;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernateCaster;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernateUtil;
 import railo.runtime.type.Struct;
-import org.opencfmlfoundation.extension.orm.hibernate.tuplizer.accessors.CFCAccessor;
-import org.opencfmlfoundation.extension.orm.hibernate.tuplizer.proxy.CFCHibernateProxyFactory;
 
 
 public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {

@@ -1,10 +1,10 @@
 package org.opencfmlfoundation.extension.orm.hibernate.tuplizer;
 import org.hibernate.EntityNameResolver;
+import org.opencfmlfoundation.extension.orm.hibernate.HibernateCaster;
+import org.opencfmlfoundation.extension.orm.hibernate.HibernatePageException;
 
 import railo.runtime.Component;
 import railo.runtime.exp.PageException;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernateCaster;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernatePageException;
 
 
 public  class CFCEntityNameResolver implements EntityNameResolver {

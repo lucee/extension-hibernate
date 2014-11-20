@@ -19,6 +19,18 @@ import org.hibernate.event.PostUpdateEventListener;
 import org.hibernate.event.PreDeleteEventListener;
 import org.hibernate.event.PreLoadEventListener;
 import org.hibernate.tuple.entity.EntityTuplizerFactory;
+import org.opencfmlfoundation.extension.orm.hibernate.event.AllEventListener;
+import org.opencfmlfoundation.extension.orm.hibernate.event.EventListener;
+import org.opencfmlfoundation.extension.orm.hibernate.event.InterceptorImpl;
+import org.opencfmlfoundation.extension.orm.hibernate.event.PostDeleteEventListenerImpl;
+import org.opencfmlfoundation.extension.orm.hibernate.event.PostInsertEventListenerImpl;
+import org.opencfmlfoundation.extension.orm.hibernate.event.PostLoadEventListenerImpl;
+import org.opencfmlfoundation.extension.orm.hibernate.event.PostUpdateEventListenerImpl;
+import org.opencfmlfoundation.extension.orm.hibernate.event.PreDeleteEventListenerImpl;
+import org.opencfmlfoundation.extension.orm.hibernate.event.PreInsertEventListenerImpl;
+import org.opencfmlfoundation.extension.orm.hibernate.event.PreLoadEventListenerImpl;
+import org.opencfmlfoundation.extension.orm.hibernate.event.PreUpdateEventListenerImpl;
+import org.opencfmlfoundation.extension.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -38,18 +50,6 @@ import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
-import org.opencfmlfoundation.extension.orm.hibernate.event.AllEventListener;
-import org.opencfmlfoundation.extension.orm.hibernate.event.EventListener;
-import org.opencfmlfoundation.extension.orm.hibernate.event.InterceptorImpl;
-import org.opencfmlfoundation.extension.orm.hibernate.event.PostDeleteEventListenerImpl;
-import org.opencfmlfoundation.extension.orm.hibernate.event.PostInsertEventListenerImpl;
-import org.opencfmlfoundation.extension.orm.hibernate.event.PostLoadEventListenerImpl;
-import org.opencfmlfoundation.extension.orm.hibernate.event.PostUpdateEventListenerImpl;
-import org.opencfmlfoundation.extension.orm.hibernate.event.PreDeleteEventListenerImpl;
-import org.opencfmlfoundation.extension.orm.hibernate.event.PreInsertEventListenerImpl;
-import org.opencfmlfoundation.extension.orm.hibernate.event.PreLoadEventListenerImpl;
-import org.opencfmlfoundation.extension.orm.hibernate.event.PreUpdateEventListenerImpl;
-import org.opencfmlfoundation.extension.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
 
 public class HibernateORMEngine implements ORMEngine {
 	
@@ -194,7 +194,7 @@ public class HibernateORMEngine implements ORMEngine {
 			}
 			addEventListeners(pc, data,e.getKey());
 			
-			EntityTuplizerFactory tuplizerFactory = data.getConfiguration(e.getKey()).getEntityTuplizerFactory();
+			EntityTuplizerFactory tuplizerFactory = data.getConfiguration(e.getKey()).config.getEntityTuplizerFactory();
 			tuplizerFactory.registerDefaultTuplizerClass(EntityMode.MAP, AbstractEntityTuplizerImpl.class);
 			tuplizerFactory.registerDefaultTuplizerClass(EntityMode.POJO, AbstractEntityTuplizerImpl.class);
 			
@@ -216,7 +216,7 @@ public class HibernateORMEngine implements ORMEngine {
 		        //config.setInterceptor(listener);
 			//}catch (PageException e) {e.printStackTrace();}
 		}
-		Configuration conf = data.getConfiguration(key);
+		Configuration conf = data.getConfiguration(key).config;
 		conf.setInterceptor(new InterceptorImpl(listener));
         EventListeners listeners = conf.getEventListeners();
         Map<String, CFCInfo> cfcs = data.getCFCs(key);

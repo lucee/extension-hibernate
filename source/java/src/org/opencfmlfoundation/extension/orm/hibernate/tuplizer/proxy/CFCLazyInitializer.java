@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 import org.hibernate.engine.SessionImplementor;
 import org.hibernate.proxy.AbstractLazyInitializer;
+import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
+import org.opencfmlfoundation.extension.orm.hibernate.HibernatePageException;
 
 import railo.runtime.Component;
 import railo.runtime.exp.PageException;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernatePageException;
 
 /**
  * Lazy initializer for "dynamic-map" entity representations.

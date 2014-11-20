@@ -10,8 +10,16 @@ import java.util.Map;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Settings;
+import org.hibernate.ejb.connection.InjectedDataSourceConnectionProvider;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.engine.query.QueryPlanCache;
+import org.hibernate.impl.SessionFactoryImpl;
+import org.opencfmlfoundation.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
+import org.opencfmlfoundation.extension.orm.hibernate.jdbc.DataSourceConfig;
+import org.opencfmlfoundation.extension.orm.hibernate.naming.CFCNamingStrategy;
+import org.opencfmlfoundation.extension.orm.hibernate.naming.DefaultNamingStrategy;
+import org.opencfmlfoundation.extension.orm.hibernate.naming.SmartNamingStrategy;
 
 import railo.commons.io.log.Log;
 import railo.loader.engine.CFMLEngineFactory;
@@ -27,9 +35,6 @@ import railo.runtime.orm.naming.NamingStrategy;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
-import org.opencfmlfoundation.extension.orm.hibernate.naming.CFCNamingStrategy;
-import org.opencfmlfoundation.extension.orm.hibernate.naming.DefaultNamingStrategy;
-import org.opencfmlfoundation.extension.orm.hibernate.naming.SmartNamingStrategy;
 
 public class SessionFactoryData {
 
@@ -37,7 +42,7 @@ public class SessionFactoryData {
 	
 	private final Map<Key,DataSource> sources=new HashMap<Key, DataSource>();
 	private final Map<Key,Map<String, CFCInfo>> cfcs=new HashMap<Key, Map<String,CFCInfo>>();
-	private final Map<Key,Configuration> configurations=new HashMap<Key,Configuration>();
+	private final Map<Key,DataSourceConfig> configurations=new HashMap<Key,DataSourceConfig>();
 	private final Map<Key,SessionFactory> factories=new HashMap<Key,SessionFactory>();
 	private final Map<Key,QueryPlanCache> queryPlanCaches=new HashMap<Key,QueryPlanCache>();
 	
@@ -191,23 +196,39 @@ public class SessionFactoryData {
 	}
 
 	// Datasource specific
-	public Configuration getConfiguration(DataSource ds){
+	public DataSourceConfig getConfiguration(DataSource ds){
 		return configurations.get(CommonUtil.toKey(ds.getName()));
 	}
-	public Configuration getConfiguration(Key key){
+	public DataSourceConfig getConfiguration(Key key){
 		return configurations.get(key);
 	}
 
 	public void setConfiguration(Log log,String mappings, DatasourceConnection dc) throws PageException, SQLException, IOException {
-		configurations.put(CommonUtil.toKey(dc.getDatasource().getName()),HibernateSessionFactory.createConfiguration(log,mappings,dc,this));
+		configurations.put(CommonUtil.toKey(dc.getDatasource().getName())
+				,new DataSourceConfig(dc.getDatasource(),HibernateSessionFactory.createConfiguration(log,mappings,dc,this))
+				);
 	}
 
 
 	public void buildSessionFactory(Key datasSourceName) {
 		//Key key=KeyImpl.init(ds.getName());
-		Configuration conf = getConfiguration(datasSourceName);
-		if(conf==null) throw new RuntimeException("cannot build factory because there is no configuration"); // this should never happen
-		factories.put(datasSourceName, conf.buildSessionFactory());
+		DataSourceConfig dsc = getConfiguration(datasSourceName);
+		if(dsc==null) throw new RuntimeException("cannot build factory because there is no configuration"); // this should never happen
+		
+		Thread thread = Thread.currentThread();
+		ClassLoader old = thread.getContextClassLoader();
+		SessionFactory sf;
+		try{
+			// use the core classloader 
+			thread.setContextClassLoader(CFMLEngineFactory.getInstance().getClass().getClassLoader());
+			sf= dsc.config.buildSessionFactory();
+		}
+		finally {
+			// reset
+			thread.setContextClassLoader(old);
+		}
+		
+		factories.put(datasSourceName, sf);
 	}
 
 	public SessionFactory getFactory(Key datasSourceName){

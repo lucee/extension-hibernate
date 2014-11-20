@@ -16,9 +16,9 @@ import org.hibernate.event.PreLoadEvent;
 import org.hibernate.event.PreLoadEventListener;
 import org.hibernate.event.PreUpdateEvent;
 import org.hibernate.event.PreUpdateEventListener;
+import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
 
 import railo.runtime.Component;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
 
 public class AllEventListener extends EventListener implements PreDeleteEventListener, PreInsertEventListener, PreLoadEventListener, PreUpdateEventListener,
 PostDeleteEventListener, PostInsertEventListener, PostLoadEventListener, PostUpdateEventListener {

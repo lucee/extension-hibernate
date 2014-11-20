@@ -17,7 +17,6 @@ import java.nio.charset.Charset;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -26,10 +25,8 @@ import java.util.TimeZone;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.xmlbeans.impl.jam.internal.elements.PropertyImpl;
 import org.hibernate.JDBCException;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
@@ -648,13 +645,7 @@ public class CommonUtil {
 	}
 
 	public static DataSource getDataSource(PageContext pc, String name) throws PageException {
-		try{
-			Method m = pc.getClass().getMethod("getDataSource", new Class[]{String.class});
-			return (DataSource) m.invoke(pc, new Object[]{name});
-		}
-		catch (Throwable t) {
-			throw caster().toPageException(t);
-		}
+		return pc.getDataSource(name);
 	}
 
 	public static DatasourceConnection getDatasourceConnection(PageContext pc, DataSource ds) throws PageException {

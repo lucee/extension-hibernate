@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
+
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
@@ -14,7 +16,6 @@ import railo.runtime.component.Property;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;

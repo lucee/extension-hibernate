@@ -2,9 +2,9 @@ package org.opencfmlfoundation.extension.orm.hibernate.event;
 
 import org.hibernate.event.PostDeleteEvent;
 import org.hibernate.event.PostDeleteEventListener;
+import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
 
 import railo.runtime.Component;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
 
 public class PostDeleteEventListenerImpl extends EventListener implements PostDeleteEventListener {
 

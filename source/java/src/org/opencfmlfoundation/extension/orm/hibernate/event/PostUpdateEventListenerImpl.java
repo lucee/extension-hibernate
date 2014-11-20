@@ -2,9 +2,9 @@ package org.opencfmlfoundation.extension.orm.hibernate.event;
 
 import org.hibernate.event.PostUpdateEvent;
 import org.hibernate.event.PostUpdateEventListener;
+import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
 
 import railo.runtime.Component;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
 
 public class PostUpdateEventListenerImpl extends EventListener implements PostUpdateEventListener {
 

@@ -1,6 +1,8 @@
 package org.opencfmlfoundation.extension.orm.hibernate.event;
 
 import org.hibernate.event.PreUpdateEvent;
+import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
+import org.opencfmlfoundation.extension.orm.hibernate.HibernateUtil;
 
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
@@ -8,8 +10,6 @@ import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernateUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;

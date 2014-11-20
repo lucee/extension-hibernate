@@ -2,9 +2,9 @@ package org.opencfmlfoundation.extension.orm.hibernate.event;
 
 import org.hibernate.event.PreInsertEvent;
 import org.hibernate.event.PreInsertEventListener;
+import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
 
 import railo.runtime.Component;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
 
 public class PreInsertEventListenerImpl extends EventListener implements PreInsertEventListener {
 	
