@@ -1,16 +1,16 @@
-package org.opencfmlfoundation.extension.orm.hibernate.event;
+package org.lucee.extension.orm.hibernate.event;
 
 import java.io.Serializable;
 
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernateCaster;
+import org.lucee.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.HibernateCaster;
 
-import railo.runtime.Component;
-import railo.runtime.exp.PageException;
-import railo.runtime.type.Collection;
-import railo.runtime.type.Struct;
+import lucee.runtime.Component;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.type.Collection;
+import lucee.runtime.type.Struct;
 
 public class InterceptorImpl extends EmptyInterceptor {
 

@@ -1,4 +1,4 @@
-package org.opencfmlfoundation.extension.orm.hibernate;
+package org.lucee.extension.orm.hibernate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,37 +24,37 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.connection.ConnectionProvider;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
-import org.opencfmlfoundation.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
-import org.opencfmlfoundation.extension.orm.hibernate.jdbc.ConnectionProviderProxy;
+import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
+import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderProxy;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.BundleReference;
 import org.w3c.dom.Document;
 
-import railo.commons.io.log.Log;
-import railo.commons.io.res.Resource;
-import railo.commons.io.res.filter.ResourceFilter;
-import railo.loader.engine.CFMLEngineFactory;
-import railo.loader.util.Util;
-import railo.runtime.Component;
-import railo.runtime.InterfacePage;
-import railo.runtime.Mapping;
-import railo.runtime.Page;
-import railo.runtime.PageContext;
-import railo.runtime.PageSource;
-import railo.runtime.config.Config;
-import railo.runtime.db.ClassDefinition;
-import railo.runtime.db.DataSource;
-import railo.runtime.db.DatasourceConnection;
-import railo.runtime.exp.PageException;
-import railo.runtime.listener.ApplicationContext;
-import railo.runtime.orm.ORMConfiguration;
-import railo.runtime.type.Collection.Key;
-import railo.runtime.util.TemplateUtil;
+import lucee.commons.io.log.Log;
+import lucee.commons.io.res.Resource;
+import lucee.commons.io.res.filter.ResourceFilter;
+import lucee.loader.engine.CFMLEngine;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.util.Util;
+import lucee.runtime.Component;
+import lucee.runtime.InterfacePage;
+import lucee.runtime.Mapping;
+import lucee.runtime.Page;
+import lucee.runtime.PageContext;
+import lucee.runtime.PageSource;
+import lucee.runtime.config.Config;
+import lucee.runtime.db.ClassDefinition;
+import lucee.runtime.db.DataSource;
+import lucee.runtime.db.DatasourceConnection;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.listener.ApplicationContext;
+import lucee.runtime.orm.ORMConfiguration;
+import lucee.runtime.type.Collection.Key;
+import lucee.runtime.util.TemplateUtil;
 
 
 public class HibernateSessionFactory {
-	
-	
+
 	public static final String HIBERNATE_3_PUBLIC_ID = "-//Hibernate/Hibernate Mapping DTD 3.0//EN";
 	public static final String HIBERNATE_3_SYSTEM_ID = "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd";
 	public static final Charset HIBERNATE_3_CHARSET = CommonUtil.UTF8;
@@ -94,9 +94,7 @@ public class HibernateSessionFactory {
 			if(Util.isEmpty(dialect)) dialect=Dialect.getDialect(ds);
 		}
 		if(Util.isEmpty(dialect))
-			throw ExceptionUtil.createException(data,null,"A valid dialect definition inside the "
-		+CFMLEngineFactory.getInstance().getInfo().getAppCFC()
-		+"/"+CFMLEngineFactory.getInstance().getInfo().getAppName()
+			throw ExceptionUtil.createException(data,null,"A valid dialect definition inside the application event listener (Application.cfc)"
 		+" is missing. The dialect cannot be determinated automatically",null);
 		
 		// Cache Provider
@@ -161,9 +159,7 @@ public class HibernateSessionFactory {
     	configuration.setProperty("hibernate.transaction.flush_before_completion", "false")
     	.setProperty("hibernate.transaction.auto_close_session", "false")
     	
-    	//.setProperty("hibernate.connection.pool_size", "2")//MUST
-    	
-    	// use Railo connection pool to avoid dynamic-import:*
+    	// use Lucee connection pool to avoid dynamic-import:*
     	.setProperty(Environment.CONNECTION_PROVIDER, 
     			//org.hibernate.ejb.connection.InjectedDataSourceConnectionProvider.class.getName()
     			ConnectionProviderProxy.class.getName()
@@ -338,7 +334,10 @@ public class HibernateSessionFactory {
 	}
 
 	public static List<Component> loadComponents(PageContext pc,HibernateORMEngine engine, ORMConfiguration ormConf) throws PageException {
-		ResourceFilter filter = CFMLEngineFactory.getInstance().getResourceUtil().getExtensionResourceFilter(pc.getConfig().getComponentExtension(),true);
+		CFMLEngine en = CFMLEngineFactory.getInstance();
+		String[] ext=HibernateUtil.merge(en.getInfo().getCFMLComponentExtensions(), en.getInfo().getLuceeComponentExtensions());
+		
+		ResourceFilter filter = en.getResourceUtil().getExtensionResourceFilter(ext,true);
 		List<Component> components=new ArrayList<Component>();
 		loadComponents(pc,engine,components,ormConf.getCfcLocations(),filter,ormConf);
 		return components;
@@ -385,7 +384,7 @@ public class HibernateSessionFactory {
 			}
 		}
 		else if(res.isFile()){
-			if(!res.getName().equalsIgnoreCase(CFMLEngineFactory.getInstance().getInfo().getAppCFC()))	{
+			if(!HibernateUtil.isApplicationName(pc,res.getName()))	{
 				try {
 					
 					// MUST still a bad solution
@@ -403,13 +402,13 @@ public class HibernateSessionFactory {
 					
 					//Page p = ps.loadPage(pc.getConfig());
 					String name=res.getName();
-					name=name.substring(0,name.length()-(CFMLEngineFactory.getInstance().getInfo().getComponentExtension().length()+1));
+					name=HibernateUtil.removeExtension(name, name);
 					
 					TemplateUtil tu = CFMLEngineFactory.getInstance().getTemplateUtil();
 					
 					Page p = tu.loadPage(pc, ps,true);
 					if(!(p instanceof InterfacePage)){
-						Component cfc = tu.loadComponent(pc, p, name, true,true,false,true,null);
+						Component cfc = tu.loadComponent(pc, p, name, true,true,false,true);
 						if(cfc.isPersistent()){
 							components.add(cfc);
 						}

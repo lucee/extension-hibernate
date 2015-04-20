@@ -1,4 +1,4 @@
-package org.opencfmlfoundation.extension.orm.hibernate;
+package org.lucee.extension.orm.hibernate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,23 +25,23 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
-import railo.commons.lang.types.RefBoolean;
-import railo.loader.engine.CFMLEngineFactory;
-import railo.loader.util.Util;
-import railo.runtime.Component;
-import railo.runtime.ComponentScope;
-import railo.runtime.PageContext;
-import railo.runtime.db.DataSource;
-import railo.runtime.db.DatasourceConnection;
-import railo.runtime.db.SQLItem;
-import railo.runtime.exp.PageException;
-import railo.runtime.orm.ORMEngine;
-import railo.runtime.orm.ORMSession;
-import railo.runtime.orm.ORMTransaction;
-import railo.runtime.type.Array;
-import railo.runtime.type.Collection.Key;
-import railo.runtime.type.Struct;
-import railo.runtime.type.scope.Argument;
+import lucee.commons.lang.types.RefBoolean;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.util.Util;
+import lucee.runtime.Component;
+import lucee.runtime.ComponentScope;
+import lucee.runtime.PageContext;
+import lucee.runtime.db.DataSource;
+import lucee.runtime.db.DatasourceConnection;
+import lucee.runtime.db.SQLItem;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.orm.ORMEngine;
+import lucee.runtime.orm.ORMSession;
+import lucee.runtime.orm.ORMTransaction;
+import lucee.runtime.type.Array;
+import lucee.runtime.type.Collection.Key;
+import lucee.runtime.type.Struct;
+import lucee.runtime.type.scope.Argument;
 
 public class HibernateORMSession implements ORMSession {
 
@@ -496,7 +496,7 @@ public class HibernateORMSession implements ORMSession {
 	}
 
 	@Override
-	public railo.runtime.type.Query toQuery(PageContext pc, Object obj, String name) throws PageException {
+	public lucee.runtime.type.Query toQuery(PageContext pc, Object obj, String name) throws PageException {
 		return HibernateCaster.toQuery(pc,this,obj,name);
 	}
 	@Override

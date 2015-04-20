@@ -1,6 +1,7 @@
-package org.opencfmlfoundation.extension.orm.hibernate.tuplizer.proxy;
+package org.lucee.extension.orm.hibernate.tuplizer.proxy;
 
-import railo.runtime.Component;
+import lucee.runtime.Component;
+import lucee.runtime.Interface;
 
 public class CFCProxy extends ComponentProxy {
 	

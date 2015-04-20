@@ -1,4 +1,4 @@
-package org.opencfmlfoundation.extension.orm.hibernate.tuplizer.proxy;
+package org.lucee.extension.orm.hibernate.tuplizer.proxy;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;

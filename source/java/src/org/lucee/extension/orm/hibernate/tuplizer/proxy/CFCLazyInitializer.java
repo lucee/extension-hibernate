@@ -1,14 +1,14 @@
-package org.opencfmlfoundation.extension.orm.hibernate.tuplizer.proxy;
+package org.lucee.extension.orm.hibernate.tuplizer.proxy;
 
 import java.io.Serializable;
 
 import org.hibernate.engine.SessionImplementor;
 import org.hibernate.proxy.AbstractLazyInitializer;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernatePageException;
+import org.lucee.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.HibernatePageException;
 
-import railo.runtime.Component;
-import railo.runtime.exp.PageException;
+import lucee.runtime.Component;
+import lucee.runtime.exp.PageException;
 
 /**
  * Lazy initializer for "dynamic-map" entity representations.

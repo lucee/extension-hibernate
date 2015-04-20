@@ -1,4 +1,4 @@
-package org.opencfmlfoundation.extension.orm.hibernate;
+package org.lucee.extension.orm.hibernate;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -13,20 +13,22 @@ import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.ComponentType;
 import org.hibernate.type.Type;
 
-import railo.commons.io.res.Resource;
-import railo.loader.engine.CFMLEngineFactory;
-import railo.loader.util.Util;
-import railo.runtime.Component;
-import railo.runtime.PageContext;
-import railo.runtime.PageSource;
-import railo.runtime.component.Property;
-import railo.runtime.config.Config;
-import railo.runtime.db.DatasourceConnection;
-import railo.runtime.exp.PageException;
-import railo.runtime.orm.ORMConfiguration;
-import railo.runtime.orm.ORMSession;
-import railo.runtime.type.Collection;
-import railo.runtime.type.Struct;
+import lucee.Info;
+import lucee.commons.io.res.Resource;
+import lucee.loader.engine.CFMLEngine;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.util.Util;
+import lucee.runtime.Component;
+import lucee.runtime.PageContext;
+import lucee.runtime.PageSource;
+import lucee.runtime.component.Property;
+import lucee.runtime.config.Config;
+import lucee.runtime.db.DatasourceConnection;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.orm.ORMConfiguration;
+import lucee.runtime.orm.ORMSession;
+import lucee.runtime.type.Collection;
+import lucee.runtime.type.Struct;
 
 
 public class HibernateUtil {
@@ -217,11 +219,17 @@ public class HibernateUtil {
 			if(cfc.equalTo(cfcName)) return true;
 
 			if(cfcName.indexOf('.')!=-1) {
-				String path=cfcName.replace('.', '/')+"."+CFMLEngineFactory.getInstance().getInfo().getComponentExtension();
+				Info info = CFMLEngineFactory.getInstance().getInfo();
+				String[] extensions = HibernateUtil.merge(info.getCFMLComponentExtensions(), info.getLuceeComponentExtensions());
+				String prefix=cfcName.replace('.', '/')+".";
 				Resource[] locations = ormConf.getCfcLocations();
+				Resource res;
 				for(int i=0;i<locations.length;i++){
-					if(locations[i].getRealResource(path).equals(cfc.getPageSource().getResource()))
-						return true;
+					for(int y=0;y<extensions.length;y++){
+						res=locations[i].getRealResource(prefix+extensions[y]);
+						if(res.equals(cfc.getPageSource().getResource()))
+							return true;
+					}
 				}
 				return false;
 			}
@@ -332,5 +340,37 @@ public class HibernateUtil {
 
 	public static long getCompileTime(PageContext pc, PageSource ps) throws PageException {
 		return CFMLEngineFactory.getInstance().getTemplateUtil().getCompileTime(pc, ps);
+	}
+	
+	public static String removeExtension(String filename, String defaultValue) {
+		int index=filename.lastIndexOf('.');
+		if(index==-1) return defaultValue;
+		return filename.substring(0,index);
+	}
+	
+	public static String[] merge(String[] arr1, String[] arr2) {
+		String[] ret = new String[arr1.length+arr2.length];
+		for(int i=0;i<arr1.length;i++){
+			ret[i]=arr1[i];
+		}
+		for(int i=0;i<arr2.length;i++){
+			ret[arr1.length+i]=arr2[i];
+		}
+		return ret;
+	}
+
+
+	public static boolean isApplicationName(PageContext pc,String name) {
+		String lcn=name.toLowerCase();
+		if(!lcn.startsWith("application.")) return false;
+		
+		Info info = CFMLEngineFactory.getInstance().getInfo();
+		String[] extensions = pc.getRequestDialect()==CFMLEngine.DIALECT_CFML? 
+				info.getCFMLComponentExtensions():info.getLuceeComponentExtensions();
+				
+		for(int i=0;i<extensions.length;i++){
+			if(lcn.equalsIgnoreCase("application."+extensions[i]))return true;
+		}
+		return false;
 	}
 }

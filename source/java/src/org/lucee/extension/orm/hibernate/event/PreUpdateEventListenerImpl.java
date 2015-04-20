@@ -1,10 +1,10 @@
-package org.opencfmlfoundation.extension.orm.hibernate.event;
+package org.lucee.extension.orm.hibernate.event;
 
 import org.hibernate.event.PreUpdateEvent;
 import org.hibernate.event.PreUpdateEventListener;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.CommonUtil;
 
-import railo.runtime.Component;
+import lucee.runtime.Component;
 
 public class PreUpdateEventListenerImpl extends EventListener implements PreUpdateEventListener {
 	

@@ -1,4 +1,4 @@
-package org.opencfmlfoundation.extension.orm.hibernate;
+package org.lucee.extension.orm.hibernate;
 
 
 import java.util.ArrayList;
@@ -12,15 +12,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import railo.loader.util.Util;
-import railo.runtime.Component;
-import railo.runtime.PageContext;
-import railo.runtime.component.Property;
-import railo.runtime.db.DatasourceConnection;
-import railo.runtime.exp.PageException;
-import railo.runtime.type.Collection;
-import railo.runtime.type.Collection.Key;
-import railo.runtime.type.Struct;
+import lucee.loader.util.Util;
+import lucee.runtime.Component;
+import lucee.runtime.PageContext;
+import lucee.runtime.component.Property;
+import lucee.runtime.db.DatasourceConnection;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.type.Collection;
+import lucee.runtime.type.Collection.Key;
+import lucee.runtime.type.Struct;
 
 public class HBMCreator {
 	

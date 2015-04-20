@@ -1,28 +1,29 @@
-package org.opencfmlfoundation.extension.orm.hibernate.tuplizer.proxy;
+package org.lucee.extension.orm.hibernate.tuplizer.proxy;
 
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.CommonUtil;
 
-import railo.commons.lang.types.RefBoolean;
-import railo.runtime.Component;
-import railo.runtime.ComponentScope;
-import railo.runtime.PageContext;
-import railo.runtime.PageSource;
-import railo.runtime.component.Member;
-import railo.runtime.component.Property;
-import railo.runtime.dump.DumpData;
-import railo.runtime.dump.DumpProperties;
-import railo.runtime.exp.PageException;
-import railo.runtime.type.Collection;
-import railo.runtime.type.Struct;
-import railo.runtime.type.UDF;
-import railo.runtime.type.UDFProperties;
-import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.scope.Scope;
-import railo.runtime.type.scope.Variables;
+import lucee.commons.lang.types.RefBoolean;
+import lucee.runtime.Component;
+import lucee.runtime.ComponentScope;
+import lucee.runtime.Interface;
+import lucee.runtime.PageContext;
+import lucee.runtime.PageSource;
+import lucee.runtime.component.Member;
+import lucee.runtime.component.Property;
+import lucee.runtime.dump.DumpData;
+import lucee.runtime.dump.DumpProperties;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.type.Collection;
+import lucee.runtime.type.Struct;
+import lucee.runtime.type.UDF;
+import lucee.runtime.type.UDFProperties;
+import lucee.runtime.type.dt.DateTime;
+import lucee.runtime.type.scope.Scope;
+import lucee.runtime.type.scope.Variables;
 
 public abstract class ComponentProxy implements Component {
 
@@ -125,6 +126,11 @@ public abstract class ComponentProxy implements Component {
 	@Override
 	public Object removeEL(Key key) {
 		return getComponent().removeEL(key);
+	}
+
+	@Override
+	public Object remove(Key key, Object defaultValue) {
+		return getComponent().remove(key,defaultValue);
 	}
 
 	@Override
@@ -397,23 +403,15 @@ public abstract class ComponentProxy implements Component {
 		return duplicate(true);
 	}
 	
+    
 	@Override
-    public void registerUDF(String key, UDF udf){
+    public void registerUDF(Collection.Key key, UDF udf) throws PageException{
     	getComponent().registerUDF(key, udf);
     }
     
-	@Override
-    public void registerUDF(Collection.Key key, UDF udf){
-    	getComponent().registerUDF(key, udf);
-    }
     
 	@Override
-    public void registerUDF(String key, UDFProperties props){
-    	getComponent().registerUDF(key, props);
-    }
-    
-	@Override
-    public void registerUDF(Collection.Key key, UDFProperties props){
+    public void registerUDF(Collection.Key key, UDFProperties props) throws PageException{
     	getComponent().registerUDF(key, props);
     }
 
@@ -562,5 +560,10 @@ public abstract class ComponentProxy implements Component {
 	@Override
 	public void afterStaticConstructor(PageContext pc, Variables var){
 		getComponent().afterStaticConstructor(pc, var);
+	}
+
+	@Override
+	public Interface[] getInterfaces() {
+		return getComponent().getInterfaces();
 	}
 }

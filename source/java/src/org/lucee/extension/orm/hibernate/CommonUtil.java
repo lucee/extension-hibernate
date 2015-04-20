@@ -1,4 +1,4 @@
-package org.opencfmlfoundation.extension.orm.hibernate;
+package org.lucee.extension.orm.hibernate;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -30,32 +30,32 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import railo.commons.io.res.Resource;
-import railo.commons.lang.types.RefBoolean;
-import railo.loader.engine.CFMLEngineFactory;
-import railo.runtime.Component;
-import railo.runtime.Mapping;
-import railo.runtime.PageContext;
-import railo.runtime.component.Property;
-import railo.runtime.config.Config;
-import railo.runtime.db.DataSource;
-import railo.runtime.db.DatasourceConnection;
-import railo.runtime.db.SQL;
-import railo.runtime.db.SQLItem;
-import railo.runtime.exp.PageException;
-import railo.runtime.type.Array;
-import railo.runtime.type.Collection;
-import railo.runtime.type.Collection.Key;
-import railo.runtime.type.Query;
-import railo.runtime.type.Struct;
-import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.scope.Argument;
-import railo.runtime.util.Cast;
-import railo.runtime.util.Creation;
-import railo.runtime.util.DBUtil;
-import railo.runtime.util.Decision;
-import railo.runtime.util.ORMUtil;
-import railo.runtime.util.Operation;
+import lucee.commons.io.res.Resource;
+import lucee.commons.lang.types.RefBoolean;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.runtime.Component;
+import lucee.runtime.Mapping;
+import lucee.runtime.PageContext;
+import lucee.runtime.component.Property;
+import lucee.runtime.config.Config;
+import lucee.runtime.db.DataSource;
+import lucee.runtime.db.DatasourceConnection;
+import lucee.runtime.db.SQL;
+import lucee.runtime.db.SQLItem;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.type.Array;
+import lucee.runtime.type.Collection;
+import lucee.runtime.type.Collection.Key;
+import lucee.runtime.type.Query;
+import lucee.runtime.type.Struct;
+import lucee.runtime.type.dt.DateTime;
+import lucee.runtime.type.scope.Argument;
+import lucee.runtime.util.Cast;
+import lucee.runtime.util.Creation;
+import lucee.runtime.util.DBUtil;
+import lucee.runtime.util.Decision;
+import lucee.runtime.util.ORMUtil;
+import lucee.runtime.util.Operation;
 
 public class CommonUtil {
 	
@@ -99,8 +99,8 @@ public class CommonUtil {
 	private static Decision decision;
 	private static Creation creator;
 	private static Operation op;
-	private static railo.runtime.util.XMLUtil xml;
-	private static railo.runtime.util.ListUtil list;
+	private static lucee.runtime.util.XMLUtil xml;
+	private static lucee.runtime.util.ListUtil list;
 	private static DBUtil db;
 	private static ORMUtil orm;
 
@@ -517,12 +517,12 @@ public class CommonUtil {
 			op=CFMLEngineFactory.getInstance().getOperatonUtil();
 		return op;
 	}
-	private static railo.runtime.util.XMLUtil xml() {
+	private static lucee.runtime.util.XMLUtil xml() {
 		if(xml==null)
 			xml=CFMLEngineFactory.getInstance().getXMLUtil();
 		return xml;
 	}
-	private static railo.runtime.util.ListUtil list() {
+	private static lucee.runtime.util.ListUtil list() {
 		if(list==null)
 			list=CFMLEngineFactory.getInstance().getListUtil();
 		return list;

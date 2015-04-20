@@ -1,10 +1,10 @@
-package org.opencfmlfoundation.extension.orm.hibernate.event;
+package org.lucee.extension.orm.hibernate.event;
 
 import org.hibernate.event.PostDeleteEvent;
 import org.hibernate.event.PostDeleteEventListener;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.CommonUtil;
 
-import railo.runtime.Component;
+import lucee.runtime.Component;
 
 public class PostDeleteEventListenerImpl extends EventListener implements PostDeleteEventListener {
 

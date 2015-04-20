@@ -1,4 +1,4 @@
-package org.opencfmlfoundation.extension.orm.hibernate.tuplizer.accessors;
+package org.lucee.extension.orm.hibernate.tuplizer.accessors;
 
 import org.hibernate.PropertyNotFoundException;
 import org.hibernate.property.Getter;

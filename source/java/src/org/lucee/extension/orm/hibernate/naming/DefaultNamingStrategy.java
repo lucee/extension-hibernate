@@ -1,6 +1,6 @@
-package org.opencfmlfoundation.extension.orm.hibernate.naming;
+package org.lucee.extension.orm.hibernate.naming;
 
-import railo.runtime.orm.naming.NamingStrategy;
+import lucee.runtime.orm.naming.NamingStrategy;
 
 public class DefaultNamingStrategy implements NamingStrategy {
 

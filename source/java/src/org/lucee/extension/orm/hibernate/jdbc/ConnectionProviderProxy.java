@@ -1,4 +1,4 @@
-package org.opencfmlfoundation.extension.orm.hibernate.jdbc;
+package org.lucee.extension.orm.hibernate.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;

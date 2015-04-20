@@ -1,19 +1,19 @@
-package org.opencfmlfoundation.extension.orm.hibernate;
+package org.lucee.extension.orm.hibernate;
 
 
 import org.hibernate.HibernateException;
 
-import railo.runtime.PageContext;
-import railo.runtime.PageSource;
-import railo.runtime.config.Config;
-import railo.runtime.dump.DumpData;
-import railo.runtime.dump.DumpProperties;
-import railo.runtime.err.ErrorPage;
-import railo.runtime.exp.CatchBlock;
-import railo.runtime.exp.IPageException;
-import railo.runtime.exp.PageException;
-import railo.runtime.exp.PageExceptionBox;
-import railo.runtime.type.Struct;
+import lucee.runtime.PageContext;
+import lucee.runtime.PageSource;
+import lucee.runtime.config.Config;
+import lucee.runtime.dump.DumpData;
+import lucee.runtime.dump.DumpProperties;
+import lucee.runtime.err.ErrorPage;
+import lucee.runtime.exp.CatchBlock;
+import lucee.runtime.exp.IPageException;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.exp.PageExceptionBox;
+import lucee.runtime.type.Struct;
 
 public class HibernatePageException extends HibernateException implements IPageException,PageExceptionBox  {
 

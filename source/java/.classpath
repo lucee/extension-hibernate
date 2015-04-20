@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Railo-Loader"/>
 	<classpathentry kind="lib" path="libs/antlr-2-7-6.jar"/>
 	<classpathentry kind="lib" path="libs/dom4j-1-6-1.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate-3-5-5.jar"/>
@@ -12,6 +11,7 @@
 	<classpathentry kind="lib" path="libs/slf4j-api-1-6-4.jar"/>
 	<classpathentry kind="lib" path="libs/slf4j-nop-1-6-4.jar"/>
 	<classpathentry kind="lib" path="libs/ehcache-2-5-2.jar"/>
-	<classpathentry kind="lib" path="/Railo-Libs/org-apache-felix-main-4-2-1.jar"/>
+	<classpathentry kind="lib" path="libs/org-apache-felix-main-4-2-1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Lucee Loader"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

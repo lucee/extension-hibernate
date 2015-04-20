@@ -1,4 +1,4 @@
-package org.opencfmlfoundation.extension.orm.hibernate.tuplizer;
+package org.lucee.extension.orm.hibernate.tuplizer;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -17,19 +17,19 @@ import org.hibernate.proxy.ProxyFactory;
 import org.hibernate.tuple.Instantiator;
 import org.hibernate.tuple.entity.AbstractEntityTuplizer;
 import org.hibernate.tuple.entity.EntityMetamodel;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
-import org.opencfmlfoundation.extension.orm.hibernate.HBMCreator;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernateCaster;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernateUtil;
-import org.opencfmlfoundation.extension.orm.hibernate.tuplizer.accessors.CFCAccessor;
-import org.opencfmlfoundation.extension.orm.hibernate.tuplizer.proxy.CFCHibernateProxyFactory;
+import org.lucee.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.HBMCreator;
+import org.lucee.extension.orm.hibernate.HibernateCaster;
+import org.lucee.extension.orm.hibernate.HibernateUtil;
+import org.lucee.extension.orm.hibernate.tuplizer.accessors.CFCAccessor;
+import org.lucee.extension.orm.hibernate.tuplizer.proxy.CFCHibernateProxyFactory;
 
-import railo.loader.engine.CFMLEngineFactory;
-import railo.loader.util.Util;
-import railo.runtime.Component;
-import railo.runtime.ComponentScope;
-import railo.runtime.exp.PageException;
-import railo.runtime.type.Struct;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.util.Util;
+import lucee.runtime.Component;
+import lucee.runtime.ComponentScope;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.type.Struct;
 
 
 public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
@@ -55,8 +55,8 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			Component cfc=(Component) id;
 			ComponentScope scope = cfc.getComponentScope();
-			railo.runtime.component.Property[] props = HibernateUtil.getIDProperties(cfc, true,true);
-			railo.runtime.component.Property p;
+			lucee.runtime.component.Property[] props = HibernateUtil.getIDProperties(cfc, true,true);
+			lucee.runtime.component.Property p;
 			String name;
 			Object value;
 			for(int i=0;i<props.length;i++){

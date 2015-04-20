@@ -1,4 +1,4 @@
-package org.opencfmlfoundation.extension.orm.hibernate;
+package org.lucee.extension.orm.hibernate;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -15,26 +15,26 @@ import org.hibernate.ejb.connection.InjectedDataSourceConnectionProvider;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.engine.query.QueryPlanCache;
 import org.hibernate.impl.SessionFactoryImpl;
-import org.opencfmlfoundation.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
-import org.opencfmlfoundation.extension.orm.hibernate.jdbc.DataSourceConfig;
-import org.opencfmlfoundation.extension.orm.hibernate.naming.CFCNamingStrategy;
-import org.opencfmlfoundation.extension.orm.hibernate.naming.DefaultNamingStrategy;
-import org.opencfmlfoundation.extension.orm.hibernate.naming.SmartNamingStrategy;
+import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
+import org.lucee.extension.orm.hibernate.jdbc.DataSourceConfig;
+import org.lucee.extension.orm.hibernate.naming.CFCNamingStrategy;
+import org.lucee.extension.orm.hibernate.naming.DefaultNamingStrategy;
+import org.lucee.extension.orm.hibernate.naming.SmartNamingStrategy;
 
-import railo.commons.io.log.Log;
-import railo.loader.engine.CFMLEngineFactory;
-import railo.loader.util.Util;
-import railo.runtime.Component;
-import railo.runtime.PageContext;
-import railo.runtime.db.DataSource;
-import railo.runtime.db.DatasourceConnection;
-import railo.runtime.exp.PageException;
-import railo.runtime.orm.ORMConfiguration;
-import railo.runtime.orm.ORMSession;
-import railo.runtime.orm.naming.NamingStrategy;
-import railo.runtime.type.Collection;
-import railo.runtime.type.Collection.Key;
-import railo.runtime.type.Struct;
+import lucee.commons.io.log.Log;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.util.Util;
+import lucee.runtime.Component;
+import lucee.runtime.PageContext;
+import lucee.runtime.db.DataSource;
+import lucee.runtime.db.DatasourceConnection;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.orm.ORMConfiguration;
+import lucee.runtime.orm.ORMSession;
+import lucee.runtime.orm.naming.NamingStrategy;
+import lucee.runtime.type.Collection;
+import lucee.runtime.type.Collection.Key;
+import lucee.runtime.type.Struct;
 
 public class SessionFactoryData {
 

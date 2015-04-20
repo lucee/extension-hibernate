@@ -1,4 +1,4 @@
-package org.opencfmlfoundation.extension.orm.hibernate.tuplizer.accessors;
+package org.lucee.extension.orm.hibernate.tuplizer.accessors;
 
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -10,19 +10,19 @@ import org.hibernate.engine.SessionImplementor;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.property.Getter;
 import org.hibernate.type.Type;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernateCaster;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernateORMEngine;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernatePageException;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernateUtil;
+import org.lucee.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.HibernateCaster;
+import org.lucee.extension.orm.hibernate.HibernateORMEngine;
+import org.lucee.extension.orm.hibernate.HibernatePageException;
+import org.lucee.extension.orm.hibernate.HibernateUtil;
 
-import railo.loader.engine.CFMLEngineFactory;
-import railo.runtime.Component;
-import railo.runtime.PageContext;
-import railo.runtime.exp.PageException;
-import railo.runtime.orm.ORMSession;
-import railo.runtime.type.Collection;
-import railo.runtime.type.Collection.Key;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.runtime.Component;
+import lucee.runtime.PageContext;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.orm.ORMSession;
+import lucee.runtime.type.Collection;
+import lucee.runtime.type.Collection.Key;
 
 public class CFCGetter implements Getter {
 

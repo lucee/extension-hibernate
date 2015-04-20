@@ -1,4 +1,4 @@
-package org.opencfmlfoundation.extension.orm.hibernate;
+package org.lucee.extension.orm.hibernate;
 
 import java.math.BigInteger;
 import java.sql.Time;
@@ -12,22 +12,22 @@ import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
-import railo.commons.lang.types.RefBoolean;
-import railo.loader.engine.CFMLEngineFactory;
-import railo.loader.util.Util;
-import railo.runtime.Component;
-import railo.runtime.ComponentScope;
-import railo.runtime.PageContext;
-import railo.runtime.component.Property;
-import railo.runtime.db.SQLItem;
-import railo.runtime.exp.PageException;
-import railo.runtime.orm.ORMEngine;
-import railo.runtime.orm.ORMSession;
-import railo.runtime.type.Array;
-import railo.runtime.type.Collection;
-import railo.runtime.type.Collection.Key;
-import railo.runtime.type.Query;
-import railo.runtime.type.Struct;
+import lucee.commons.lang.types.RefBoolean;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.util.Util;
+import lucee.runtime.Component;
+import lucee.runtime.ComponentScope;
+import lucee.runtime.PageContext;
+import lucee.runtime.component.Property;
+import lucee.runtime.db.SQLItem;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.orm.ORMEngine;
+import lucee.runtime.orm.ORMSession;
+import lucee.runtime.type.Array;
+import lucee.runtime.type.Collection;
+import lucee.runtime.type.Collection.Key;
+import lucee.runtime.type.Query;
+import lucee.runtime.type.Struct;
 
 public class HibernateCaster {
 	
@@ -475,7 +475,7 @@ public class HibernateCaster {
 	}
 
 
-	public static railo.runtime.type.Query toQuery(PageContext pc,HibernateORMSession session, Object obj, String name) throws PageException {
+	public static lucee.runtime.type.Query toQuery(PageContext pc,HibernateORMSession session, Object obj, String name) throws PageException {
 		Query qry=null;
 		// a single entity
 		if(!CommonUtil.isArray(obj)){

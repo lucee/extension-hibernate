@@ -1,4 +1,4 @@
-package org.opencfmlfoundation.extension.orm.hibernate.tuplizer;
+package org.lucee.extension.orm.hibernate.tuplizer;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -7,16 +7,16 @@ import java.util.Set;
 
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.tuple.Instantiator;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernateCaster;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernateORMEngine;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernateORMSession;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernatePageException;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernateUtil;
+import org.lucee.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.HibernateCaster;
+import org.lucee.extension.orm.hibernate.HibernateORMEngine;
+import org.lucee.extension.orm.hibernate.HibernateORMSession;
+import org.lucee.extension.orm.hibernate.HibernatePageException;
+import org.lucee.extension.orm.hibernate.HibernateUtil;
 
-import railo.runtime.Component;
-import railo.runtime.PageContext;
-import railo.runtime.exp.PageException;
+import lucee.runtime.Component;
+import lucee.runtime.PageContext;
+import lucee.runtime.exp.PageException;
 
 public class CFCInstantiator implements Instantiator {
 	

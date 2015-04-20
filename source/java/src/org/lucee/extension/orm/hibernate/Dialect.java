@@ -1,12 +1,12 @@
-package org.opencfmlfoundation.extension.orm.hibernate;
+package org.lucee.extension.orm.hibernate;
 
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import railo.loader.util.Util;
-import railo.runtime.db.DataSource;
-import railo.runtime.type.Struct;
+import lucee.loader.util.Util;
+import lucee.runtime.db.DataSource;
+import lucee.runtime.type.Struct;
 
 public class Dialect {
 	private static Struct dialects=CommonUtil.createStruct();

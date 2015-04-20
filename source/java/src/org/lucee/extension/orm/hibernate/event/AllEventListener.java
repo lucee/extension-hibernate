@@ -1,4 +1,4 @@
-package org.opencfmlfoundation.extension.orm.hibernate.event;
+package org.lucee.extension.orm.hibernate.event;
 
 import org.hibernate.event.PostDeleteEvent;
 import org.hibernate.event.PostDeleteEventListener;
@@ -16,9 +16,9 @@ import org.hibernate.event.PreLoadEvent;
 import org.hibernate.event.PreLoadEventListener;
 import org.hibernate.event.PreUpdateEvent;
 import org.hibernate.event.PreUpdateEventListener;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.CommonUtil;
 
-import railo.runtime.Component;
+import lucee.runtime.Component;
 
 public class AllEventListener extends EventListener implements PreDeleteEventListener, PreInsertEventListener, PreLoadEventListener, PreUpdateEventListener,
 PostDeleteEventListener, PostInsertEventListener, PostLoadEventListener, PostUpdateEventListener {

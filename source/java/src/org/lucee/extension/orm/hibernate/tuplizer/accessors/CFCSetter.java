@@ -1,17 +1,17 @@
-package org.opencfmlfoundation.extension.orm.hibernate.tuplizer.accessors;
+package org.lucee.extension.orm.hibernate.tuplizer.accessors;
 
 import java.lang.reflect.Method;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.property.Setter;
-import org.opencfmlfoundation.extension.orm.hibernate.CommonUtil;
-import org.opencfmlfoundation.extension.orm.hibernate.HibernatePageException;
+import org.lucee.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.HibernatePageException;
 
-import railo.runtime.Component;
-import railo.runtime.exp.PageException;
-import railo.runtime.type.Collection;
-import railo.runtime.type.Collection.Key;
+import lucee.runtime.Component;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.type.Collection;
+import lucee.runtime.type.Collection.Key;
 
 public final class CFCSetter implements Setter {
 	

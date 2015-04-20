@@ -1,8 +1,8 @@
-package org.opencfmlfoundation.extension.orm.hibernate.jdbc;
+package org.lucee.extension.orm.hibernate.jdbc;
 
 import org.hibernate.cfg.Configuration;
 
-import railo.runtime.db.DataSource;
+import lucee.runtime.db.DataSource;
 
 public class DataSourceConfig {
 
@@ -13,5 +13,4 @@ public class DataSourceConfig {
 		this.ds=ds;
 		this.config=config;
 	}
-
 }

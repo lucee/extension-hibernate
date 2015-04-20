@@ -1,13 +1,13 @@
-package org.opencfmlfoundation.extension.orm.hibernate;
+package org.lucee.extension.orm.hibernate;
 
 import java.lang.reflect.Method;
 
-import railo.loader.engine.CFMLEngineFactory;
-import railo.runtime.Component;
-import railo.runtime.db.DataSource;
-import railo.runtime.exp.PageException;
-import railo.runtime.orm.ORMSession;
-import railo.runtime.type.Collection.Key;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.runtime.Component;
+import lucee.runtime.db.DataSource;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.orm.ORMSession;
+import lucee.runtime.type.Collection.Key;
 
 public class ExceptionUtil {
 

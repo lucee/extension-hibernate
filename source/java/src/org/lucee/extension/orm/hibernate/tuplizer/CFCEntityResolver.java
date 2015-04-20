@@ -1,4 +1,4 @@
-package org.opencfmlfoundation.extension.orm.hibernate.tuplizer;
+package org.lucee.extension.orm.hibernate.tuplizer;
 
 import java.io.IOException;
 

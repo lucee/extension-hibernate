@@ -1,4 +1,4 @@
-package org.opencfmlfoundation.extension.orm.hibernate.jdbc;
+package org.lucee.extension.orm.hibernate.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -10,13 +10,13 @@ import org.hibernate.HibernateException;
 import org.hibernate.cfg.Environment;
 import org.hibernate.connection.ConnectionProvider;
 
-import railo.loader.engine.CFMLEngine;
-import railo.loader.engine.CFMLEngineFactory;
-import railo.loader.util.Util;
-import railo.runtime.PageContext;
-import railo.runtime.db.DatasourceConnection;
-import railo.runtime.exp.PageException;
-import railo.runtime.util.DBUtil;
+import lucee.loader.engine.CFMLEngine;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.util.Util;
+import lucee.runtime.PageContext;
+import lucee.runtime.db.DatasourceConnection;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.util.DBUtil;
 
 public class ConnectionProviderImpl implements ConnectionProvider {
 	

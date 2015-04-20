@@ -1,11 +1,11 @@
-package org.opencfmlfoundation.extension.orm.hibernate.naming;
+package org.lucee.extension.orm.hibernate.naming;
 
-import railo.loader.engine.CFMLEngine;
-import railo.loader.engine.CFMLEngineFactory;
-import railo.runtime.Component;
-import railo.runtime.exp.PageException;
-import railo.runtime.orm.naming.NamingStrategy;
-import railo.runtime.type.UDF;
+import lucee.loader.engine.CFMLEngine;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.runtime.Component;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.orm.naming.NamingStrategy;
+import lucee.runtime.type.UDF;
 
 public class CFCNamingStrategy implements NamingStrategy {
 	

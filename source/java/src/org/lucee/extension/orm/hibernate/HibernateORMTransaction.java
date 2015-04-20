@@ -1,9 +1,9 @@
-package org.opencfmlfoundation.extension.orm.hibernate;
+package org.lucee.extension.orm.hibernate;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import railo.runtime.orm.ORMTransaction;
+import lucee.runtime.orm.ORMTransaction;
 
 public class HibernateORMTransaction implements ORMTransaction {
 	
