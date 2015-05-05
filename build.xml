@@ -60,6 +60,7 @@ name: ${label}
 description: ${description}
 start-bundles: false
 orm: "[{'class':'${class}','name':'${bundlename}','version':'${bundleversion}${build.number}'}]"
+lucee-core-version: "5.0.0.48"
 </echo>
 
 
