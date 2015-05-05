@@ -33,6 +33,7 @@ import org.xml.sax.SAXException;
 import lucee.commons.io.res.Resource;
 import lucee.commons.lang.types.RefBoolean;
 import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.util.Util;
 import lucee.runtime.Component;
 import lucee.runtime.Mapping;
 import lucee.runtime.PageContext;
@@ -643,8 +644,16 @@ public class CommonUtil {
 	        return value?"true":"false";
 	    }
 	}
+	
+
+	public static DataSource getDataSource(PageContext pc, String dsn, DataSource defaultValue) {
+		if(Util.isEmpty(dsn,true)) return orm().getDefaultDataSource(pc,defaultValue);
+		return pc.getDataSource(dsn.trim(),defaultValue);
+	}
+	
 
 	public static DataSource getDataSource(PageContext pc, String name) throws PageException {
+		if(Util.isEmpty(name,true)) return orm().getDefaultDataSource(pc);
 		return pc.getDataSource(name);
 	}
 
