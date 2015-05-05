@@ -40,6 +40,11 @@ public abstract class ComponentProxy implements Component {
 	public Class getJavaAccessClass(PageContext pc,RefBoolean isNew,boolean writeLog, boolean takeTop, boolean create, boolean supressWSbeforeArg) throws PageException{
    		return getComponent().getJavaAccessClass(pc, isNew, writeLog, takeTop, create, supressWSbeforeArg);
 	}
+	
+	@Override
+	public Class getJavaAccessClass(PageContext pc,RefBoolean isNew,boolean writeLog, boolean takeTop, boolean create, boolean supressWSbeforeArg, boolean output, boolean returnValue) throws PageException{
+   		return getComponent().getJavaAccessClass(pc, isNew, writeLog, takeTop, create, supressWSbeforeArg,output,returnValue);
+	}
 
 	@Override
 	public String getDisplayName() {
