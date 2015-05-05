@@ -268,7 +268,6 @@ public class HibernateUtil {
 	private static Struct checkTableFill(DatabaseMetaData md, String dbName, String tableName) throws SQLException, PageException {
 		Struct rows=CFMLEngineFactory.getInstance().getCreationUtil().createCastableStruct(tableName,Struct.TYPE_LINKED);
 		ResultSet columns = md.getColumns(dbName, null, tableName, null);
-		//print.o(new QueryImpl(columns,""));
 		try{
 			String name;
 			Object nullable;
