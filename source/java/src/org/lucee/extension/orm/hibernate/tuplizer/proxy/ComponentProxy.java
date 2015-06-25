@@ -571,4 +571,9 @@ public abstract class ComponentProxy implements Component {
 	public Interface[] getInterfaces() {
 		return getComponent().getInterfaces();
 	}
+
+	@Override
+	public String id() {
+		return getComponent().id();
+	}
 }

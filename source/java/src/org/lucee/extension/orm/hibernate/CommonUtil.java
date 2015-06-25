@@ -669,7 +669,7 @@ public class CommonUtil {
 		return creator().createMapping(config,
 				virtual,
 				physical,
-				null,INSPECT_UNDEFINED,true,false,false,false,true,true,null
+				null,INSPECT_UNDEFINED,true,false,false,false,true,true,null,-1,-1
 				);
 	}
 	
