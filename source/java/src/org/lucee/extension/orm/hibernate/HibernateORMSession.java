@@ -117,20 +117,28 @@ public class HibernateORMSession implements ORMSession {
 	}
 	
 	@Override
+	public void flushAll(PageContext pc) throws PageException {
+		// release all connections
+		for(int i=0;i<connections.length;i++) {
+			_flush(pc, connections[i].getDatasource());
+		}
+	}
+	
+	@Override
 	public void flush(PageContext pc) throws PageException {
 		flush(pc,null);
 	}
 	
 	@Override
 	public void flush(PageContext pc, String datasource) throws PageException {
-		Key dsn = CommonUtil.toKey(CommonUtil.getDataSource(pc,datasource).getName());
+		_flush(pc, CommonUtil.getDataSource(pc,datasource));
+	}
+
+	private void _flush(PageContext pc, DataSource datasource) throws PageException {
+		Key dsn = CommonUtil.toKey(datasource.getName());
 		
 		try {
 			getSession(dsn).flush();
-			/*Iterator<Session> it = _sessions.values().iterator();
-			while(it.hasNext()){
-				it.next().flush();
-			}*/
 		}
 		catch(ConstraintViolationException cve){
 			PageException pe = ExceptionUtil.createException(this,null,cve);
