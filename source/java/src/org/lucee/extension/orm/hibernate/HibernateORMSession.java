@@ -41,6 +41,7 @@ import lucee.runtime.orm.ORMTransaction;
 import lucee.runtime.type.Array;
 import lucee.runtime.type.Collection.Key;
 import lucee.runtime.type.Struct;
+import lucee.runtime.type.dt.TimeSpan;
 import lucee.runtime.type.scope.Argument;
 
 public class HibernateORMSession implements ORMSession {
@@ -139,13 +140,6 @@ public class HibernateORMSession implements ORMSession {
 		
 		try {
 			getSession(dsn).flush();
-		}
-		catch(ConstraintViolationException cve){
-			PageException pe = ExceptionUtil.createException(this,null,cve);
-			if(!Util.isEmpty(cve.getConstraintName())) {
-				ExceptionUtil.setAdditional(pe, CommonUtil.createKey("constraint name"), cve.getConstraintName());
-			}
-			throw pe;
 		}
 		catch(Throwable t) {
 			throw CommonUtil.toPageException(t);
@@ -382,7 +376,10 @@ public class HibernateORMSession implements ORMSession {
 			// timeout
 			obj=options.get("timeout",null);
 			if(obj!=null) {
-				int to=CommonUtil.toIntValue(obj,-1);
+				int to;
+				if(obj instanceof TimeSpan) to=(int)((TimeSpan)obj).getSeconds();
+				else to=CommonUtil.toIntValue(obj,-1);
+				
 				if(to<0) throw ExceptionUtil.createException(this,null,"option [timeout] has an invalid value ["+obj+"], value should be a number bigger or equal to 0",null);
 				query.setTimeout(to);
 			}
