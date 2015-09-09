@@ -58,7 +58,7 @@ version: "${bundleversion}${build.number}"
 id: "FAD1E8CB-4F45-4184-86359145767C29DE"
 name: ${label}
 description: ${description}
-start-bundles: false
+start-bundles: true
 orm: "[{'class':'${class}','name':'${bundlename}','version':'${bundleversion}${build.number}'}]"
 lucee-core-version: "5.0.0.48"
 </echo>
@@ -88,7 +88,6 @@ lucee-core-version: "5.0.0.48"
         <attribute name="Bundle-Version" value="${bundleversion}${build.number}"/>
         <attribute name="Built-Date" value="${NOW}"/>
         <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
-
       </manifest>
     </jar>
 
