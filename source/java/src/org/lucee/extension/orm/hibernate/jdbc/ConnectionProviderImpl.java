@@ -28,16 +28,12 @@ public class ConnectionProviderImpl implements ConnectionProvider {
 	private String id;
 
 	public ConnectionProviderImpl(){
-		
-		System.out.println("ConnectionProviderImpl<init>");
 		engine = CFMLEngineFactory.getInstance();
 		dbu=engine.getDBUtil();
 	}
 
 	@Override
 	public void configure(Properties props) throws HibernateException {
-		System.out.println("ConnectionProviderImpl.config");
-		
 		dsn=props.getProperty("hibernate.connection.datasource_name");
 		id = props.getProperty("hibernate.connection.datasource_id");
 		user=props.getProperty(Environment.USER);

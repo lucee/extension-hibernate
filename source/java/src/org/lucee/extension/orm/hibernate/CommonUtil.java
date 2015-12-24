@@ -74,26 +74,49 @@ public class CommonUtil {
 	public static final Key INIT=CommonUtil.createKey("init");
 	private static final short INSPECT_UNDEFINED = (short)4; /*ConfigImpl.INSPECT_UNDEFINED*/
 	
-	private static Charset charset;
+	private static Charset _charset;
 	
-	public static final Charset UTF8;
-	public static final Charset ISO88591;
-	public static final Charset UTF16BE;
-	public static final Charset UTF16LE;
+	public static Charset _UTF8;
+	//public static Charset ISO88591;
+	public static Charset _UTF16BE;
+	public static Charset _UTF16LE;
 	
-	static {
-		UTF8=Charset.forName("utf-8");
-		ISO88591=Charset.forName("iso-8859-1");
-		UTF16BE=Charset.forName("utf-16BE");
-		UTF16LE=Charset.forName("UTF-16LE");
-		
-		String strCharset=System.getProperty("file.encoding");
-		if(strCharset==null || strCharset.equalsIgnoreCase("MacRoman"))
-			strCharset="cp1252";
-
-		if(strCharset.equalsIgnoreCase("utf-8")) charset=UTF8;
-		else charset=Charset.forName(strCharset);
+	
+	public static Charset getCharset() {
+		if(_charset==null) {
+			String strCharset=System.getProperty("file.encoding");
+			if(strCharset==null || strCharset.equalsIgnoreCase("MacRoman"))
+				strCharset="cp1252";
+			
+			if(strCharset.equalsIgnoreCase("utf-8")) _charset=UTF8();
+			else _charset=toCharset(strCharset);
+		}
+ 		return _charset;
 	}
+	
+ 	public static Charset UTF8() {
+		if(_UTF8==null) _UTF8=toCharset("UTF-8");
+ 		return _UTF8;
+	}
+
+	private static Charset UTF16LE() {
+		if(_UTF16LE==null) _UTF16LE=toCharset("UTF-16LE");
+ 		return _UTF16LE;
+	}
+
+	private static Charset UTF16BE() {
+		if(_UTF16BE==null) _UTF16BE=toCharset("UTF-16BE");
+ 		return _UTF16BE;
+	}
+
+	private static Charset toCharset(String charset) {
+		try {
+			return CFMLEngineFactory.getInstance().getCastUtil().toCharset(charset);
+		} catch (PageException pe) {
+			throw CFMLEngineFactory.getInstance().getExceptionUtil().createPageRuntimeException(pe);
+		}
+	}
+	
 	
 
 	
@@ -227,18 +250,18 @@ public class CommonUtil {
 	        int second = is.read();
 	        // FE FF 	UTF-16, big-endian
 	        if (first == 0xFE && second == 0xFF)    {
-	        	return _getReader(is, UTF16BE);
+	        	return _getReader(is, UTF16BE());
 	        }
 	        // FF FE 	UTF-16, little-endian
 	        if (first == 0xFF && second == 0xFE)    {
-	        	return _getReader(is, UTF16LE);
+	        	return _getReader(is, UTF16LE());
 	        }
 	        
 	        int third=is.read();
 	        // EF BB BF 	UTF-8
 	        if (first == 0xEF && second == 0xBB && third == 0xBF)    {
 	        	//is.reset();
-	 			return _getReader(is,UTF8);
+	 			return _getReader(is,UTF8());
 	        }
 
 	        if(markSupported) {
@@ -265,7 +288,7 @@ public class CommonUtil {
    }
  	
  	private static Reader _getReader(InputStream is, Charset cs)  {
-		 if(cs==null) cs=charset;
+		 if(cs==null) cs=getCharset();
 	     return new BufferedReader(new InputStreamReader(is,cs));
 	}
 
@@ -431,11 +454,11 @@ public class CommonUtil {
 		return caster().toTypeName(obj);
 	}
 	public static Node toXML(Object obj) throws PageException {
-		return caster().toXML(obj);
+		return xml().toNode(obj);
 	}
-	public static Node toXML(Object obj, Node defaultValue) {
+	/*public static Node toXML(Object obj, Node defaultValue) {
 		return caster().toXML(obj,defaultValue);
-	}
+	}*/
 	
 
 	public static Document toDocument(Resource res, Charset cs) throws IOException, SAXException {
@@ -714,7 +737,7 @@ public class CommonUtil {
 	}
 
 	public static void write(Resource res, String string, Charset cs, boolean append) throws IOException {
-		if(cs==null) cs=charset;
+		if(cs==null) cs=getCharset();
 
 		Writer writer=null;
 		try {
@@ -739,8 +762,8 @@ public class CommonUtil {
  	}
 	
 	public static Writer getWriter(OutputStream os, Charset cs) {
-		if(cs==null) cs=charset;
-		return new BufferedWriter(new OutputStreamWriter(os,charset));
+		if(cs==null) cs=getCharset();
+		return new BufferedWriter(new OutputStreamWriter(os,getCharset()));
 	}
 
 	public static BufferedReader toBufferedReader(Resource res, Charset charset) throws IOException {

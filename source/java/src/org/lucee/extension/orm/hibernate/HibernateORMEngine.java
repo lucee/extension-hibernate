@@ -360,7 +360,7 @@ public class HibernateORMEngine implements ORMEngine {
 						CommonUtil.toString(hm,false,true,
 								HibernateSessionFactory.HIBERNATE_3_PUBLIC_ID,
 								HibernateSessionFactory.HIBERNATE_3_SYSTEM_ID,
-								HibernateSessionFactory.HIBERNATE_3_CHARSET.name()), HibernateSessionFactory.HIBERNATE_3_CHARSET, false);
+								CommonUtil.UTF8().name()), CommonUtil.UTF8(), false);
 				}
 				catch(Exception e){} 
 			}
@@ -373,7 +373,7 @@ public class HibernateORMEngine implements ORMEngine {
 		if(res!=null){
 			res=res.getParentResource().getRealResource(res.getName()+".hbm.xml");
 			try{
-				sb.append(CommonUtil.toString(res, CommonUtil.UTF8));
+				sb.append(CommonUtil.toString(res, CommonUtil.UTF8()));
 				return res.lastModified();
 			}
 			catch(Exception e){} 
