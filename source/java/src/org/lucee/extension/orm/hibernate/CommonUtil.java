@@ -2,6 +2,7 @@ package org.lucee.extension.orm.hibernate;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,9 +25,11 @@ import java.util.TimeZone;
 
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.hibernate.JDBCException;
 import org.hibernate.exception.ConstraintViolationException;
+import org.lucee.xml.XMLUtility;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -453,8 +456,8 @@ public class CommonUtil {
 	public static String toTypeName(Object obj) {
 		return caster().toTypeName(obj);
 	}
-	public static Node toXML(Object obj) throws PageException {
-		return xml().toNode(obj);
+	public static Node toXML(Object obj) throws IOException, SAXException {
+		return XMLUtility.toNode(obj);
 	}
 	/*public static Node toXML(Object obj, Node defaultValue) {
 		return caster().toXML(obj,defaultValue);
@@ -462,7 +465,9 @@ public class CommonUtil {
 	
 
 	public static Document toDocument(Resource res, Charset cs) throws IOException, SAXException {
-		return xml().parse(xml().toInputSource(res,cs), null, false);
+		if(res instanceof File)
+			return XMLUtility.parse(XMLUtility.toInputSource((File)res,cs), null, false);
+		return XMLUtility.parse(XMLUtility.toInputSource(res.getInputStream()), null, false);
 	}
 	
 	
@@ -551,11 +556,7 @@ public class CommonUtil {
 			op=CFMLEngineFactory.getInstance().getOperatonUtil();
 		return op;
 	}
-	private static lucee.runtime.util.XMLUtil xml() {
-		if(xml==null)
-			xml=CFMLEngineFactory.getInstance().getXMLUtil();
-		return xml;
-	}
+	
 	private static lucee.runtime.util.ListUtil list() {
 		if(list==null)
 			list=CFMLEngineFactory.getInstance().getListUtil();
@@ -722,14 +723,13 @@ public class CommonUtil {
 	}
 	
 	public static Document getDocument(Node node) {
-		return xml().getDocument(node);
+		return XMLUtility.getDocument(node);
 	}
 	public static Document newDocument() throws ParserConfigurationException, FactoryConfigurationError {
-		return xml().newDocument();
+		return XMLUtility.newDocument();
 	}
 	public static void setFirst(Node parent, Node node) {
-		
-		xml().setFirst(parent, node);
+		XMLUtility.setFirst(parent, node);
 	}
 
 	public static Property[] getProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
@@ -853,8 +853,9 @@ public class CommonUtil {
 		return orm().getPropertyValue(cfc, name, defaultValue);
 	}
 
-	public static String toString(Node node, boolean omitXMLDecl, boolean indent, String publicId, String systemId, String encoding) throws PageException {
-		return xml().toString(node, omitXMLDecl, indent, publicId, systemId, encoding);
+	public static String toString(Node node, boolean omitXMLDecl, boolean indent, String publicId, String systemId, 
+			String encoding) throws IOException, TransformerException {
+		return XMLUtility.toString(node, omitXMLDecl, indent, publicId, systemId, encoding);
 	}
 
 	public static Locale toLocale(String strLocale) throws PageException {

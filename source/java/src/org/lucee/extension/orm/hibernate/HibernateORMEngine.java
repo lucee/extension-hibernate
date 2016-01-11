@@ -1,5 +1,6 @@
 package org.lucee.extension.orm.hibernate;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -7,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.xml.transform.TransformerException;
 
 import org.hibernate.EntityMode;
 import org.hibernate.SessionFactory;
@@ -31,8 +34,10 @@ import org.lucee.extension.orm.hibernate.event.PreInsertEventListenerImpl;
 import org.lucee.extension.orm.hibernate.event.PreLoadEventListenerImpl;
 import org.lucee.extension.orm.hibernate.event.PreUpdateEventListenerImpl;
 import org.lucee.extension.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
+import org.lucee.xml.XMLUtility;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 import lucee.commons.io.log.Log;
 import lucee.commons.io.res.Resource;
@@ -331,13 +336,22 @@ public class HibernateORMEngine implements ORMEngine {
 					pc.removeLastPageSource(true);
 					manager.releaseConnection(pc, dc);
 				}
-				xml=CFMLEngineFactory.getInstance().getXMLUtil().toString(root.getChildNodes(),true,true);
+				try {
+					xml= XMLUtility.toString(root.getChildNodes(),true,true);
+				} 
+				catch (Exception e) {
+					throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
+				}
 				saveMapping(ormConf,cfc,root);
 			}
 			// load
 			else {
 				xml=sb.toString();
-				root=CommonUtil.toXML(xml).getOwnerDocument().getDocumentElement();
+				try {
+					root=CommonUtil.toXML(xml).getOwnerDocument().getDocumentElement();
+				} catch (Exception e) {
+					throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
+				}
 				/*print.o("1+++++++++++++++++++++++++++++++++++++++++");
 				print.o(xml);
 				print.o("2+++++++++++++++++++++++++++++++++++++++++");
