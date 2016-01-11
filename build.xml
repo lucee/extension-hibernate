@@ -28,6 +28,7 @@
     <tstamp/>
     
     <delete dir="${temp}"/>
+    <delete dir="${dist}"/>
     <delete dir="${dist}/extension/jars"/>
     <delete dir="${dist}/extension/META-INF"/>
 
@@ -83,7 +84,7 @@ lucee-core-version: "5.0.0.48"
  
     <!-- Put everything in ${build} into .jar file -->
     <jar 
-    	jarfile="${dist}/extension/jars/rasia-hibernate.jar" basedir="${build}"  manifest="${src}/META-INF/MANIFEST.MF">
+    	jarfile="${dist}/extension/jars/lucee-hibernate-${bundleversion}${build.number}.jar" basedir="${build}"  manifest="${src}/META-INF/MANIFEST.MF">
       <manifest>
         <attribute name="Bundle-Version" value="${bundleversion}${build.number}"/>
         <attribute name="Built-Date" value="${NOW}"/>
