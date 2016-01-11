@@ -11,8 +11,9 @@
 	<classpathentry kind="lib" path="libs/slf4j-nop-1-6-4.jar"/>
 	<classpathentry kind="lib" path="libs/ehcache-2-5-2.jar"/>
 	<classpathentry kind="lib" path="libs/org-apache-felix-main-4-2-1.jar"/>
-	<classpathentry kind="lib" path="libs/hibernate-3-5-5-0001L.jar"/>
 	<classpathentry kind="lib" path="libs/org-apache-commons-collections-3-2-1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loader"/>
+	<classpathentry kind="lib" path="libs/org.lucee.xml-1.0.0.0.jar"/>
+	<classpathentry kind="lib" path="libs/hibernate-3-5-5-0002L.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
