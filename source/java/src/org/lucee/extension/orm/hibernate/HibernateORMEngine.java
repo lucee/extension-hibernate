@@ -14,13 +14,16 @@ import javax.xml.transform.TransformerException;
 import org.hibernate.EntityMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.event.EventListeners;
-import org.hibernate.event.PostDeleteEventListener;
-import org.hibernate.event.PostInsertEventListener;
-import org.hibernate.event.PostLoadEventListener;
-import org.hibernate.event.PostUpdateEventListener;
-import org.hibernate.event.PreDeleteEventListener;
-import org.hibernate.event.PreLoadEventListener;
+import org.hibernate.event.service.spi.EventListenerGroup;
+import org.hibernate.event.service.spi.EventListenerRegistry;
+import org.hibernate.event.spi.EventType;
+import org.hibernate.event.spi.PostDeleteEventListener;
+import org.hibernate.event.spi.PostInsertEventListener;
+import org.hibernate.event.spi.PostLoadEventListener;
+import org.hibernate.event.spi.PostUpdateEventListener;
+import org.hibernate.event.spi.PreDeleteEventListener;
+import org.hibernate.event.spi.PreLoadEventListener;
+import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.tuple.entity.EntityTuplizerFactory;
 import org.lucee.extension.orm.hibernate.event.AllEventListener;
 import org.lucee.extension.orm.hibernate.event.EventListener;
@@ -223,41 +226,58 @@ public class HibernateORMEngine implements ORMEngine {
 		}
 		Configuration conf = data.getConfiguration(key).config;
 		conf.setInterceptor(new InterceptorImpl(listener));
-        EventListeners listeners = conf.getEventListeners();
+        //EventListeners listeners = conf.getEventListeners();
+        
+		SessionFactory sessionFactory = data.getFactory(key);
+		EventListenerRegistry eventListenerRegistry = (EventListenerRegistry)
+        		((SessionFactoryImpl)sessionFactory).getServiceRegistry().getService(EventListenerRegistry.class);
+    	
+        
         Map<String, CFCInfo> cfcs = data.getCFCs(key);
         // post delete
 		List<EventListener> 
 		list=merge(listener,cfcs,CommonUtil.POST_DELETE);
-		listeners.setPostDeleteEventListeners(list.toArray(new PostDeleteEventListener[list.size()]));
+		appendListeners(eventListenerRegistry.getEventListenerGroup(EventType.POST_DELETE),list);
 		
         // post insert
 		list=merge(listener,cfcs,CommonUtil.POST_INSERT);
-		listeners.setPostInsertEventListeners(list.toArray(new PostInsertEventListener[list.size()]));
+		appendListeners(eventListenerRegistry.getEventListenerGroup(EventType.POST_INSERT),list);
 		
 		// post update
 		list=merge(listener,cfcs,CommonUtil.POST_UPDATE);
-		listeners.setPostUpdateEventListeners(list.toArray(new PostUpdateEventListener[list.size()]));
+		appendListeners(eventListenerRegistry.getEventListenerGroup(EventType.POST_UPDATE),list);
 		
 		// post load
 		list=merge(listener,cfcs,CommonUtil.POST_LOAD);
-		listeners.setPostLoadEventListeners(list.toArray(new PostLoadEventListener[list.size()]));
+		appendListeners(eventListenerRegistry.getEventListenerGroup(EventType.POST_LOAD),list);
 		
 		// pre delete
 		list=merge(listener,cfcs,CommonUtil.PRE_DELETE);
-		listeners.setPreDeleteEventListeners(list.toArray(new PreDeleteEventListener[list.size()]));
+		appendListeners(eventListenerRegistry.getEventListenerGroup(EventType.PRE_DELETE),list);
 		
 		// pre insert
-		//list=merge(listener,cfcs,CommonUtil.PRE_INSERT);
-		//listeners.setPreInsertEventListeners(list.toArray(new PreInsertEventListener[list.size()]));
+		list=merge(listener,cfcs,CommonUtil.PRE_INSERT);
+		appendListeners(eventListenerRegistry.getEventListenerGroup(EventType.PRE_INSERT),list);
 		
 		// pre load
 		list=merge(listener,cfcs,CommonUtil.PRE_LOAD);
-		listeners.setPreLoadEventListeners(list.toArray(new PreLoadEventListener[list.size()]));
+		appendListeners(eventListenerRegistry.getEventListenerGroup(EventType.PRE_LOAD),list);
 		
 		// pre update
-		//list=merge(listener,cfcs,CommonUtil.PRE_UPDATE);
-		//listeners.setPreUpdateEventListeners(list.toArray(new PreUpdateEventListener[list.size()]));
+		list=merge(listener,cfcs,CommonUtil.PRE_UPDATE);
+		appendListeners(eventListenerRegistry.getEventListenerGroup(EventType.PRE_UPDATE),list);
 	}
+	
+	private static void appendListeners(EventListenerGroup group, List<EventListener> list) {
+		Iterator<EventListener> it = list.iterator();
+		while(it.hasNext()) {
+			group.appendListener(it.next());
+		}
+	}
+
+	
+	
+	
 
 	private static List<EventListener> merge(EventListener listener, Map<String, CFCInfo> cfcs, Collection.Key eventType) {
 		List<EventListener> list=new ArrayList<EventListener>();

@@ -8,7 +8,7 @@ import java.util.Properties;
 
 import org.hibernate.HibernateException;
 import org.hibernate.cfg.Environment;
-import org.hibernate.connection.ConnectionProvider;
+import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 
 import lucee.loader.engine.CFMLEngine;
 import lucee.loader.engine.CFMLEngineFactory;
@@ -32,7 +32,6 @@ public class ConnectionProviderImpl implements ConnectionProvider {
 		dbu=engine.getDBUtil();
 	}
 
-	@Override
 	public void configure(Properties props) throws HibernateException {
 		dsn=props.getProperty("hibernate.connection.datasource_name");
 		id = props.getProperty("hibernate.connection.datasource_id");
@@ -62,14 +61,21 @@ public class ConnectionProviderImpl implements ConnectionProvider {
 	}
 
 	@Override
-	public void close() throws HibernateException {
-		System.out.println("ConnectionProviderImpl.close");
-	}
-
-	@Override
 	public boolean supportsAggressiveRelease() {
 		// nope
 		return false;
+	}
+
+	@Override
+	public boolean isUnwrappableAs(Class arg0) {
+		// TODO
+		return false;
+	}
+
+	@Override
+	public <T> T unwrap(Class<T> arg0) {
+		// TODO
+		return null;
 	}
 
 }

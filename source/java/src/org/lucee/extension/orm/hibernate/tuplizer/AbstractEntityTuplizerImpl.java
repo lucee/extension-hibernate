@@ -6,10 +6,12 @@ import java.util.HashMap;
 import org.hibernate.EntityMode;
 import org.hibernate.EntityNameResolver;
 import org.hibernate.HibernateException;
-import org.hibernate.engine.SessionFactoryImplementor;
-import org.hibernate.engine.SessionImplementor;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.mapping.Property;
+import org.hibernate.metamodel.binding.AttributeBinding;
+import org.hibernate.metamodel.binding.EntityBinding;
 import org.hibernate.property.Getter;
 import org.hibernate.property.PropertyAccessor;
 import org.hibernate.property.Setter;
@@ -109,6 +111,9 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 		}
 		return accessor;
 	}
+	private PropertyAccessor buildPropertyAccessor(AttributeBinding ab) {
+		return accessor;
+	}
 
 	
 	@Override
@@ -116,10 +121,20 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 		return buildPropertyAccessor(mappedProperty).getGetter( null, mappedProperty.getName() );
 	}
 
+	@Override
+	protected Getter buildPropertyGetter(AttributeBinding ab) {
+		return buildPropertyAccessor( ab ).getGetter(null,ab.getAttribute().getName());
+	}
+
 	
 	@Override
 	protected Setter buildPropertySetter(Property mappedProperty, PersistentClass mappedEntity) {
 		return buildPropertyAccessor(mappedProperty).getSetter( null, mappedProperty.getName() );
+	}
+	
+	@Override
+	protected Setter buildPropertySetter(AttributeBinding ab) {
+		return buildPropertyAccessor( ab ).getSetter(null,ab.getAttribute().getName());
 	}
 	
 	@Override
@@ -157,7 +172,21 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 
 	@Override
 	public boolean isInstrumented() {
-		return false;
+		return false; // TODO ???
+	}
+
+	@Override
+	protected Instantiator buildInstantiator(EntityBinding arg0) {
+		// TODO ???
+		return null;
+	}
+
+	
+
+	@Override
+	protected ProxyFactory buildProxyFactory(EntityBinding arg0, Getter arg1, Setter arg2) {
+		// TODO ???
+		return null;
 	}
 
 }

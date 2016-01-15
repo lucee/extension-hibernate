@@ -21,8 +21,7 @@ import org.hibernate.MappingException;
 import org.hibernate.cache.RegionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
-import org.hibernate.connection.ConnectionProvider;
-import org.hibernate.connection.UserSuppliedConnectionProvider;
+import org.hibernate.engine.jdbc.connections.internal.UserSuppliedConnectionProviderImpl;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
@@ -161,7 +160,7 @@ public class HibernateSessionFactory {
     	
     	// use Lucee connection pool to avoid dynamic-import:*
     	.setProperty(Environment.CONNECTION_PROVIDER, 
-    			UserSuppliedConnectionProvider.class.getName()//ConnectionProviderProxy.class.getName()	
+    			UserSuppliedConnectionProviderImpl.class.getName()//ConnectionProviderProxy.class.getName()	
     			)
     	
     	// SQL dialect

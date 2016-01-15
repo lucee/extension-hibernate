@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
-import org.hibernate.engine.SessionImplementor;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.property.Getter;
 import org.hibernate.type.Type;
@@ -79,7 +79,7 @@ public class CFCGetter implements Getter {
 	
 
 	@Override
-	public Object getForInsert(Object trg, Map arg1, SessionImplementor arg2)throws HibernateException {
+	public Object getForInsert(Object trg, Map arg1, SessionImplementor si)throws HibernateException {
 		return get(trg);// MUST better solution? this is from MapGetter
 	}
 

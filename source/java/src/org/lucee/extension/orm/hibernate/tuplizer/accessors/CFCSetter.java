@@ -3,7 +3,7 @@ package org.lucee.extension.orm.hibernate.tuplizer.accessors;
 import java.lang.reflect.Method;
 
 import org.hibernate.HibernateException;
-import org.hibernate.engine.SessionFactoryImplementor;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.property.Setter;
 import org.lucee.extension.orm.hibernate.CommonUtil;
 import org.lucee.extension.orm.hibernate.HibernatePageException;

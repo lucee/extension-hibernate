@@ -1,6 +1,6 @@
 package org.lucee.extension.orm.hibernate.event;
 
-import org.hibernate.event.PreUpdateEvent;
+import org.hibernate.event.spi.PreUpdateEvent;
 import org.lucee.extension.orm.hibernate.CommonUtil;
 import org.lucee.extension.orm.hibernate.HibernateUtil;
 
