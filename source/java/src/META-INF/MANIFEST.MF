@@ -6,13 +6,12 @@ Require-Bundle: hibernate;bundle-version=3.5.5.0002L,
  dom4j;bundle-version=1.6.1,
  javassist;bundle-version=3.9.0,
  jta;bundle-version=1.1.0,
- ehcache;bundle-version=2.5.2,
- slf4j.api;bundle-version=1.6.4,
+ ehcache;bundle-version=2.5.2.0001L,
+ slf4j.api;bundle-version=1.7.12,
  org.apache.commons.collections;bundle-version=3.2.1,
  apache.xml.xalan;bundle-version=2.7.2.0007L,
  apache.xml.xerces;bundle-version=2.11.0.0005L,
  xml.apis;bundle-version=1.4.1,
  org.lucee.xml;bundle-version=1.0.0.0
-XImport-Package: net.sf.ehcache.hibernate;version=2.5.2
-Require-Bundle-Fragment: slf4j.nop;bundle-version=1.6.4
+Require-Bundle-Fragment: slf4j.nop;bundle-version=1.7.12
 Bundle-ManifestVersion: 2
