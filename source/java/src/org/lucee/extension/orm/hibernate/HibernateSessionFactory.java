@@ -154,14 +154,28 @@ public class HibernateSessionFactory {
 		}
 		
 		
+    	ConnectionProviderImpl.dataSources.put(ds.id(),ds);
+    	
 		ConnectionProviderProxy.provider=new ConnectionProviderImpl();
     	//.setProperty("hibernate.connection.release_mode", "after_transaction")
     	configuration.setProperty("hibernate.transaction.flush_before_completion", "false")
     	.setProperty("hibernate.transaction.auto_close_session", "false")
     	
     	// use Lucee connection pool to avoid dynamic-import:*
-    	.setProperty(Environment.CONNECTION_PROVIDER, 
-    			UserSuppliedConnectionProvider.class.getName()//ConnectionProviderProxy.class.getName()	
+    	.setProperty("hibernate.transactsion.auto_close_session", "false")
+    	
+    	.setProperty("lucee.datasource.name", ds.getName())
+    	.setProperty("lucee.datasource.id", ds.id());
+    	
+    	
+    	if(!Util.isEmpty(ds.getUsername())) {
+			configuration.setProperty("lucee.datasource.user", ds.getUsername());
+			if(!Util.isEmpty(ds.getPassword()))
+				configuration.setProperty("lucee.datasource.password", ds.getPassword());
+		}
+    	configuration.setProperty(Environment.CONNECTION_PROVIDER, 
+    			ConnectionProviderImpl.class.getName()
+    			//CPDummy.class.getName()	
     			)
     	
     	// SQL dialect

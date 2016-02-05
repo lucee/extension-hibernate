@@ -12,6 +12,6 @@
 	<classpathentry kind="lib" path="libs/lucee.jar"/>
 	<classpathentry kind="lib" path="libs/ehcache-2-5-2-0001L.jar"/>
 	<classpathentry kind="lib" path="libs/antlr-2-7-6-0001L.jar"/>
-	<classpathentry kind="lib" path="libs/hibernate-3-5-5-0003L.jar"/>
+	<classpathentry kind="lib" path="libs/hibernate-3-5-5-0004L.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

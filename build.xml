@@ -59,7 +59,7 @@ version: "${bundleversion}${build.number}"
 id: "FAD1E8CB-4F45-4184-86359145767C29DE"
 name: ${label}
 description: ${description}
-start-bundles: true
+start-bundles: false
 release-type: ${releaseType}
 orm: "[{'class':'${class}','name':'${bundlename}','version':'${bundleversion}${build.number}'}]"
 lucee-core-version: "${luceeCoreVersion}"

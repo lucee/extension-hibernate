@@ -681,7 +681,7 @@ public class CommonUtil {
 	
 
 	public static DataSource getDataSource(PageContext pc, String dsn, DataSource defaultValue) {
-		if(Util.isEmpty(dsn,true)) return orm().getDefaultDataSource(pc,defaultValue);
+		if(Util.isEmpty(dsn,true) || dsn.equals("__default__")) return orm().getDefaultDataSource(pc,defaultValue);
 		return pc.getDataSource(dsn.trim(),defaultValue);
 	}
 	

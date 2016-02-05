@@ -1,7 +1,6 @@
 Manifest-Version: 1.0
-Export-Package: org.opencfmlfoundation.extension.orm.hibernate,
- org.opencfmlfoundation.extension.orm.hibernate.jdbc
-Require-Bundle: hibernate;bundle-version=3.5.5.0003L,
+Export-Package: org.lucee.extension.orm.hibernate,org.lucee.extension.orm.hibernate.jdbc
+Require-Bundle: hibernate;bundle-version=3.5.5.0004L,
  antlr;bundle-version=2.7.6.0001L,
  dom4j;bundle-version=1.6.1,
  javassist;bundle-version=3.9.0,
