@@ -2,16 +2,18 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libs/dom4j-1-6-1.jar"/>
-	<classpathentry kind="lib" path="libs/javassist-3-9-0.jar"/>
 	<classpathentry kind="lib" path="libs/javax.servlet.jar"/>
 	<classpathentry kind="lib" path="libs/org-apache-felix-main-4-2-1.jar"/>
 	<classpathentry kind="lib" path="libs/org-apache-commons-collections-3-2-1.jar"/>
 	<classpathentry kind="lib" path="libs/org.lucee.xml-1.0.0.0.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loader"/>
 	<classpathentry kind="lib" path="libs/lucee.jar"/>
-	<classpathentry kind="lib" path="libs/ehcache-2-5-2-0001L.jar"/>
-	<classpathentry kind="lib" path="libs/antlr-2-7-6-0001L.jar"/>
-	<classpathentry kind="lib" path="libs/hibernate-3-5-5-0004L.jar"/>
+	<classpathentry kind="lib" path="libs/antlr-2.7.6.jar"/>
+	<classpathentry kind="lib" path="libs/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="libs/hibernate-3-5-5-0005L.jar"/>
+	<classpathentry kind="lib" path="libs/javassist-3.9.0.GA.jar"/>
+	<classpathentry kind="lib" path="libs/jta-1.1.0.jar"/>
+	<classpathentry kind="lib" path="libs/xml-apis-1.4.1.jar"/>
+	<classpathentry kind="lib" path="libs/ehcache-2.10.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
