@@ -2,12 +2,12 @@ package org.lucee.extension.orm.hibernate.tuplizer.proxy;
 
 import java.io.Serializable;
 
-import org.hibernate.proxy.HibernateProxy;
-import org.hibernate.proxy.LazyInitializer;
-
 import lucee.runtime.Component;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.type.ObjectWrap;
+
+import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.proxy.LazyInitializer;
 
 
 

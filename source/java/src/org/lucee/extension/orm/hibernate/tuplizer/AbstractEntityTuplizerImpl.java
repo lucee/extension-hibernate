@@ -3,6 +3,13 @@ package org.lucee.extension.orm.hibernate.tuplizer;
 import java.io.Serializable;
 import java.util.HashMap;
 
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.util.Util;
+import lucee.runtime.Component;
+import lucee.runtime.ComponentScope;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.type.Struct;
+
 import org.hibernate.EntityMode;
 import org.hibernate.EntityNameResolver;
 import org.hibernate.HibernateException;
@@ -23,13 +30,6 @@ import org.lucee.extension.orm.hibernate.HibernateCaster;
 import org.lucee.extension.orm.hibernate.HibernateUtil;
 import org.lucee.extension.orm.hibernate.tuplizer.accessors.CFCAccessor;
 import org.lucee.extension.orm.hibernate.tuplizer.proxy.CFCHibernateProxyFactory;
-
-import lucee.loader.engine.CFMLEngineFactory;
-import lucee.loader.util.Util;
-import lucee.runtime.Component;
-import lucee.runtime.ComponentScope;
-import lucee.runtime.exp.PageException;
-import lucee.runtime.type.Struct;
 
 
 public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {

@@ -1,8 +1,8 @@
 package org.lucee.extension.orm.hibernate.jdbc;
 
-import org.hibernate.cfg.Configuration;
-
 import lucee.runtime.db.DataSource;
+
+import org.hibernate.cfg.Configuration;
 
 public class DataSourceConfig {
 

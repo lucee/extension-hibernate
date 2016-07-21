@@ -8,10 +8,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.hibernate.SessionFactory;
-import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.type.Type;
-
 import lucee.commons.lang.types.RefBoolean;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.loader.util.Util;
@@ -28,6 +24,10 @@ import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
 import lucee.runtime.type.Query;
 import lucee.runtime.type.Struct;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.type.Type;
 
 public class HibernateCaster {
 	

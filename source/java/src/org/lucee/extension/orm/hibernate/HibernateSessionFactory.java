@@ -3,7 +3,6 @@ package org.lucee.extension.orm.hibernate;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -12,24 +11,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import org.hibernate.HibernateException;
-import org.hibernate.MappingException;
-import org.hibernate.cache.RegionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Environment;
-import org.hibernate.connection.ConnectionProvider;
-import org.hibernate.connection.UserSuppliedConnectionProvider;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
-import org.hibernate.tool.hbm2ddl.SchemaUpdate;
-import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
-import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderProxy;
-import org.osgi.framework.BundleException;
-import org.osgi.framework.BundleReference;
-import org.w3c.dom.Document;
 
 import lucee.commons.io.log.Log;
 import lucee.commons.io.res.Resource;
@@ -44,7 +27,6 @@ import lucee.runtime.Page;
 import lucee.runtime.PageContext;
 import lucee.runtime.PageSource;
 import lucee.runtime.config.Config;
-import lucee.runtime.db.ClassDefinition;
 import lucee.runtime.db.DataSource;
 import lucee.runtime.db.DatasourceConnection;
 import lucee.runtime.exp.PageException;
@@ -52,6 +34,16 @@ import lucee.runtime.listener.ApplicationContext;
 import lucee.runtime.orm.ORMConfiguration;
 import lucee.runtime.type.Collection.Key;
 import lucee.runtime.util.TemplateUtil;
+
+import org.hibernate.MappingException;
+import org.hibernate.cache.RegionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
+import org.hibernate.tool.hbm2ddl.SchemaExport;
+import org.hibernate.tool.hbm2ddl.SchemaUpdate;
+import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
+import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderProxy;
+import org.w3c.dom.Document;
 
 
 public class HibernateSessionFactory {

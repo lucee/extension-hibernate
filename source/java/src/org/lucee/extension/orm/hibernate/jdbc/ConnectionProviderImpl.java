@@ -2,17 +2,9 @@ package org.lucee.extension.orm.hibernate.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
-
-import org.hibernate.HibernateException;
-import org.hibernate.connection.ConnectionProvider;
-import org.lucee.extension.orm.hibernate.CommonUtil;
 
 import lucee.loader.engine.CFMLEngine;
 import lucee.loader.engine.CFMLEngineFactory;
@@ -22,6 +14,10 @@ import lucee.runtime.db.DataSource;
 import lucee.runtime.db.DatasourceConnection;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.util.DBUtil;
+
+import org.hibernate.HibernateException;
+import org.hibernate.connection.ConnectionProvider;
+import org.lucee.extension.orm.hibernate.CommonUtil;
 
 public class ConnectionProviderImpl implements ConnectionProvider {
 	

@@ -1,10 +1,10 @@
 package org.lucee.extension.orm.hibernate.event;
 
+import lucee.runtime.Component;
+
 import org.hibernate.event.PostUpdateEvent;
 import org.hibernate.event.PostUpdateEventListener;
 import org.lucee.extension.orm.hibernate.CommonUtil;
-
-import lucee.runtime.Component;
 
 public class PostUpdateEventListenerImpl extends EventListener implements PostUpdateEventListener {
 

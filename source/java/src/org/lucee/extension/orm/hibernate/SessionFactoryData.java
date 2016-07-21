@@ -8,19 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Settings;
-import org.hibernate.ejb.connection.InjectedDataSourceConnectionProvider;
-import org.hibernate.engine.SessionFactoryImplementor;
-import org.hibernate.engine.query.QueryPlanCache;
-import org.hibernate.impl.SessionFactoryImpl;
-import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
-import org.lucee.extension.orm.hibernate.jdbc.DataSourceConfig;
-import org.lucee.extension.orm.hibernate.naming.CFCNamingStrategy;
-import org.lucee.extension.orm.hibernate.naming.DefaultNamingStrategy;
-import org.lucee.extension.orm.hibernate.naming.SmartNamingStrategy;
-
 import lucee.commons.io.log.Log;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.loader.util.Util;
@@ -35,6 +22,14 @@ import lucee.runtime.orm.naming.NamingStrategy;
 import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
 import lucee.runtime.type.Struct;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.engine.SessionFactoryImplementor;
+import org.hibernate.engine.query.QueryPlanCache;
+import org.lucee.extension.orm.hibernate.jdbc.DataSourceConfig;
+import org.lucee.extension.orm.hibernate.naming.CFCNamingStrategy;
+import org.lucee.extension.orm.hibernate.naming.DefaultNamingStrategy;
+import org.lucee.extension.orm.hibernate.naming.SmartNamingStrategy;
 
 public class SessionFactoryData {
 

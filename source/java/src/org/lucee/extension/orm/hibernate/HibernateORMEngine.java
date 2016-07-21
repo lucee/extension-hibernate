@@ -1,6 +1,5 @@
 package org.lucee.extension.orm.hibernate;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,7 +8,22 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.xml.transform.TransformerException;
+import lucee.commons.io.log.Log;
+import lucee.commons.io.res.Resource;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.util.Util;
+import lucee.runtime.Component;
+import lucee.runtime.PageContext;
+import lucee.runtime.db.DataSource;
+import lucee.runtime.db.DataSourceManager;
+import lucee.runtime.db.DatasourceConnection;
+import lucee.runtime.exp.PageException;
+import lucee.runtime.listener.ApplicationContext;
+import lucee.runtime.orm.ORMConfiguration;
+import lucee.runtime.orm.ORMEngine;
+import lucee.runtime.orm.ORMSession;
+import lucee.runtime.type.Collection;
+import lucee.runtime.type.Collection.Key;
 
 import org.hibernate.EntityMode;
 import org.hibernate.SessionFactory;
@@ -37,24 +51,6 @@ import org.lucee.extension.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
 import org.lucee.xml.XMLUtility;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
-import lucee.commons.io.log.Log;
-import lucee.commons.io.res.Resource;
-import lucee.loader.engine.CFMLEngineFactory;
-import lucee.loader.util.Util;
-import lucee.runtime.Component;
-import lucee.runtime.PageContext;
-import lucee.runtime.db.DataSource;
-import lucee.runtime.db.DataSourceManager;
-import lucee.runtime.db.DatasourceConnection;
-import lucee.runtime.exp.PageException;
-import lucee.runtime.listener.ApplicationContext;
-import lucee.runtime.orm.ORMConfiguration;
-import lucee.runtime.orm.ORMEngine;
-import lucee.runtime.orm.ORMSession;
-import lucee.runtime.type.Collection;
-import lucee.runtime.type.Collection.Key;
 
 public class HibernateORMEngine implements ORMEngine {
 	
@@ -457,7 +453,7 @@ public class HibernateORMEngine implements ORMEngine {
 		Resource[] locations = ormConf.getCfcLocations();
 		
 		throw ExceptionUtil.createException(data,null,
-				"No entity (persitent component) with name ["+entityName+"] found, available entities are ["+CFMLEngineFactory.getInstance().getListUtil().toList(data.getEntityNames(), ", ")+"] ",
+				"No entity (persistent component) with name ["+entityName+"] found, available entities are ["+CFMLEngineFactory.getInstance().getListUtil().toList(data.getEntityNames(), ", ")+"] ",
 				"component are searched in the following directories ["+toString(locations)+"]");
 		
 	}

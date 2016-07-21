@@ -1,10 +1,10 @@
 package org.lucee.extension.orm.hibernate.event;
 
+import lucee.runtime.Component;
+
 import org.hibernate.event.PreLoadEvent;
 import org.hibernate.event.PreLoadEventListener;
 import org.lucee.extension.orm.hibernate.CommonUtil;
-
-import lucee.runtime.Component;
 
 public class PreLoadEventListenerImpl extends EventListener implements PreLoadEventListener {
 

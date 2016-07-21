@@ -4,8 +4,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.lucee.extension.orm.hibernate.CommonUtil;
-
 import lucee.commons.lang.types.RefBoolean;
 import lucee.runtime.Component;
 import lucee.runtime.ComponentScope;
@@ -24,6 +22,8 @@ import lucee.runtime.type.UDFProperties;
 import lucee.runtime.type.dt.DateTime;
 import lucee.runtime.type.scope.Scope;
 import lucee.runtime.type.scope.Variables;
+
+import org.lucee.extension.orm.hibernate.CommonUtil;
 
 public abstract class ComponentProxy implements Component {
 

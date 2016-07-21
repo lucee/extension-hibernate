@@ -1,10 +1,10 @@
 package org.lucee.extension.orm.hibernate.event;
 
+import lucee.runtime.Component;
+
 import org.hibernate.event.PostDeleteEvent;
 import org.hibernate.event.PostDeleteEventListener;
 import org.lucee.extension.orm.hibernate.CommonUtil;
-
-import lucee.runtime.Component;
 
 public class PostDeleteEventListenerImpl extends EventListener implements PostDeleteEventListener {
 

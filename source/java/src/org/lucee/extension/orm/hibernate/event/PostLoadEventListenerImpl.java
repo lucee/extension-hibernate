@@ -1,10 +1,10 @@
 package org.lucee.extension.orm.hibernate.event;
 
+import lucee.runtime.Component;
+
 import org.hibernate.event.PostLoadEvent;
 import org.hibernate.event.PostLoadEventListener;
 import org.lucee.extension.orm.hibernate.CommonUtil;
-
-import lucee.runtime.Component;
 
 public class PostLoadEventListenerImpl extends EventListener implements PostLoadEventListener {
 

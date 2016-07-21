@@ -8,11 +8,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.hibernate.HibernateException;
-import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.type.ComponentType;
-import org.hibernate.type.Type;
-
 import lucee.Info;
 import lucee.commons.io.res.Resource;
 import lucee.loader.engine.CFMLEngine;
@@ -29,6 +24,11 @@ import lucee.runtime.orm.ORMConfiguration;
 import lucee.runtime.orm.ORMSession;
 import lucee.runtime.type.Collection;
 import lucee.runtime.type.Struct;
+
+import org.hibernate.HibernateException;
+import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.type.ComponentType;
+import org.hibernate.type.Type;
 
 
 public class HibernateUtil {
