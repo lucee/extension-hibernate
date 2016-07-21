@@ -59,9 +59,10 @@ version: "${bundleversion}${build.number}"
 id: "FAD1E8CB-4F45-4184-86359145767C29DE"
 name: ${label}
 description: ${description}
-start-bundles: true
+start-bundles: false
+release-type: ${releaseType}
 orm: "[{'class':'${class}','name':'${bundlename}','version':'${bundleversion}${build.number}'}]"
-lucee-core-version: "5.0.0.48"
+lucee-core-version: "${luceeCoreVersion}"
 </echo>
 
 
@@ -101,6 +102,8 @@ lucee-core-version: "5.0.0.48"
         <exclude name="**/javax.servlet.jar"/>
         <exclude name="**/lucee.jar"/>
         <exclude name="**/org-apache-felix-main-*.jar"/>
+        <exclude name="**/ehcache-*.jar"/>
+        <exclude name="**/xml-apis-*.jar"/>
 
       </fileset>
     </copy>

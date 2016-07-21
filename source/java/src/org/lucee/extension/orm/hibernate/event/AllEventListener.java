@@ -19,8 +19,6 @@ import org.hibernate.event.spi.PreUpdateEventListener;
 import org.hibernate.persister.entity.EntityPersister;
 import org.lucee.extension.orm.hibernate.CommonUtil;
 
-import lucee.runtime.Component;
-
 public class AllEventListener extends EventListener implements PreDeleteEventListener, PreInsertEventListener, PreLoadEventListener, PreUpdateEventListener,
 PostDeleteEventListener, PostInsertEventListener, PostLoadEventListener, PostUpdateEventListener {
 	

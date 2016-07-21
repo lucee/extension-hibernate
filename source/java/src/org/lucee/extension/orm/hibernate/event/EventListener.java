@@ -1,9 +1,5 @@
 package org.lucee.extension.orm.hibernate.event;
 
-import org.hibernate.event.spi.PreUpdateEvent;
-import org.lucee.extension.orm.hibernate.CommonUtil;
-import org.lucee.extension.orm.hibernate.HibernateUtil;
-
 import lucee.loader.engine.CFMLEngine;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.runtime.Component;
@@ -14,6 +10,10 @@ import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
 import lucee.runtime.type.Struct;
 import lucee.runtime.type.UDF;
+
+import org.hibernate.event.PreUpdateEvent;
+import org.lucee.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.HibernateUtil;
 
 public abstract class EventListener {
 

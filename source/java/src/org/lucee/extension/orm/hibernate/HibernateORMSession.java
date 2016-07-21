@@ -8,24 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.hibernate.Criteria;
-import org.hibernate.FlushMode;
-import org.hibernate.NonUniqueResultException;
-import org.hibernate.QueryException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.StatelessSession;
-import org.hibernate.Transaction;
-import org.hibernate.criterion.Example;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.engine.query.spi.HQLQueryPlan;
-import org.hibernate.engine.query.spi.ParameterMetadata;
-import org.hibernate.engine.query.spi.QueryPlanCache;
-import org.hibernate.exception.ConstraintViolationException;
-import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.type.Type;
-
 import lucee.commons.lang.types.RefBoolean;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.loader.util.Util;
@@ -44,6 +26,22 @@ import lucee.runtime.type.Collection.Key;
 import lucee.runtime.type.Struct;
 import lucee.runtime.type.dt.TimeSpan;
 import lucee.runtime.type.scope.Argument;
+
+import org.hibernate.Criteria;
+import org.hibernate.FlushMode;
+import org.hibernate.NonUniqueResultException;
+import org.hibernate.QueryException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Example;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.engine.query.HQLQueryPlan;
+import org.hibernate.engine.query.ParameterMetadata;
+import org.hibernate.engine.query.QueryPlanCache;
+import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.type.Type;
 
 public class HibernateORMSession implements ORMSession {
 

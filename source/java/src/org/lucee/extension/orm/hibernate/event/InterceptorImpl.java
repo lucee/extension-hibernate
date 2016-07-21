@@ -2,15 +2,15 @@ package org.lucee.extension.orm.hibernate.event;
 
 import java.io.Serializable;
 
-import org.hibernate.EmptyInterceptor;
-import org.hibernate.type.Type;
-import org.lucee.extension.orm.hibernate.CommonUtil;
-import org.lucee.extension.orm.hibernate.HibernateCaster;
-
 import lucee.runtime.Component;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.type.Collection;
 import lucee.runtime.type.Struct;
+
+import org.hibernate.EmptyInterceptor;
+import org.hibernate.type.Type;
+import org.lucee.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.HibernateCaster;
 
 public class InterceptorImpl extends EmptyInterceptor {
 

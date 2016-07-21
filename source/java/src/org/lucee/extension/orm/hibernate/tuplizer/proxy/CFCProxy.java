@@ -1,7 +1,6 @@
 package org.lucee.extension.orm.hibernate.tuplizer.proxy;
 
 import lucee.runtime.Component;
-import lucee.runtime.Interface;
 
 public class CFCProxy extends ComponentProxy {
 	

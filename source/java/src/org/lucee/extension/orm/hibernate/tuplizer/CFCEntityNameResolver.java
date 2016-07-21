@@ -1,10 +1,10 @@
 package org.lucee.extension.orm.hibernate.tuplizer;
+import lucee.runtime.Component;
+import lucee.runtime.exp.PageException;
+
 import org.hibernate.EntityNameResolver;
 import org.lucee.extension.orm.hibernate.HibernateCaster;
 import org.lucee.extension.orm.hibernate.HibernatePageException;
-
-import lucee.runtime.Component;
-import lucee.runtime.exp.PageException;
 
 
 public  class CFCEntityNameResolver implements EntityNameResolver {

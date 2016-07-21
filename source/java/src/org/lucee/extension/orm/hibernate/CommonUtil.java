@@ -27,13 +27,6 @@ import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.hibernate.JDBCException;
-import org.hibernate.exception.ConstraintViolationException;
-import org.lucee.xml.XMLUtility;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
-
 import lucee.commons.io.res.Resource;
 import lucee.commons.lang.types.RefBoolean;
 import lucee.loader.engine.CFMLEngineFactory;
@@ -43,6 +36,7 @@ import lucee.runtime.Mapping;
 import lucee.runtime.PageContext;
 import lucee.runtime.component.Property;
 import lucee.runtime.config.Config;
+import lucee.runtime.config.ConfigWeb;
 import lucee.runtime.db.DataSource;
 import lucee.runtime.db.DatasourceConnection;
 import lucee.runtime.db.SQL;
@@ -62,6 +56,13 @@ import lucee.runtime.util.Decision;
 import lucee.runtime.util.ORMUtil;
 import lucee.runtime.util.Operation;
 
+import org.hibernate.JDBCException;
+import org.hibernate.exception.ConstraintViolationException;
+import org.lucee.xml.XMLUtility;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
+
 public class CommonUtil {
 	
 	public static final Key ENTITY_NAME = CommonUtil.createKey("entityname");
@@ -76,6 +77,10 @@ public class CommonUtil {
 	public static final Key PRE_INSERT=CommonUtil.createKey("preInsert");
 	public static final Key INIT=CommonUtil.createKey("init");
 	private static final short INSPECT_UNDEFINED = (short)4; /*ConfigImpl.INSPECT_UNDEFINED*/
+	private static final Class<?>[] ZEROC = new Class<?>[]{};
+	private static final Object[] ZEROO = new Object[]{};
+	private static final Class<?>[] GET_CONN_ARGS = new Class[]{Config.class, DataSource.class,String.class,String.class};
+	
 	
 	private static Charset _charset;
 	
@@ -681,7 +686,7 @@ public class CommonUtil {
 	
 
 	public static DataSource getDataSource(PageContext pc, String dsn, DataSource defaultValue) {
-		if(Util.isEmpty(dsn,true)) return orm().getDefaultDataSource(pc,defaultValue);
+		if(Util.isEmpty(dsn,true) || dsn.equals("__default__")) return orm().getDefaultDataSource(pc,defaultValue);
 		return pc.getDataSource(dsn.trim(),defaultValue);
 	}
 	
@@ -692,11 +697,27 @@ public class CommonUtil {
 	}
 
 	public static DatasourceConnection getDatasourceConnection(PageContext pc, DataSource ds) throws PageException {
-		return db().getDatasourceConnection(pc,ds,null,null);
+		//return db().getDatasourceConnection(pc, ds, null, null);
+		
+		// FUTURE this need to come from the Lucee public interface NOT MANAGED this cannot come from the manager!
+		// FUTURE db().getDatasourceConnection(pc, ds, null, null,false);
+		
+		try {
+			ConfigWeb config = pc.getConfig();
+			Method getDatasourceConnectionPool = config.getClass().getMethod("getDatasourceConnectionPool", ZEROC);
+			Object pool = getDatasourceConnectionPool.invoke(config, ZEROO);
+			Method getDatasourceConnection = pool.getClass().getMethod("getDatasourceConnection", GET_CONN_ARGS);
+			return (DatasourceConnection) getDatasourceConnection.invoke(pool, new Object[]{config,ds,null,null});
+		}
+		catch(Throwable t) {
+			throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(t);
+		}
 	}
-	
+
 	public static void releaseDatasourceConnection(PageContext pc, DatasourceConnection dc) {
+		// we can do this, because this is not using the manager!
 		db().releaseDatasourceConnection(pc.getConfig(),dc,true);
+		// FUTURE db().releaseDatasourceConnection(pc,dc);
 	}
 
 	public static Mapping createMapping(Config config, String virtual, String physical) {

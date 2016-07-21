@@ -1,8 +1,6 @@
 package org.lucee.extension.orm.hibernate;
 
 
-import org.hibernate.HibernateException;
-
 import lucee.runtime.PageContext;
 import lucee.runtime.PageSource;
 import lucee.runtime.config.Config;
@@ -14,6 +12,8 @@ import lucee.runtime.exp.IPageException;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.exp.PageExceptionBox;
 import lucee.runtime.type.Struct;
+
+import org.hibernate.HibernateException;
 
 public class HibernatePageException extends HibernateException implements IPageException,PageExceptionBox  {
 
