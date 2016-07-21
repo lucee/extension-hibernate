@@ -20,7 +20,6 @@ import lucee.runtime.exp.PageException;
 import lucee.runtime.util.DBUtil;
 
 import org.hibernate.HibernateException;
-import org.hibernate.connection.ConnectionProvider;
 import org.lucee.extension.orm.hibernate.CommonUtil;
 
 public class ConnectionProviderImpl implements ConnectionProvider {
@@ -71,9 +70,6 @@ public class ConnectionProviderImpl implements ConnectionProvider {
 	public boolean supportsAggressiveRelease() {
 		// nope
 		return false;
-	}
-	@Override
-	public void close() throws HibernateException {
 	}
 
 	@Override

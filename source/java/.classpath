@@ -4,8 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libs/javax.servlet.jar"/>
 	<classpathentry kind="lib" path="libs/org-apache-felix-main-4-2-1.jar"/>
-	<classpathentry kind="lib" path="libs/org-apache-commons-collections-3-2-1.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/loader"/>
 	<classpathentry kind="lib" path="libs/org.lucee.xml-1.0.0.0.jar"/>
 	<classpathentry kind="lib" path="libs/antlr-2.7.7.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate-jpa-2.1-api-1.0.0.Final.jar"/>
@@ -17,10 +15,9 @@
 	<classpathentry kind="lib" path="libs/lucee.jar"/>
 	<classpathentry kind="lib" path="libs/jandex-1.1.0.jar"/>
 	<classpathentry kind="lib" path="libs/jboss-logging-annotations-1.2.0.jar"/>
-	<classpathentry kind="lib" path="libs/slf4j-api-1-6-4.jar"/>
-	<classpathentry kind="lib" path="libs/slf4j-nop-1-6-4.jar"/>
 	<classpathentry kind="lib" path="libs/jboss-transaction-1-2-0.jar"/>
-	<classpathentry kind="lib" path="libs/jta-1.1.0.jar"/>
 	<classpathentry kind="lib" path="libs/xml-apis-1.4.1.jar"/>
+	<classpathentry kind="lib" path="libs/org.lucee.jta-1.1.0.jar"/>
+	<classpathentry kind="lib" path="libs/slf4j-api-1-7-12.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

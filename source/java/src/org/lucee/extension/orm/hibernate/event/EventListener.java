@@ -11,7 +11,7 @@ import lucee.runtime.type.Collection.Key;
 import lucee.runtime.type.Struct;
 import lucee.runtime.type.UDF;
 
-import org.hibernate.event.PreUpdateEvent;
+import org.hibernate.event.spi.PreUpdateEvent;
 import org.lucee.extension.orm.hibernate.CommonUtil;
 import org.lucee.extension.orm.hibernate.HibernateUtil;
 

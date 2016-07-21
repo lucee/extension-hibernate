@@ -35,8 +35,6 @@ import lucee.runtime.type.Collection.Key;
 import lucee.runtime.type.Struct;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.engine.SessionFactoryImplementor;
-import org.hibernate.engine.query.QueryPlanCache;
 import org.lucee.extension.orm.hibernate.jdbc.DataSourceConfig;
 import org.lucee.extension.orm.hibernate.naming.CFCNamingStrategy;
 import org.lucee.extension.orm.hibernate.naming.DefaultNamingStrategy;
