@@ -226,7 +226,9 @@ public class HibernateORMEngine implements ORMEngine {
         
 		SessionFactory sessionFactory = data.getFactory(key);
 		EventListenerRegistry eventListenerRegistry = (EventListenerRegistry)
-        		((SessionFactoryImpl)sessionFactory).getServiceRegistry().getService(EventListenerRegistry.class);
+        		((SessionFactoryImpl)sessionFactory)
+        			.getServiceRegistry()
+        			.getService(EventListenerRegistry.class);
     	
         
         Map<String, CFCInfo> cfcs = data.getCFCs(key);

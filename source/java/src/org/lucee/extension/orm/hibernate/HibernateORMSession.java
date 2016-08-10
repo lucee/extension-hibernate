@@ -32,6 +32,7 @@ import lucee.loader.util.Util;
 import lucee.runtime.Component;
 import lucee.runtime.ComponentScope;
 import lucee.runtime.PageContext;
+import lucee.runtime.component.Property;
 import lucee.runtime.db.DataSource;
 import lucee.runtime.db.DatasourceConnection;
 import lucee.runtime.db.SQLItem;
@@ -107,8 +108,10 @@ public class HibernateORMSession implements ORMSession {
 	}
 	
 	void createSession(SessionFactory factory, DatasourceConnection dc) { 
-		StatelessSession session;
-		_sessions.put(CommonUtil.toKey(dc.getDatasource().getName()), session=factory.openStatelessSession(dc.getConnection()));//ssion(dc.getConnection()));
+		//MUST StatelessSession session;
+		//_sessions.put(CommonUtil.toKey(dc.getDatasource().getName()), session=factory.openStatelessSession(dc.getConnection()));//ssion(dc.getConnection()));
+		Session session;
+		_sessions.put(CommonUtil.toKey(dc.getDatasource().getName()), session=factory.openSession());//ssion(dc.getConnection()));
 		session.setFlushMode(FlushMode.MANUAL);
 	}
 

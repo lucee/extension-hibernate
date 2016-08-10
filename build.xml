@@ -55,13 +55,13 @@
 
     <echo file="${dist}/extension/META-INF/MANIFEST.MF">Manifest-Version: 1.0
 Built-Date: ${NOW}
-version: "${bundleversion}${build.number}"
+version: "${bundleversion}${build.number}${versionappendix}"
 id: "FAD1E8CB-4F45-4184-86359145767C29DE"
 name: ${label}
 description: ${description}
 start-bundles: false
 release-type: ${releaseType}
-orm: "[{'class':'${class}','name':'${bundlename}','version':'${bundleversion}${build.number}'}]"
+orm: "[{'class':'${class}','name':'${bundlename}','version':'${bundleversion}${build.number}${versionappendix}'}]"
 lucee-core-version: "${luceeCoreVersion}"
 </echo>
 
@@ -85,9 +85,9 @@ lucee-core-version: "${luceeCoreVersion}"
  
     <!-- Put everything in ${build} into .jar file -->
     <jar 
-    	jarfile="${dist}/extension/jars/lucee-hibernate-${bundleversion}${build.number}.jar" basedir="${build}"  manifest="${src}/META-INF/MANIFEST.MF">
+    	jarfile="${dist}/extension/jars/lucee-hibernate-${bundleversion}${build.number}${versionappendix}.jar" basedir="${build}"  manifest="${src}/META-INF/MANIFEST.MF">
       <manifest>
-        <attribute name="Bundle-Version" value="${bundleversion}${build.number}"/>
+        <attribute name="Bundle-Version" value="${bundleversion}${build.number}${versionappendix}"/>
         <attribute name="Built-Date" value="${NOW}"/>
         <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
       </manifest>
@@ -115,7 +115,7 @@ lucee-core-version: "${luceeCoreVersion}"
     </copy>
 
     <!-- Zip everything  -->
-     <zip destfile="${dist}/hibernate-orm-${bundleversion}${build.number}.lex">
+     <zip destfile="${dist}/hibernate-orm-${bundleversion}${build.number}${versionappendix}.lex">
         <zipfileset dir="${dist}/extension"/>
     </zip>
 		
