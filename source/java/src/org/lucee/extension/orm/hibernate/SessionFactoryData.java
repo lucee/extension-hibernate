@@ -214,7 +214,8 @@ public class SessionFactoryData {
 	}
 
 
-	public void buildSessionFactory(Key datasSourceName) {
+	public SessionFactory buildSessionFactory(Key datasSourceName) {
+		//System.out.println("---- buildSessionFactory("+hashCode()+") ----");
 		//Key key=KeyImpl.init(ds.getName());
 		DataSourceConfig dsc = getConfiguration(datasSourceName);
 		if(dsc==null) throw new RuntimeException("cannot build factory because there is no configuration"); // this should never happen
@@ -231,13 +232,20 @@ public class SessionFactoryData {
 			// reset
 			thread.setContextClassLoader(old);
 		}
-		
+		//System.out.println(datasSourceName+"+"+sf);
 		factories.put(datasSourceName, sf);
+		return sf;
 	}
 
 	public SessionFactory getFactory(Key datasSourceName){
 		SessionFactory factory = factories.get(datasSourceName);
-		if(factory==null && getConfiguration(datasSourceName)!=null) buildSessionFactory(datasSourceName);// this should never be happen
+		/*System.out.println("---- getFactory("+hashCode()+") ----");
+		System.out.println(datasSourceName+"+"+factory);
+		System.out.println(factories.keySet());*/
+		
+		
+		
+		if(factory==null && getConfiguration(datasSourceName)!=null) factory = buildSessionFactory(datasSourceName);// this should never be happen
 		return factory;
 	}
 	
