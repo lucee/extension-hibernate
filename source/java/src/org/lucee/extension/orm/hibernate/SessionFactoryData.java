@@ -225,7 +225,7 @@ public class SessionFactoryData {
 		SessionFactory sf;
 		try{
 			// use the core classloader 
-			thread.setContextClassLoader(CFMLEngineFactory.getInstance().getClass().getClassLoader());
+			thread.setContextClassLoader(this.getClass().getClassLoader());
 			sf= dsc.config.buildSessionFactory();
 		}
 		finally {

@@ -74,12 +74,13 @@ public class HibernateORMSession implements ORMSession {
 	private Session getSession(Key datasSourceName) throws PageException{
 		Session s = _sessions.get(datasSourceName);
 		if(s!=null) return s; 
-		CFMLEngineFactory.getInstance().getExceptionUtil().similarKeyMessage(
+		String msg=CFMLEngineFactory.getInstance().getExceptionUtil().similarKeyMessage(
 				_sessions.keySet().toArray(new Key[_sessions.size()])
 				,datasSourceName.getString(),"datasource","datasources",null,true);
 		
-		throw ExceptionUtil.createException(data, null, "there is no Session for the datasource ["+datasSourceName+"]",null);
-	}
+		throw ExceptionUtil.createException(data, null, msg,null);
+		//throw ExceptionUtil.createException(data, null, "there is no Session for the datasource ["+datasSourceName+"]",null);
+		}
 	
 	public SessionFactoryData getSessionFactoryData(){
 		return data;
