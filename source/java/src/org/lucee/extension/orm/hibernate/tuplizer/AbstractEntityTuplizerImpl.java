@@ -66,21 +66,25 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 				name=p.getName();
 				value=scope.get(CommonUtil.createKey(name),null);
 				String type=p.getType();
-				if(CommonUtil.isAnyType(type)) {
+				Object o=p.getMetaData();
+				Struct meta=o instanceof Struct?(Struct)o:null;
+				// ormtype
+				if(meta!=null) {
+					String tmp = CommonUtil.toString(meta.get("ormtype", null),null);
+					if(!Util.isEmpty(tmp)) type=tmp;
+				}
+				
+				// generator
+				if(meta!=null && CommonUtil.isAnyType(type)) {
 					type="string";
 					try {
-						Object o=p.getMetaData();
-						if(o instanceof Struct) {
-							Struct meta=(Struct) o;
-							String gen = CommonUtil.toString(meta.get("generator", null),null);
-							if(!Util.isEmpty(gen)){
-								type=HBMCreator.getDefaultTypeForGenerator(gen, "string");
-							}
+						String gen = CommonUtil.toString(meta.get("generator", null),null);
+						if(!Util.isEmpty(gen)){
+							type=HBMCreator.getDefaultTypeForGenerator(gen, "string");
 						}
 					}
 					catch (Throwable t) {}
 				}
-
 				try {
 					value=HibernateCaster.toHibernateValue(CFMLEngineFactory.getInstance().getThreadPageContext(), value, type);
 				}

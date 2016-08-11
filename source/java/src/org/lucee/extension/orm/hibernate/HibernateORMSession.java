@@ -214,6 +214,26 @@ public class HibernateORMSession implements ORMSession {
 		Component cfc = HibernateCaster.toComponent(obj);
 		String name = HibernateCaster.getEntityName(cfc);
 		Key dsn = CommonUtil.toKey(CommonUtil.getDataSourceName(pc, cfc));
+		/* just a test
+		Property[] props = cfc.getProperties(true,true, false,true);
+		Cast caster = CFMLEngineFactory.getInstance().getCastUtil();
+		ComponentScope cs = cfc.getComponentScope();
+		String type;
+		Object val;
+		for(Property p:props) {
+			val=cs.get(p.getName(),null);
+			if(val==null) continue;
+			Object o = p.getMetaData();
+			if(!(o instanceof Struct)) continue;
+			Struct meta = (Struct) o;
+			
+			type=caster.toString(meta.get("ormtype",null),null);
+			if(Util.isEmpty(type)) type=caster.toString(meta.get("type",null));
+			if(!Util.isEmpty(type)) {
+				val=HibernateCaster.toHibernateValue(pc,val,type);
+				cs.setEL(p.getName(), val);
+			}
+		}*/
 		
 		try {
 			Session session = getSession(dsn);
