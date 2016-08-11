@@ -205,7 +205,7 @@ public class SessionFactoryData {
 	}
 
 
-	public void buildSessionFactory(Key datasSourceName) {
+	public SessionFactory buildSessionFactory(Key datasSourceName) {
 		//Key key=KeyImpl.init(ds.getName());
 		DataSourceConfig dsc = getConfiguration(datasSourceName);
 		if(dsc==null) throw new RuntimeException("cannot build factory because there is no configuration"); // this should never happen
@@ -224,11 +224,12 @@ public class SessionFactoryData {
 		}
 		
 		factories.put(datasSourceName, sf);
+		return sf;
 	}
 
 	public SessionFactory getFactory(Key datasSourceName){
 		SessionFactory factory = factories.get(datasSourceName);
-		if(factory==null && getConfiguration(datasSourceName)!=null) buildSessionFactory(datasSourceName);// this should never be happen
+		if(factory==null && getConfiguration(datasSourceName)!=null) factory=buildSessionFactory(datasSourceName);// this should never be happen
 		return factory;
 	}
 	
