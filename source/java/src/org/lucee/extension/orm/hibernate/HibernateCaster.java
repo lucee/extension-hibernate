@@ -7,6 +7,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import lucee.commons.lang.types.RefBoolean;
 import lucee.loader.engine.CFMLEngineFactory;
@@ -434,7 +435,7 @@ public class HibernateCaster {
 	 */
 	public static Object toSQL(Type type, Object value, RefBoolean isArray) throws PageException {
 		int t = toSQLType(type.getName(), Types.OTHER);
-		if(t==Types.OTHER) return value;
+		///if(t==Types.OTHER) return value;
 		return toSQL(t, value,isArray);
 	}
 
@@ -448,30 +449,42 @@ public class HibernateCaster {
 	 */
 	private static Object toSQL(int sqlType, Object value, RefBoolean isArray) throws PageException {
 		if(isArray!=null)isArray.setValue(false);
-		SQLItem item = CommonUtil.toSQLItem(value,sqlType);
-		try{
-			return CommonUtil.toSqlType(item);
-		}
-		catch(PageException pe){
-			// pherhaps it is a array of this type 
-			if(isArray!=null && CommonUtil.isArray(value)) {
-				Object[] src = CommonUtil.toNativeArray(value);
-				ArrayList<Object> trg = new ArrayList<Object>();
-				for(int i=0;i<src.length;i++){
-					try{
-						trg.add(CommonUtil.toSqlType(CommonUtil.toSQLItem(src[i],sqlType)));
-					}
-					catch(PageException inner){
-						throw pe;
-					}
-				}
-				isArray.setValue(true);
-				return CommonUtil.toArray(trg);
-				
+		
+		Boolean _isArray=null;
+		boolean hasType=sqlType!=Types.OTHER;
+		
+		// first we try to convert without any checking
+		if(hasType) {
+			try{
+				return CommonUtil.toSqlType(CommonUtil.toSQLItem(value,sqlType));
 			}
-			throw pe;
+			catch(PageException pe){
+				_isArray=CommonUtil.isArray(value);
+				if(!_isArray.booleanValue()) throw pe;
+			}
 		}
 		
+		// can only be null if type is other
+		if(_isArray==null) {
+			 if(!CommonUtil.isArray(value)) return value;
+		}
+		
+		// at this point it is for sure that the value is an array
+		if(isArray!=null)isArray.setValue(true);
+		Array src = CommonUtil.toArray(value);
+		Iterator<Object> it = src.valueIterator();
+		ArrayList<Object> trg = new ArrayList<Object>();
+		Object v;
+		while(it.hasNext()){
+			v=it.next();
+			if(v==null) continue;
+			if(hasType) {
+				trg.add(CommonUtil.toSqlType(CommonUtil.toSQLItem(v,sqlType)));
+			}
+			else
+				trg.add(v);
+		}
+		return CommonUtil.toArray(trg);
 	}
 
 
