@@ -85,7 +85,8 @@ public class HibernateCaster {
 		try {
 			name=CommonUtil.toString(cfc.getMetaStructItem(CommonUtil.ENTITY_NAME),null);
 		} 
-		catch (Throwable t) {
+		catch(Throwable t) {
+			if(t instanceof ThreadDeath) throw (ThreadDeath)t;
 			try {
 				Struct md = cfc.getMetaData(CommonUtil.pc());
 				name = CommonUtil.toString(md.get(CommonUtil.ENTITY_NAME),null);

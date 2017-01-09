@@ -156,6 +156,7 @@ public class HibernateUtil {
 		
 		}
 		catch(Throwable t){
+			if(t instanceof ThreadDeath) throw (ThreadDeath)t;
 			return new Property[0];
 		}
 		
@@ -303,7 +304,7 @@ public class HibernateUtil {
 				return name;	
 			}
 		}
-        catch(Throwable t){}
+        catch(Throwable t) {if(t instanceof ThreadDeath) throw (ThreadDeath)t;}
 		finally {
 			CommonUtil.closeEL(tables);
 		}

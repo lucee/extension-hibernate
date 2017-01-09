@@ -102,7 +102,9 @@ public class HibernateSessionFactory {
 		else if("HashTable".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.HashtableCacheProvider";
 		else if("SwarmCache".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.SwarmCacheProvider";
 		else if("OSCache".equalsIgnoreCase(cacheProvider)) 		cacheProvider="org.hibernate.cache.OSCacheProvider";
-	
+		
+		
+		
 		Resource cacheConfig = ormConf.getCacheConfig();
 		Configuration configuration = new Configuration();
 		
@@ -113,7 +115,8 @@ public class HibernateSessionFactory {
 				Document doc = CommonUtil.toDocument(conf,null);
 				configuration.configure(doc);
 			} 
-			catch (Throwable t) {
+			catch(Throwable t) {
+				if(t instanceof ThreadDeath) throw (ThreadDeath)t;
 				log.log(Log.LEVEL_ERROR, "hibernate", t);
 				
 			}
@@ -204,9 +207,7 @@ public class HibernateSessionFactory {
 	    	//hibernate.cache.provider_class=org.hibernate.cache.EhCacheProvider
 		}
 		}
-		catch(Throwable t){
-			t.printStackTrace();
-		}
+		catch(Throwable t){if(t instanceof ThreadDeath) throw (ThreadDeath)t;}
 		
 		/*
 		<!ELEMENT tuplizer EMPTY> 
@@ -323,7 +324,7 @@ public class HibernateSessionFactory {
 			try {
 				Component base = data.getEntityByCFCName(ext, false);
 				ext=HibernateCaster.getEntityName(base);
-			} catch (Throwable t) {}
+			} catch(Throwable t) {if(t instanceof ThreadDeath) throw (ThreadDeath)t;}
 			
 			
 			ext=HibernateUtil.id(CommonUtil.last(ext, ".").trim());

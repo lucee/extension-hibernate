@@ -318,7 +318,7 @@ public class HibernateORMEngine implements ORMEngine {
 				Document doc=null;
 				try {
 					doc=CommonUtil.newDocument();
-				}catch(Throwable t){t.printStackTrace();}
+				}catch(Throwable t){if(t instanceof ThreadDeath) throw (ThreadDeath)t;}
 				
 				root=doc.createElement("hibernate-mapping");
 				doc.appendChild(root);

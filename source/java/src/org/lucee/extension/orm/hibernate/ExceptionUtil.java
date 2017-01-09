@@ -63,6 +63,6 @@ public class ExceptionUtil {
 			}
 			setAdditional.invoke(pe, new Object[]{name,value});
 		}
-		catch(Throwable t){}
+		catch(Throwable t) {if(t instanceof ThreadDeath) throw (ThreadDeath)t;}
 	}
 }

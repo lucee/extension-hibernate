@@ -94,7 +94,7 @@ public class HBMCreator {
 				Component base = data.getEntityByCFCName(ext, false);
 				ext = HibernateCaster.getEntityName(base);
 			}
-			catch(Throwable t){}
+			catch(Throwable t) {if(t instanceof ThreadDeath) throw (ThreadDeath)t;}
 			
 			
 			String discriminatorValue = toString(cfc,null,meta,"discriminatorValue",data);
@@ -735,7 +735,7 @@ public class HBMCreator {
 						}
 					}
 				}
-				catch(Throwable t){}
+				catch(Throwable t) {if(t instanceof ThreadDeath) throw (ThreadDeath)t;}
 			}
 			return "string";
 		}
