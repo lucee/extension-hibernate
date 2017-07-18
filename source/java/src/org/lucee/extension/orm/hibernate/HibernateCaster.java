@@ -27,6 +27,7 @@ import lucee.runtime.type.Query;
 import lucee.runtime.type.Struct;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.collection.PersistentCollection;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
@@ -436,9 +437,10 @@ public class HibernateCaster {
 	 */
 	public static Object toSQL(Type type, Object value, RefBoolean isArray) throws PageException {
 		int t = toSQLType(type.getName(), Types.OTHER);
-		///if(t==Types.OTHER) return value;
+		//if(t==Types.OTHER) return value;
 		return toSQL(t, value,isArray);
 	}
+
 
 	/**
 	 * translate CFMl specific type to SQL specific types
@@ -449,6 +451,10 @@ public class HibernateCaster {
 	 * @throws PageException
 	 */
 	private static Object toSQL(int sqlType, Object value, RefBoolean isArray) throws PageException {
+		if(sqlType==Types.OTHER && value instanceof PersistentCollection) { 
+			return value;
+		}
+		
 		if(isArray!=null)isArray.setValue(false);
 		
 		Boolean _isArray=null;
@@ -464,6 +470,8 @@ public class HibernateCaster {
 				if(!_isArray.booleanValue()) throw pe;
 			}
 		}
+		
+		// already a hibernate type
 		
 		// can only be null if type is other
 		if(_isArray==null) {
@@ -485,7 +493,7 @@ public class HibernateCaster {
 			else
 				trg.add(v);
 		}
-		return CommonUtil.toArray(trg);
+		return trg;
 	}
 
 

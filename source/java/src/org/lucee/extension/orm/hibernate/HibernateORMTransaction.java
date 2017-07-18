@@ -41,7 +41,8 @@ public class HibernateORMTransaction implements ORMTransaction {
 			if(autoManage)session.clear();
 		}
 		else{
-			trans.commit();
+			if(!trans.wasCommitted())
+				trans.commit();
 			session.flush();
 		}
 	}
