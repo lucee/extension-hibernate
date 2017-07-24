@@ -49,7 +49,7 @@ public class CFCGetter implements Getter {
 	public Object get(Object trg) throws HibernateException {
 		try {
 			// MUST cache this, perhaps when building xml
-			PageContext pc = CommonUtil.pc();
+			PageContext pc = CommonUtil.pc(); // pc can be null
 			ORMSession session = pc.getORMSession(true);
 			Component cfc = CommonUtil.toComponent(trg);
 			String dsn = CFMLEngineFactory.getInstance().getORMUtil().getDataSourceName(pc, cfc);
@@ -63,6 +63,9 @@ public class CFCGetter implements Getter {
 		} 
 		catch (PageException pe) {
 			throw new HibernatePageException(pe);
+		}
+		catch (Exception e) {
+			throw new HibernatePageException(CFMLEngineFactory.getInstance().getCastUtil().toPageException(e));
 		}
 	}
 	

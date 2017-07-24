@@ -88,11 +88,12 @@ public class HibernateORMSession implements ORMSession {
 	}
 	
 	void resetSession(PageContext pc,SessionFactory factory, Key dataSourceName, SessionFactoryData data) throws PageException { 
-		
-		for(int i=0;i<connections.length;i++){
-			if(dataSourceName.equals(connections[i].getDatasource().getName())) {
-				createSession(factory, connections[i]);
-				return;
+		if(connections!=null) {
+			for(int i=0;i<connections.length;i++){
+				if(dataSourceName.equals(connections[i].getDatasource().getName())) {
+					createSession(factory, connections[i]);
+					return;
+				}
 			}
 		}
 		DataSource ds = data.getDataSource(dataSourceName);
@@ -119,8 +120,10 @@ public class HibernateORMSession implements ORMSession {
 	@Override
 	public void flushAll(PageContext pc) throws PageException {
 		// release all connections
-		for(int i=0;i<connections.length;i++) {
-			_flush(pc, connections[i].getDatasource());
+		if(connections!=null) {
+			for(int i=0;i<connections.length;i++) {
+				_flush(pc, connections[i].getDatasource());
+			}
 		}
 	}
 	
@@ -534,33 +537,37 @@ public class HibernateORMSession implements ORMSession {
 		Key dsn = CommonUtil.toKey(ds.getName());
 		
 		// close Session
-		getSession(dsn).close();
+		Session s = getSession(dsn);
+		if(s.isOpen())s.close();
 		
 		// release connection
 		List<DatasourceConnection> list=new ArrayList<DatasourceConnection>();
-		for(int i=0;i<connections.length;i++){
-			if(connections[i].getDatasource().equals(ds)) {
-				CommonUtil.releaseDatasourceConnection(pc, connections[i]);
+		if(connections!=null) {
+			for(int i=0;i<connections.length;i++){
+				if(connections[i].getDatasource().equals(ds)) {
+					CommonUtil.releaseDatasourceConnection(pc, connections[i]);
+				}
+				else list.add(connections[i]);
 			}
-			else list.add(connections[i]);
 		}
 		connections=list.toArray(new DatasourceConnection[list.size()]);
 	}
 	
 	@Override
 	public void closeAll(PageContext pc) throws PageException {
-		
 		Iterator<Session> it = _sessions.values().iterator();
 		while(it.hasNext()){
 			Session s = it.next();
-			s.close();
+			if(s.isOpen())s.close();
 		}
 		
 		// release all connections
-		for(int i=0;i<connections.length;i++){
-			CommonUtil.releaseDatasourceConnection(pc, connections[i]);
+		if(connections!=null) {
+			for(int i=0;i<connections.length;i++){
+				CommonUtil.releaseDatasourceConnection(pc, connections[i]);
+			}
+			connections=null;
 		}
-		connections=null;
 	}
 	
 	@Override
