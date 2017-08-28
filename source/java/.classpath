@@ -5,7 +5,6 @@
 	<classpathentry kind="lib" path="libs/javax.servlet.jar"/>
 	<classpathentry kind="lib" path="libs/org-apache-felix-main-4-2-1.jar"/>
 	<classpathentry kind="lib" path="libs/org-apache-commons-collections-3-2-1.jar"/>
-	<classpathentry kind="lib" path="libs/org.lucee.xml-1.0.0.0.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loader"/>
 	<classpathentry kind="lib" path="libs/lucee.jar"/>
 	<classpathentry kind="lib" path="libs/antlr-2.7.6.jar"/>
@@ -15,5 +14,6 @@
 	<classpathentry kind="lib" path="libs/xml-apis-1.4.1.jar"/>
 	<classpathentry kind="lib" path="libs/ehcache-2.10.3.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate-3.5.5.0007L.jar"/>
+	<classpathentry kind="lib" path="libs/org.lucee.xml-1.0.0.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
