@@ -58,7 +58,7 @@ import lucee.runtime.util.Operation;
 
 import org.hibernate.JDBCException;
 import org.hibernate.exception.ConstraintViolationException;
-import org.lucee.xml.XMLUtility;
+import org.lucee.extension.orm.hibernate.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -461,18 +461,16 @@ public class CommonUtil {
 	public static String toTypeName(Object obj) {
 		return caster().toTypeName(obj);
 	}
-	public static Node toXML(Object obj) throws IOException, SAXException {
-		return XMLUtility.toNode(obj);
+	public static Node toXML(Object obj) throws PageException {
+		return XMLUtil.toNode(obj);
 	}
 	/*public static Node toXML(Object obj, Node defaultValue) {
 		return caster().toXML(obj,defaultValue);
 	}*/
 	
 
-	public static Document toDocument(Resource res, Charset cs) throws IOException, SAXException {
-		if(res instanceof File)
-			return XMLUtility.parse(XMLUtility.toInputSource((File)res,cs), null, false);
-		return XMLUtility.parse(XMLUtility.toInputSource(res.getInputStream()), null, false);
+	public static Document toDocument(Resource res, Charset cs) throws PageException {
+		return XMLUtil.parse(XMLUtil.toInputSource(res,cs), null, false);
 	}
 	
 	
@@ -745,13 +743,13 @@ public class CommonUtil {
 	}
 	
 	public static Document getDocument(Node node) {
-		return XMLUtility.getDocument(node);
+		return XMLUtil.getDocument(node);
 	}
-	public static Document newDocument() throws ParserConfigurationException, FactoryConfigurationError {
-		return XMLUtility.newDocument();
+	public static Document newDocument() throws PageException {
+		return XMLUtil.newDocument();
 	}
 	public static void setFirst(Node parent, Node node) {
-		XMLUtility.setFirst(parent, node);
+		XMLUtil.setFirst(parent, node);
 	}
 
 	public static Property[] getProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
@@ -876,8 +874,8 @@ public class CommonUtil {
 	}
 
 	public static String toString(Node node, boolean omitXMLDecl, boolean indent, String publicId, String systemId, 
-			String encoding) throws IOException, TransformerException {
-		return XMLUtility.toString(node, omitXMLDecl, indent, publicId, systemId, encoding);
+			String encoding) throws PageException {
+		return XMLUtil.toString(node, omitXMLDecl, indent, publicId, systemId, encoding);
 	}
 
 	public static Locale toLocale(String strLocale) throws PageException {

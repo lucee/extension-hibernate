@@ -8,9 +8,7 @@ Require-Bundle: hibernate;bundle-version=3.5.5.0007L,
  org.lucee.jta;bundle-version=1.1.0,
  slf4j.api;bundle-version=1.7.12,
  org.apache.commons.collections;bundle-version=3.2.1,
- org.lucee.xalan;bundle-version=2.7.2,
  org.lucee.xml.apis;bundle-version=1.4.1,
- org.lucee.xml;bundle-version=1.0.0.3,
  org.lucee.ehcache;bundle-version=2.10.3
 Require-Bundle-Fragment: slf4j.nop;bundle-version=1.7.12
 Bundle-ManifestVersion: 2

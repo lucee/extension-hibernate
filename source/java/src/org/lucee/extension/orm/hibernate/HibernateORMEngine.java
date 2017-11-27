@@ -48,7 +48,7 @@ import org.lucee.extension.orm.hibernate.event.PreInsertEventListenerImpl;
 import org.lucee.extension.orm.hibernate.event.PreLoadEventListenerImpl;
 import org.lucee.extension.orm.hibernate.event.PreUpdateEventListenerImpl;
 import org.lucee.extension.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
-import org.lucee.xml.XMLUtility;
+import org.lucee.extension.orm.hibernate.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -333,7 +333,7 @@ public class HibernateORMEngine implements ORMEngine {
 					manager.releaseConnection(pc, dc);
 				}
 				try {
-					xml= XMLUtility.toString(root.getChildNodes(),true,true);
+					xml= XMLUtil.toString(root.getChildNodes(),true,true);
 				} 
 				catch (Exception e) {
 					throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);

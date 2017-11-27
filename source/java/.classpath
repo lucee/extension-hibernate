@@ -14,6 +14,5 @@
 	<classpathentry kind="lib" path="libs/xml-apis-1.4.1.jar"/>
 	<classpathentry kind="lib" path="libs/ehcache-2.10.3.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate-3.5.5.0007L.jar"/>
-	<classpathentry kind="lib" path="libs/org.lucee.xml-1.0.0.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
