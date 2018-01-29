@@ -233,7 +233,6 @@ public class HibernateORMSession implements ORMSession {
 				cs.setEL(p.getName(), val);
 			}
 		}*/
-		
 		try {
 			Session session = getSession(dsn);
 			if(forceInsert)
@@ -241,9 +240,8 @@ public class HibernateORMSession implements ORMSession {
 			else
 				session.saveOrUpdate(name, cfc);
 		}
-		catch(Throwable t){
-			if(t instanceof ThreadDeath) throw (ThreadDeath)t;
-			throw ExceptionUtil.createException(this,null,t);
+		catch(Exception e){
+			throw ExceptionUtil.createException(this,null,e);
 		}
 	}
 	

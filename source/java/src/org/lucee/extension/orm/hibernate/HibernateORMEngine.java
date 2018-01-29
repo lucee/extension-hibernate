@@ -185,7 +185,7 @@ public class HibernateORMEngine implements ORMEngine {
 			
 			DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc,data.getDataSource(e.getKey()));
 			try{
-				data.setConfiguration(log,e.getValue(),dc);
+				data.setConfiguration(log,e.getValue(),dc,appContext==null?"":appContext.getName());
 			} 
 			catch (Exception ex) {
 				throw CommonUtil.toPageException(ex);
@@ -446,9 +446,7 @@ public class HibernateORMEngine implements ORMEngine {
 				if(cfc!=null)return cfc;
 			}
 		}
-		
-		
-		
+
 		ORMConfiguration ormConf = pc.getApplicationContext().getORMConfiguration();
 		Resource[] locations = ormConf.getCfcLocations();
 		

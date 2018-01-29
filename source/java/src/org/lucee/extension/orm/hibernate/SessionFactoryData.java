@@ -198,15 +198,15 @@ public class SessionFactoryData {
 		return configurations.get(key);
 	}
 
-	public void setConfiguration(Log log,String mappings, DatasourceConnection dc) throws PageException, SQLException, IOException {
+	public void setConfiguration(Log log,String mappings, DatasourceConnection dc, String applicationContextName) throws PageException, SQLException, IOException {
 		configurations.put(CommonUtil.toKey(dc.getDatasource().getName())
-				,new DataSourceConfig(dc.getDatasource(),HibernateSessionFactory.createConfiguration(log,mappings,dc,this))
+				,new DataSourceConfig(dc.getDatasource(),HibernateSessionFactory.createConfiguration(log,mappings,dc,this,applicationContextName))
 				);
 	}
 
 
 	public SessionFactory buildSessionFactory(Key datasSourceName) {
-		//Key key=KeyImpl.init(ds.getName());
+		//Key key=eng.getCreationUtil().createKey(ds.getName());
 		DataSourceConfig dsc = getConfiguration(datasSourceName);
 		if(dsc==null) throw new RuntimeException("cannot build factory because there is no configuration"); // this should never happen
 		
@@ -283,7 +283,7 @@ public class SessionFactoryData {
 	}
 
 	/*public Map<String, CFCInfo> getCFCs(DataSource ds) {
-		Key key=KeyImpl.init(ds.getName());
+		Key key=eng.getCreationUtil().createKey(ds.getName());
 		Map<String, CFCInfo> rtn = cfcs.get(key);
 		if(rtn==null) return new HashMap<String, CFCInfo>();
 		return rtn;

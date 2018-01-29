@@ -1,6 +1,7 @@
 package org.lucee.extension.orm.hibernate;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
@@ -52,8 +53,9 @@ public class HibernateSessionFactory {
 	public static final String HIBERNATE_3_SYSTEM_ID = "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd";
 	public static final String HIBERNATE_3_DOCTYPE_DEFINITION = "<!DOCTYPE hibernate-mapping PUBLIC \""+HIBERNATE_3_PUBLIC_ID+"\" \""+HIBERNATE_3_SYSTEM_ID+"\">";
 	
+	
 
-	public static Configuration createConfiguration(Log log,String mappings, DatasourceConnection dc, SessionFactoryData data) throws SQLException, IOException, PageException {
+	public static Configuration createConfiguration(Log log,String mappings, DatasourceConnection dc, SessionFactoryData data, String applicationContextName) throws SQLException, IOException, PageException {
 		/*
 		 autogenmap
 		 cacheconfig
@@ -94,20 +96,30 @@ public class HibernateSessionFactory {
 		Class<? extends RegionFactory> regionFactory=null;
 		
 		if(Util.isEmpty(cacheProvider) || "EHCache".equalsIgnoreCase(cacheProvider)) {
-			//regionFactory=net.sf.ehcache.hibernate.EhCacheRegionFactory.class;
-			regionFactory=net.sf.ehcache.hibernate.SingletonEhCacheRegionFactory.class;
-			// regionFactory=(Class<? extends RegionFactory>) CFMLEngineFactory.getInstance().getClassUtil().loadClass("net.sf.ehcache.hibernate.EhCacheRegionFactory");
+			regionFactory=net.sf.ehcache.hibernate.EhCacheRegionFactory.class;
 			cacheProvider=regionFactory.getName();
 		}
 		else if("JBossCache".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.TreeCacheProvider";
 		else if("HashTable".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.HashtableCacheProvider";
 		else if("SwarmCache".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.SwarmCacheProvider";
 		else if("OSCache".equalsIgnoreCase(cacheProvider)) 		cacheProvider="org.hibernate.cache.OSCacheProvider";
-		
-		
-		
+
 		Resource cacheConfig = ormConf.getCacheConfig();
 		Configuration configuration = new Configuration();
+
+		// is ehcache
+		if(cacheProvider!=null && cacheProvider.toLowerCase().indexOf("ehcache")!=-1) {
+			if(cacheConfig==null) {
+				CFMLEngine eng = CFMLEngineFactory.getInstance();
+				String varName = eng.getCastUtil().toVariableName(applicationContextName,applicationContextName);
+				String xml=createEHConfigXML(varName);
+				cacheConfig=eng.getResourceUtil().getTempDirectory().getRealResource("ehcache/"+varName+".xml");
+				if(!cacheConfig.isFile()) {
+					cacheConfig.getParentResource().mkdirs();
+					eng.getIOUtil().write(cacheConfig, xml, false, null);
+				}
+			}
+		}
 		
 		// ormConfig
 		Resource conf = ormConf.getOrmConfig();
@@ -196,15 +208,24 @@ public class HibernateSessionFactory {
 		
 		try{
 		if(ormConf.secondaryCacheEnabled()){
-			if(cacheConfig!=null && cacheConfig.isFile())
+			if(cacheConfig!=null && cacheConfig.isFile()) {
 				configuration.setProperty("hibernate.cache.provider_configuration_file_resource_path",cacheConfig.getAbsolutePath());
+				configuration.setProperty("cache.provider_configuration_file_resource_path",cacheConfig.getAbsolutePath());
+				if(cacheConfig instanceof File)
+					configuration.setProperty("net.sf.ehcache.configurationResourceName",((File)cacheConfig).toURI().toURL().toExternalForm());
+				else 
+					throw new IOException("only local configuration files are supported");
+			
+			}
+			
 			if(regionFactory!=null || CFMLEngineFactory.getInstance().getClassUtil().isInstaneOf(cacheProvider, RegionFactory.class))
 				configuration.setProperty("hibernate.cache.region.factory_class", cacheProvider);
 			else
 				configuration.setProperty("hibernate.cache.provider_class", cacheProvider);
 			
 			configuration.setProperty("hibernate.cache.use_query_cache", "true");
-	    	
+	    	// <prop key="hibernate.cache.provider_configuration_file_resource_path">hibernate-ehcache.xml</prop>
+
 	    	//hibernate.cache.provider_class=org.hibernate.cache.EhCacheProvider
 		}
 		}
@@ -219,6 +240,28 @@ public class HibernateSessionFactory {
 		schemaExport(log,configuration,dc,data);
 		
 		return configuration;
+	}
+
+	private static String createEHConfigXML(String cacheName) {
+		return new StringBuilder()
+		.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+		.append("<ehcache")
+		.append("    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"")
+		.append("    xsi:noNamespaceSchemaLocation=\"ehcache.xsd\"")
+		.append("    updateCheck=\"true\" name=\""+cacheName+"\">")
+		.append("    <diskStore path=\"java.io.tmpdir\"/>")
+		.append("    <defaultCache")
+		.append("            maxElementsInMemory=\"10000\"")
+		.append("            eternal=\"false\"")
+		.append("            timeToIdleSeconds=\"120\"")
+		.append("            timeToLiveSeconds=\"120\"")
+		.append("            maxElementsOnDisk=\"10000000\"")
+		.append("            diskExpiryThreadIntervalSeconds=\"120\"")
+		.append("            memoryStoreEvictionPolicy=\"LRU\">")
+		.append("        <persistence strategy=\"localTempSwap\"/>")
+		.append("    </defaultCache>")
+		.append("</ehcache>")
+		.toString();
 	}
 
 	private static void schemaExport(Log log,Configuration configuration, DatasourceConnection dc, SessionFactoryData data) throws PageException, SQLException, IOException {
