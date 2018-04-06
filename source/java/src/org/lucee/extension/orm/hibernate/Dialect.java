@@ -56,6 +56,8 @@ public class Dialect {
 		dialects.setEL("MySQL5/InnoDB", org.hibernate.dialect.MySQL5InnoDBDialect.class.getName());
 		dialects.setEL("MySQL", org.hibernate.dialect.MySQLDialect.class.getName());
 		dialects.setEL("org.gjt.mm.mysql.Driver", org.hibernate.dialect.MySQLDialect.class.getName());
+		dialects.setEL("com.mysql.cj.jdbc.Driver", org.hibernate.dialect.MySQLDialect.class.getName());
+		dialects.setEL("com.mysql.jdbc.Driver", org.hibernate.dialect.MySQLDialect.class.getName());
 		dialects.setEL("MySQLInnoDB", org.hibernate.dialect.MySQLInnoDBDialect.class.getName());
 		dialects.setEL("MySQL/InnoDB", org.hibernate.dialect.MySQLInnoDBDialect.class.getName());
 		dialects.setEL("MySQLwithInnoDB", org.hibernate.dialect.MySQLInnoDBDialect.class.getName());
