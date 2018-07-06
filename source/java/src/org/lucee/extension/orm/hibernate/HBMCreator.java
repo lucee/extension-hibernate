@@ -187,7 +187,7 @@ public class HBMCreator {
 			_props = CommonUtil.getProperties(cfc,true, true, true, true);
 		}
 		else {
-			_props = cfc.getProperties(true);
+			_props = cfc.getProperties(true, false, false, false);
 		}
 
 		if(isClass && _props.length==0 && data.getORMConfiguration().useDBForMapping()){
@@ -714,7 +714,7 @@ public class HBMCreator {
 				try {
 					Component cfc = data.getEntityByCFCName(foreignCFC.toString(), false);
 					if(cfc!=null){
-						Property[] ids = getIds(cfc,cfc.getProperties(true),null,true,data);
+						Property[] ids = getIds(cfc,cfc.getProperties(true, false, false, false),null,true,data);
 						if(ids!=null && ids.length>0){
 							Property id = ids[0];
 							id.getDynamicAttributes();
@@ -1508,7 +1508,7 @@ public class HBMCreator {
 		
 		String feName = toString(cfc,prop,meta,"cfc",true,data);
 		Component feCFC=data.getEntityByCFCName(feName, false);
-		Property[] feProps = feCFC.getProperties(true);
+		Property[] feProps = feCFC.getProperties(true, false, false, false);
 		
 		Property p;
 		Component _cfc;

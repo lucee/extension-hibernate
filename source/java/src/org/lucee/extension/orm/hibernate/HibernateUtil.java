@@ -171,7 +171,7 @@ public class HibernateUtil {
 
 
 	public static Property[] getProperties(Component component,int fieldType, Property[] defaultValue) {
-		Property[] props = component.getProperties(true);
+		Property[] props = component.getProperties(true, false, false, false);
 		java.util.List<Property> rtn=new ArrayList<Property>();
 		
 		if(props!=null) {

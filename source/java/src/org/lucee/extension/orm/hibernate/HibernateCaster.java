@@ -606,7 +606,7 @@ public class HibernateCaster {
 
 
 	private static Query inheritance(PageContext pc,HibernateORMSession session,Component cfc,Query qry, String entityName) throws PageException {
-		Property[] properties = cfc.getProperties(true);
+		Property[] properties = cfc.getProperties(true, false, false, false);
 		ComponentScope scope = cfc.getComponentScope();
 		Object value;
 		Array arr;
