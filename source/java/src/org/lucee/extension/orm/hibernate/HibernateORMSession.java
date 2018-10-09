@@ -614,6 +614,10 @@ public class HibernateORMSession implements ORMSession {
 	
 	@Override
 	public Component load(PageContext pc, String cfcName, String id) throws PageException {
+		return load(pc, cfcName, (Object)id);
+	}
+	
+	public Component load(PageContext pc, String cfcName, Object id) throws PageException {
 		//Component cfc = create(pc,cfcName);
 		
 		

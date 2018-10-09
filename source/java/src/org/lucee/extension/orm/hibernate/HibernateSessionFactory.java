@@ -45,6 +45,7 @@ import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
 import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderProxy;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 
 public class HibernateSessionFactory {
@@ -56,20 +57,6 @@ public class HibernateSessionFactory {
 	
 
 	public static Configuration createConfiguration(Log log,String mappings, DatasourceConnection dc, SessionFactoryData data, String applicationContextName) throws SQLException, IOException, PageException {
-		/*
-		 autogenmap
-		 cacheconfig
-		 cacheprovider
-		 cfclocation
-		 datasource
-		 dbcreate
-		 eventHandling
-		 flushatrequestend
-		 ormconfig
-		 sqlscript
-		 useDBForMapping
-		 */ 
-		
 		ORMConfiguration ormConf = data.getORMConfiguration();
 		
 		// dialect
@@ -104,20 +91,40 @@ public class HibernateSessionFactory {
 		else if("SwarmCache".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.SwarmCacheProvider";
 		else if("OSCache".equalsIgnoreCase(cacheProvider)) 		cacheProvider="org.hibernate.cache.OSCacheProvider";
 
-		Resource cacheConfig = ormConf.getCacheConfig();
+		Resource cc = ormConf.getCacheConfig();
 		Configuration configuration = new Configuration();
-
+		
 		// is ehcache
+		Resource cacheConfig=null;
 		if(cacheProvider!=null && cacheProvider.toLowerCase().indexOf("ehcache")!=-1) {
-			if(cacheConfig==null) {
-				CFMLEngine eng = CFMLEngineFactory.getInstance();
-				String varName = eng.getCastUtil().toVariableName(applicationContextName,applicationContextName);
-				String xml=createEHConfigXML(varName);
+			CFMLEngine eng = CFMLEngineFactory.getInstance();
+			String varName = eng.getCastUtil().toVariableName(applicationContextName,applicationContextName);
+			String xml;
+			if(cc==null || !cc.isFile()) {
 				cacheConfig=eng.getResourceUtil().getTempDirectory().getRealResource("ehcache/"+varName+".xml");
-				if(!cacheConfig.isFile()) {
-					cacheConfig.getParentResource().mkdirs();
-					eng.getIOUtil().write(cacheConfig, xml, false, null);
-				}
+				xml=createEHConfigXML(varName);
+			}
+			// we need to change or set the name
+			else {
+				String b64=varName+eng.getSystemUtil().hash64b(CommonUtil.toString(cc, (Charset)null));
+				cacheConfig=eng.getResourceUtil().getTempDirectory().getRealResource("ehcache/"+b64+".xml");
+				Document doc = CommonUtil.toDocument(cc, null);
+				Element root = doc.getDocumentElement();
+				root.setAttribute("name",b64);
+				
+				xml=CommonUtil.toString(
+						root,
+						false,
+						true,
+						null,
+						null,
+						CommonUtil.UTF8().name()
+				);
+			}
+			
+			if(!cacheConfig.isFile()) {
+				cacheConfig.getParentResource().mkdirs();
+				eng.getIOUtil().write(cacheConfig, xml, false, null);
 			}
 		}
 		
@@ -160,8 +167,7 @@ public class HibernateSessionFactory {
 			if(!Util.isEmpty(ds.getPassword()))
 				configuration.setProperty(Environment.PASS, ds.getPassword());
 		}
-		
-		
+
     	ConnectionProviderImpl.dataSources.put(ds.id(),ds);
     	
 		ConnectionProviderProxy.provider=new ConnectionProviderImpl();
@@ -205,29 +211,29 @@ public class HibernateSessionFactory {
 			configuration.setProperty("hibernate.default_catalog", ormConf.getCatalog());
 		if(!Util.isEmpty(ormConf.getSchema()))
 			configuration.setProperty("hibernate.default_schema",ormConf.getSchema());
-		
-		try{
-		if(ormConf.secondaryCacheEnabled()){
-			if(cacheConfig!=null && cacheConfig.isFile()) {
-				configuration.setProperty("hibernate.cache.provider_configuration_file_resource_path",cacheConfig.getAbsolutePath());
-				configuration.setProperty("cache.provider_configuration_file_resource_path",cacheConfig.getAbsolutePath());
-				if(cacheConfig instanceof File)
-					configuration.setProperty("net.sf.ehcache.configurationResourceName",((File)cacheConfig).toURI().toURL().toExternalForm());
-				else 
-					throw new IOException("only local configuration files are supported");
-			
-			}
-			
-			if(regionFactory!=null || CFMLEngineFactory.getInstance().getClassUtil().isInstaneOf(cacheProvider, RegionFactory.class))
-				configuration.setProperty("hibernate.cache.region.factory_class", cacheProvider);
-			else
-				configuration.setProperty("hibernate.cache.provider_class", cacheProvider);
-			
-			configuration.setProperty("hibernate.cache.use_query_cache", "true");
-	    	// <prop key="hibernate.cache.provider_configuration_file_resource_path">hibernate-ehcache.xml</prop>
 
-	    	//hibernate.cache.provider_class=org.hibernate.cache.EhCacheProvider
-		}
+		try {
+			if(ormConf.secondaryCacheEnabled()){
+				if(cacheConfig!=null && cacheConfig.isFile()) {
+					configuration.setProperty("hibernate.cache.provider_configuration_file_resource_path",cacheConfig.getAbsolutePath());
+					configuration.setProperty("cache.provider_configuration_file_resource_path",cacheConfig.getAbsolutePath());
+					if(cacheConfig instanceof File)
+						configuration.setProperty("net.sf.ehcache.configurationResourceName",((File)cacheConfig).toURI().toURL().toExternalForm());
+					else 
+						throw new IOException("only local configuration files are supported");
+				
+				}
+				
+				if(regionFactory!=null || CFMLEngineFactory.getInstance().getClassUtil().isInstaneOf(cacheProvider, RegionFactory.class))
+					configuration.setProperty("hibernate.cache.region.factory_class", cacheProvider);
+				else
+					configuration.setProperty("hibernate.cache.provider_class", cacheProvider);
+				
+				configuration.setProperty("hibernate.cache.use_query_cache", "true");
+		    	// <prop key="hibernate.cache.provider_configuration_file_resource_path">hibernate-ehcache.xml</prop>
+	
+		    	//hibernate.cache.provider_class=org.hibernate.cache.EhCacheProvider
+			}
 		}
 		catch(Throwable t){if(t instanceof ThreadDeath) throw (ThreadDeath)t;}
 		
@@ -236,9 +242,8 @@ public class HibernateSessionFactory {
 	    <!ATTLIST tuplizer entity-mode (pojo|dom4j|dynamic-map) #IMPLIED>   <!-- entity mode for which tuplizer is in effect --> 
 	    <!ATTLIST tuplizer class CDATA #REQUIRED>                           <!-- the tuplizer class to use --> 
 		*/
-        
 		schemaExport(log,configuration,dc,data);
-		
+
 		return configuration;
 	}
 
