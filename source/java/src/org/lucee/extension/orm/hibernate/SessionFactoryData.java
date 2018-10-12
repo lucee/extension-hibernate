@@ -229,9 +229,11 @@ public class SessionFactoryData {
 
 	public SessionFactory getFactory(Key datasSourceName){
 		SessionFactory factory = factories.get(datasSourceName);
+		if(factory!=null && factory.isClosed()) factory=null;
 		if(factory==null && getConfiguration(datasSourceName)!=null) factory=buildSessionFactory(datasSourceName);// this should never be happen
 		return factory;
 	}
+	
 	
 
 	public void reset() {

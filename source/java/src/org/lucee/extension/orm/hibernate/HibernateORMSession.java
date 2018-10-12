@@ -310,6 +310,7 @@ public class HibernateORMSession implements ORMSession {
 
 	@Override
 	public void evictEntity(PageContext pc, String entityName, String id) throws PageException {
+		entityName=correctCaseEntityName(entityName);
 		Iterator<Session> it = _sessions.values().iterator();
 		while(it.hasNext()){
 			SessionFactory f = it.next().getSessionFactory();
@@ -318,6 +319,17 @@ public class HibernateORMSession implements ORMSession {
 		}
 	}
 	
+	private String correctCaseEntityName(String entityName) {
+		Iterator<String> it = data.getEntityNames().iterator();
+		String n;
+		while(it.hasNext()) {
+			n=it.next();
+			if(n.equalsIgnoreCase(entityName)) return n;
+			
+		}
+		return entityName;
+	}
+
 	@Override
 	public void evictCollection(PageContext pc, String entityName, String collectionName) throws PageException {
 		evictCollection(pc, entityName, collectionName, null);
