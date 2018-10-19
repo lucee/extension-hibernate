@@ -1,5 +1,5 @@
 package org.lucee.extension.orm.hibernate;
 
 public interface Entity {
-	public String name();
+    public String name();
 }

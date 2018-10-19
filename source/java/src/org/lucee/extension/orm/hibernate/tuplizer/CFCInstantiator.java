@@ -5,10 +5,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import lucee.runtime.Component;
-import lucee.runtime.PageContext;
-import lucee.runtime.exp.PageException;
-
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.tuple.Instantiator;
 import org.lucee.extension.orm.hibernate.CommonUtil;
@@ -18,55 +14,60 @@ import org.lucee.extension.orm.hibernate.HibernateORMSession;
 import org.lucee.extension.orm.hibernate.HibernatePageException;
 import org.lucee.extension.orm.hibernate.HibernateUtil;
 
+import lucee.runtime.Component;
+import lucee.runtime.PageContext;
+import lucee.runtime.exp.PageException;
+
 public class CFCInstantiator implements Instantiator {
-	
-	private String entityName;
-	private Set<String> isInstanceEntityNames = new HashSet<String>();
-	
-	public CFCInstantiator() {
-		this.entityName = null;
-	}
 
-	/**
-	 * Constructor of the class
-	 * @param mappingInfo
-	 */
-	public CFCInstantiator(PersistentClass mappingInfo) {
-		this.entityName = mappingInfo.getEntityName();
-		isInstanceEntityNames.add( entityName );
-		if ( mappingInfo.hasSubclasses() ) {
-			Iterator<PersistentClass> itr = mappingInfo.getSubclassClosureIterator();
-			while ( itr.hasNext() ) {
-				final PersistentClass subclassInfo = itr.next();
-				isInstanceEntityNames.add( subclassInfo.getEntityName() );
-			}
-		}
-	}
+    private String entityName;
+    private Set<String> isInstanceEntityNames = new HashSet<String>();
 
-	@Override
-	public final Object instantiate(Serializable id) {
-		return instantiate();
-	}
+    public CFCInstantiator() {
+	this.entityName = null;
+    }
 
-	@Override
-	public final Object instantiate() {
-		try {
-			PageContext pc = CommonUtil.pc();
-			HibernateORMSession session=HibernateUtil.getORMSession(pc,true);
-			HibernateORMEngine engine=(HibernateORMEngine) session.getEngine();
-			Component c = engine.create(pc, session, entityName, true);
-			c.setEntity(true);
-			return c;//new CFCProxy(c);
-		} 
-		catch (PageException pe) {
-			throw new HibernatePageException(pe);
-		}
+    /**
+     * Constructor of the class
+     * 
+     * @param mappingInfo
+     */
+    public CFCInstantiator(PersistentClass mappingInfo) {
+	this.entityName = mappingInfo.getEntityName();
+	isInstanceEntityNames.add(entityName);
+	if (mappingInfo.hasSubclasses()) {
+	    Iterator<PersistentClass> itr = mappingInfo.getSubclassClosureIterator();
+	    while (itr.hasNext()) {
+		final PersistentClass subclassInfo = itr.next();
+		isInstanceEntityNames.add(subclassInfo.getEntityName());
+	    }
 	}
+    }
 
-	@Override
-	public final boolean isInstance(Object object) {
-		Component cfc = CommonUtil.toComponent(object,null);
-		if(cfc==null) return false;
-		return isInstanceEntityNames.contains( HibernateCaster.getEntityName(cfc));
+    @Override
+    public final Object instantiate(Serializable id) {
+	return instantiate();
+    }
+
+    @Override
+    public final Object instantiate() {
+	try {
+	    PageContext pc = CommonUtil.pc();
+	    HibernateORMSession session = HibernateUtil.getORMSession(pc, true);
+	    HibernateORMEngine engine = (HibernateORMEngine) session.getEngine();
+	    Component c = engine.create(pc, session, entityName, true);
+	    c.setEntity(true);
+	    return c;// new CFCProxy(c);
 	}
+	catch (PageException pe) {
+	    throw new HibernatePageException(pe);
+	}
+    }
+
+    @Override
+    public final boolean isInstance(Object object) {
+	Component cfc = CommonUtil.toComponent(object, null);
+	if (cfc == null) return false;
+	return isInstanceEntityNames.contains(HibernateCaster.getEntityName(cfc));
+    }
 }

@@ -1,42 +1,43 @@
 package org.lucee.extension.orm.hibernate.tuplizer;
-import lucee.runtime.Component;
-import lucee.runtime.exp.PageException;
 
 import org.hibernate.EntityNameResolver;
 import org.lucee.extension.orm.hibernate.HibernateCaster;
 import org.lucee.extension.orm.hibernate.HibernatePageException;
 
+import lucee.runtime.Component;
+import lucee.runtime.exp.PageException;
 
-public  class CFCEntityNameResolver implements EntityNameResolver {
-	public static final CFCEntityNameResolver INSTANCE = new CFCEntityNameResolver();
+public class CFCEntityNameResolver implements EntityNameResolver {
+    public static final CFCEntityNameResolver INSTANCE = new CFCEntityNameResolver();
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String resolveEntityName(Object entity) {
-		try {
-			Component cfc = HibernateCaster.toComponent(entity);
-			return HibernateCaster.getEntityName(cfc);
-		} catch (PageException pe) {
-			//print.printST(e);
-			throw new HibernatePageException(pe);
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String resolveEntityName(Object entity) {
+	try {
+	    Component cfc = HibernateCaster.toComponent(entity);
+	    return HibernateCaster.getEntityName(cfc);
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		return getClass().equals( obj.getClass() );
+	catch (PageException pe) {
+	    // print.printST(e);
+	    throw new HibernatePageException(pe);
 	}
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int hashCode() {
-		return getClass().hashCode();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+	return getClass().equals(obj.getClass());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+	return getClass().hashCode();
+    }
 }

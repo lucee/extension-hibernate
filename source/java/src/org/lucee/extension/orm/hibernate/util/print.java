@@ -23,4 +23,4 @@ package org.lucee.extension.orm.hibernate.util;
  */
 public final class print extends aprint {
 
-}	 
+}

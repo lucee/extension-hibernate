@@ -9,31 +9,31 @@ import org.hibernate.connection.ConnectionProvider;
 
 public class ConnectionProviderProxy implements ConnectionProvider {
 
-	public static ConnectionProvider provider;
+    public static ConnectionProvider provider;
 
-	@Override
-	public void close() throws HibernateException {
-		provider.close();
-	}
+    @Override
+    public void close() throws HibernateException {
+	provider.close();
+    }
 
-	@Override
-	public void closeConnection(Connection arg0) throws SQLException {
-		provider.closeConnection(arg0);
-	}
+    @Override
+    public void closeConnection(Connection arg0) throws SQLException {
+	provider.closeConnection(arg0);
+    }
 
-	@Override
-	public void configure(Properties arg0) throws HibernateException {
-		provider.configure(arg0);
-	}
+    @Override
+    public void configure(Properties arg0) throws HibernateException {
+	provider.configure(arg0);
+    }
 
-	@Override
-	public Connection getConnection() throws SQLException {
-		return provider.getConnection();
-	}
+    @Override
+    public Connection getConnection() throws SQLException {
+	return provider.getConnection();
+    }
 
-	@Override
-	public boolean supportsAggressiveRelease() {
-		return provider.supportsAggressiveRelease();
-	}
+    @Override
+    public boolean supportsAggressiveRelease() {
+	return provider.supportsAggressiveRelease();
+    }
 
 }
