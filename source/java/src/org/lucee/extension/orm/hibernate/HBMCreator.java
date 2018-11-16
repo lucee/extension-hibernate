@@ -139,7 +139,7 @@ public class HBMCreator {
 	String tableName = getTableName(pc, meta, cfc, data);
 
 	if (join != null) clazz = join;
-	if (doTable) addGeneralTableAttributes(pc, cfc, meta, clazz, data);
+	if (doTable) addGeneralTableAttributes(pc, dc, cfc, meta, clazz, data);
 
 	Struct columnsInfo = null;
 	if (data.getORMConfiguration().useDBForMapping()) {
@@ -400,11 +400,11 @@ public class HBMCreator {
 		count++;
 	    }
 	    else if ("one-to-many".equalsIgnoreCase(fieldType)) {
-		createXMLMappingOneToMany(cfc, propColl, clazz, pc, props[y], data);
+		createXMLMappingOneToMany(dc, cfc, propColl, clazz, pc, props[y], data);
 		count++;
 	    }
 	    else if ("many-to-many".equalsIgnoreCase(fieldType)) {
-		createXMLMappingManyToMany(cfc, propColl, clazz, pc, props[y], dc, data);
+		createXMLMappingManyToMany(dc, cfc, propColl, clazz, pc, props[y], data);
 		count++;
 	    }
 	}
@@ -485,20 +485,22 @@ public class HBMCreator {
 
     }
 
-    private static void addGeneralTableAttributes(PageContext pc, Component cfc, Struct meta, Element clazz, SessionFactoryData data) throws PageException {
+    private static void addGeneralTableAttributes(PageContext pc, DatasourceConnection dc, Component cfc, Struct meta, Element clazz, SessionFactoryData data)
+	    throws PageException {
 	// table
 	clazz.setAttribute("table", escape(getTableName(pc, meta, cfc, data)));
 
 	// catalog
 	String str = toString(cfc, null, meta, "catalog", data);
-	if (str == null)// empty string is allowed as input
-	    str = data.getORMConfiguration().getCatalog();
+	if (str == null) // empty string is allowed as input
+	    str = ORMConfigurationUtil.getCatalog(data.getORMConfiguration(), dc.getDatasource().getName());
+
 	if (!Util.isEmpty(str, true)) clazz.setAttribute("catalog", str);
 
 	// schema
 	str = toString(cfc, null, meta, "schema", data);
 	if (str == null)// empty string is allowed as input
-	    str = data.getORMConfiguration().getSchema();
+	    str = ORMConfigurationUtil.getSchema(data.getORMConfiguration(), dc.getDatasource().getName());
 	if (!Util.isEmpty(str, true)) clazz.setAttribute("schema", str);
 
     }
@@ -1138,7 +1140,7 @@ public class HBMCreator {
 	return clazz;
     }
 
-    private static void createXMLMappingManyToMany(Component cfc, PropertyCollection propColl, Element clazz, PageContext pc, Property prop, DatasourceConnection dc,
+    private static void createXMLMappingManyToMany(DatasourceConnection dc, Component cfc, PropertyCollection propColl, Element clazz, PageContext pc, Property prop,
 	    SessionFactoryData data) throws PageException {
 	Element el = createXMLMappingXToMany(propColl, clazz, pc, cfc, prop, data);
 	Struct meta = prop.getDynamicAttributes();
@@ -1147,7 +1149,7 @@ public class HBMCreator {
 	el.appendChild(m2m);
 
 	// link
-	setLink(cfc, prop, el, meta, true, data);
+	setLink(dc, cfc, prop, el, meta, true, data);
 
 	setForeignEntityName(cfc, prop, meta, m2m, true, data);
 
@@ -1206,7 +1208,8 @@ public class HBMCreator {
 	if (!Util.isEmpty(str, true)) m2m.setAttribute("foreign-key", str);
     }
 
-    private static boolean setLink(Component cfc, Property prop, Element el, Struct meta, boolean linkTableRequired, SessionFactoryData data) throws PageException {
+    private static boolean setLink(DatasourceConnection dc, Component cfc, Property prop, Element el, Struct meta, boolean linkTableRequired, SessionFactoryData data)
+	    throws PageException {
 	String str = toString(cfc, prop, meta, "linktable", linkTableRequired, data);
 
 	if (!Util.isEmpty(str, true)) {
@@ -1215,20 +1218,20 @@ public class HBMCreator {
 
 	    // schema
 	    str = toString(cfc, prop, meta, "linkschema", data);
-	    if (Util.isEmpty(str, true)) str = data.getORMConfiguration().getSchema();
+	    if (Util.isEmpty(str, true)) str = ORMConfigurationUtil.getSchema(data.getORMConfiguration(), dc.getDatasource().getName());
 	    if (!Util.isEmpty(str, true)) el.setAttribute("schema", str);
 
 	    // catalog
 	    str = toString(cfc, prop, meta, "linkcatalog", data);
-	    if (Util.isEmpty(str, true)) str = data.getORMConfiguration().getCatalog();
+	    if (Util.isEmpty(str, true)) str = ORMConfigurationUtil.getCatalog(data.getORMConfiguration(), dc.getDatasource().getName());
 	    if (!Util.isEmpty(str, true)) el.setAttribute("catalog", str);
 	    return true;
 	}
 	return false;
     }
 
-    private static void createXMLMappingOneToMany(Component cfc, PropertyCollection propColl, Element clazz, PageContext pc, Property prop, SessionFactoryData data)
-	    throws PageException {
+    private static void createXMLMappingOneToMany(DatasourceConnection dc, Component cfc, PropertyCollection propColl, Element clazz, PageContext pc, Property prop,
+	    SessionFactoryData data) throws PageException {
 	Element el = createXMLMappingXToMany(propColl, clazz, pc, cfc, prop, data);
 	Struct meta = prop.getDynamicAttributes();
 	Document doc = CommonUtil.getDocument(clazz);
@@ -1239,7 +1242,7 @@ public class HBMCreator {
 	if (!Util.isEmpty(str, true)) el.setAttribute("order-by", str);
 
 	// link
-	if (setLink(cfc, prop, el, meta, false, data)) {
+	if (setLink(dc, cfc, prop, el, meta, false, data)) {
 	    x2m = doc.createElement("many-to-many");
 	    x2m.setAttribute("unique", "true");
 

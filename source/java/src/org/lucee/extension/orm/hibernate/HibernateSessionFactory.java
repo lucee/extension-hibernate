@@ -60,17 +60,27 @@ public class HibernateSessionFactory {
 	// dialect
 	DataSource ds = dc.getDatasource();
 	String dialect = null;
+	String tmpDialect = ORMConfigurationUtil.getDialect(ormConf, ds.getName());
+
 	try {
-	    if (Class.forName(ormConf.getDialect()) != null) {
-		dialect = ormConf.getDialect();
+	    if ((Class.forName(tmpDialect)) != null) {
+		dialect = tmpDialect;
 	    }
 	}
-	catch (Exception e) {
-	    // MZ: The dialect value could not be bound to a classname or instantiation causes an exception -
-	    // ignore and use the default dialect entries
-	}
+	catch (Exception e) {}
+
 	if (dialect == null) {
-	    dialect = Dialect.getDialect(ormConf.getDialect());
+	    try {
+
+		if ((CFMLEngineFactory.getInstance().getClassUtil().loadClass(tmpDialect)) != null) {
+		    dialect = tmpDialect;
+		}
+	    }
+	    catch (Exception e) {}
+	}
+
+	if (dialect == null) {
+	    dialect = Dialect.getDialect(tmpDialect);
 	    if (Util.isEmpty(dialect)) dialect = Dialect.getDialect(ds);
 	}
 	if (Util.isEmpty(dialect)) throw ExceptionUtil.createException(data, null,
@@ -190,8 +200,11 @@ public class HibernateSessionFactory {
 		// .setProperty("hibernate.hbm2ddl.auto", "create")
 		.setProperty("hibernate.default_entity_mode", "dynamic-map");
 
-	if (!Util.isEmpty(ormConf.getCatalog())) configuration.setProperty("hibernate.default_catalog", ormConf.getCatalog());
-	if (!Util.isEmpty(ormConf.getSchema())) configuration.setProperty("hibernate.default_schema", ormConf.getSchema());
+	String catalog = ORMConfigurationUtil.getCatalog(ormConf, dc.getDatasource().getName());
+	String schema = ORMConfigurationUtil.getSchema(ormConf, dc.getDatasource().getName());
+
+	if (!Util.isEmpty(catalog)) configuration.setProperty("hibernate.default_catalog", catalog);
+	if (!Util.isEmpty(schema)) configuration.setProperty("hibernate.default_schema", schema);
 
 	try {
 	    if (ormConf.secondaryCacheEnabled()) {
@@ -240,11 +253,11 @@ public class HibernateSessionFactory {
 
     private static void schemaExport(Log log, Configuration configuration, DatasourceConnection dc, SessionFactoryData data) throws PageException, SQLException, IOException {
 	ORMConfiguration ormConf = data.getORMConfiguration();
-
-	if (ORMConfiguration.DBCREATE_NONE == ormConf.getDbCreate()) {
+	int dbcreate = ORMConfigurationUtil.getDbCreate(ormConf, dc.getDatasource().getName());
+	if (ORMConfiguration.DBCREATE_NONE == dbcreate) {
 	    return;
 	}
-	else if (ORMConfiguration.DBCREATE_DROP_CREATE == ormConf.getDbCreate()) {
+	else if (ORMConfiguration.DBCREATE_DROP_CREATE == dbcreate) {
 	    SchemaExport export = new SchemaExport(configuration);
 	    export.setHaltOnError(true);
 
@@ -252,7 +265,7 @@ public class HibernateSessionFactory {
 	    printError(log, data, export.getExceptions(), false);
 	    executeSQLScript(ormConf, dc);
 	}
-	else if (ORMConfiguration.DBCREATE_UPDATE == ormConf.getDbCreate()) {
+	else if (ORMConfiguration.DBCREATE_UPDATE == dbcreate) {
 	    SchemaUpdate update = new SchemaUpdate(configuration);
 	    update.setHaltOnError(true);
 	    update.execute(false, true);
@@ -276,8 +289,8 @@ public class HibernateSessionFactory {
 	}
     }
 
-    private static void executeSQLScript(ORMConfiguration ormConf, DatasourceConnection dc) throws SQLException, IOException {
-	Resource sqlScript = ormConf.getSqlScript();
+    private static void executeSQLScript(ORMConfiguration ormConf, DatasourceConnection dc) throws SQLException, IOException, PageException {
+	Resource sqlScript = ORMConfigurationUtil.getSqlScript(ormConf, dc.getDatasource().getName());
 	if (sqlScript != null && sqlScript.isFile()) {
 	    BufferedReader br = CommonUtil.toBufferedReader(sqlScript, (Charset) null);
 	    String line;

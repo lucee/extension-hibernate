@@ -109,6 +109,7 @@ public class HibernateORMEngine implements ORMEngine {
 
 	// datasource
 	ORMConfiguration ormConf = appContext.getORMConfiguration();
+
 	String key = hash(pc);
 	SessionFactoryData data = factories.get(key);
 	if (initType == INIT_ALL && data != null) {
@@ -286,12 +287,13 @@ public class HibernateORMEngine implements ORMEngine {
 	Object ds = _ac.getORMDataSource();
 	ORMConfiguration ormConf = _ac.getORMConfiguration();
 
-	StringBuilder data = new StringBuilder().append(ormConf.autogenmap()).append(':').append(ormConf.getCatalog()).append(':').append(ormConf.isDefaultCfcLocation())
-		.append(':').append(ormConf.getDbCreate()).append(':').append(ormConf.getDialect()).append(':').append(ormConf.eventHandling()).append(':')
-		.append(ormConf.namingStrategy()).append(':').append(ormConf.eventHandler()).append(':').append(ormConf.flushAtRequestEnd()).append(':').append(ormConf.logSQL())
-		.append(':').append(ormConf.autoManageSession()).append(':').append(ormConf.skipCFCWithError()).append(':').append(ormConf.saveMapping()).append(':')
-		.append(ormConf.getSchema()).append(':').append(ormConf.secondaryCacheEnabled()).append(':').append(ormConf.useDBForMapping()).append(':')
-		.append(ormConf.getCacheProvider()).append(':').append(ds).append(':');
+	StringBuilder data = new StringBuilder(ormConf.hash()).append(ormConf.autogenmap()).append(':').append(ormConf.getCatalog()).append(':')
+		.append(ormConf.isDefaultCfcLocation()).append(':').append(ormConf.getDbCreate()).append(':').append(ormConf.getDialect()).append(':')
+		.append(ormConf.eventHandling()).append(':').append(ormConf.namingStrategy()).append(':').append(ormConf.eventHandler()).append(':')
+		.append(ormConf.flushAtRequestEnd()).append(':').append(ormConf.logSQL()).append(':').append(ormConf.autoManageSession()).append(':')
+		.append(ormConf.skipCFCWithError()).append(':').append(ormConf.saveMapping()).append(':').append(ormConf.getSchema()).append(':')
+		.append(ormConf.secondaryCacheEnabled()).append(':').append(ormConf.useDBForMapping()).append(':').append(ormConf.getCacheProvider()).append(':').append(ds)
+		.append(':');
 
 	append(data, ormConf.getCfcLocations());
 	append(data, ormConf.getSqlScript());
