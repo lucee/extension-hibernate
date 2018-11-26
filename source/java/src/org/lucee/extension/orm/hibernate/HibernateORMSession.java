@@ -627,7 +627,9 @@ public class HibernateORMSession implements ORMSession {
 
     @Override
     public Component loadByExample(PageContext pc, Object obj) throws PageException {
-	return CommonUtil.toComponent(loadByExample(pc, obj, true));
+	Object res = loadByExample(pc, obj, true);
+	if (res == null) return null;
+	return CommonUtil.toComponent(res);
     }
 
     @Override
