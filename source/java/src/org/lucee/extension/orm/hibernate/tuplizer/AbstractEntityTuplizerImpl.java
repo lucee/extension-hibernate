@@ -33,134 +33,134 @@ import lucee.runtime.type.Struct;
 
 public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 
-    private static CFCAccessor accessor = new CFCAccessor();
+	private static CFCAccessor accessor = new CFCAccessor();
 
-    public AbstractEntityTuplizerImpl(EntityMetamodel entityMetamodel, PersistentClass persistentClass) {
-	super(entityMetamodel, persistentClass);
-    }
+	public AbstractEntityTuplizerImpl(EntityMetamodel entityMetamodel, PersistentClass persistentClass) {
+		super(entityMetamodel, persistentClass);
+	}
 
-    @Override
-    public Serializable getIdentifier(Object entity, SessionImplementor arg1) {
-	return toIdentifier(super.getIdentifier(entity, arg1));
-    }
+	@Override
+	public Serializable getIdentifier(Object entity, SessionImplementor arg1) {
+		return toIdentifier(super.getIdentifier(entity, arg1));
+	}
 
-    @Override
-    public Serializable getIdentifier(Object entity) throws HibernateException {
-	return toIdentifier(super.getIdentifier(entity));
-    }
+	@Override
+	public Serializable getIdentifier(Object entity) throws HibernateException {
+		return toIdentifier(super.getIdentifier(entity));
+	}
 
-    private Serializable toIdentifier(Serializable id) {
-	if (id instanceof Component) {
-	    HashMap<String, Object> map = new HashMap<String, Object>();
-	    Component cfc = (Component) id;
-	    ComponentScope scope = cfc.getComponentScope();
-	    lucee.runtime.component.Property[] props = HibernateUtil.getIDProperties(cfc, true, true);
-	    lucee.runtime.component.Property p;
-	    String name;
-	    Object value;
-	    for (int i = 0; i < props.length; i++) {
-		p = props[i];
-		name = p.getName();
-		value = scope.get(CommonUtil.createKey(name), null);
-		String type = p.getType();
-		Object o = p.getMetaData();
-		Struct meta = o instanceof Struct ? (Struct) o : null;
-		// ormtype
-		if (meta != null) {
-		    String tmp = CommonUtil.toString(meta.get("ormtype", null), null);
-		    if (!Util.isEmpty(tmp)) type = tmp;
-		}
+	private Serializable toIdentifier(Serializable id) {
+		if (id instanceof Component) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			Component cfc = (Component) id;
+			ComponentScope scope = cfc.getComponentScope();
+			lucee.runtime.component.Property[] props = HibernateUtil.getIDProperties(cfc, true, true);
+			lucee.runtime.component.Property p;
+			String name;
+			Object value;
+			for (int i = 0; i < props.length; i++) {
+				p = props[i];
+				name = p.getName();
+				value = scope.get(CommonUtil.createKey(name), null);
+				String type = p.getType();
+				Object o = p.getMetaData();
+				Struct meta = o instanceof Struct ? (Struct) o : null;
+				// ormtype
+				if (meta != null) {
+					String tmp = CommonUtil.toString(meta.get("ormtype", null), null);
+					if (!Util.isEmpty(tmp)) type = tmp;
+				}
 
-		// generator
-		if (meta != null && CommonUtil.isAnyType(type)) {
-		    type = "string";
-		    try {
-			String gen = CommonUtil.toString(meta.get("generator", null), null);
-			if (!Util.isEmpty(gen)) {
-			    type = HBMCreator.getDefaultTypeForGenerator(gen, "string");
+				// generator
+				if (meta != null && CommonUtil.isAnyType(type)) {
+					type = "string";
+					try {
+						String gen = CommonUtil.toString(meta.get("generator", null), null);
+						if (!Util.isEmpty(gen)) {
+							type = HBMCreator.getDefaultTypeForGenerator(gen, "string");
+						}
+					}
+					catch (Throwable t) {
+						if (t instanceof ThreadDeath) throw (ThreadDeath) t;
+					}
+				}
+				try {
+					value = HibernateCaster.toHibernateValue(CFMLEngineFactory.getInstance().getThreadPageContext(), value, type);
+				}
+				catch (PageException pe) {}
+
+				map.put(name, value);
 			}
-		    }
-		    catch (Throwable t) {
-			if (t instanceof ThreadDeath) throw (ThreadDeath) t;
-		    }
+			return map;
 		}
-		try {
-		    value = HibernateCaster.toHibernateValue(CFMLEngineFactory.getInstance().getThreadPageContext(), value, type);
+		return id;
+	}
+
+	@Override
+	protected Instantiator buildInstantiator(PersistentClass persistentClass) {
+		return new CFCInstantiator(persistentClass);
+	}
+
+	/**
+	 * return accessors
+	 * 
+	 * @param mappedProperty
+	 * @return
+	 */
+	private PropertyAccessor buildPropertyAccessor(Property mappedProperty) {
+		if (mappedProperty.isBackRef()) {
+			PropertyAccessor ac = mappedProperty.getPropertyAccessor(null);
+			if (ac != null) return ac;
 		}
-		catch (PageException pe) {}
-
-		map.put(name, value);
-	    }
-	    return map;
+		return accessor;
 	}
-	return id;
-    }
 
-    @Override
-    protected Instantiator buildInstantiator(PersistentClass persistentClass) {
-	return new CFCInstantiator(persistentClass);
-    }
-
-    /**
-     * return accessors
-     * 
-     * @param mappedProperty
-     * @return
-     */
-    private PropertyAccessor buildPropertyAccessor(Property mappedProperty) {
-	if (mappedProperty.isBackRef()) {
-	    PropertyAccessor ac = mappedProperty.getPropertyAccessor(null);
-	    if (ac != null) return ac;
+	@Override
+	protected Getter buildPropertyGetter(Property mappedProperty, PersistentClass mappedEntity) {
+		return buildPropertyAccessor(mappedProperty).getGetter(null, mappedProperty.getName());
 	}
-	return accessor;
-    }
 
-    @Override
-    protected Getter buildPropertyGetter(Property mappedProperty, PersistentClass mappedEntity) {
-	return buildPropertyAccessor(mappedProperty).getGetter(null, mappedProperty.getName());
-    }
+	@Override
+	protected Setter buildPropertySetter(Property mappedProperty, PersistentClass mappedEntity) {
+		return buildPropertyAccessor(mappedProperty).getSetter(null, mappedProperty.getName());
+	}
 
-    @Override
-    protected Setter buildPropertySetter(Property mappedProperty, PersistentClass mappedEntity) {
-	return buildPropertyAccessor(mappedProperty).getSetter(null, mappedProperty.getName());
-    }
+	@Override
+	protected ProxyFactory buildProxyFactory(PersistentClass pc, Getter arg1, Setter arg2) {
+		CFCHibernateProxyFactory pf = new CFCHibernateProxyFactory();
+		pf.postInstantiate(pc);
 
-    @Override
-    protected ProxyFactory buildProxyFactory(PersistentClass pc, Getter arg1, Setter arg2) {
-	CFCHibernateProxyFactory pf = new CFCHibernateProxyFactory();
-	pf.postInstantiate(pc);
+		return pf;
+	}
 
-	return pf;
-    }
+	@Override
+	public String determineConcreteSubclassEntityName(Object entityInstance, SessionFactoryImplementor factory) {
+		return CFCEntityNameResolver.INSTANCE.resolveEntityName(entityInstance);
+	}
 
-    @Override
-    public String determineConcreteSubclassEntityName(Object entityInstance, SessionFactoryImplementor factory) {
-	return CFCEntityNameResolver.INSTANCE.resolveEntityName(entityInstance);
-    }
+	@Override
+	public EntityNameResolver[] getEntityNameResolvers() {
+		return new EntityNameResolver[] { CFCEntityNameResolver.INSTANCE };
+	}
 
-    @Override
-    public EntityNameResolver[] getEntityNameResolvers() {
-	return new EntityNameResolver[] { CFCEntityNameResolver.INSTANCE };
-    }
+	@Override
+	public Class getConcreteProxyClass() {
+		return Component.class;// ????
+	}
 
-    @Override
-    public Class getConcreteProxyClass() {
-	return Component.class;// ????
-    }
+	@Override
+	public Class getMappedClass() {
+		return Component.class; // ????
+	}
 
-    @Override
-    public Class getMappedClass() {
-	return Component.class; // ????
-    }
+	@Override
+	public EntityMode getEntityMode() {
+		return EntityMode.MAP;
+	}
 
-    @Override
-    public EntityMode getEntityMode() {
-	return EntityMode.MAP;
-    }
-
-    @Override
-    public boolean isInstrumented() {
-	return false;
-    }
+	@Override
+	public boolean isInstrumented() {
+		return false;
+	}
 
 }

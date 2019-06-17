@@ -8,16 +8,16 @@ import lucee.runtime.Component;
 
 public class PreInsertEventListenerImpl extends EventListener implements PreInsertEventListener {
 
-    private static final long serialVersionUID = -808107633829478391L;
+	private static final long serialVersionUID = -808107633829478391L;
 
-    public PreInsertEventListenerImpl(Component component) {
-	super(component, CommonUtil.PRE_INSERT, false);
-    }
+	public PreInsertEventListenerImpl(Component component) {
+		super(component, CommonUtil.PRE_INSERT, false);
+	}
 
-    @Override
-    public boolean onPreInsert(PreInsertEvent event) {
-	invoke(CommonUtil.PRE_INSERT, event.getEntity());
-	return false;
-    }
+	@Override
+	public boolean onPreInsert(PreInsertEvent event) {
+		invoke(CommonUtil.PRE_INSERT, event.getEntity());
+		return false;
+	}
 
 }
