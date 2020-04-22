@@ -169,7 +169,9 @@ public class HibernateORMEngine implements ORMEngine {
 		}
 				
 		// already initialized for this application context
-		
+		if (data.haveAllConfigurationsSet()) {
+		    return data;
+		}
 		//MUST
 		//cacheconfig
 		//cacheprovider
@@ -201,6 +203,8 @@ public class HibernateORMEngine implements ORMEngine {
 			
 			data.buildSessionFactory(e.getKey());
 		}
+		
+		data.setAllConfigurationsSetFlag(true);
 		
 		return data;
 	}

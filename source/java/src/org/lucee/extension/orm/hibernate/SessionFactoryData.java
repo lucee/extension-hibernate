@@ -46,12 +46,13 @@ public class SessionFactoryData {
 	private final HibernateORMEngine engine;
 	private Struct tableInfo=CommonUtil.createStruct();
 	private String cfcNamingStrategy;
-
+	private boolean allConfigurationsSetFlag;
 	
 	
 	public SessionFactoryData(HibernateORMEngine engine,ORMConfiguration ormConf) {
 		this.engine=engine;
 		this.ormConf=ormConf;
+		this.allConfigurationsSetFlag = false;
 	}
 	
 	public ORMConfiguration getORMConfiguration(){
@@ -60,6 +61,14 @@ public class SessionFactoryData {
 	public HibernateORMEngine getEngine(){
 		return engine;
 	}
+	
+	public boolean haveAllConfigurationsSet() {
+		return allConfigurationsSetFlag;
+    }
+
+    public void setAllConfigurationsSetFlag(boolean haveSet) {
+    	this.allConfigurationsSetFlag = haveSet;
+    }
 	
 	public QueryPlanCache getQueryPlanCache(Key datasSourceName) {
 		QueryPlanCache qpc = queryPlanCaches.get(datasSourceName);
