@@ -8,16 +8,16 @@ import lucee.runtime.Component;
 
 public class PreDeleteEventListenerImpl extends EventListener implements PreDeleteEventListener {
 
-    private static final long serialVersionUID = 1730085093470940646L;
+	private static final long serialVersionUID = 1730085093470940646L;
 
-    public PreDeleteEventListenerImpl(Component component) {
-	super(component, CommonUtil.PRE_DELETE, false);
-    }
+	public PreDeleteEventListenerImpl(Component component) {
+		super(component, CommonUtil.PRE_DELETE, false);
+	}
 
-    @Override
-    public boolean onPreDelete(PreDeleteEvent event) {
-	invoke(CommonUtil.PRE_DELETE, event.getEntity());
-	return false;
-    }
+	@Override
+	public boolean onPreDelete(PreDeleteEvent event) {
+		invoke(CommonUtil.PRE_DELETE, event.getEntity());
+		return false;
+	}
 
 }
