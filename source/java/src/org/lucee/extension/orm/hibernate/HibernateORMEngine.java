@@ -169,12 +169,14 @@ public class HibernateORMEngine implements ORMEngine {
 		}
 
 		// already initialized for this application context
-
-		// MUST
-		// cacheconfig
-		// cacheprovider
-		// ...
-
+		if (data.haveAllConfigurationsSet()) {
+		    return data;
+		}
+		//MUST
+		//cacheconfig
+		//cacheprovider
+		//...
+		
 		Log log = pc.getConfig().getLog("orm");
 
 		Iterator<Entry<Key, String>> it = HibernateSessionFactory.createMappings(ormConf, data).entrySet().iterator();
@@ -202,6 +204,8 @@ public class HibernateORMEngine implements ORMEngine {
 			data.buildSessionFactory(e.getKey());
 		}
 
+		data.setAllConfigurationsSetFlag(true);
+		
 		return data;
 	}
 
