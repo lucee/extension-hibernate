@@ -6,9 +6,10 @@ import java.util.Map;
 
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
-import org.hibernate.engine.SessionImplementor;
+import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.property.Getter;
+import org.hibernate.property.access.spi.Getter;
 import org.hibernate.type.Type;
 import org.lucee.extension.orm.hibernate.CommonUtil;
 import org.lucee.extension.orm.hibernate.HibernateCaster;
@@ -76,12 +77,12 @@ public class CFCGetter implements Getter {
 			// TODO better impl
 			return HibernateUtil.getORMEngine(CommonUtil.pc());
 		}
-		catch (PageException e) {}
+		catch (PageException e) {
+		}
 
 		return null;
 	}
 
-	@Override
 	public Object getForInsert(Object trg, Map arg1, SessionImplementor arg2) throws HibernateException {
 		return get(trg);// MUST better solution? this is from MapGetter
 	}
@@ -104,6 +105,12 @@ public class CFCGetter implements Getter {
 	@Override
 	public Class getReturnType() {
 		return Object.class;// MUST more concrete?
+	}
+
+	@Override
+	public Object getForInsert(Object arg0, Map arg1, SharedSessionContractImplementor arg2) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

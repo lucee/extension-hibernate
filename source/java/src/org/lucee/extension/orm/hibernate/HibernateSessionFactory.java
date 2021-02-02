@@ -1,12 +1,12 @@
 package org.lucee.extension.orm.hibernate;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,15 +16,19 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.hibernate.MappingException;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cache.RegionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
+import org.hibernate.service.ServiceRegistry;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
+import org.hibernate.tool.hbm2ddl.SchemaExport.Action;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
+import org.hibernate.tool.schema.TargetType;
 import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
 import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderProxy;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import lucee.commons.io.log.Log;
 import lucee.commons.io.res.Resource;
@@ -53,34 +57,28 @@ public class HibernateSessionFactory {
 	public static final String HIBERNATE_3_SYSTEM_ID = "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd";
 	public static final String HIBERNATE_3_DOCTYPE_DEFINITION = "<!DOCTYPE hibernate-mapping PUBLIC \"" + HIBERNATE_3_PUBLIC_ID + "\" \"" + HIBERNATE_3_SYSTEM_ID + "\">";
 
-	public static Configuration createConfiguration(Log log, String mappings, DatasourceConnection dc, SessionFactoryData data, String applicationContextName)
-			throws SQLException, IOException, PageException {
+	public static Configuration createConfiguration(Log log, String mappings, DatasourceConnection dc, SessionFactoryData data) throws SQLException, IOException, PageException {
+		/*
+		 * autogenmap cacheconfig cacheprovider cfclocation datasource dbcreate eventHandling
+		 * flushatrequestend ormconfig sqlscript useDBForMapping
+		 */
+
 		ORMConfiguration ormConf = data.getORMConfiguration();
 
 		// dialect
 		DataSource ds = dc.getDatasource();
 		String dialect = null;
-		String tmpDialect = ORMConfigurationUtil.getDialect(ormConf, ds.getName());
-
 		try {
-			if ((Class.forName(tmpDialect)) != null) {
-				dialect = tmpDialect;
+			if (Class.forName(ormConf.getDialect()) != null) {
+				dialect = ormConf.getDialect();
 			}
 		}
-		catch (Exception e) {}
-
-		if (dialect == null) {
-			try {
-
-				if ((CFMLEngineFactory.getInstance().getClassUtil().loadClass(tmpDialect)) != null) {
-					dialect = tmpDialect;
-				}
-			}
-			catch (Exception e) {}
+		catch (Exception e) {
+			// MZ: The dialect value could not be bound to a classname or instantiation causes an exception -
+			// ignore and use the default dialect entries
 		}
-
 		if (dialect == null) {
-			dialect = Dialect.getDialect(tmpDialect);
+			dialect = Dialect.getDialect(ormConf.getDialect());
 			if (Util.isEmpty(dialect)) dialect = Dialect.getDialect(ds);
 		}
 		if (Util.isEmpty(dialect)) throw ExceptionUtil.createException(data, null,
@@ -91,7 +89,10 @@ public class HibernateSessionFactory {
 		Class<? extends RegionFactory> regionFactory = null;
 
 		if (Util.isEmpty(cacheProvider) || "EHCache".equalsIgnoreCase(cacheProvider)) {
-			regionFactory = net.sf.ehcache.hibernate.EhCacheRegionFactory.class;
+			// regionFactory=net.sf.ehcache.hibernate.EhCacheRegionFactory.class;
+			regionFactory = net.sf.ehcache.hibernate.SingletonEhCacheRegionFactory.class;
+			// regionFactory=(Class<? extends RegionFactory>)
+			// CFMLEngineFactory.getInstance().getClassUtil().loadClass("net.sf.ehcache.hibernate.EhCacheRegionFactory");
 			cacheProvider = regionFactory.getName();
 		}
 		else if ("JBossCache".equalsIgnoreCase(cacheProvider)) cacheProvider = "org.hibernate.cache.TreeCacheProvider";
@@ -99,35 +100,8 @@ public class HibernateSessionFactory {
 		else if ("SwarmCache".equalsIgnoreCase(cacheProvider)) cacheProvider = "org.hibernate.cache.SwarmCacheProvider";
 		else if ("OSCache".equalsIgnoreCase(cacheProvider)) cacheProvider = "org.hibernate.cache.OSCacheProvider";
 
-		Resource cc = ormConf.getCacheConfig();
+		Resource cacheConfig = ormConf.getCacheConfig();
 		Configuration configuration = new Configuration();
-
-		// is ehcache
-		Resource cacheConfig = null;
-		if (cacheProvider != null && cacheProvider.toLowerCase().indexOf("ehcache") != -1) {
-			CFMLEngine eng = CFMLEngineFactory.getInstance();
-			String varName = eng.getCastUtil().toVariableName(applicationContextName, applicationContextName);
-			String xml;
-			if (cc == null || !cc.isFile()) {
-				cacheConfig = eng.getResourceUtil().getTempDirectory().getRealResource("ehcache/" + varName + ".xml");
-				xml = createEHConfigXML(varName);
-			}
-			// we need to change or set the name
-			else {
-				String b64 = varName + eng.getSystemUtil().hash64b(CommonUtil.toString(cc, (Charset) null));
-				cacheConfig = eng.getResourceUtil().getTempDirectory().getRealResource("ehcache/" + b64 + ".xml");
-				Document doc = CommonUtil.toDocument(cc, null);
-				Element root = doc.getDocumentElement();
-				root.setAttribute("name", b64);
-
-				xml = CommonUtil.toString(root, false, true, null, null, CommonUtil.UTF8().name());
-			}
-
-			if (!cacheConfig.isFile()) {
-				cacheConfig.getParentResource().mkdirs();
-				eng.getIOUtil().write(cacheConfig, xml, false, null);
-			}
-		}
 
 		// ormConfig
 		Resource conf = ormConf.getOrmConfig();
@@ -200,29 +174,18 @@ public class HibernateSessionFactory {
 				// .setProperty("hibernate.hbm2ddl.auto", "create")
 				.setProperty("hibernate.default_entity_mode", "dynamic-map");
 
-		String catalog = ORMConfigurationUtil.getCatalog(ormConf, dc.getDatasource().getName());
-		String schema = ORMConfigurationUtil.getSchema(ormConf, dc.getDatasource().getName());
-
-		if (!Util.isEmpty(catalog)) configuration.setProperty("hibernate.default_catalog", catalog);
-		if (!Util.isEmpty(schema)) configuration.setProperty("hibernate.default_schema", schema);
+		if (!Util.isEmpty(ormConf.getCatalog())) configuration.setProperty("hibernate.default_catalog", ormConf.getCatalog());
+		if (!Util.isEmpty(ormConf.getSchema())) configuration.setProperty("hibernate.default_schema", ormConf.getSchema());
 
 		try {
 			if (ormConf.secondaryCacheEnabled()) {
-				if (cacheConfig != null && cacheConfig.isFile()) {
+				if (cacheConfig != null && cacheConfig.isFile())
 					configuration.setProperty("hibernate.cache.provider_configuration_file_resource_path", cacheConfig.getAbsolutePath());
-					configuration.setProperty("cache.provider_configuration_file_resource_path", cacheConfig.getAbsolutePath());
-					if (cacheConfig instanceof File) configuration.setProperty("net.sf.ehcache.configurationResourceName", ((File) cacheConfig).toURI().toURL().toExternalForm());
-					else throw new IOException("only local configuration files are supported");
-
-				}
-
 				if (regionFactory != null || CFMLEngineFactory.getInstance().getClassUtil().isInstaneOf(cacheProvider, RegionFactory.class))
 					configuration.setProperty("hibernate.cache.region.factory_class", cacheProvider);
 				else configuration.setProperty("hibernate.cache.provider_class", cacheProvider);
 
 				configuration.setProperty("hibernate.cache.use_query_cache", "true");
-				// <prop
-				// key="hibernate.cache.provider_configuration_file_resource_path">hibernate-ehcache.xml</prop>
 
 				// hibernate.cache.provider_class=org.hibernate.cache.EhCacheProvider
 			}
@@ -236,39 +199,38 @@ public class HibernateSessionFactory {
 		 * entity mode for which tuplizer is in effect --> <!ATTLIST tuplizer class CDATA #REQUIRED> <!--
 		 * the tuplizer class to use -->
 		 */
+
 		schemaExport(log, configuration, dc, data);
 
 		return configuration;
 	}
 
-	private static String createEHConfigXML(String cacheName) {
-		return new StringBuilder().append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>").append("<ehcache").append("    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"")
-				.append("    xsi:noNamespaceSchemaLocation=\"ehcache.xsd\"").append("    updateCheck=\"true\" name=\"" + cacheName + "\">")
-				.append("    <diskStore path=\"java.io.tmpdir\"/>").append("    <defaultCache").append("            maxElementsInMemory=\"10000\"")
-				.append("            eternal=\"false\"").append("            timeToIdleSeconds=\"120\"").append("            timeToLiveSeconds=\"120\"")
-				.append("            maxElementsOnDisk=\"10000000\"").append("            diskExpiryThreadIntervalSeconds=\"120\"")
-				.append("            memoryStoreEvictionPolicy=\"LRU\">").append("        <persistence strategy=\"localTempSwap\"/>").append("    </defaultCache>")
-				.append("</ehcache>").toString();
-	}
-
 	private static void schemaExport(Log log, Configuration configuration, DatasourceConnection dc, SessionFactoryData data) throws PageException, SQLException, IOException {
 		ORMConfiguration ormConf = data.getORMConfiguration();
-		int dbcreate = ORMConfigurationUtil.getDbCreate(ormConf, dc.getDatasource().getName());
-		if (ORMConfiguration.DBCREATE_NONE == dbcreate) {
+		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration).build();
+
+		MetadataSources metadata = new MetadataSources(serviceRegistry);
+		EnumSet<TargetType> enumSet = EnumSet.of(TargetType.DATABASE);
+
+		if (ORMConfiguration.DBCREATE_NONE == ormConf.getDbCreate()) {
 			return;
 		}
-		else if (ORMConfiguration.DBCREATE_DROP_CREATE == dbcreate) {
-			SchemaExport export = new SchemaExport(configuration);
+		else if (ORMConfiguration.DBCREATE_DROP_CREATE == ormConf.getDbCreate()) {
+			SchemaExport export = new SchemaExport();
 			export.setHaltOnError(true);
 
-			export.execute(false, true, false, false);
+			// export.execute(false,true,false,false);
+
+			SchemaExport schemaExport = new SchemaExport();
+			schemaExport.execute(enumSet, Action.BOTH, metadata.buildMetadata());
+
 			printError(log, data, export.getExceptions(), false);
 			executeSQLScript(ormConf, dc);
 		}
-		else if (ORMConfiguration.DBCREATE_UPDATE == dbcreate) {
-			SchemaUpdate update = new SchemaUpdate(configuration);
+		else if (ORMConfiguration.DBCREATE_UPDATE == ormConf.getDbCreate()) {
+			SchemaUpdate update = new SchemaUpdate();
 			update.setHaltOnError(true);
-			update.execute(false, true);
+			update.execute(enumSet, metadata.buildMetadata());
 			printError(log, data, update.getExceptions(), false);
 		}
 	}
@@ -289,8 +251,8 @@ public class HibernateSessionFactory {
 		}
 	}
 
-	private static void executeSQLScript(ORMConfiguration ormConf, DatasourceConnection dc) throws SQLException, IOException, PageException {
-		Resource sqlScript = ORMConfigurationUtil.getSqlScript(ormConf, dc.getDatasource().getName());
+	private static void executeSQLScript(ORMConfiguration ormConf, DatasourceConnection dc) throws SQLException, IOException {
+		Resource sqlScript = ormConf.getSqlScript();
 		if (sqlScript != null && sqlScript.isFile()) {
 			BufferedReader br = CommonUtil.toBufferedReader(sqlScript, (Charset) null);
 			String line;

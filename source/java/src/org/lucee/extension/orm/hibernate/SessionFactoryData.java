@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.engine.SessionFactoryImplementor;
-import org.hibernate.engine.query.QueryPlanCache;
+import org.hibernate.engine.query.spi.QueryPlanCache;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.lucee.extension.orm.hibernate.jdbc.DataSourceConfig;
 import org.lucee.extension.orm.hibernate.naming.CFCNamingStrategy;
 import org.lucee.extension.orm.hibernate.naming.DefaultNamingStrategy;
@@ -63,7 +63,7 @@ public class SessionFactoryData {
 	public QueryPlanCache getQueryPlanCache(Key datasSourceName) {
 		QueryPlanCache qpc = queryPlanCaches.get(datasSourceName);
 		if (qpc == null) {
-			queryPlanCaches.put(datasSourceName, qpc = new QueryPlanCache((SessionFactoryImplementor) getFactory(datasSourceName)));
+			queryPlanCaches.put(datasSourceName, qpc = new QueryPlanCache((SessionFactoryImplementor) getFactory(datasSourceName), null));// TODO ....check second argument
 		}
 		return qpc;
 	}
@@ -189,13 +189,13 @@ public class SessionFactoryData {
 		return configurations.get(key);
 	}
 
-	public void setConfiguration(Log log, String mappings, DatasourceConnection dc, String applicationContextName) throws PageException, SQLException, IOException {
+	public void setConfiguration(Log log, String mappings, DatasourceConnection dc) throws PageException, SQLException, IOException {
 		configurations.put(CommonUtil.toKey(dc.getDatasource().getName()),
-				new DataSourceConfig(dc.getDatasource(), HibernateSessionFactory.createConfiguration(log, mappings, dc, this, applicationContextName)));
+				new DataSourceConfig(dc.getDatasource(), HibernateSessionFactory.createConfiguration(log, mappings, dc, this)));
 	}
 
 	public SessionFactory buildSessionFactory(Key datasSourceName) {
-		// Key key=eng.getCreationUtil().createKey(ds.getName());
+		// Key key=KeyImpl.init(ds.getName());
 		DataSourceConfig dsc = getConfiguration(datasSourceName);
 		if (dsc == null) throw new RuntimeException("cannot build factory because there is no configuration"); // this should never happen
 
@@ -218,7 +218,6 @@ public class SessionFactoryData {
 
 	public SessionFactory getFactory(Key datasSourceName) {
 		SessionFactory factory = factories.get(datasSourceName);
-		if (factory != null && factory.isClosed()) factory = null;
 		if (factory == null && getConfiguration(datasSourceName) != null) factory = buildSessionFactory(datasSourceName);// this should never be happen
 		return factory;
 	}
@@ -269,9 +268,9 @@ public class SessionFactoryData {
 	}
 
 	/*
-	 * public Map<String, CFCInfo> getCFCs(DataSource ds) { Key
-	 * key=eng.getCreationUtil().createKey(ds.getName()); Map<String, CFCInfo> rtn = cfcs.get(key);
-	 * if(rtn==null) return new HashMap<String, CFCInfo>(); return rtn; }
+	 * public Map<String, CFCInfo> getCFCs(DataSource ds) { Key key=KeyImpl.init(ds.getName());
+	 * Map<String, CFCInfo> rtn = cfcs.get(key); if(rtn==null) return new HashMap<String, CFCInfo>();
+	 * return rtn; }
 	 */
 
 	public Map<String, CFCInfo> getCFCs(Key datasSourceName) {

@@ -1,7 +1,8 @@
 package org.lucee.extension.orm.hibernate.event;
 
-import org.hibernate.event.PostInsertEvent;
-import org.hibernate.event.PostInsertEventListener;
+import org.hibernate.event.spi.PostInsertEvent;
+import org.hibernate.event.spi.PostInsertEventListener;
+import org.hibernate.persister.entity.EntityPersister;
 import org.lucee.extension.orm.hibernate.CommonUtil;
 
 import lucee.runtime.Component;
@@ -17,6 +18,12 @@ public class PostInsertEventListenerImpl extends EventListener implements PostIn
 	@Override
 	public void onPostInsert(PostInsertEvent event) {
 		invoke(CommonUtil.POST_INSERT, event.getEntity());
+	}
+
+	@Override
+	public boolean requiresPostCommitHanding(EntityPersister arg0) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

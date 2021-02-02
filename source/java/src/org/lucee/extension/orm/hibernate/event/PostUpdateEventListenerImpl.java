@@ -1,7 +1,8 @@
 package org.lucee.extension.orm.hibernate.event;
 
-import org.hibernate.event.PostUpdateEvent;
-import org.hibernate.event.PostUpdateEventListener;
+import org.hibernate.event.spi.PostUpdateEvent;
+import org.hibernate.event.spi.PostUpdateEventListener;
+import org.hibernate.persister.entity.EntityPersister;
 import org.lucee.extension.orm.hibernate.CommonUtil;
 
 import lucee.runtime.Component;
@@ -17,6 +18,12 @@ public class PostUpdateEventListenerImpl extends EventListener implements PostUp
 	@Override
 	public void onPostUpdate(PostUpdateEvent event) {
 		invoke(CommonUtil.POST_UPDATE, event.getEntity());
+	}
+
+	@Override
+	public boolean requiresPostCommitHanding(EntityPersister arg0) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

@@ -1,7 +1,7 @@
 package org.lucee.extension.orm.hibernate.event;
 
-import org.hibernate.event.PostLoadEvent;
-import org.hibernate.event.PostLoadEventListener;
+import org.hibernate.event.spi.PostLoadEvent;
+import org.hibernate.event.spi.PostLoadEventListener;
 import org.lucee.extension.orm.hibernate.CommonUtil;
 
 import lucee.runtime.Component;
