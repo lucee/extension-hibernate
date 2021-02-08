@@ -13,6 +13,7 @@
 	<classpathentry kind="lib" path="libs/jta-1.1.0.jar"/>
 	<classpathentry kind="lib" path="libs/xml-apis-1.4.1.jar"/>
 	<classpathentry kind="lib" path="libs/ehcache-2.10.3.jar"/>
-	<classpathentry kind="lib" path="libs/hibernate-3.5.5.0007L.jar"/>
+	<classpathentry kind="lib" path="libs/hibernate-5.4.27.Final.jar"/>
+	<classpathentry kind="lib" path="libs/persistence-api-2.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

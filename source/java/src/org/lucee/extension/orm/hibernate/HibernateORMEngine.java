@@ -1,6 +1,5 @@
 package org.lucee.extension.orm.hibernate;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,18 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.EntityMode;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.event.EventListeners;
-import org.hibernate.event.PostDeleteEventListener;
-import org.hibernate.event.PostInsertEventListener;
-import org.hibernate.event.PostLoadEventListener;
-import org.hibernate.event.PostUpdateEventListener;
-import org.hibernate.event.PreDeleteEventListener;
-import org.hibernate.event.PreLoadEventListener;
 import org.hibernate.tuple.entity.EntityTuplizerFactory;
-import org.lucee.extension.orm.hibernate.event.AllEventListener;
 import org.lucee.extension.orm.hibernate.event.EventListener;
-import org.lucee.extension.orm.hibernate.event.InterceptorImpl;
 import org.lucee.extension.orm.hibernate.event.PostDeleteEventListenerImpl;
 import org.lucee.extension.orm.hibernate.event.PostInsertEventListenerImpl;
 import org.lucee.extension.orm.hibernate.event.PostLoadEventListenerImpl;
@@ -38,9 +27,7 @@ import org.w3c.dom.Element;
 
 import lucee.commons.io.log.Log;
 import lucee.commons.io.res.Resource;
-import lucee.loader.engine.CFMLEngine;
 import lucee.loader.engine.CFMLEngineFactory;
-import lucee.loader.util.Util;
 import lucee.runtime.Component;
 import lucee.runtime.PageContext;
 import lucee.runtime.db.DataSource;
@@ -62,7 +49,8 @@ public class HibernateORMEngine implements ORMEngine {
 
 	private Map<String, SessionFactoryData> factories = new ConcurrentHashMap<String, SessionFactoryData>();
 
-	public HibernateORMEngine() {}
+	public HibernateORMEngine() {
+	}
 
 	@Override
 	public void init(PageContext pc) throws PageException {
@@ -109,8 +97,7 @@ public class HibernateORMEngine implements ORMEngine {
 
 		// datasource
 		ORMConfiguration ormConf = appContext.getORMConfiguration();
-
-		String key = hash(pc);
+		String key = hash(ormConf);
 		SessionFactoryData data = factories.get(key);
 		if (initType == INIT_ALL && data != null) {
 			data.reset();
@@ -185,7 +172,7 @@ public class HibernateORMEngine implements ORMEngine {
 
 			DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, data.getDataSource(e.getKey()));
 			try {
-				data.setConfiguration(log, e.getValue(), dc, appContext == null ? "" : appContext.getName());
+				data.setConfiguration(log, e.getValue(), dc);
 			}
 			catch (Exception ex) {
 				throw CommonUtil.toPageException(ex);
@@ -205,54 +192,60 @@ public class HibernateORMEngine implements ORMEngine {
 		return data;
 	}
 
-	private static void addEventListeners(PageContext pc, SessionFactoryData data, Key key) throws PageException {
-		if (!data.getORMConfiguration().eventHandling()) return;
-		String eventHandler = data.getORMConfiguration().eventHandler();
-		AllEventListener listener = null;
-		if (!Util.isEmpty(eventHandler, true)) {
-			// try {
-			Component c = pc.loadComponent(eventHandler.trim());
-
-			listener = new AllEventListener(c);
-			// config.setInterceptor(listener);
-			// }catch (PageException e) {e.printStackTrace();}
-		}
-		Configuration conf = data.getConfiguration(key).config;
-		conf.setInterceptor(new InterceptorImpl(listener));
-		EventListeners listeners = conf.getEventListeners();
-		Map<String, CFCInfo> cfcs = data.getCFCs(key);
-		// post delete
-		List<EventListener> list = merge(listener, cfcs, CommonUtil.POST_DELETE);
-		listeners.setPostDeleteEventListeners(list.toArray(new PostDeleteEventListener[list.size()]));
-
-		// post insert
-		list = merge(listener, cfcs, CommonUtil.POST_INSERT);
-		listeners.setPostInsertEventListeners(list.toArray(new PostInsertEventListener[list.size()]));
-
-		// post update
-		list = merge(listener, cfcs, CommonUtil.POST_UPDATE);
-		listeners.setPostUpdateEventListeners(list.toArray(new PostUpdateEventListener[list.size()]));
-
-		// post load
-		list = merge(listener, cfcs, CommonUtil.POST_LOAD);
-		listeners.setPostLoadEventListeners(list.toArray(new PostLoadEventListener[list.size()]));
-
-		// pre delete
-		list = merge(listener, cfcs, CommonUtil.PRE_DELETE);
-		listeners.setPreDeleteEventListeners(list.toArray(new PreDeleteEventListener[list.size()]));
-
-		// pre insert
-		// list=merge(listener,cfcs,CommonUtil.PRE_INSERT);
-		// listeners.setPreInsertEventListeners(list.toArray(new PreInsertEventListener[list.size()]));
-
-		// pre load
-		list = merge(listener, cfcs, CommonUtil.PRE_LOAD);
-		listeners.setPreLoadEventListeners(list.toArray(new PreLoadEventListener[list.size()]));
-
-		// pre update
-		// list=merge(listener,cfcs,CommonUtil.PRE_UPDATE);
-		// listeners.setPreUpdateEventListeners(list.toArray(new PreUpdateEventListener[list.size()]));
-	}
+	// private static void addEventListeners(PageContext pc, SessionFactoryData data, Key key) throws
+	// PageException {
+	// if(!data.getORMConfiguration().eventHandling()) return;
+	// String eventHandler = data.getORMConfiguration().eventHandler();
+	// AllEventListener listener=null;
+	// if(!Util.isEmpty(eventHandler,true)){
+	// //try {
+	// Component c = pc.loadComponent(eventHandler.trim());
+	//
+	// listener = new AllEventListener(c);
+	// //config.setInterceptor(listener);
+	// //}catch (PageException e) {e.printStackTrace();}
+	// }
+	// Configuration conf = data.getConfiguration(key).config;
+	// conf.setInterceptor(new InterceptorImpl(listener));
+	// //AllEventListener listeners = conf.getEventListeners();
+	// EventListenerRegistry eventListenerRegistry =
+	// serviceRegistry.getService(EventListenerRegistry.class);
+	// Map<String, CFCInfo> cfcs = data.getCFCs(key);
+	// // post delete
+	// List<EventListener>
+	// list=merge(listener,cfcs,CommonUtil.POST_DELETE);
+	// eventListenerRegistry.setListeners(EventType.DELETE, list.toArray(new
+	// PostDeleteEventListener[list.size()]));
+	// listeners.setPostDeleteEventListeners(list.toArray(new PostDeleteEventListener[list.size()]));
+	//
+	// // post insert
+	// list=merge(listener,cfcs,CommonUtil.POST_INSERT);
+	// listeners.setPostInsertEventListeners(list.toArray(new PostInsertEventListener[list.size()]));
+	//
+	// // post update
+	// list=merge(listener,cfcs,CommonUtil.POST_UPDATE);
+	// listeners.setPostUpdateEventListeners(list.toArray(new PostUpdateEventListener[list.size()]));
+	//
+	// // post load
+	// list=merge(listener,cfcs,CommonUtil.POST_LOAD);
+	// listeners.setPostLoadEventListeners(list.toArray(new PostLoadEventListener[list.size()]));
+	//
+	// // pre delete
+	// list=merge(listener,cfcs,CommonUtil.PRE_DELETE);
+	// listeners.setPreDeleteEventListeners(list.toArray(new PreDeleteEventListener[list.size()]));
+	//
+	// // pre insert
+	// //list=merge(listener,cfcs,CommonUtil.PRE_INSERT);
+	// //listeners.setPreInsertEventListeners(list.toArray(new PreInsertEventListener[list.size()]));
+	//
+	// // pre load
+	// list=merge(listener,cfcs,CommonUtil.PRE_LOAD);
+	// listeners.setPreLoadEventListeners(list.toArray(new PreLoadEventListener[list.size()]));
+	//
+	// // pre update
+	// //list=merge(listener,cfcs,CommonUtil.PRE_UPDATE);
+	// //listeners.setPreUpdateEventListeners(list.toArray(new PreUpdateEventListener[list.size()]));
+	// }
 
 	private static List<EventListener> merge(EventListener listener, Map<String, CFCInfo> cfcs, Collection.Key eventType) {
 		List<EventListener> list = new ArrayList<EventListener>();
@@ -282,45 +275,12 @@ public class HibernateORMEngine implements ORMEngine {
 		return list;
 	}
 
-	public String hash(PageContext pc) {
-		ApplicationContext _ac = pc.getApplicationContext();
-		Object ds = _ac.getORMDataSource();
-		ORMConfiguration ormConf = _ac.getORMConfiguration();
-
-		StringBuilder data = new StringBuilder(ormConf.hash()).append(ormConf.autogenmap()).append(':').append(ormConf.getCatalog()).append(':')
-				.append(ormConf.isDefaultCfcLocation()).append(':').append(ormConf.getDbCreate()).append(':').append(ormConf.getDialect()).append(':')
-				.append(ormConf.eventHandling()).append(':').append(ormConf.namingStrategy()).append(':').append(ormConf.eventHandler()).append(':')
-				.append(ormConf.flushAtRequestEnd()).append(':').append(ormConf.logSQL()).append(':').append(ormConf.autoManageSession()).append(':')
-				.append(ormConf.skipCFCWithError()).append(':').append(ormConf.saveMapping()).append(':').append(ormConf.getSchema()).append(':')
-				.append(ormConf.secondaryCacheEnabled()).append(':').append(ormConf.useDBForMapping()).append(':').append(ormConf.getCacheProvider()).append(':').append(ds)
-				.append(':');
-
-		append(data, ormConf.getCfcLocations());
-		append(data, ormConf.getSqlScript());
-		append(data, ormConf.getCacheConfig());
-		append(data, ormConf.getOrmConfig());
-
-		return CFMLEngineFactory.getInstance().getSystemUtil().hash64b(data.toString());
+	private static Object hash(PageContext pc) {
+		return hash(pc.getApplicationContext().getORMConfiguration());
 	}
 
-	private void append(StringBuilder data, Resource[] reses) {
-		if (reses == null) return;
-		for (int i = 0; i < reses.length; i++) {
-			append(data, reses[i]);
-		}
-	}
-
-	private void append(StringBuilder data, Resource res) {
-		if (res == null) return;
-		if (res.isFile()) {
-			CFMLEngine eng = CFMLEngineFactory.getInstance();
-			try {
-				data.append(eng.getSystemUtil().hash64b(eng.getIOUtil().toString(res, null)));
-				return;
-			}
-			catch (IOException e) {}
-		}
-		data.append(res.getAbsolutePath()).append(':');
+	private static String hash(ORMConfiguration ormConf) {
+		return ormConf.hash();
 	}
 
 	public void createMapping(PageContext pc, Component cfc, ORMConfiguration ormConf, SessionFactoryData data) throws PageException {
@@ -395,7 +355,8 @@ public class HibernateORMEngine implements ORMEngine {
 					CommonUtil.write(res, CommonUtil.toString(hm, false, true, HibernateSessionFactory.HIBERNATE_3_PUBLIC_ID, HibernateSessionFactory.HIBERNATE_3_SYSTEM_ID,
 							CommonUtil.UTF8().name()), CommonUtil.UTF8(), false);
 				}
-				catch (Exception e) {}
+				catch (Exception e) {
+				}
 			}
 		}
 	}
@@ -409,7 +370,8 @@ public class HibernateORMEngine implements ORMEngine {
 				sb.append(CommonUtil.toString(res, CommonUtil.UTF8()));
 				return res.lastModified();
 			}
-			catch (Exception e) {}
+			catch (Exception e) {
+			}
 		}
 		return 0;
 	}

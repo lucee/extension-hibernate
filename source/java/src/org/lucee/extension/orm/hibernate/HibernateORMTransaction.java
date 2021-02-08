@@ -2,6 +2,7 @@ package org.lucee.extension.orm.hibernate;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 
 import lucee.runtime.orm.ORMTransaction;
 
@@ -41,7 +42,7 @@ public class HibernateORMTransaction implements ORMTransaction {
 			if (autoManage) session.clear();
 		}
 		else {
-			if (!trans.wasCommitted()) trans.commit();
+			if (trans.getStatus() == TransactionStatus.COMMITTED) trans.commit();
 			session.flush();
 		}
 	}
