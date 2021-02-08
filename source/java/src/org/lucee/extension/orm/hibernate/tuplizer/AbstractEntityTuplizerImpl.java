@@ -6,22 +6,22 @@ import java.util.HashMap;
 import org.hibernate.EntityMode;
 import org.hibernate.EntityNameResolver;
 import org.hibernate.HibernateException;
-import org.hibernate.engine.SessionFactoryImplementor;
-import org.hibernate.engine.SessionImplementor;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.mapping.Property;
-import org.hibernate.property.Getter;
-import org.hibernate.property.PropertyAccessor;
-import org.hibernate.property.Setter;
+import org.hibernate.property.access.spi.Getter;
+import org.hibernate.property.access.spi.Setter;
 import org.hibernate.proxy.ProxyFactory;
 import org.hibernate.tuple.Instantiator;
 import org.hibernate.tuple.entity.AbstractEntityTuplizer;
 import org.hibernate.tuple.entity.EntityMetamodel;
+import org.hibernate.type.Type;
 import org.lucee.extension.orm.hibernate.CommonUtil;
 import org.lucee.extension.orm.hibernate.HBMCreator;
 import org.lucee.extension.orm.hibernate.HibernateCaster;
 import org.lucee.extension.orm.hibernate.HibernateUtil;
-import org.lucee.extension.orm.hibernate.tuplizer.accessors.CFCAccessor;
+import org.lucee.extension.orm.hibernate.tuplizer.accessors.CFCGetter;
+import org.lucee.extension.orm.hibernate.tuplizer.accessors.CFCSetter;
 import org.lucee.extension.orm.hibernate.tuplizer.proxy.CFCHibernateProxyFactory;
 
 import lucee.loader.engine.CFMLEngineFactory;
@@ -33,15 +33,10 @@ import lucee.runtime.type.Struct;
 
 public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 
-	private static CFCAccessor accessor = new CFCAccessor();
+	// private static CFCAccessor accessor = new CFCAccessor();
 
 	public AbstractEntityTuplizerImpl(EntityMetamodel entityMetamodel, PersistentClass persistentClass) {
 		super(entityMetamodel, persistentClass);
-	}
-
-	@Override
-	public Serializable getIdentifier(Object entity, SessionImplementor arg1) {
-		return toIdentifier(super.getIdentifier(entity, arg1));
 	}
 
 	@Override
@@ -68,7 +63,8 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 				// ormtype
 				if (meta != null) {
 					String tmp = CommonUtil.toString(meta.get("ormtype", null), null);
-					if (!Util.isEmpty(tmp)) type = tmp;
+					if (!Util.isEmpty(tmp))
+						type = tmp;
 				}
 
 				// generator
@@ -79,15 +75,16 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 						if (!Util.isEmpty(gen)) {
 							type = HBMCreator.getDefaultTypeForGenerator(gen, "string");
 						}
-					}
-					catch (Throwable t) {
-						if (t instanceof ThreadDeath) throw (ThreadDeath) t;
+					} catch (Throwable t) {
+						if (t instanceof ThreadDeath)
+							throw (ThreadDeath) t;
 					}
 				}
 				try {
-					value = HibernateCaster.toHibernateValue(CFMLEngineFactory.getInstance().getThreadPageContext(), value, type);
+					value = HibernateCaster.toHibernateValue(CFMLEngineFactory.getInstance().getThreadPageContext(),
+							value, type);
+				} catch (PageException pe) {
 				}
-				catch (PageException pe) {}
 
 				map.put(name, value);
 			}
@@ -97,32 +94,26 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 	}
 
 	@Override
-	protected Instantiator buildInstantiator(PersistentClass persistentClass) {
-		return new CFCInstantiator(persistentClass);
-	}
-
-	/**
-	 * return accessors
-	 * 
-	 * @param mappedProperty
-	 * @return
-	 */
-	private PropertyAccessor buildPropertyAccessor(Property mappedProperty) {
-		if (mappedProperty.isBackRef()) {
-			PropertyAccessor ac = mappedProperty.getPropertyAccessor(null);
-			if (ac != null) return ac;
-		}
-		return accessor;
+	protected Instantiator buildInstantiator(EntityMetamodel entityMetamodel, PersistentClass persistentClass) {
+		return new CFCInstantiator(entityMetamodel, persistentClass);
 	}
 
 	@Override
 	protected Getter buildPropertyGetter(Property mappedProperty, PersistentClass mappedEntity) {
-		return buildPropertyAccessor(mappedProperty).getGetter(null, mappedProperty.getName());
+		Type type = null;
+		// Type type = null;
+		if (mappedProperty.getValue() != null)
+			type = mappedProperty.getType();
+		return new CFCGetter(mappedProperty.getName(), type, mappedEntity.getEntityName());
 	}
 
 	@Override
 	protected Setter buildPropertySetter(Property mappedProperty, PersistentClass mappedEntity) {
-		return buildPropertyAccessor(mappedProperty).getSetter(null, mappedProperty.getName());
+		Type type = null;
+		// Type type = null;
+		if (mappedProperty.getValue() != null)
+			type = mappedProperty.getType();
+		return new CFCSetter(mappedProperty.getName(), type, mappedEntity.getEntityName());
 	}
 
 	@Override
@@ -157,10 +148,4 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 	public EntityMode getEntityMode() {
 		return EntityMode.MAP;
 	}
-
-	@Override
-	public boolean isInstrumented() {
-		return false;
-	}
-
 }

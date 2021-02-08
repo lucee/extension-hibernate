@@ -4,38 +4,38 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Set;
 
-import org.hibernate.HibernateException;
-import org.hibernate.engine.SessionImplementor;
+import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.ProxyFactory;
-import org.hibernate.type.AbstractComponentType;
+import org.hibernate.type.CompositeType;
 
 public class CFCHibernateProxyFactory implements ProxyFactory {
 	private String entityName;
 	private String nodeName;
 
 	@Override
-	public void postInstantiate(final String entityName, final Class persistentClass, final Set interfaces, final Method getIdentifierMethod, final Method setIdentifierMethod,
-			AbstractComponentType componentIdType) throws HibernateException {
+	public void postInstantiate(final String entityName, final Class persistentClass, final Set interfaces,
+			final Method getIdentifierMethod, final Method setIdentifierMethod, CompositeType componentIdType) {
 		int index = entityName.indexOf('.');
 		this.nodeName = entityName;
 		this.entityName = entityName.substring(index + 1);
 	}
 
 	public void postInstantiate(PersistentClass pc) {
-		this.nodeName = pc.getNodeName();
+		this.nodeName = pc.getClassName();
 		this.entityName = pc.getEntityName();
 	}
 
 	@Override
-	public HibernateProxy getProxy(final Serializable id, final SessionImplementor session) {
+	public HibernateProxy getProxy(final Serializable id, final SharedSessionContractImplementor session) {
 		try {
-			return new CFCHibernateProxy(new CFCLazyInitializer(entityName, id, session));
-		}
-		catch (Throwable t) {
-			if (t instanceof ThreadDeath) throw (ThreadDeath) t;
-			return new CFCHibernateProxy(new CFCLazyInitializer(nodeName, id, session));
+			return new CFCHibernateProxy(new CFCLazyInitializer(entityName, id, (SessionImplementor) session));
+		} catch (Throwable t) {
+			if (t instanceof ThreadDeath)
+				throw (ThreadDeath) t;
+			return new CFCHibernateProxy(new CFCLazyInitializer(nodeName, id, (SessionImplementor) session));
 		}
 	}
 }

@@ -2,6 +2,7 @@ package org.lucee.extension.orm.hibernate;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 
 import lucee.runtime.orm.ORMTransaction;
 
@@ -19,7 +20,8 @@ public class HibernateORMTransaction implements ORMTransaction {
 
 	@Override
 	public void begin() {
-		if (autoManage) session.flush();
+		if (autoManage)
+			session.flush();
 		trans = session.beginTransaction();
 
 	}
@@ -38,10 +40,11 @@ public class HibernateORMTransaction implements ORMTransaction {
 	public void end() {
 		if (doRollback) {
 			trans.rollback();
-			if (autoManage) session.clear();
-		}
-		else {
-			if (!trans.wasCommitted()) trans.commit();
+			if (autoManage)
+				session.clear();
+		} else {
+			if (trans.getStatus() == TransactionStatus.COMMITTED)
+				trans.commit();
 			session.flush();
 		}
 	}

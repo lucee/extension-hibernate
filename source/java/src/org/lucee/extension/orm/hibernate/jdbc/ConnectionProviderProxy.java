@@ -2,28 +2,18 @@ package org.lucee.extension.orm.hibernate.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Properties;
 
-import org.hibernate.HibernateException;
-import org.hibernate.connection.ConnectionProvider;
+import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 
 public class ConnectionProviderProxy implements ConnectionProvider {
+
+	private static final long serialVersionUID = -122194182002532262L;
 
 	public static ConnectionProvider provider;
 
 	@Override
-	public void close() throws HibernateException {
-		provider.close();
-	}
-
-	@Override
 	public void closeConnection(Connection arg0) throws SQLException {
 		provider.closeConnection(arg0);
-	}
-
-	@Override
-	public void configure(Properties arg0) throws HibernateException {
-		provider.configure(arg0);
 	}
 
 	@Override
@@ -34,6 +24,16 @@ public class ConnectionProviderProxy implements ConnectionProvider {
 	@Override
 	public boolean supportsAggressiveRelease() {
 		return provider.supportsAggressiveRelease();
+	}
+
+	@Override
+	public boolean isUnwrappableAs(Class arg0) {
+		return provider.isUnwrappableAs(arg0);
+	}
+
+	@Override
+	public <T> T unwrap(Class<T> arg0) {
+		return provider.unwrap(arg0);
 	}
 
 }

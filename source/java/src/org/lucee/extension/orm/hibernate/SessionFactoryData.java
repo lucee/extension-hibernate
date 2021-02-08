@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.engine.SessionFactoryImplementor;
-import org.hibernate.engine.query.QueryPlanCache;
+import org.hibernate.engine.query.spi.QueryPlanCache;
+import org.hibernate.internal.SessionFactoryImpl;
 import org.lucee.extension.orm.hibernate.jdbc.DataSourceConfig;
 import org.lucee.extension.orm.hibernate.naming.CFCNamingStrategy;
 import org.lucee.extension.orm.hibernate.naming.DefaultNamingStrategy;
@@ -63,7 +63,8 @@ public class SessionFactoryData {
 	public QueryPlanCache getQueryPlanCache(Key datasSourceName) {
 		QueryPlanCache qpc = queryPlanCaches.get(datasSourceName);
 		if (qpc == null) {
-			queryPlanCaches.put(datasSourceName, qpc = new QueryPlanCache((SessionFactoryImplementor) getFactory(datasSourceName)));
+			qpc = ((SessionFactoryImpl) this.getFactory(datasSourceName)).getQueryPlanCache();
+			queryPlanCaches.put(datasSourceName, qpc);
 		}
 		return qpc;
 	}
@@ -73,28 +74,33 @@ public class SessionFactoryData {
 			String strNamingStrategy = ormConf.namingStrategy();
 			if (Util.isEmpty(strNamingStrategy, true)) {
 				namingStrategy = DefaultNamingStrategy.INSTANCE;
-			}
-			else {
+			} else {
 				strNamingStrategy = strNamingStrategy.trim();
-				if ("default".equalsIgnoreCase(strNamingStrategy)) namingStrategy = DefaultNamingStrategy.INSTANCE;
-				else if ("smart".equalsIgnoreCase(strNamingStrategy)) namingStrategy = SmartNamingStrategy.INSTANCE;
+				if ("default".equalsIgnoreCase(strNamingStrategy))
+					namingStrategy = DefaultNamingStrategy.INSTANCE;
+				else if ("smart".equalsIgnoreCase(strNamingStrategy))
+					namingStrategy = SmartNamingStrategy.INSTANCE;
 				else {
-					CFCNamingStrategy cfcNS = new CFCNamingStrategy(cfcNamingStrategy == null ? strNamingStrategy : cfcNamingStrategy);
+					CFCNamingStrategy cfcNS = new CFCNamingStrategy(
+							cfcNamingStrategy == null ? strNamingStrategy : cfcNamingStrategy);
 					cfcNamingStrategy = cfcNS.getComponent().getPageSource().getComponentName();
 					namingStrategy = cfcNS;
 
 				}
 			}
 		}
-		if (namingStrategy == null) return DefaultNamingStrategy.INSTANCE;
+		if (namingStrategy == null)
+			return DefaultNamingStrategy.INSTANCE;
 		return namingStrategy;
 	}
 
 	public CFCInfo checkExistent(PageContext pc, Component cfc) throws PageException {
 		CFCInfo info = getCFC(HibernateCaster.getEntityName(cfc), null);
-		if (info != null) return info;
+		if (info != null)
+			return info;
 
-		throw ExceptionUtil.createException(this, null, "there is no mapping definition for component [" + cfc.getAbsName() + "]", "");
+		throw ExceptionUtil.createException(this, null,
+				"there is no mapping definition for component [" + cfc.getAbsName() + "]", "");
 	}
 
 	public List<String> getEntityNames() {
@@ -125,7 +131,8 @@ public class SessionFactoryData {
 			Iterator<Component> it = tmpList.iterator();
 			while (it.hasNext()) {
 				cfc = it.next();
-				if (HibernateCaster.getEntityName(cfc).equalsIgnoreCase(entityName)) return unique ? (Component) cfc.duplicate(false) : cfc;
+				if (HibernateCaster.getEntityName(cfc).equalsIgnoreCase(entityName))
+					return unique ? (Component) cfc.duplicate(false) : cfc;
 			}
 		}
 		throw ExceptionUtil.createException((ORMSession) null, null, "entity [" + entityName + "] does not exist", "");
@@ -136,8 +143,8 @@ public class SessionFactoryData {
 		int pointIndex = cfcName.lastIndexOf('.');
 		if (pointIndex != -1) {
 			name = cfcName.substring(pointIndex + 1);
-		}
-		else cfcName = null;
+		} else
+			cfcName = null;
 
 		Component cfc;
 		List<String> names = new ArrayList<String>();
@@ -152,8 +159,7 @@ public class SessionFactoryData {
 				if (HibernateUtil.isEntity(ormConf, cfc, cfcName, name)) // if(cfc.equalTo(name))
 					return unique ? (Component) cfc.duplicate(false) : cfc;
 			}
-		}
-		else {
+		} else {
 			// search cfcs
 			Iterator<Map<String, CFCInfo>> it = cfcs.values().iterator();
 			Map<String, CFCInfo> _cfcs;
@@ -175,8 +181,11 @@ public class SessionFactoryData {
 			return unique ? (Component) cfc.duplicate(false) : cfc;
 		}
 
-		throw ExceptionUtil.createException((ORMSession) null, null, "entity [" + name + "] " + (Util.isEmpty(cfcName) ? "" : "with cfc name [" + cfcName + "] ")
-				+ "does not exist, existing  entities are [" + CFMLEngineFactory.getInstance().getListUtil().toList(names, ", ") + "]", "");
+		throw ExceptionUtil.createException((ORMSession) null, null,
+				"entity [" + name + "] " + (Util.isEmpty(cfcName) ? "" : "with cfc name [" + cfcName + "] ")
+						+ "does not exist, existing  entities are ["
+						+ CFMLEngineFactory.getInstance().getListUtil().toList(names, ", ") + "]",
+				"");
 
 	}
 
@@ -189,15 +198,18 @@ public class SessionFactoryData {
 		return configurations.get(key);
 	}
 
-	public void setConfiguration(Log log, String mappings, DatasourceConnection dc, String applicationContextName) throws PageException, SQLException, IOException {
-		configurations.put(CommonUtil.toKey(dc.getDatasource().getName()),
-				new DataSourceConfig(dc.getDatasource(), HibernateSessionFactory.createConfiguration(log, mappings, dc, this, applicationContextName)));
+	public void setConfiguration(Log log, String mappings, DatasourceConnection dc, String applicationContextName)
+			throws PageException, SQLException, IOException {
+		configurations.put(CommonUtil.toKey(dc.getDatasource().getName()), new DataSourceConfig(dc.getDatasource(),
+				HibernateSessionFactory.createConfiguration(log, mappings, dc, this, applicationContextName)));
 	}
 
 	public SessionFactory buildSessionFactory(Key datasSourceName) {
 		// Key key=eng.getCreationUtil().createKey(ds.getName());
 		DataSourceConfig dsc = getConfiguration(datasSourceName);
-		if (dsc == null) throw new RuntimeException("cannot build factory because there is no configuration"); // this should never happen
+		if (dsc == null)
+			throw new RuntimeException("cannot build factory because there is no configuration"); // this should never
+																									// happen
 
 		Thread thread = Thread.currentThread();
 		ClassLoader old = thread.getContextClassLoader();
@@ -206,8 +218,7 @@ public class SessionFactoryData {
 			// use the core classloader
 			thread.setContextClassLoader(CFMLEngineFactory.getInstance().getClass().getClassLoader());
 			sf = dsc.config.buildSessionFactory();
-		}
-		finally {
+		} finally {
 			// reset
 			thread.setContextClassLoader(old);
 		}
@@ -218,8 +229,10 @@ public class SessionFactoryData {
 
 	public SessionFactory getFactory(Key datasSourceName) {
 		SessionFactory factory = factories.get(datasSourceName);
-		if (factory != null && factory.isClosed()) factory = null;
-		if (factory == null && getConfiguration(datasSourceName) != null) factory = buildSessionFactory(datasSourceName);// this should never be happen
+		if (factory != null && factory.isClosed())
+			factory = null;
+		if (factory == null && getConfiguration(datasSourceName) != null)
+			factory = buildSessionFactory(datasSourceName);// this should never be happen
 		return factory;
 	}
 
@@ -230,14 +243,16 @@ public class SessionFactoryData {
 			it.next().close();
 		}
 		factories.clear();
-		// namingStrategy=null; because the ormconf not change, this has not to change as well
+		// namingStrategy=null; because the ormconf not change, this has not to change
+		// as well
 		tableInfo = CommonUtil.createStruct();
 	}
 
 	public Struct getTableInfo(DatasourceConnection dc, String tableName) throws PageException {
 		Collection.Key keyTableName = CommonUtil.createKey(tableName);
 		Struct columnsInfo = (Struct) tableInfo.get(keyTableName, null);
-		if (columnsInfo != null) return columnsInfo;
+		if (columnsInfo != null)
+			return columnsInfo;
 
 		columnsInfo = HibernateUtil.checkTable(dc, tableName, this);
 		tableInfo.setEL(keyTableName, columnsInfo);
@@ -250,7 +265,8 @@ public class SessionFactoryData {
 		Key dsn = CommonUtil.toKey(ds.getName());
 
 		Map<String, CFCInfo> map = cfcs.get(dsn);
-		if (map == null) cfcs.put(dsn, map = new HashMap<String, CFCInfo>());
+		if (map == null)
+			cfcs.put(dsn, map = new HashMap<String, CFCInfo>());
 		map.put(HibernateUtil.id(entityName), info);
 		sources.put(dsn, ds);
 	}
@@ -259,7 +275,8 @@ public class SessionFactoryData {
 		Iterator<Map<String, CFCInfo>> it = cfcs.values().iterator();
 		while (it.hasNext()) {
 			CFCInfo info = it.next().get(HibernateUtil.id(entityName));
-			if (info != null) return info;
+			if (info != null)
+				return info;
 		}
 		return defaultValue;
 	}
@@ -270,13 +287,15 @@ public class SessionFactoryData {
 
 	/*
 	 * public Map<String, CFCInfo> getCFCs(DataSource ds) { Key
-	 * key=eng.getCreationUtil().createKey(ds.getName()); Map<String, CFCInfo> rtn = cfcs.get(key);
-	 * if(rtn==null) return new HashMap<String, CFCInfo>(); return rtn; }
+	 * key=eng.getCreationUtil().createKey(ds.getName()); Map<String, CFCInfo> rtn =
+	 * cfcs.get(key); if(rtn==null) return new HashMap<String, CFCInfo>(); return
+	 * rtn; }
 	 */
 
 	public Map<String, CFCInfo> getCFCs(Key datasSourceName) {
 		Map<String, CFCInfo> rtn = cfcs.get(datasSourceName);
-		if (rtn == null) return new HashMap<String, CFCInfo>();
+		if (rtn == null)
+			return new HashMap<String, CFCInfo>();
 		return rtn;
 	}
 
