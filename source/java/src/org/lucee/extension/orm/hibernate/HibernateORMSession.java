@@ -20,10 +20,10 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.engine.query.HQLQueryPlan;
-import org.hibernate.engine.query.ParameterMetadata;
-import org.hibernate.engine.query.QueryPlanCache;
+import org.hibernate.engine.query.spi.HQLQueryPlan;
+import org.hibernate.engine.query.spi.QueryPlanCache;
 import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.query.ParameterMetadata;
 import org.hibernate.type.Type;
 
 import lucee.commons.lang.types.RefBoolean;
