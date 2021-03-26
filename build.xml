@@ -102,7 +102,7 @@ lucee-core-version: "${luceeCoreVersion}"
         <exclude name="**/javax.servlet.jar"/>
         <exclude name="**/lucee.jar"/>
         <exclude name="**/org-apache-felix-main-*.jar"/>
-        <exclude name="**/ehcache-*.jar"/>
+        <!-- <exclude name="**/ehcache-*.jar"/> -->
         <exclude name="**/xml-apis-*.jar"/>
 
       </fileset>

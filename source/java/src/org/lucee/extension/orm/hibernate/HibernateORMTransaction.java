@@ -20,8 +20,13 @@ public class HibernateORMTransaction implements ORMTransaction {
 
 	@Override
 	public void begin() {
-		if (autoManage)
+		if (autoManage) {
+			// FlushM
+			// FlushModeType fm = session.getFlushMode();
+			// FlushMode hfm = session.getHibernateFlushMode();
+
 			session.flush();
+		}
 		trans = session.beginTransaction();
 
 	}
@@ -38,14 +43,23 @@ public class HibernateORMTransaction implements ORMTransaction {
 
 	@Override
 	public void end() {
-		if (doRollback) {
-			trans.rollback();
-			if (autoManage)
-				session.clear();
-		} else {
-			if (trans.getStatus() == TransactionStatus.COMMITTED)
-				trans.commit();
-			session.flush();
+		try {
+			if (doRollback) {
+				trans.rollback();
+				if (autoManage) {
+					session.clear();
+				}
+			}
+			else {
+				if (trans.getStatus() == TransactionStatus.COMMITTED) {
+					trans.commit();
+				}
+				session.flush();
+			}
 		}
+		finally {
+			session.close();
+		}
+
 	}
 }

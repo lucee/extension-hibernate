@@ -616,7 +616,8 @@ public class CommonUtil {
 		}
 
 		@Override
-		public void setPosition(int position) {}
+		public void setPosition(int position) {
+		}
 
 		@Override
 		public String getSQLString() {
@@ -646,7 +647,8 @@ public class CommonUtil {
 
 		private boolean value;
 
-		public RefBooleanImpl() {}
+		public RefBooleanImpl() {
+		}
 
 		/**
 		 * @param value
@@ -695,7 +697,7 @@ public class CommonUtil {
 		return pc.getDataSource(name);
 	}
 
-	public static DatasourceConnection getDatasourceConnection(PageContext pc, DataSource ds) throws PageException {
+	public static DatasourceConnection getDatasourceConnection(PageContext pc, DataSource ds, String user, String pass) throws PageException {
 		// return db().getDatasourceConnection(pc, ds, null, null);
 
 		// FUTURE this need to come from the Lucee public interface NOT MANAGED this cannot come from the
@@ -707,7 +709,7 @@ public class CommonUtil {
 			Method getDatasourceConnectionPool = config.getClass().getMethod("getDatasourceConnectionPool", ZEROC);
 			Object pool = getDatasourceConnectionPool.invoke(config, ZEROO);
 			Method getDatasourceConnection = pool.getClass().getMethod("getDatasourceConnection", GET_CONN_ARGS);
-			return (DatasourceConnection) getDatasourceConnection.invoke(pool, new Object[] { config, ds, null, null });
+			return (DatasourceConnection) getDatasourceConnection.invoke(pool, new Object[] { config, ds, user, pass });
 		}
 		catch (Throwable t) {
 			if (t instanceof ThreadDeath) throw (ThreadDeath) t;

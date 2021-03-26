@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Export-Package: org.lucee.extension.orm.hibernate,org.lucee.extension.orm.hibernate.jdbc
 Import-Package: net.sf.ehcache.hibernate
-Require-Bundle: hibernate;bundle-version=3.5.5.0007L,
+Require-Bundle: org.lucee.hibernate;bundle-version=5.4.29.Final,
  org.lucee.antlr;bundle-version=2.7.6,
  org.lucee.dom4j;bundle-version=1.6.1,
  org.lucee.javassist;bundle-version=3.9.0.GA,
@@ -9,6 +9,11 @@ Require-Bundle: hibernate;bundle-version=3.5.5.0007L,
  slf4j.api;bundle-version=1.7.12,
  org.apache.commons.collections;bundle-version=3.2.1,
  org.lucee.xml.apis;bundle-version=1.4.1,
- org.lucee.ehcache;bundle-version=2.10.3
+ com.fasterxml.classmate;bundle-version=1.5.1,
+ net.bytebuddy.byte-buddy;bundle-version=1.10.21,
+ org.lucee.hibernate-annotations;bundle-version=5.1.2.Final,
+ javax.persistence-api;bundle-version=2.2,
+ org.lucee.hibernate-ehcache;bundle-version=5.4.29.Final,
+ org.lucee.ehcache;bundle-version=2.10.6
 Require-Bundle-Fragment: slf4j.nop;bundle-version=1.7.12
 Bundle-ManifestVersion: 2

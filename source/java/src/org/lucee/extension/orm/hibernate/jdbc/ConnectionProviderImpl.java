@@ -2,11 +2,8 @@ package org.lucee.extension.orm.hibernate.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
-import org.lucee.extension.orm.hibernate.CommonUtil;
 
 import lucee.loader.engine.CFMLEngine;
 import lucee.loader.engine.CFMLEngineFactory;
@@ -20,45 +17,34 @@ public class ConnectionProviderImpl implements ConnectionProvider {
 
 	private final DBUtil dbu;
 	private CFMLEngine engine;
-	private String dsn;
-	private String user;
-	private String pass;
-	private DataSource ds;
+	private final DataSource ds;
+	private final String user;
+	private final String pass;
 
-	public static Map<String, DataSource> dataSources = new HashMap<String, DataSource>();
-
-	public ConnectionProviderImpl() {
+	public ConnectionProviderImpl(DataSource ds, String user, String pass) {
 		engine = CFMLEngineFactory.getInstance();
 		dbu = engine.getDBUtil();
+		this.ds = ds;
+		this.user = user;
+		this.pass = pass;
 	}
 
 	@Override
 	public Connection getConnection() throws SQLException {
 		PageContext pc = engine.getThreadPageContext();
-		DataSource datasource = ds != null ? ds : CommonUtil.getDataSource(pc, dsn, null);
 
 		try {
-			if (datasource != null)
-				return dbu.getDatasourceConnection(pc, datasource, user, pass);
-			return dbu.getDatasourceConnection(pc, dsn, user, pass);
-		} catch (PageException pe) {
+			return dbu.getDatasourceConnection(pc, ds, user, pass);
+		}
+		catch (PageException pe) {
 			throw engine.getExceptionUtil().createPageRuntimeException(pe);
 		}
 	}
 
 	@Override
 	public void closeConnection(Connection conn) throws SQLException {
-		if (conn instanceof DatasourceConnection)
-			dbu.releaseDatasourceConnection(engine.getThreadConfig(), (DatasourceConnection) conn, false);
+		if (conn instanceof DatasourceConnection) dbu.releaseDatasourceConnection(engine.getThreadConfig(), (DatasourceConnection) conn, false);
 	}
-
-	/*
-	 * @Override public void configure(Properties props) throws HibernateException {
-	 * String id = props.getProperty("lucee.datasource.id"); if (!Util.isEmpty(id))
-	 * ds = dataSources.get(id); dsn = props.getProperty("lucee.datasource.name");
-	 * user = props.getProperty("lucee.datasource.user"); pass =
-	 * props.getProperty("lucee.datasource.password"); }
-	 */
 
 	@Override
 	public boolean supportsAggressiveRelease() {

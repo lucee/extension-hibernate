@@ -17,13 +17,13 @@ public class CFCLazyInitializer extends AbstractLazyInitializer implements Seria
 
 	CFCLazyInitializer(String entityName, Serializable id, SessionImplementor session) {
 		super(entityName, id, session);
-
 	}
 
 	public Component getCFC() {
 		try {
 			return CommonUtil.toComponent(getImplementation());
-		} catch (PageException pe) {
+		}
+		catch (PageException pe) {
 			throw new HibernatePageException(pe);
 		}
 	}
