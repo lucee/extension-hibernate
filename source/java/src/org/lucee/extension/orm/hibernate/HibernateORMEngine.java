@@ -124,7 +124,7 @@ public class HibernateORMEngine implements ORMEngine {
 							Iterator<Component> it = data.tmpList.iterator();
 							while (it.hasNext()) {
 
-								// check for ambiguous entity names ambiguous
+								// check for ambiguous entity names
 								cfc = it.next();
 								name = HibernateCaster.getEntityName(cfc);
 								lcName = name.toLowerCase();
