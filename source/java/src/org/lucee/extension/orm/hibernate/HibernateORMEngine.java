@@ -346,7 +346,7 @@ public class HibernateORMEngine implements ORMEngine {
 		catch (Throwable t) {
 			if (t instanceof ThreadDeath) throw (ThreadDeath) t;
 		}
-		
+
 		root = doc.createElement("hibernate-mapping");
 		doc.appendChild(root);
 		pc.addPageSource(cfc.getPageSource(), true);
@@ -390,7 +390,9 @@ public class HibernateORMEngine implements ORMEngine {
 		if (res != null) {
 			res = res.getParentResource().getRealResource(res.getName() + ".hbm.xml");
 			try {
-				String xml = CommonUtil.toString(res, CommonUtil.UTF8());
+				Document mapping = CommonUtil.toDocument(res, CommonUtil.UTF8());
+				Element root = mapping.getDocumentElement();
+				String xml = XMLUtil.toString(root.getChildNodes(), true, true);
 				return new CFCInfo(HibernateUtil.getCompileTime(pc, cfc.getPageSource()), xml, cfc, ds);
 			} catch (Exception e) {
 				unableToLoadXMLException = e;
