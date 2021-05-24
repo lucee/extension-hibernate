@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.engine.SessionFactoryImplementor;
-import org.hibernate.engine.query.QueryPlanCache;
+import org.hibernate.engine.query.spi.QueryPlanCache;
+import org.hibernate.internal.SessionFactoryImpl;
 import org.lucee.extension.orm.hibernate.jdbc.DataSourceConfig;
 import org.lucee.extension.orm.hibernate.naming.CFCNamingStrategy;
 import org.lucee.extension.orm.hibernate.naming.DefaultNamingStrategy;
@@ -63,7 +63,8 @@ public class SessionFactoryData {
 	public QueryPlanCache getQueryPlanCache(Key datasSourceName) {
 		QueryPlanCache qpc = queryPlanCaches.get(datasSourceName);
 		if (qpc == null) {
-			queryPlanCaches.put(datasSourceName, qpc = new QueryPlanCache((SessionFactoryImplementor) getFactory(datasSourceName)));
+			qpc = ((SessionFactoryImpl) this.getFactory(datasSourceName)).getQueryPlanCache();
+			queryPlanCaches.put(datasSourceName, qpc);
 		}
 		return qpc;
 	}
@@ -189,15 +190,16 @@ public class SessionFactoryData {
 		return configurations.get(key);
 	}
 
-	public void setConfiguration(Log log, String mappings, DatasourceConnection dc, String applicationContextName) throws PageException, SQLException, IOException {
-		configurations.put(CommonUtil.toKey(dc.getDatasource().getName()),
-				new DataSourceConfig(dc.getDatasource(), HibernateSessionFactory.createConfiguration(log, mappings, dc, this, applicationContextName)));
+	public void setConfiguration(Log log, String mappings, DataSource ds, String user, String pass, String applicationContextName) throws PageException, SQLException, IOException {
+		configurations.put(CommonUtil.toKey(ds.getName()),
+				new DataSourceConfig(ds, HibernateSessionFactory.createConfiguration(log, mappings, ds, user, pass, this, applicationContextName)));
 	}
 
 	public SessionFactory buildSessionFactory(Key datasSourceName) {
 		// Key key=eng.getCreationUtil().createKey(ds.getName());
 		DataSourceConfig dsc = getConfiguration(datasSourceName);
-		if (dsc == null) throw new RuntimeException("cannot build factory because there is no configuration"); // this should never happen
+		if (dsc == null) throw new RuntimeException("cannot build factory because there is no configuration"); // this should never
+																												// happen
 
 		Thread thread = Thread.currentThread();
 		ClassLoader old = thread.getContextClassLoader();
@@ -230,7 +232,8 @@ public class SessionFactoryData {
 			it.next().close();
 		}
 		factories.clear();
-		// namingStrategy=null; because the ormconf not change, this has not to change as well
+		// namingStrategy=null; because the ormconf not change, this has not to change
+		// as well
 		tableInfo = CommonUtil.createStruct();
 	}
 

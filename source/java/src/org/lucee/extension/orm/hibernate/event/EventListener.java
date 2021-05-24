@@ -1,6 +1,6 @@
 package org.lucee.extension.orm.hibernate.event;
 
-import org.hibernate.event.PreUpdateEvent;
+import org.hibernate.event.spi.PreUpdateEvent;
 import org.lucee.extension.orm.hibernate.CommonUtil;
 import org.lucee.extension.orm.hibernate.HibernateUtil;
 
@@ -53,32 +53,34 @@ public abstract class EventListener {
 	}
 
 	protected void invoke(Collection.Key name, Object obj, Struct data) {
-		if (eventType != null && !eventType.equals(name)) return;
+		if (eventType != null && !eventType.equals(name))
+			return;
 		// print.e(name);
 		Component caller = CommonUtil.toComponent(obj, null);
 		Component c = allEvents ? component : caller;
-		if (c == null) return;
+		if (c == null)
+			return;
 
-		if (!allEvents && !caller.getPageSource().equals(component.getPageSource())) return;
+		if (!allEvents && !caller.getPageSource().equals(component.getPageSource()))
+			return;
 		invoke(name, c, data, allEvents ? obj : null);
 
 	}
 
 	public static void invoke(Key name, Component cfc, Struct data, Object arg) {
-		if (cfc == null) return;
+		if (cfc == null)
+			return;
 		CFMLEngine engine = CFMLEngineFactory.getInstance();
 		try {
 			PageContext pc = engine.getThreadPageContext();
 			Object[] args;
 			if (data == null) {
 				args = arg != null ? new Object[] { arg } : new Object[] {};
-			}
-			else {
+			} else {
 				args = arg != null ? new Object[] { arg, data } : new Object[] { data };
 			}
 			cfc.call(pc, name, args);
-		}
-		catch (PageException pe) {
+		} catch (PageException pe) {
 			throw engine.getCastUtil().toPageRuntimeException(pe);
 		}
 	}

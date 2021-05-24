@@ -11,6 +11,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import lucee.commons.io.log.Log;
 import lucee.loader.util.Util;
 import lucee.runtime.Component;
 import lucee.runtime.PageContext;
@@ -87,8 +88,9 @@ public class HBMCreator {
 				Component base = data.getEntityByCFCName(ext, false);
 				ext = HibernateCaster.getEntityName(base);
 			}
-			catch (Throwable t) {
-				if (t instanceof ThreadDeath) throw (ThreadDeath) t;
+			catch (Exception e) {
+				Log log = pc.getConfig().getLog("orm");
+				log.error("hibernate", e);
 			}
 
 			String discriminatorValue = toString(cfc, null, meta, "discriminatorValue", data);
@@ -222,7 +224,8 @@ public class HBMCreator {
 					else if ("version".equals(fieldType)) isJoin = false;
 					else if ("timestamp".equals(fieldType)) isJoin = false;
 				}
-				catch (PageException e) {}
+				catch (PageException e) {
+				}
 
 				// missing column
 				String columns = null;
@@ -234,7 +237,8 @@ public class HBMCreator {
 						columns = toString(cfc, props[i], prop.getDynamicAttributes(), "joincolumn", data);
 					}
 				}
-				catch (PageException e) {}
+				catch (PageException e) {
+				}
 				if (Util.isEmpty(columns)) isJoin = false;
 
 				if (isJoin) {

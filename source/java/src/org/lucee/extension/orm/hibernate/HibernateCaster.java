@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.collection.PersistentCollection;
+import org.hibernate.collection.spi.PersistentCollection;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 

@@ -2,7 +2,7 @@ package org.lucee.extension.orm.hibernate.tuplizer.proxy;
 
 import java.io.Serializable;
 
-import org.hibernate.engine.SessionImplementor;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.proxy.AbstractLazyInitializer;
 import org.lucee.extension.orm.hibernate.CommonUtil;
 import org.lucee.extension.orm.hibernate.HibernatePageException;
@@ -17,7 +17,6 @@ public class CFCLazyInitializer extends AbstractLazyInitializer implements Seria
 
 	CFCLazyInitializer(String entityName, Serializable id, SessionImplementor session) {
 		super(entityName, id, session);
-
 	}
 
 	public Component getCFC() {

@@ -1,28 +1,36 @@
 package org.lucee.extension.orm.hibernate;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 
 import org.hibernate.MappingException;
-import org.hibernate.cache.RegionFactory;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cache.ehcache.internal.EhcacheRegionFactory;
+import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
+import org.hibernate.service.ServiceRegistry;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
+import org.hibernate.tool.hbm2ddl.SchemaExport.Action;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
+import org.hibernate.tool.schema.TargetType;
 import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
-import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderProxy;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -53,51 +61,65 @@ public class HibernateSessionFactory {
 	public static final String HIBERNATE_3_SYSTEM_ID = "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd";
 	public static final String HIBERNATE_3_DOCTYPE_DEFINITION = "<!DOCTYPE hibernate-mapping PUBLIC \"" + HIBERNATE_3_PUBLIC_ID + "\" \"" + HIBERNATE_3_SYSTEM_ID + "\">";
 
-	public static Configuration createConfiguration(Log log, String mappings, DatasourceConnection dc, SessionFactoryData data, String applicationContextName)
+	public static Configuration createConfiguration(Log log, String mappings, DataSource ds, String user, String pass, SessionFactoryData data, String applicationContextName)
 			throws SQLException, IOException, PageException {
 		ORMConfiguration ormConf = data.getORMConfiguration();
 
 		// dialect
-		DataSource ds = dc.getDatasource();
 		String dialect = null;
 		String tmpDialect = ORMConfigurationUtil.getDialect(ormConf, ds.getName());
+		if (!Util.isEmpty(tmpDialect)) {
 
-		try {
-			if ((Class.forName(tmpDialect)) != null) {
-				dialect = tmpDialect;
-			}
-		}
-		catch (Exception e) {}
+			dialect = Dialect.getDialect(tmpDialect);
 
-		if (dialect == null) {
-			try {
-
-				if ((CFMLEngineFactory.getInstance().getClassUtil().loadClass(tmpDialect)) != null) {
-					dialect = tmpDialect;
+			if (dialect == null) {
+				try {
+					if ((Class.forName(tmpDialect)) != null) {
+						dialect = tmpDialect;
+					}
+				}
+				catch (Exception e) {
+					log.error("hibernate", e);
 				}
 			}
-			catch (Exception e) {}
-		}
 
-		if (dialect == null) {
-			dialect = Dialect.getDialect(tmpDialect);
-			if (Util.isEmpty(dialect)) dialect = Dialect.getDialect(ds);
+			if (dialect == null) {
+				try {
+
+					if ((CFMLEngineFactory.getInstance().getClassUtil().loadClass(tmpDialect)) != null) {
+						dialect = tmpDialect;
+					}
+				}
+				catch (Exception e) {
+					log.error("hibernate", e);
+				}
+			}
+
 		}
+		if (Util.isEmpty(dialect)) dialect = Dialect.getDialect(ds);
+
 		if (Util.isEmpty(dialect)) throw ExceptionUtil.createException(data, null,
 				"A valid dialect definition inside the application event listener (Application.cfc)" + " is missing. The dialect cannot be determinated automatically", null);
 
 		// Cache Provider
 		String cacheProvider = ormConf.getCacheProvider();
-		Class<? extends RegionFactory> regionFactory = null;
+		Class<?> cacheProviderFactory = null;
 
 		if (Util.isEmpty(cacheProvider) || "EHCache".equalsIgnoreCase(cacheProvider)) {
-			regionFactory = net.sf.ehcache.hibernate.EhCacheRegionFactory.class;
-			cacheProvider = regionFactory.getName();
+			cacheProviderFactory = EhcacheRegionFactory.class;
 		}
-		else if ("JBossCache".equalsIgnoreCase(cacheProvider)) cacheProvider = "org.hibernate.cache.TreeCacheProvider";
-		else if ("HashTable".equalsIgnoreCase(cacheProvider)) cacheProvider = "org.hibernate.cache.HashtableCacheProvider";
-		else if ("SwarmCache".equalsIgnoreCase(cacheProvider)) cacheProvider = "org.hibernate.cache.SwarmCacheProvider";
-		else if ("OSCache".equalsIgnoreCase(cacheProvider)) cacheProvider = "org.hibernate.cache.OSCacheProvider";
+		// else if ("JBossCache".equalsIgnoreCase(cacheProvider)) cacheProvider =
+		// "org.hibernate.cache.TreeCacheProvider";
+		// else if ("HashTable".equalsIgnoreCase(cacheProvider)) cacheProvider =
+		// "org.hibernate.cache.HashtableCacheProvider";
+		// else if ("SwarmCache".equalsIgnoreCase(cacheProvider)) cacheProvider =
+		// "org.hibernate.cache.SwarmCacheProvider";
+		// else if ("OSCache".equalsIgnoreCase(cacheProvider)) cacheProvider =
+		// "org.hibernate.cache.OSCacheProvider";
+
+		/// JBossCache -> https://mvnrepository.com/artifact/org.hibernate/hibernate-jbosscache
+		// OSCache -> https://mvnrepository.com/artifact/org.hibernate/hibernate-oscache
+		// SwarmCache -> https://mvnrepository.com/artifact/org.hibernate/hibernate-swarmcache
 
 		Resource cc = ormConf.getCacheConfig();
 		Configuration configuration = new Configuration();
@@ -136,109 +158,90 @@ public class HibernateSessionFactory {
 				Document doc = CommonUtil.toDocument(conf, null);
 				configuration.configure(doc);
 			}
-			catch (Throwable t) {
-				if (t instanceof ThreadDeath) throw (ThreadDeath) t;
-				log.log(Log.LEVEL_ERROR, "hibernate", t);
+			catch (Exception e) {
+				log.log(Log.LEVEL_ERROR, "hibernate", e);
 
 			}
 		}
 
 		try {
-			configuration.addXML(mappings);
+			configuration.addInputStream(new ByteArrayInputStream(mappings.getBytes("UTF-8")));
 		}
 		catch (MappingException me) {
 			throw ExceptionUtil.createException(data, null, me);
 		}
 
-		// make sure the connection provider has the DBUtil instance, this is a little bit of a mess but the
-		// only way to make our pool availbale without importing the railo core
-		// providing reference to connection pool here.
+		configuration.setProperty(AvailableSettings.FLUSH_BEFORE_COMPLETION, "false")
 
-		configuration
-				// Database connection settings
-				.setProperty("hibernate.connection.datasource_name", ds.getName())// uded by custom connctionprovider
-				.setProperty("hibernate.connection.datasource_id", ds.id())// uded by custom connctionprovider
+				.setProperty(AvailableSettings.ALLOW_UPDATE_OUTSIDE_TRANSACTION, "true")
 
-				.setProperty("hibernate.connection.driver_class", ds.getClassDefinition().getClassName())
+				.setProperty(AvailableSettings.AUTO_CLOSE_SESSION, "false");
 
-				.setProperty("hibernate.connection.url", ds.getDsnTranslated());
-		if (!Util.isEmpty(ds.getUsername())) {
-			configuration.setProperty(Environment.USER, ds.getUsername());
-			if (!Util.isEmpty(ds.getPassword())) configuration.setProperty(Environment.PASS, ds.getPassword());
-		}
+		setProperty(configuration, Environment.CONNECTION_PROVIDER, new ConnectionProviderImpl(ds, user, pass));
 
-		ConnectionProviderImpl.dataSources.put(ds.id(), ds);
+		/*
+		 * configuration.setProperty(Environment.CONNECTION_PROVIDER, ConnectionProviderImpl.class.getName()
+		 * // CPDummy.class.getName() )
+		 */
 
-		ConnectionProviderProxy.provider = new ConnectionProviderImpl();
-		// .setProperty("hibernate.connection.release_mode", "after_transaction")
-		configuration.setProperty("hibernate.transaction.flush_before_completion", "false").setProperty("hibernate.transaction.auto_close_session", "false")
-
-				// use Lucee connection pool to avoid dynamic-import:*
-				.setProperty("hibernate.transactsion.auto_close_session", "false")
-
-				.setProperty("lucee.datasource.name", ds.getName()).setProperty("lucee.datasource.id", ds.id());
-
-		if (!Util.isEmpty(ds.getUsername())) {
-			configuration.setProperty("lucee.datasource.user", ds.getUsername());
-			if (!Util.isEmpty(ds.getPassword())) configuration.setProperty("lucee.datasource.password", ds.getPassword());
-		}
-		configuration.setProperty(Environment.CONNECTION_PROVIDER, ConnectionProviderImpl.class.getName()
-		// CPDummy.class.getName()
-		)
-
-				// SQL dialect
-				.setProperty("hibernate.dialect", dialect)
+		// SQL dialect
+		configuration.setProperty(AvailableSettings.DIALECT, dialect)
 				// Enable Hibernate's current session context
-				.setProperty("hibernate.current_session_context_class", "thread")
+				.setProperty(AvailableSettings.CURRENT_SESSION_CONTEXT_CLASS, "thread")
 
 				// Echo all executed SQL to stdout
-				.setProperty("hibernate.show_sql", CommonUtil.toString(ormConf.logSQL())).setProperty("hibernate.format_sql", CommonUtil.toString(ormConf.logSQL()))
+				.setProperty(AvailableSettings.SHOW_SQL, CommonUtil.toString(ormConf.logSQL())).setProperty("hibernate.format_sql", CommonUtil.toString(ormConf.logSQL()))
+				// formatting of SQL logged to the console
+				.setProperty(AvailableSettings.FORMAT_SQL, CommonUtil.toString(ormConf.logSQL())).setProperty("hibernate.format_sql", CommonUtil.toString(ormConf.logSQL()))
 				// Specifies whether secondary caching should be enabled
-				.setProperty("hibernate.cache.use_second_level_cache", CommonUtil.toString(ormConf.secondaryCacheEnabled()))
+				.setProperty(AvailableSettings.USE_SECOND_LEVEL_CACHE, CommonUtil.toString(ormConf.secondaryCacheEnabled()))
 				// Drop and re-create the database schema on startup
 				.setProperty("hibernate.exposeTransactionAwareSessionFactory", "false")
 				// .setProperty("hibernate.hbm2ddl.auto", "create")
-				.setProperty("hibernate.default_entity_mode", "dynamic-map");
+				.setProperty(AvailableSettings.DEFAULT_ENTITY_MODE, "dynamic-map");
 
-		String catalog = ORMConfigurationUtil.getCatalog(ormConf, dc.getDatasource().getName());
-		String schema = ORMConfigurationUtil.getSchema(ormConf, dc.getDatasource().getName());
+		String catalog = ORMConfigurationUtil.getCatalog(ormConf, ds.getName());
+		String schema = ORMConfigurationUtil.getSchema(ormConf, ds.getName());
 
 		if (!Util.isEmpty(catalog)) configuration.setProperty("hibernate.default_catalog", catalog);
 		if (!Util.isEmpty(schema)) configuration.setProperty("hibernate.default_schema", schema);
 
-		try {
-			if (ormConf.secondaryCacheEnabled()) {
-				if (cacheConfig != null && cacheConfig.isFile()) {
-					configuration.setProperty("hibernate.cache.provider_configuration_file_resource_path", cacheConfig.getAbsolutePath());
-					configuration.setProperty("cache.provider_configuration_file_resource_path", cacheConfig.getAbsolutePath());
-					if (cacheConfig instanceof File) configuration.setProperty("net.sf.ehcache.configurationResourceName", ((File) cacheConfig).toURI().toURL().toExternalForm());
-					else throw new IOException("only local configuration files are supported");
+		if (ormConf.secondaryCacheEnabled()) {
+			if (cacheConfig != null && cacheConfig.isFile()) {
+				configuration.setProperty("hibernate.cache.provider_configuration_file_resource_path", cacheConfig.getAbsolutePath());
+				configuration.setProperty("cache.provider_configuration_file_resource_path", cacheConfig.getAbsolutePath());
+				if (cacheConfig instanceof File) configuration.setProperty("net.sf.ehcache.configurationResourceName", ((File) cacheConfig).toURI().toURL().toExternalForm());
+				else throw new IOException("only local configuration files are supported");
 
-				}
-
-				if (regionFactory != null || CFMLEngineFactory.getInstance().getClassUtil().isInstaneOf(cacheProvider, RegionFactory.class))
-					configuration.setProperty("hibernate.cache.region.factory_class", cacheProvider);
-				else configuration.setProperty("hibernate.cache.provider_class", cacheProvider);
-
-				configuration.setProperty("hibernate.cache.use_query_cache", "true");
-				// <prop
-				// key="hibernate.cache.provider_configuration_file_resource_path">hibernate-ehcache.xml</prop>
-
-				// hibernate.cache.provider_class=org.hibernate.cache.EhCacheProvider
 			}
-		}
-		catch (Throwable t) {
-			if (t instanceof ThreadDeath) throw (ThreadDeath) t;
+
+			if (cacheProviderFactory != null) {
+				setProperty(configuration, AvailableSettings.CACHE_REGION_FACTORY, cacheProviderFactory);
+			}
+			// AvailableSettings.CACHE_REGION_FACTORY
+			// hibernate.cache.region.factory_class
+			// hibernate.cache.use_second_level_cache
+
+			// <property
+			// name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
+			// <property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
+
+			configuration.setProperty("hibernate.cache.use_query_cache", "true");
+			// <prop
+			// key="hibernate.cache.provider_configuration_file_resource_path">hibernate-ehcache.xml</prop>
+
+			// hibernate.cache.provider_class=org.hibernate.cache.EhCacheProvider
 		}
 
-		/*
-		 * <!ELEMENT tuplizer EMPTY> <!ATTLIST tuplizer entity-mode (pojo|dom4j|dynamic-map) #IMPLIED> <!--
-		 * entity mode for which tuplizer is in effect --> <!ATTLIST tuplizer class CDATA #REQUIRED> <!--
-		 * the tuplizer class to use -->
-		 */
-		schemaExport(log, configuration, dc, data);
+		schemaExport(log, configuration, ds, user, pass, data);
 
 		return configuration;
+	}
+
+	private static void setProperty(Configuration configuration, String name, Object value) {
+		Properties props = new Properties();
+		props.put(name, value);
+		configuration.addProperties(props);
 	}
 
 	private static String createEHConfigXML(String cacheName) {
@@ -251,24 +254,47 @@ public class HibernateSessionFactory {
 				.append("</ehcache>").toString();
 	}
 
-	private static void schemaExport(Log log, Configuration configuration, DatasourceConnection dc, SessionFactoryData data) throws PageException, SQLException, IOException {
+	private static void schemaExport(Log log, Configuration configuration, DataSource ds, String user, String pass, SessionFactoryData data)
+			throws PageException, SQLException, IOException {
 		ORMConfiguration ormConf = data.getORMConfiguration();
-		int dbcreate = ORMConfigurationUtil.getDbCreate(ormConf, dc.getDatasource().getName());
-		if (ORMConfiguration.DBCREATE_NONE == dbcreate) {
+		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+
+		MetadataSources metadata = new MetadataSources(serviceRegistry);
+		EnumSet<TargetType> enumSet = EnumSet.of(TargetType.DATABASE);
+
+		if (ORMConfiguration.DBCREATE_NONE == ormConf.getDbCreate()) {
+			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "none");
 			return;
 		}
-		else if (ORMConfiguration.DBCREATE_DROP_CREATE == dbcreate) {
-			SchemaExport export = new SchemaExport(configuration);
+		else if (ORMConfiguration.DBCREATE_DROP_CREATE == ormConf.getDbCreate()) {
+			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create");
+			SchemaExport export = new SchemaExport();
 			export.setHaltOnError(true);
-
-			export.execute(false, true, false, false);
+			export.execute(enumSet, Action.BOTH, metadata.buildMetadata());
 			printError(log, data, export.getExceptions(), false);
-			executeSQLScript(ormConf, dc);
+			executeSQLScript(ormConf, ds, user, pass);
 		}
-		else if (ORMConfiguration.DBCREATE_UPDATE == dbcreate) {
-			SchemaUpdate update = new SchemaUpdate(configuration);
+		else if (/* ORMConfiguration.DBCREATE_CREATE */3 == ormConf.getDbCreate()) {
+			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create-only");
+			SchemaExport export = new SchemaExport();
+			export.setHaltOnError(true);
+			export.execute(enumSet, Action.CREATE, metadata.buildMetadata());
+			printError(log, data, export.getExceptions(), false);
+			executeSQLScript(ormConf, ds, user, pass);
+		}
+		else if (/* ORMConfiguration.DBCREATE_CREATE_DROP */4 == ormConf.getDbCreate()) {
+			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create-drop");
+			SchemaExport export = new SchemaExport();
+			export.setHaltOnError(true);
+			export.execute(enumSet, Action.BOTH, metadata.buildMetadata());
+			printError(log, data, export.getExceptions(), false);
+			executeSQLScript(ormConf, ds, user, pass);
+		}
+		else if (ORMConfiguration.DBCREATE_UPDATE == ormConf.getDbCreate()) {
+			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "update");
+			SchemaUpdate update = new SchemaUpdate();
 			update.setHaltOnError(true);
-			update.execute(false, true);
+			update.execute(enumSet, metadata.buildMetadata());
 			printError(log, data, update.getExceptions(), false);
 		}
 	}
@@ -289,15 +315,19 @@ public class HibernateSessionFactory {
 		}
 	}
 
-	private static void executeSQLScript(ORMConfiguration ormConf, DatasourceConnection dc) throws SQLException, IOException, PageException {
-		Resource sqlScript = ORMConfigurationUtil.getSqlScript(ormConf, dc.getDatasource().getName());
+	private static void executeSQLScript(ORMConfiguration ormConf, DataSource ds, String user, String pass) throws SQLException, IOException, PageException {
+		Resource sqlScript = ORMConfigurationUtil.getSqlScript(ormConf, ds.getName());
 		if (sqlScript != null && sqlScript.isFile()) {
 			BufferedReader br = CommonUtil.toBufferedReader(sqlScript, (Charset) null);
 			String line;
 			StringBuilder sql = new StringBuilder();
 			String str;
-			Statement stat = dc.getConnection().createStatement();
+			Statement stat = null;
+			PageContext pc = CFMLEngineFactory.getInstance().getThreadPageContext();
+			DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds, user, pass);
 			try {
+
+				stat = dc.getConnection().createStatement();
 				while ((line = br.readLine()) != null) {
 					line = line.trim();
 					if (line.startsWith("//") || line.startsWith("--")) continue;
@@ -318,6 +348,7 @@ public class HibernateSessionFactory {
 			}
 			finally {
 				CFMLEngineFactory.getInstance().getDBUtil().closeSilent(stat);
+				CommonUtil.releaseDatasourceConnection(pc, dc);
 			}
 		}
 	}

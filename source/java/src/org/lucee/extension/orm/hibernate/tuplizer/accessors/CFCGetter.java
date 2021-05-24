@@ -6,9 +6,10 @@ import java.util.Map;
 
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
-import org.hibernate.engine.SessionImplementor;
+import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.property.Getter;
+import org.hibernate.property.access.spi.Getter;
 import org.hibernate.type.Type;
 import org.lucee.extension.orm.hibernate.CommonUtil;
 import org.lucee.extension.orm.hibernate.HibernateCaster;
@@ -21,37 +22,32 @@ import lucee.runtime.Component;
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMSession;
-import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
 
 public class CFCGetter implements Getter {
 
 	private Key key;
+	private Type type;
+	private String entityName;
 
 	/**
 	 * Constructor of the class
 	 * 
 	 * @param key
+	 * @param string
+	 * @param type
 	 */
-	public CFCGetter(String key) {
-		this(CommonUtil.createKey(key));
-	}
-
-	/**
-	 * Constructor of the class
-	 * 
-	 * @param engine
-	 * @param key
-	 */
-	public CFCGetter(Collection.Key key) {
-		this.key = key;
+	public CFCGetter(String key, Type type, String entityName) {
+		this.key = CommonUtil.createKey(key);
+		this.type = type;
+		this.entityName = entityName;
 	}
 
 	@Override
 	public Object get(Object trg) throws HibernateException {
 		try {
 			// MUST cache this, perhaps when building xml
-			PageContext pc = CommonUtil.pc(); // pc can be null
+			PageContext pc = CommonUtil.pc();
 			ORMSession session = pc.getORMSession(true);
 			Component cfc = CommonUtil.toComponent(trg);
 			String dsn = CFMLEngineFactory.getInstance().getORMUtil().getDataSourceName(pc, cfc);
@@ -62,12 +58,8 @@ public class CFCGetter implements Getter {
 
 			Object rtn = cfc.getComponentScope().get(key, null);
 			return HibernateCaster.toSQL(type, rtn, null);
-		}
-		catch (PageException pe) {
+		} catch (PageException pe) {
 			throw new HibernatePageException(pe);
-		}
-		catch (Exception e) {
-			throw new HibernatePageException(CFMLEngineFactory.getInstance().getCastUtil().toPageException(e));
 		}
 	}
 
@@ -75,14 +67,19 @@ public class CFCGetter implements Getter {
 		try {
 			// TODO better impl
 			return HibernateUtil.getORMEngine(CommonUtil.pc());
+		} catch (PageException e) {
 		}
-		catch (PageException e) {}
 
 		return null;
 	}
 
+	// was used in previous versions, we keep it just in case
+	public Object getForInsert(Object trg, Map map, SessionImplementor si) throws HibernateException {
+		return get(trg);// MUST better solution? this is from MapGetter
+	}
+
 	@Override
-	public Object getForInsert(Object trg, Map arg1, SessionImplementor arg2) throws HibernateException {
+	public Object getForInsert(Object trg, Map map, SharedSessionContractImplementor ssci) {
 		return get(trg);// MUST better solution? this is from MapGetter
 	}
 
