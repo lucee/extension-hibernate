@@ -17,7 +17,6 @@
 	<classpathentry kind="lib" path="libs/lucee.jar"/>
 	<classpathentry kind="lib" path="libs/com.fasterxml.classmate-1.5.1.jar"/>
 	<classpathentry kind="lib" path="libs/javassist-3.9.0.GA copy.jar"/>
-	<classpathentry kind="lib" path="libs/hibernate-5.4.29.Final.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate-annotations-5.1.2.Final.jar"/>
 	<classpathentry kind="lib" path="libs/net.bytebuddy.byte-buddy-1.10.21.jar"/>
 	<classpathentry kind="lib" path="libs/javax.persistence-api-2.2.jar"/>
@@ -25,5 +24,10 @@
 	<classpathentry kind="lib" path="libs/org.jboss.logging.jboss-logging-3.4.1.Final.jar"/>
 	<classpathentry kind="lib" path="libs/ehcache-2.10.6.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate-ehcache-5.4.29.Final.jar"/>
+	<classpathentry kind="lib" path="libs/com.sun.istack.commons-runtime-3.0.12.jar"/>
+	<classpathentry kind="lib" path="libs/hibernate-5.4.29.1.jar"/>
+	<classpathentry kind="lib" path="libs/jakarta.xml.bind-api-2.3.3.jar"/>
+	<classpathentry kind="lib" path="libs/jaxb-runtime-2.3.4.jar"/>
+	<classpathentry kind="lib" path="libs/org.lucee.txw2-2011.8.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
