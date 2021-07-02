@@ -20,6 +20,8 @@ import java.util.Set;
 
 import org.hibernate.MappingException;
 import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.BootstrapServiceRegistry;
+import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cache.ehcache.internal.EhcacheRegionFactory;
 import org.hibernate.cfg.AvailableSettings;
@@ -122,7 +124,10 @@ public class HibernateSessionFactory {
 		// SwarmCache -> https://mvnrepository.com/artifact/org.hibernate/hibernate-swarmcache
 
 		Resource cc = ormConf.getCacheConfig();
-		Configuration configuration = new Configuration();
+
+		BootstrapServiceRegistry bootstrapRegistry = new BootstrapServiceRegistryBuilder().applyIntegrator(data.getEventListenerIntegrator()).build();
+
+		Configuration configuration = new Configuration(bootstrapRegistry);
 
 		// is ehcache
 		Resource cacheConfig = null;
@@ -178,11 +183,6 @@ public class HibernateSessionFactory {
 				.setProperty(AvailableSettings.AUTO_CLOSE_SESSION, "false");
 
 		setProperty(configuration, Environment.CONNECTION_PROVIDER, new ConnectionProviderImpl(ds, user, pass));
-
-		/*
-		 * configuration.setProperty(Environment.CONNECTION_PROVIDER, ConnectionProviderImpl.class.getName()
-		 * // CPDummy.class.getName() )
-		 */
 
 		// SQL dialect
 		configuration.setProperty(AvailableSettings.DIALECT, dialect)
@@ -257,6 +257,7 @@ public class HibernateSessionFactory {
 	private static void schemaExport(Log log, Configuration configuration, DataSource ds, String user, String pass, SessionFactoryData data)
 			throws PageException, SQLException, IOException {
 		ORMConfiguration ormConf = data.getORMConfiguration();
+
 		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 
 		MetadataSources metadata = new MetadataSources(serviceRegistry);

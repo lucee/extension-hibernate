@@ -11,6 +11,7 @@ import java.util.Map;
 import org.hibernate.SessionFactory;
 import org.hibernate.engine.query.spi.QueryPlanCache;
 import org.hibernate.internal.SessionFactoryImpl;
+import org.lucee.extension.orm.hibernate.event.EventListenerIntegrator;
 import org.lucee.extension.orm.hibernate.jdbc.DataSourceConfig;
 import org.lucee.extension.orm.hibernate.naming.CFCNamingStrategy;
 import org.lucee.extension.orm.hibernate.naming.DefaultNamingStrategy;
@@ -46,6 +47,8 @@ public class SessionFactoryData {
 	private final HibernateORMEngine engine;
 	private Struct tableInfo = CommonUtil.createStruct();
 	private String cfcNamingStrategy;
+
+	private EventListenerIntegrator eventListenerIntegrator = new EventListenerIntegrator();
 
 	public SessionFactoryData(HibernateORMEngine engine, ORMConfiguration ormConf) {
 		this.engine = engine;
@@ -320,5 +323,9 @@ public class SessionFactoryData {
 
 	public DataSource getDataSource(Key datasSourceName) {
 		return sources.get(datasSourceName);
+	}
+
+	public EventListenerIntegrator getEventListenerIntegrator() {
+		return eventListenerIntegrator;
 	}
 }
