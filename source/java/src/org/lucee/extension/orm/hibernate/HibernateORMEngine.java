@@ -272,14 +272,13 @@ public class HibernateORMEngine implements ORMEngine {
 				root = doc.createElement("hibernate-mapping");
 				doc.appendChild(root);
 				pc.addPageSource(cfc.getPageSource(), true);
-				DataSourceManager manager = pc.getDataSourceManager();
-				DatasourceConnection dc = manager.getConnection(pc, ds, null, null);
+				DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds, null, null);
 				try {
 					HBMCreator.createXMLMapping(pc, dc, cfc, root, data);
 				}
 				finally {
 					pc.removeLastPageSource(true);
-					manager.releaseConnection(pc, dc);
+					CommonUtil.releaseDatasourceConnection(pc, dc);
 				}
 				try {
 					xml = XMLUtil.toString(root.getChildNodes(), true, true);
