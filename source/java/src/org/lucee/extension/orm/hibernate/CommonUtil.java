@@ -69,6 +69,13 @@ public class CommonUtil {
 	public static final Key POST_LOAD = CommonUtil.createKey("postLoad");
 	public static final Key PRE_UPDATE = CommonUtil.createKey("preUpdate");
 	public static final Key PRE_INSERT = CommonUtil.createKey("preInsert");
+	public static final Key ON_FLUSH = CommonUtil.createKey("onFlush");
+	public static final Key ON_AUTO_FLUSH = CommonUtil.createKey("onAutoFlush");
+	public static final Key ON_CLEAR = CommonUtil.createKey("onClear");
+	public static final Key ON_DELETE = CommonUtil.createKey("onDelete");
+	public static final Key ON_DIRTY_CHECK = CommonUtil.createKey("onDirtyCheck");
+	public static final Key ON_EVICT = CommonUtil.createKey("onEvict");
+
 	public static final Key INIT = CommonUtil.createKey("init");
 	private static final short INSPECT_UNDEFINED = (short) 4; /* ConfigImpl.INSPECT_UNDEFINED */
 	private static final Class<?>[] ZEROC = new Class<?>[] {};
