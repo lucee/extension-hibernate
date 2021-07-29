@@ -553,16 +553,7 @@ public class HibernateORMSession implements ORMSession {
 						// HibernateCaster.toHibernateType(item.getType(), null); MUST
 						// query.setParameter(index, item.getValue(),type);
 					}
-					if (meta != null) {
-						type = meta.getOrdinalParameterExpectedType(index + 1);
-						obj = HibernateCaster.toSQL(type, obj, isArray);
-						// TOOD can the following be done somehow
-						// if(isArray.toBooleanValue())
-						// query.setParameterList(index, (Object[])obj,type);
-						// else
-						query.setParameter(index, obj, type);
-					}
-					else query.setParameter(index, obj);
+					query.setParameter( index+1, obj );
 					index++;
 				}
 				if (meta.getOrdinalParameterCount() > index) throw ExceptionUtil.createException(this, null,
