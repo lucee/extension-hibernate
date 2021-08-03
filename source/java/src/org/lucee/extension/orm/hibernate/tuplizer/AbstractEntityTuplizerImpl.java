@@ -7,6 +7,7 @@ import org.hibernate.EntityMode;
 import org.hibernate.EntityNameResolver;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.mapping.Property;
 import org.hibernate.property.access.spi.Getter;
@@ -44,6 +45,11 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 		return toIdentifier(super.getIdentifier(entity));
 	}
 
+	@Override
+	public void setIdentifier(final Object entity, final Serializable id, final SharedSessionContractImplementor session) {
+		super.setIdentifier(entity, toIdentifier(id), session);
+	}
+
 	private Serializable toIdentifier(Serializable id) {
 		if (id instanceof Component) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
@@ -63,8 +69,7 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 				// ormtype
 				if (meta != null) {
 					String tmp = CommonUtil.toString(meta.get("ormtype", null), null);
-					if (!Util.isEmpty(tmp))
-						type = tmp;
+					if (!Util.isEmpty(tmp)) type = tmp;
 				}
 
 				// generator
@@ -75,15 +80,15 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 						if (!Util.isEmpty(gen)) {
 							type = HBMCreator.getDefaultTypeForGenerator(gen, "string");
 						}
-					} catch (Throwable t) {
-						if (t instanceof ThreadDeath)
-							throw (ThreadDeath) t;
+					}
+					catch (Throwable t) {
+						if (t instanceof ThreadDeath) throw (ThreadDeath) t;
 					}
 				}
 				try {
-					value = HibernateCaster.toHibernateValue(CFMLEngineFactory.getInstance().getThreadPageContext(),
-							value, type);
-				} catch (PageException pe) {
+					value = HibernateCaster.toHibernateValue(CFMLEngineFactory.getInstance().getThreadPageContext(), value, type);
+				}
+				catch (PageException pe) {
 				}
 
 				map.put(name, value);
@@ -102,8 +107,7 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 	protected Getter buildPropertyGetter(Property mappedProperty, PersistentClass mappedEntity) {
 		Type type = null;
 		// Type type = null;
-		if (mappedProperty.getValue() != null)
-			type = mappedProperty.getType();
+		if (mappedProperty.getValue() != null) type = mappedProperty.getType();
 		return new CFCGetter(mappedProperty.getName(), type, mappedEntity.getEntityName());
 	}
 
@@ -111,8 +115,7 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 	protected Setter buildPropertySetter(Property mappedProperty, PersistentClass mappedEntity) {
 		Type type = null;
 		// Type type = null;
-		if (mappedProperty.getValue() != null)
-			type = mappedProperty.getType();
+		if (mappedProperty.getValue() != null) type = mappedProperty.getType();
 		return new CFCSetter(mappedProperty.getName(), type, mappedEntity.getEntityName());
 	}
 
