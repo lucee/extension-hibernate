@@ -26,9 +26,9 @@
 	<classpathentry kind="lib" path="libs/hibernate-ehcache-5.4.29.Final.jar"/>
 	<classpathentry kind="lib" path="libs/com.sun.istack.commons-runtime-3.0.12.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate-5.4.29.1.jar"/>
-	<classpathentry kind="lib" path="libs/jakarta.xml.bind-api-2.3.3.jar"/>
 	<classpathentry kind="lib" path="libs/jaxb-runtime-2.3.4.jar"/>
 	<classpathentry kind="lib" path="libs/org.lucee.txw2-2011.8.9.jar"/>
-	<classpathentry kind="lib" path="libs/org.glassfish.jaxb.runtime-2.3.4.jar"/>
+	<classpathentry kind="lib" path="libs/jakarta.activation-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libs/jakarta.xml.bind-api-3.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
