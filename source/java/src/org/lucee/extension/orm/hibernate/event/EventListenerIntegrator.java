@@ -66,6 +66,14 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 		eventListenerRegistry.getEventListenerGroup(EventType.PRE_LOAD).appendListener(this);
 		eventListenerRegistry.getEventListenerGroup(EventType.POST_LOAD).appendListener(this);
 
+		// NEW events added in 5.4
+		eventListenerRegistry.getEventListenerGroup(EventType.AUTO_FLUSH ).appendListener(this);
+		eventListenerRegistry.getEventListenerGroup(EventType.CLEAR ).appendListener(this);
+		eventListenerRegistry.getEventListenerGroup(EventType.DIRTY_CHECK ).appendListener(this);
+		eventListenerRegistry.getEventListenerGroup(EventType.FLUSH ).appendListener(this);
+		eventListenerRegistry.getEventListenerGroup(EventType.EVICT ).appendListener(this);
+		eventListenerRegistry.getEventListenerGroup(EventType.DELETE ).appendListener(this);
+
 	}
 
 	@Override
