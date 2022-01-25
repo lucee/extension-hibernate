@@ -43,8 +43,8 @@ jobs:
       with:
         repository: lucee/lucee
         path: lucee
-    - name: Run Lucee Test Suite
-      uses: zspitzer/lucee-script-engine-runner@main
+    - name: Run Lucee Test Suite, testLabels="orm"
+      uses: lucee/script-runner@main
       with:
         webroot: ${{ github.workspace }}/lucee/test
         execute: /bootstrap-tests.cfm
