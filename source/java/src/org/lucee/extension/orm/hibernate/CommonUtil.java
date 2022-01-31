@@ -25,6 +25,7 @@ import java.util.TimeZone;
 import org.hibernate.JDBCException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.lucee.extension.orm.hibernate.util.XMLUtil;
+import org.lucee.extension.orm.hibernate.util.print;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -37,7 +38,6 @@ import lucee.runtime.Mapping;
 import lucee.runtime.PageContext;
 import lucee.runtime.component.Property;
 import lucee.runtime.config.Config;
-import lucee.runtime.config.ConfigWeb;
 import lucee.runtime.db.DataSource;
 import lucee.runtime.db.DatasourceConnection;
 import lucee.runtime.db.SQL;
@@ -80,8 +80,9 @@ public class CommonUtil {
 	private static final short INSPECT_UNDEFINED = (short) 4; /* ConfigImpl.INSPECT_UNDEFINED */
 	private static final Class<?>[] ZEROC = new Class<?>[] {};
 	private static final Object[] ZEROO = new Object[] {};
-	private static final Class<?>[] GET_CONN_ARGS = new Class[] { Config.class, DataSource.class, String.class, String.class };
-
+	private static final Class<?>[] GET_CONN = new Class[] { PageContext.class, DataSource.class, String.class, String.class };
+	private static final Class<?>[] REL_CONN = new Class[] { PageContext.class, DatasourceConnection.class };
+	// releaseConnection(pageContext, dc);
 	private static Charset _charset;
 
 	public static Charset _UTF8;
@@ -132,6 +133,9 @@ public class CommonUtil {
 	private static lucee.runtime.util.ListUtil list;
 	private static DBUtil db;
 	private static ORMUtil orm;
+	private static Method mGetDataSourceManager;
+	private static Method mGetConnection;
+	private static Method mReleaseConnection;
 
 	public static Object castTo(PageContext pc, Class trgClass, Object obj) throws PageException {
 		return caster().castTo(pc, trgClass, obj);
@@ -704,30 +708,43 @@ public class CommonUtil {
 		return pc.getDataSource(name);
 	}
 
-	public static DatasourceConnection getDatasourceConnection(PageContext pc, DataSource ds, String user, String pass) throws PageException {
-		// return db().getDatasourceConnection(pc, ds, null, null);
-
-		// FUTURE this need to come from the Lucee public interface NOT MANAGED this cannot come from the
-		// manager!
-		// FUTURE db().getDatasourceConnection(pc, ds, null, null,false);
-
+	private static Object getDatasourceManager(PageContext pc) throws PageException {
 		try {
-			ConfigWeb config = pc.getConfig();
-			Method getDatasourceConnectionPool = config.getClass().getMethod("getDatasourceConnectionPool", ZEROC);
-			Object pool = getDatasourceConnectionPool.invoke(config, ZEROO);
-			Method getDatasourceConnection = pool.getClass().getMethod("getDatasourceConnection", GET_CONN_ARGS);
-			return (DatasourceConnection) getDatasourceConnection.invoke(pool, new Object[] { config, ds, user, pass });
+			if (mGetDataSourceManager == null || pc.getClass() != mGetDataSourceManager.getDeclaringClass())
+				mGetDataSourceManager = pc.getClass().getMethod("getDataSourceManager", ZEROC);
+			return mGetDataSourceManager.invoke(pc, ZEROO);
 		}
-		catch (Throwable t) {
-			if (t instanceof ThreadDeath) throw (ThreadDeath) t;
-			throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(t);
+		catch (Exception e) {
+			throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
 		}
 	}
 
-	public static void releaseDatasourceConnection(PageContext pc, DatasourceConnection dc) {
-		// we can do this, because this is not using the manager!
-		db().releaseDatasourceConnection(pc.getConfig(), dc, true);
-		// FUTURE db().releaseDatasourceConnection(pc,dc);
+	public static DatasourceConnection getDatasourceConnection(PageContext pc, DataSource ds, String user, String pass) throws PageException {
+		print.ds();
+		Object manager = getDatasourceManager(pc);
+		try {
+			if (mGetConnection == null || manager.getClass() != mGetConnection.getDeclaringClass()) {
+				mGetConnection = manager.getClass().getMethod("getConnection", GET_CONN);
+			}
+			return (DatasourceConnection) mGetConnection.invoke(manager, new Object[] { pc, ds, user, pass });
+		}
+		catch (Exception e) {
+			throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
+		}
+	}
+
+	public static void releaseDatasourceConnection(PageContext pc, DatasourceConnection dc) throws PageException {
+		print.ds();
+		Object manager = getDatasourceManager(pc);
+		try {
+			if (mReleaseConnection == null || manager.getClass() != mReleaseConnection.getDeclaringClass()) {
+				mReleaseConnection = manager.getClass().getMethod("releaseConnection", REL_CONN);
+			}
+			mReleaseConnection.invoke(manager, new Object[] { pc, dc });
+		}
+		catch (Exception e) {
+			throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
+		}
 	}
 
 	public static Mapping createMapping(Config config, String virtual, String physical) {

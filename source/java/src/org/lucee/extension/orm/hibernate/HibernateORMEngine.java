@@ -172,7 +172,6 @@ public class HibernateORMEngine implements ORMEngine {
 			e = it.next();
 			if (data.getConfiguration(e.getKey()) != null) continue;
 
-			// DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, data.getDataSource(e.getKey()));
 			try {
 				data.setConfiguration(log, e.getValue(), data.getDataSource(e.getKey()), null, null, appContext == null ? "" : appContext.getName());
 			}

@@ -89,7 +89,7 @@ public class HibernateORMSession implements ORMSession {
 			dc = CommonUtil.getDatasourceConnection(pc, d, null, null);
 		}
 
-		public void close(PageContext pc) {
+		public void close(PageContext pc) throws PageException {
 			if (s != null && s.isOpen()) {
 				s.close();
 				s = null;
@@ -678,7 +678,6 @@ public class HibernateORMSession implements ORMSession {
 
 	public Component load(PageContext pc, String cfcName, Object id) throws PageException {
 		// Component cfc = create(pc,cfcName);
-
 		Component cfc = data.getEngine().create(pc, this, cfcName, false);
 		Key dsn = CommonUtil.toKey(CommonUtil.getDataSourceName(pc, cfc));
 		Session sess = getSession(pc, dsn);

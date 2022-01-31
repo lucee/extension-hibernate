@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
+import org.lucee.extension.orm.hibernate.CommonUtil;
 
 import lucee.loader.engine.CFMLEngine;
 import lucee.loader.engine.CFMLEngineFactory;
@@ -11,11 +12,12 @@ import lucee.runtime.PageContext;
 import lucee.runtime.db.DataSource;
 import lucee.runtime.db.DatasourceConnection;
 import lucee.runtime.exp.PageException;
-import lucee.runtime.util.DBUtil;
 
 public class ConnectionProviderImpl implements ConnectionProvider {
 
-	private final DBUtil dbu;
+	private static final long serialVersionUID = -4513189055112912809L;
+
+	// private final DBUtil dbu;
 	private CFMLEngine engine;
 	private final DataSource ds;
 	private final String user;
@@ -23,7 +25,7 @@ public class ConnectionProviderImpl implements ConnectionProvider {
 
 	public ConnectionProviderImpl(DataSource ds, String user, String pass) {
 		engine = CFMLEngineFactory.getInstance();
-		dbu = engine.getDBUtil();
+		// dbu = engine.getDBUtil();
 		this.ds = ds;
 		this.user = user;
 		this.pass = pass;
@@ -34,7 +36,9 @@ public class ConnectionProviderImpl implements ConnectionProvider {
 		PageContext pc = engine.getThreadPageContext();
 
 		try {
-			return dbu.getDatasourceConnection(pc, ds, user, pass);
+			return CommonUtil.getDatasourceConnection(pc, ds, user, pass);
+			// FUTURE we do not use because this is not managed the 4th argument is required return
+			// dbu.getDatasourceConnection(pc, ds, user, pass,true);
 		}
 		catch (PageException pe) {
 			throw engine.getExceptionUtil().createPageRuntimeException(pe);
@@ -43,7 +47,17 @@ public class ConnectionProviderImpl implements ConnectionProvider {
 
 	@Override
 	public void closeConnection(Connection conn) throws SQLException {
-		if (conn instanceof DatasourceConnection) dbu.releaseDatasourceConnection(engine.getThreadConfig(), (DatasourceConnection) conn, false);
+		PageContext pc = engine.getThreadPageContext();
+		if (conn instanceof DatasourceConnection) {
+			try {
+				CommonUtil.releaseDatasourceConnection(pc, (DatasourceConnection) conn);
+				// FUTURE see comment above dbu.releaseDatasourceConnection(engine.getThreadConfig(),
+				// (DatasourceConnection) conn, false);
+			}
+			catch (PageException pe) {
+				throw engine.getExceptionUtil().createPageRuntimeException(pe);
+			}
+		}
 	}
 
 	@Override
