@@ -15,8 +15,7 @@ Require-Bundle: org.lucee.hibernate;bundle-version=5.4.29.1,
  javax.persistence-api;bundle-version=2.2,
  org.lucee.hibernate-ehcache;bundle-version=5.4.29.Final,
  org.lucee.ehcache;bundle-version=2.10.6,
- com.sun.activation.jakarta.activation;bundle-version=2.0.1,
- jakarta.xml.bind-api;bundle-version=3.0.1,
+ jakarta.xml.bind-api;bundle-version=2.3.3,
  org.glassfish.jaxb.runtime;bundle-version=2.3.4
 Require-Bundle-Fragment: slf4j.nop;bundle-version=1.7.12
 Bundle-ManifestVersion: 2
