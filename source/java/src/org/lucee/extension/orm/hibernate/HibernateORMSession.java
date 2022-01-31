@@ -86,10 +86,10 @@ public class HibernateORMSession implements ORMSession {
 
 		public void connect(PageContext pc) throws PageException {
 			if (dc != null) CommonUtil.releaseDatasourceConnection(pc, dc);
-			dc = CommonUtil.getDatasourceConnection(pc, d);
+			dc = CommonUtil.getDatasourceConnection(pc, d, null, null);
 		}
 
-		public void close(PageContext pc) {
+		public void close(PageContext pc) throws PageException {
 			if (s != null && s.isOpen()) {
 				s.close();
 				s = null;

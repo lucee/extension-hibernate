@@ -62,7 +62,8 @@ public class HibernateORMEngine implements ORMEngine {
 
 	private Map<String, SessionFactoryData> factories = new ConcurrentHashMap<String, SessionFactoryData>();
 
-	public HibernateORMEngine() {}
+	public HibernateORMEngine() {
+	}
 
 	@Override
 	public void init(PageContext pc) throws PageException {
@@ -183,7 +184,7 @@ public class HibernateORMEngine implements ORMEngine {
 			e = it.next();
 			if (data.getConfiguration(e.getKey()) != null) continue;
 
-			DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, data.getDataSource(e.getKey()));
+			DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, data.getDataSource(e.getKey()), null, null);
 			try {
 				data.setConfiguration(log, e.getValue(), dc, appContext == null ? "" : appContext.getName());
 			}
@@ -318,7 +319,8 @@ public class HibernateORMEngine implements ORMEngine {
 				data.append(eng.getSystemUtil().hash64b(eng.getIOUtil().toString(res, null)));
 				return;
 			}
-			catch (IOException e) {}
+			catch (IOException e) {
+			}
 		}
 		data.append(res.getAbsolutePath()).append(':');
 	}
@@ -395,7 +397,8 @@ public class HibernateORMEngine implements ORMEngine {
 					CommonUtil.write(res, CommonUtil.toString(hm, false, true, HibernateSessionFactory.HIBERNATE_3_PUBLIC_ID, HibernateSessionFactory.HIBERNATE_3_SYSTEM_ID,
 							CommonUtil.UTF8().name()), CommonUtil.UTF8(), false);
 				}
-				catch (Exception e) {}
+				catch (Exception e) {
+				}
 			}
 		}
 	}
@@ -409,7 +412,8 @@ public class HibernateORMEngine implements ORMEngine {
 				sb.append(CommonUtil.toString(res, CommonUtil.UTF8()));
 				return res.lastModified();
 			}
-			catch (Exception e) {}
+			catch (Exception e) {
+			}
 		}
 		return 0;
 	}
