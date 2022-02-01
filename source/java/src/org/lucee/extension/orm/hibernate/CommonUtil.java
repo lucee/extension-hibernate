@@ -25,7 +25,6 @@ import java.util.TimeZone;
 import org.hibernate.JDBCException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.lucee.extension.orm.hibernate.util.XMLUtil;
-import org.lucee.extension.orm.hibernate.util.print;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -720,7 +719,6 @@ public class CommonUtil {
 	}
 
 	public static DatasourceConnection getDatasourceConnection(PageContext pc, DataSource ds, String user, String pass) throws PageException {
-		print.ds();
 		Object manager = getDatasourceManager(pc);
 		try {
 			if (mGetConnection == null || manager.getClass() != mGetConnection.getDeclaringClass()) {
@@ -734,7 +732,6 @@ public class CommonUtil {
 	}
 
 	public static void releaseDatasourceConnection(PageContext pc, DatasourceConnection dc) throws PageException {
-		print.ds();
 		Object manager = getDatasourceManager(pc);
 		try {
 			if (mReleaseConnection == null || manager.getClass() != mReleaseConnection.getDeclaringClass()) {
