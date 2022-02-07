@@ -33,6 +33,7 @@ import lucee.runtime.Component;
 import lucee.runtime.ComponentScope;
 import lucee.runtime.PageContext;
 import lucee.runtime.db.DataSource;
+import lucee.runtime.db.DataSourceManager;
 import lucee.runtime.db.DatasourceConnection;
 import lucee.runtime.db.SQLItem;
 import lucee.runtime.exp.PageException;
@@ -85,8 +86,11 @@ public class HibernateORMSession implements ORMSession {
 		}
 
 		public void connect(PageContext pc) throws PageException {
-			if (dc != null) CommonUtil.releaseDatasourceConnection(pc, dc);
-			dc = CommonUtil.getDatasourceConnection(pc, d, null, null);
+			DataSourceManager manager = pc.getDataSourceManager();
+			if (dc != null) {
+				manager.releaseConnection(pc, dc);
+			}
+			dc = manager.getConnection(pc, d, null, null);
 		}
 
 		public void close(PageContext pc) throws PageException {
@@ -96,7 +100,8 @@ public class HibernateORMSession implements ORMSession {
 			}
 
 			if (dc != null) {
-				CommonUtil.releaseDatasourceConnection(pc, dc);
+				DataSourceManager manager = pc.getDataSourceManager();
+				manager.releaseConnection(pc, dc);
 				dc = null;
 			}
 		}

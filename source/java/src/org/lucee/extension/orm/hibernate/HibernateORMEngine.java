@@ -184,7 +184,9 @@ public class HibernateORMEngine implements ORMEngine {
 			e = it.next();
 			if (data.getConfiguration(e.getKey()) != null) continue;
 
-			DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, data.getDataSource(e.getKey()), null, null);
+			DataSourceManager manager = pc.getDataSourceManager();
+			DatasourceConnection dc = manager.getConnection(pc, data.getDataSource(e.getKey()), null, null);
+
 			try {
 				data.setConfiguration(log, e.getValue(), dc, appContext == null ? "" : appContext.getName());
 			}
@@ -192,7 +194,7 @@ public class HibernateORMEngine implements ORMEngine {
 				throw CommonUtil.toPageException(ex);
 			}
 			finally {
-				CommonUtil.releaseDatasourceConnection(pc, dc);
+				manager.releaseConnection(pc, dc);
 			}
 			addEventListeners(pc, data, e.getKey());
 
