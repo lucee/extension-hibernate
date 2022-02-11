@@ -23,6 +23,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.query.spi.HQLQueryPlan;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.query.Query;
 import org.hibernate.query.internal.ParameterMetadataImpl;
 import org.hibernate.type.Type;
 
@@ -456,7 +457,9 @@ public class HibernateORMSession implements ORMSession {
 	private Object __executeQuery(PageContext pc, Session session, Key dsn, String hql, Object params, boolean unique, Struct options) throws PageException {
 		// Session session = getSession(pc,null);
 		hql = hql.trim();
-		org.hibernate.Query query = session.createQuery(hql);
+		boolean isParamArray = params != null && CommonUtil.isArray(params);
+		if (isParamArray) hql = addIndexIfNecessary(hql);
+		Query<?> query = session.createQuery(hql);
 		// options
 		if (options != null) {
 			// maxresults
@@ -506,7 +509,6 @@ public class HibernateORMSession implements ORMSession {
 			// struct
 			if (CommonUtil.isStruct(params)) {
 				Struct sct = CommonUtil.toStruct(params);
-				Key[] keys = CommonUtil.keys(sct);
 				String name;
 				// fix case-senstive
 				Struct names = CommonUtil.createStruct();
@@ -519,12 +521,16 @@ public class HibernateORMSession implements ORMSession {
 				}
 
 				RefBoolean isArray = CommonUtil.createRefBoolean();
-				for (int i = 0; i < keys.length; i++) {
-					obj = sct.get(keys[i], null);
+				Iterator<Entry<Key, Object>> it = sct.entryIterator();
+				Entry<Key, Object> e;
+				while (it.hasNext()) {
+					e = it.next();
+					obj = sct.get(e.getKey(), null);
 					if (meta != null) {
-						name = (String) names.get(keys[i], null);
+						name = (String) names.get(e.getKey(), null);
 						if (name == null) continue; // param not needed will be ignored
 						type = meta.getNamedParameterExpectedType(name);
+
 						obj = HibernateCaster.toSQL(type, obj, isArray);
 						if (isArray.toBooleanValue()) {
 							if (obj instanceof Object[]) query.setParameterList(name, (Object[]) obj, type);
@@ -534,39 +540,38 @@ public class HibernateORMSession implements ORMSession {
 						else query.setParameter(name, obj, type);
 
 					}
-					else query.setParameter(keys[i].getString(), obj);
+					else query.setParameter(e.getKey().getString(), obj);
 				}
 			}
 
 			// array
-			else if (CommonUtil.isArray(params)) {
+			else if (isParamArray) {
 				Array arr = CommonUtil.toArray(params);
+
+				if (meta.getOrdinalParameterCount() > arr.size()) throw ExceptionUtil.createException(this, null,
+						"parameter array is to small [" + arr.size() + "], need [" + meta.getOrdinalParameterCount() + "] elements", null);
+
 				Iterator it = arr.valueIterator();
-				int index = 0;
+				int idx = 1;
 				SQLItem item;
 				RefBoolean isArray = null;
+
 				while (it.hasNext()) {
+					type = null;
 					obj = it.next();
 					if (obj instanceof SQLItem) {
 						item = (SQLItem) obj;
 						obj = item.getValue();
-						// HibernateCaster.toHibernateType(item.getType(), null); MUST
-						// query.setParameter(index, item.getValue(),type);
 					}
 					if (meta != null) {
-						type = meta.getOrdinalParameterExpectedType(index + 1);
-						obj = HibernateCaster.toSQL(type, obj, isArray);
-						// TOOD can the following be done somehow
-						// if(isArray.toBooleanValue())
-						// query.setParameterList(index, (Object[])obj,type);
-						// else
-						query.setParameter(index, obj, type);
+						type = meta.getOrdinalParameterExpectedType(idx);
 					}
-					else query.setParameter(index, obj);
-					index++;
+
+					if (type != null) query.setParameter(idx, HibernateCaster.toSQL(type, obj, isArray), type);
+					else query.setParameter(idx, obj);
+					idx++;
 				}
-				if (meta.getOrdinalParameterCount() > index) throw ExceptionUtil.createException(this, null,
-						"parameter array is to small [" + arr.size() + "], need [" + meta.getOrdinalParameterCount() + "] elements", null);
+
 			}
 		}
 
@@ -583,7 +588,7 @@ public class HibernateORMSession implements ORMSession {
 		return new Double(query.executeUpdate());
 	}
 
-	private Object uniqueResult(org.hibernate.Query query) throws PageException {
+	private Object uniqueResult(Query<?> query) throws PageException {
 		try {
 			return query.uniqueResult();
 		}
@@ -897,5 +902,48 @@ public class HibernateORMSession implements ORMSession {
 	@Override
 	public DataSource[] getDataSources() {
 		return data.getDataSources();
+	}
+
+	private static String addIndexIfNecessary(String sql) {
+		// if(namedParams.size()==0) return new Pair<String, List<Param>>(sql,params);
+		StringBuilder sb = new StringBuilder();
+		int sqlLen = sql.length();
+		char c, quoteType = 0;
+		boolean inQuotes = false;
+		int qm = 0, _qm = 0;
+		int index = 1;
+		for (int i = 0; i < sqlLen; i++) {
+			c = sql.charAt(i);
+
+			if (c == '"' || c == '\'') {
+				if (inQuotes) {
+					if (c == quoteType) {
+						inQuotes = false;
+					}
+				}
+				else {
+					quoteType = c;
+					inQuotes = true;
+				}
+			}
+
+			if (!inQuotes && c == '?') {
+				// is the next a number?
+				if (sqlLen > i + 1 && isInteger(sql.charAt(i + 1))) {
+					return sql;
+				}
+
+				sb.append(c).append(index++);
+			}
+			else {
+				sb.append(c);
+			}
+		}
+
+		return sb.toString();
+	}
+
+	private static final boolean isInteger(char c) {
+		return c >= '0' && c <= '9';
 	}
 }
