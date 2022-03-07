@@ -70,38 +70,8 @@ public class HibernateSessionFactory {
 		// dialect
 		String dialect = null;
 		String tmpDialect = ORMConfigurationUtil.getDialect(ormConf, ds.getName());
-		if (!Util.isEmpty(tmpDialect)) {
-
-			dialect = Dialect.getDialect(tmpDialect);
-
-			if (dialect == null) {
-				try {
-					if ((Class.forName(tmpDialect)) != null) {
-						dialect = tmpDialect;
-					}
-				}
-				catch (Exception e) {
-					log.error("hibernate", e);
-				}
-			}
-
-			if (dialect == null) {
-				try {
-
-					if ((CFMLEngineFactory.getInstance().getClassUtil().loadClass(tmpDialect)) != null) {
-						dialect = tmpDialect;
-					}
-				}
-				catch (Exception e) {
-					log.error("hibernate", e);
-				}
-			}
-
-		}
-		if (Util.isEmpty(dialect)) dialect = Dialect.getDialect(ds);
-
-		if (Util.isEmpty(dialect)) throw ExceptionUtil.createException(data, null,
-				"A valid dialect definition inside the application event listener (Application.cfc)" + " is missing. The dialect cannot be determinated automatically", null);
+		if (!Util.isEmpty(tmpDialect)) dialect = Dialect.getDialect(tmpDialect);
+		if (dialect != null && Util.isEmpty(dialect)) dialect = null;
 
 		// Cache Provider
 		String cacheProvider = ormConf.getCacheProvider();
@@ -185,9 +155,9 @@ public class HibernateSessionFactory {
 		setProperty(configuration, Environment.CONNECTION_PROVIDER, new ConnectionProviderImpl(ds, user, pass));
 
 		// SQL dialect
-		configuration.setProperty(AvailableSettings.DIALECT, dialect)
-				// Enable Hibernate's current session context
-				.setProperty(AvailableSettings.CURRENT_SESSION_CONTEXT_CLASS, "thread")
+		if (dialect != null) configuration.setProperty(AvailableSettings.DIALECT, dialect);
+		// Enable Hibernate's current session context
+		configuration.setProperty(AvailableSettings.CURRENT_SESSION_CONTEXT_CLASS, "thread")
 
 				// Echo all executed SQL to stdout
 				.setProperty(AvailableSettings.SHOW_SQL, CommonUtil.toString(ormConf.logSQL())).setProperty("hibernate.format_sql", CommonUtil.toString(ormConf.logSQL()))
