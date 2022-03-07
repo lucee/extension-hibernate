@@ -79,8 +79,12 @@ public class CommonUtil {
 	private static final short INSPECT_UNDEFINED = (short) 4; /* ConfigImpl.INSPECT_UNDEFINED */
 	private static final Class<?>[] ZEROC = new Class<?>[] {};
 	private static final Object[] ZEROO = new Object[] {};
-	private static final Class<?>[] GET_CONN = new Class[] { PageContext.class, DataSource.class, String.class, String.class };
-	private static final Class<?>[] REL_CONN = new Class[] { PageContext.class, DatasourceConnection.class };
+	private static final Class<?>[] GET_DSCONN = new Class[] { PageContext.class, DataSource.class, String.class, String.class, boolean.class };
+	private static final Class<?>[] REL_DSCONN = new Class[] { PageContext.class, DatasourceConnection.class, boolean.class };
+	// private static final Class<?>[] GET_CONN = new Class[] { PageContext.class, DataSource.class,
+	// String.class, String.class };
+	// private static final Class<?>[] REL_CONN = new Class[] { PageContext.class,
+	// DatasourceConnection.class };
 	// releaseConnection(pageContext, dc);
 	private static Charset _charset;
 
@@ -132,9 +136,12 @@ public class CommonUtil {
 	private static lucee.runtime.util.ListUtil list;
 	private static DBUtil db;
 	private static ORMUtil orm;
-	private static Method mGetDataSourceManager;
-	private static Method mGetConnection;
-	private static Method mReleaseConnection;
+	// private static Method mGetDataSourceManager;
+	// private static Method mGetConnection;
+	// private static Method mReleaseConnection;
+
+	private static Method mGetDatasourceConnection;
+	private static Method mReleaseDatasourceConnection;
 
 	public static Object castTo(PageContext pc, Class trgClass, Object obj) throws PageException {
 		return caster().castTo(pc, trgClass, obj);
@@ -707,41 +714,55 @@ public class CommonUtil {
 		return pc.getDataSource(name);
 	}
 
-	private static Object getDatasourceManager(PageContext pc) throws PageException {
-		try {
-			if (mGetDataSourceManager == null || pc.getClass() != mGetDataSourceManager.getDeclaringClass())
-				mGetDataSourceManager = pc.getClass().getMethod("getDataSourceManager", ZEROC);
-			return mGetDataSourceManager.invoke(pc, ZEROO);
-		}
-		catch (Exception e) {
-			throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
-		}
-	}
+	/*
+	 * private static Object getDatasourceManager(PageContext pc) throws PageException { try { if
+	 * (mGetDataSourceManager == null || pc.getClass() != mGetDataSourceManager.getDeclaringClass())
+	 * mGetDataSourceManager = pc.getClass().getMethod("getDataSourceManager", ZEROC); return
+	 * mGetDataSourceManager.invoke(pc, ZEROO); } catch (Exception e) { throw
+	 * CFMLEngineFactory.getInstance().getCastUtil().toPageException(e); } }
+	 */
 
 	public static DatasourceConnection getDatasourceConnection(PageContext pc, DataSource ds, String user, String pass) throws PageException {
-		Object manager = getDatasourceManager(pc);
+		DBUtil dbutil = db();
 		try {
-			if (mGetConnection == null || manager.getClass() != mGetConnection.getDeclaringClass()) {
-				mGetConnection = manager.getClass().getMethod("getConnection", GET_CONN);
+			if (mGetDatasourceConnection == null || dbutil.getClass() != mGetDatasourceConnection.getDeclaringClass()) {
+				mGetDatasourceConnection = dbutil.getClass().getMethod("getDatasourceConnection", GET_DSCONN);
 			}
-			return (DatasourceConnection) mGetConnection.invoke(manager, new Object[] { pc, ds, user, pass });
+			return (DatasourceConnection) mGetDatasourceConnection.invoke(dbutil, new Object[] { pc, ds, user, pass, false });
 		}
 		catch (Exception e) {
 			throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
 		}
+		/*
+		 * Object manager = getDatasourceManager(pc); try { if (mGetConnection == null || manager.getClass()
+		 * != mGetConnection.getDeclaringClass()) { mGetConnection =
+		 * manager.getClass().getMethod("getConnection", GET_CONN); } return (DatasourceConnection)
+		 * mGetConnection.invoke(manager, new Object[] { pc, ds, user, pass }); } catch (Exception e) {
+		 * throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e); }
+		 */
 	}
 
 	public static void releaseDatasourceConnection(PageContext pc, DatasourceConnection dc) throws PageException {
-		Object manager = getDatasourceManager(pc);
+		// releaseDatasourceConnection(PageContext pc, DatasourceConnection dc, boolean managed)
+
+		DBUtil dbutil = db();
 		try {
-			if (mReleaseConnection == null || manager.getClass() != mReleaseConnection.getDeclaringClass()) {
-				mReleaseConnection = manager.getClass().getMethod("releaseConnection", REL_CONN);
+			if (mReleaseDatasourceConnection == null || dbutil.getClass() != mReleaseDatasourceConnection.getDeclaringClass()) {
+				mReleaseDatasourceConnection = dbutil.getClass().getMethod("releaseDatasourceConnection", REL_DSCONN);
 			}
-			mReleaseConnection.invoke(manager, new Object[] { pc, dc });
+			mReleaseDatasourceConnection.invoke(dbutil, new Object[] { pc, dc, false });
 		}
 		catch (Exception e) {
 			throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
 		}
+
+		/*
+		 * Object manager = getDatasourceManager(pc); try { if (mReleaseConnection == null ||
+		 * manager.getClass() != mReleaseConnection.getDeclaringClass()) { mReleaseConnection =
+		 * manager.getClass().getMethod("releaseConnection", REL_CONN); } mReleaseConnection.invoke(manager,
+		 * new Object[] { pc, dc }); } catch (Exception e) { throw
+		 * CFMLEngineFactory.getInstance().getCastUtil().toPageException(e); }
+		 */
 	}
 
 	public static Mapping createMapping(Config config, String virtual, String physical) {
