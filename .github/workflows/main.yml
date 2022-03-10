@@ -52,6 +52,7 @@ jobs:
         extensionDir: ${{ github.workspace }}/dist
       env:
         testLabels: orm
+        testAdditional: ${{ github.workspace }}/tests
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: always()
