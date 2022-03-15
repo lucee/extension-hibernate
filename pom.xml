@@ -17,7 +17,7 @@
       <description>Hibernate ORM (Hibernate in short) is an object-relational mapping library for the Java language,
  providing a framework for mapping an object-oriented domain model to a traditional relational database. 
  Hibernate solves object-relational impedance mismatch problems by replacing direct persistence-related 
- database accesses with high-level object handling functions.</dexcription>
+ database accesses with high-level object handling functions.</description>
       <class>org.lucee.extension.orm.hibernate.HibernateORMEngine</class>
   </properties>
 
