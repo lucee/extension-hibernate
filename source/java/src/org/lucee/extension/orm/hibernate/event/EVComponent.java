@@ -110,12 +110,12 @@ public class EVComponent {
 		if (!hasPreUpdate) return;
 
 		Struct oldData = CommonUtil.createStruct();
-		Property[] properties = HibernateUtil.getProperties(comp, HibernateUtil.FIELDTYPE_COLUMN, null);
+		String[] properties = event.getPersister().getPropertyNames();
 		Object[] data = event.getOldState();
 
 		if (data != null && properties != null && data.length == properties.length) {
 			for (int i = 0; i < data.length; i++) {
-				oldData.setEL(CommonUtil.createKey(properties[i].getName()), data[i]);
+				oldData.setEL(CommonUtil.createKey(properties[i]), data[i]);
 			}
 		}
 		invoke(caller, CommonUtil.PRE_UPDATE, event.getEntity(), event, oldData);
