@@ -26,7 +26,6 @@ import lucee.loader.util.Util;
 import lucee.runtime.Component;
 import lucee.runtime.PageContext;
 import lucee.runtime.db.DataSource;
-import lucee.runtime.db.DataSourceManager;
 import lucee.runtime.db.DatasourceConnection;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.listener.ApplicationContext;
@@ -280,14 +279,13 @@ public class HibernateORMEngine implements ORMEngine {
 				root = doc.createElement("hibernate-mapping");
 				doc.appendChild(root);
 				pc.addPageSource(cfc.getPageSource(), true);
-				DataSourceManager manager = pc.getDataSourceManager();
-				DatasourceConnection dc = manager.getConnection(pc, ds, null, null);
+				DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds, null, null, false);
 				try {
 					HBMCreator.createXMLMapping(pc, dc, cfc, root, data);
 				}
 				finally {
 					pc.removeLastPageSource(true);
-					manager.releaseConnection(pc, dc);
+					CommonUtil.releaseDatasourceConnection(pc, dc, false);
 				}
 				try {
 					xml = XMLUtil.toString(root.getChildNodes(), true, true);

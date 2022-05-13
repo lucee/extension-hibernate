@@ -295,7 +295,7 @@ public class HibernateSessionFactory {
 			String str;
 			Statement stat = null;
 			PageContext pc = CFMLEngineFactory.getInstance().getThreadPageContext();
-			DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds, user, pass);
+			DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds, user, pass, true);
 			try {
 
 				stat = dc.getConnection().createStatement();
@@ -319,7 +319,7 @@ public class HibernateSessionFactory {
 			}
 			finally {
 				CFMLEngineFactory.getInstance().getDBUtil().closeSilent(stat);
-				CommonUtil.releaseDatasourceConnection(pc, dc);
+				CommonUtil.releaseDatasourceConnection(pc, dc, true);
 			}
 		}
 	}

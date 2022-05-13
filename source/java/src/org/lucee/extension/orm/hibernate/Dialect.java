@@ -6,7 +6,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 import org.apache.felix.framework.BundleWiringImpl.BundleClassLoader;
-import org.lucee.extension.orm.hibernate.util.print;
 import org.osgi.framework.Bundle;
 
 import lucee.loader.engine.CFMLEngineFactory;
@@ -48,7 +47,7 @@ public class Dialect {
 							dialects.setEL(CommonUtil.createKey(name), path);
 						}
 
-						print.e("dialects.setEL(\"" + name + "\",\"" + path + "\");");
+						// print.e("dialects.setEL(\"" + name + "\",\"" + path + "\");");
 					}
 				}
 				catch (Exception exx) {
@@ -159,7 +158,7 @@ public class Dialect {
 	public static String getDialect(String name) {
 		String d = _getDialect(name);
 
-		print.e(name + ":" + d);
+		// print.e(name + ":" + d);
 		return d;
 	}
 

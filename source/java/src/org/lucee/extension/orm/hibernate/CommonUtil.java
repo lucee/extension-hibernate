@@ -722,7 +722,12 @@ public class CommonUtil {
 	 * CFMLEngineFactory.getInstance().getCastUtil().toPageException(e); } }
 	 */
 
-	public static DatasourceConnection getDatasourceConnection(PageContext pc, DataSource ds, String user, String pass) throws PageException {
+	public static DatasourceConnection getDatasourceConnection(PageContext pc, DataSource ds, String user, String pass, boolean transactionSensitive) throws PageException {
+		if (transactionSensitive) {
+			return pc.getDataSourceManager().getConnection(pc, ds, user, pass);
+
+		}
+
 		DBUtil dbutil = db();
 		try {
 			if (mGetDatasourceConnection == null || dbutil.getClass() != mGetDatasourceConnection.getDeclaringClass()) {
@@ -742,8 +747,12 @@ public class CommonUtil {
 		 */
 	}
 
-	public static void releaseDatasourceConnection(PageContext pc, DatasourceConnection dc) throws PageException {
-		// releaseDatasourceConnection(PageContext pc, DatasourceConnection dc, boolean managed)
+	public static void releaseDatasourceConnection(PageContext pc, DatasourceConnection dc, boolean transactionSensitive) throws PageException {
+		// print.ds("rel:" + transactionSensitive);
+		if (transactionSensitive) {
+			pc.getDataSourceManager().releaseConnection(pc, dc);
+			return;
+		}
 
 		DBUtil dbutil = db();
 		try {

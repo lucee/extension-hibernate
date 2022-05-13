@@ -86,8 +86,8 @@ public class HibernateORMSession implements ORMSession {
 		}
 
 		public void connect(PageContext pc) throws PageException {
-			if (dc != null) CommonUtil.releaseDatasourceConnection(pc, dc);
-			dc = CommonUtil.getDatasourceConnection(pc, d, null, null);
+			if (dc != null) CommonUtil.releaseDatasourceConnection(pc, dc, true);
+			dc = CommonUtil.getDatasourceConnection(pc, d, null, null, true);
 		}
 
 		public void close(PageContext pc) throws PageException {
@@ -97,7 +97,7 @@ public class HibernateORMSession implements ORMSession {
 			}
 
 			if (dc != null) {
-				CommonUtil.releaseDatasourceConnection(pc, dc);
+				CommonUtil.releaseDatasourceConnection(pc, dc, true);
 				dc = null;
 			}
 		}

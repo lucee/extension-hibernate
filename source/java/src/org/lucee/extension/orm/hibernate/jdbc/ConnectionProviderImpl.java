@@ -36,7 +36,7 @@ public class ConnectionProviderImpl implements ConnectionProvider {
 		PageContext pc = engine.getThreadPageContext();
 
 		try {
-			return CommonUtil.getDatasourceConnection(pc, ds, user, pass);
+			return CommonUtil.getDatasourceConnection(pc, ds, user, pass, true);
 			// FUTURE we do not use because this is not managed the 4th argument is required return
 			// dbu.getDatasourceConnection(pc, ds, user, pass,true);
 		}
@@ -50,7 +50,7 @@ public class ConnectionProviderImpl implements ConnectionProvider {
 		PageContext pc = engine.getThreadPageContext();
 		if (conn instanceof DatasourceConnection) {
 			try {
-				CommonUtil.releaseDatasourceConnection(pc, (DatasourceConnection) conn);
+				CommonUtil.releaseDatasourceConnection(pc, (DatasourceConnection) conn, true);
 				// FUTURE see comment above dbu.releaseDatasourceConnection(engine.getThreadConfig(),
 				// (DatasourceConnection) conn, false);
 			}
