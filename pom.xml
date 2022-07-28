@@ -751,22 +751,22 @@
 
 <!-- slf4j.api - 1.6.4
 	Bundle-SymbolicName: slf4j.api
-	Bundle-Version: 1.7.12
+	Bundle-Version: 1.7.36
 -->
 <dependency>
 	<groupId>org.slf4j</groupId>
 	<artifactId>slf4j-api</artifactId>
-	<version>1.7.12</version>
+	<version>1.7.36</version>
 </dependency>
 
-<!-- slf4j.nop - 1.7.12
+<!-- slf4j.nop - 1.7.36
 	Bundle-SymbolicName: slf4j.nop
-	Bundle-Version: 1.7.12
+	Bundle-Version: 1.7.36
 -->
 <dependency>
 	<groupId>org.slf4j</groupId>
 	<artifactId>slf4j-nop</artifactId>
-	<version>1.7.12</version>
+	<version>1.7.36</version>
 </dependency>
 
 <!-- ss.css2 - 0.9.4 -->
