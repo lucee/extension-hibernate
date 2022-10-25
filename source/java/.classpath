@@ -29,5 +29,6 @@
 	<classpathentry kind="lib" path="libs/org.lucee.txw2-2011.8.9.jar"/>
 	<classpathentry kind="lib" path="libs/org.glassfish.jaxb.runtime-2.3.4.jar"/>
 	<classpathentry kind="lib" path="libs/jakarta.xml.bind-api-2.3.3.jar"/>
+	<classpathentry kind="lib" path="libs/slf4j.api-1.7.36.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
