@@ -16,8 +16,6 @@ import org.lucee.extension.orm.hibernate.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.sun.xml.bind.v2.ContextFactory;
-
 import lucee.commons.io.log.Log;
 import lucee.commons.io.res.Resource;
 import lucee.loader.engine.CFMLEngine;
@@ -45,8 +43,8 @@ public class HibernateORMEngine implements ORMEngine {
 	static {
 		// Patch because commandbox otherwise uses com.sun.xml.internal.bind.v2.ContextFactory for unknown
 		// reason
-		Class clazz = ContextFactory.class;
-		System.setProperty("javax.xml.bind.context.factory", "com.sun.xml.bind.v2.ContextFactory");
+		// Class clazz = ContextFactory.class;
+		// System.setProperty("javax.xml.bind.context.factory", "com.sun.xml.bind.v2.ContextFactory");
 	}
 
 	public HibernateORMEngine() {
