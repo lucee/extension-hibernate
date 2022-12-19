@@ -16,13 +16,11 @@ import org.hibernate.event.spi.PreInsertEvent;
 import org.hibernate.event.spi.PreLoadEvent;
 import org.hibernate.event.spi.PreUpdateEvent;
 import org.lucee.extension.orm.hibernate.CommonUtil;
-import org.lucee.extension.orm.hibernate.HibernateUtil;
 
 import lucee.loader.engine.CFMLEngine;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.runtime.Component;
 import lucee.runtime.PageContext;
-import lucee.runtime.component.Property;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
@@ -159,7 +157,11 @@ public class EVComponent {
 		if (hasEvict) invoke(null, CommonUtil.ON_EVICT, null, event, null);
 	}
 
-	private void invoke(Component caller, Key name, Object obj, AbstractEvent event, Struct data) {
+	public Component getComp() {
+		return comp;
+	}
+
+	public void invoke(Component caller, Key name, Object obj, AbstractEvent event, Struct data) {
 		_invoke(caller == null ? comp : caller, name, data, caller == null ? obj : null, event);
 	}
 
@@ -182,7 +184,26 @@ public class EVComponent {
 		}
 	}
 
-	private static boolean hasEventType(Component comp, Collection.Key eventType) {
+	public static void invoke(Key name, Component cfc, Struct data, Object arg) {
+		if (cfc == null) return;
+		CFMLEngine engine = CFMLEngineFactory.getInstance();
+		try {
+			PageContext pc = engine.getThreadPageContext();
+			Object[] args;
+			if (data == null) {
+				args = arg != null ? new Object[] { arg } : new Object[] {};
+			}
+			else {
+				args = arg != null ? new Object[] { arg, data } : new Object[] { data };
+			}
+			cfc.call(pc, name, args);
+		}
+		catch (PageException pe) {
+			throw engine.getCastUtil().toPageRuntimeException(pe);
+		}
+	}
+
+	public static boolean hasEventType(Component comp, Collection.Key eventType) {
 		return comp.get(eventType, null) instanceof UDF;
 	}
 }
