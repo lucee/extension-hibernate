@@ -22,11 +22,15 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 	//public function setUp(){}
 	public void function testEvents(){
 		local.uri=createURI("events/index.cfm");
-		systemOutput( "", true ); 
 		local.result=_InternalRequest(uri);
-		systemOutput( "", true ); 
 		expect( result.status ).toBe( 200 );
-		expect( trim( result.fileContent ) ).toBe( 20 );
+		local.events = deserializeJson(result.fileContent);
+		systemOutput( events, true );
+		expect( events.len() ).toBe( 20 );
+		// expect( trim( result.fileContent ) ).toBe( arrExpectedEvents ); // TODO this should be an array of event names
+		/*
+		i.e. arrExpectedEvents to be something like this
+		["preInsert","preInsert","postInsert","postInsert","preInsert","preInsert","preLoad","preLoad","postLoad","postLoad","postInsert","postInsert","postUpdate","postUpdate","preDelete","preDelete","postDelete","postDelete"] */
 	}
 
 	private string function createURI(string calledName){

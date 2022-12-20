@@ -63,10 +63,10 @@ component hint="logs out any orm events"  {
 
 	private function eventLog( required struct args ){
 		var eventName = CallStackGet( "array" )[2].function;
+		var s = CallStackGet( "array" )[3];
+		systemOutput( "------- #eventName#  #listLast(s.template,"/\")#: #s.lineNumber#", true );
+		// systemOutput(args, true);
 		
-		systemOutput( "------- #eventName# @ #this.name# ----------", true );
-		systemOutput( arguments.args, true );
-
 		//if ( ! structKeyExists( application, "ormEventLog" ) )
 		//    application.ormEventLog = [];
 		application.ormEventLog.append( {
