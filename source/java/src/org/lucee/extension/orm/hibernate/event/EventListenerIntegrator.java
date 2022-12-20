@@ -31,12 +31,8 @@ import org.hibernate.event.spi.PostUpdateEvent;
 import org.hibernate.event.spi.PostUpdateEventListener;
 import org.hibernate.event.spi.PreDeleteEvent;
 import org.hibernate.event.spi.PreDeleteEventListener;
-import org.hibernate.event.spi.PreInsertEvent;
-import org.hibernate.event.spi.PreInsertEventListener;
 import org.hibernate.event.spi.PreLoadEvent;
 import org.hibernate.event.spi.PreLoadEventListener;
-import org.hibernate.event.spi.PreUpdateEvent;
-import org.hibernate.event.spi.PreUpdateEventListener;
 import org.hibernate.integrator.spi.Integrator;
 import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
@@ -44,9 +40,8 @@ import org.lucee.extension.orm.hibernate.CommonUtil;
 
 import lucee.runtime.Component;
 
-public class EventListenerIntegrator implements Integrator, PreInsertEventListener, PostInsertEventListener, PreDeleteEventListener, PostDeleteEventListener,
-		PreUpdateEventListener, PostUpdateEventListener, PreLoadEventListener, PostLoadEventListener, FlushEventListener, AutoFlushEventListener, ClearEventListener,
-		DeleteEventListener, DirtyCheckEventListener, EvictEventListener {
+public class EventListenerIntegrator implements Integrator, PostInsertEventListener, PreDeleteEventListener, PostDeleteEventListener, PostUpdateEventListener, PreLoadEventListener,
+		PostLoadEventListener, FlushEventListener, AutoFlushEventListener, ClearEventListener, DeleteEventListener, DirtyCheckEventListener, EvictEventListener {
 
 	private static final long serialVersionUID = -5954121166467541422L;
 
@@ -57,11 +52,9 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 	public void integrate(Metadata metadata, SessionFactoryImplementor sessionFactory, SessionFactoryServiceRegistry serviceRegistry) {
 		EventListenerRegistry eventListenerRegistry = serviceRegistry.getService(EventListenerRegistry.class);
 
-		eventListenerRegistry.getEventListenerGroup(EventType.PRE_INSERT).appendListener(this);
 		eventListenerRegistry.getEventListenerGroup(EventType.POST_INSERT).appendListener(this);
 		eventListenerRegistry.getEventListenerGroup(EventType.PRE_DELETE).appendListener(this);
 		eventListenerRegistry.getEventListenerGroup(EventType.POST_DELETE).appendListener(this);
-		eventListenerRegistry.getEventListenerGroup(EventType.PRE_UPDATE).appendListener(this);
 		eventListenerRegistry.getEventListenerGroup(EventType.POST_UPDATE).appendListener(this);
 		eventListenerRegistry.getEventListenerGroup(EventType.PRE_LOAD).appendListener(this);
 		eventListenerRegistry.getEventListenerGroup(EventType.POST_LOAD).appendListener(this);
@@ -97,14 +90,6 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 	}
 
 	@Override
-	public boolean onPreInsert(PreInsertEvent event) {
-		if (allEventListener != null) allEventListener.onPreInsert(null, event);
-		EVC2Caller evcc = getEventListener(event.getEntity());
-		if (evcc != null) evcc.evc.onPreInsert(evcc.caller, event);
-		return false;
-	}
-
-	@Override
 	public void onPostInsert(PostInsertEvent event) {
 		if (allEventListener != null) allEventListener.onPostInsert(null, event);
 		EVC2Caller evcc = getEventListener(event.getEntity());
@@ -126,15 +111,6 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 		if (allEventListener != null) allEventListener.onPostDelete(null, event);
 		EVC2Caller evcc = getEventListener(event.getEntity());
 		if (evcc != null) evcc.evc.onPostDelete(evcc.caller, event);
-	}
-
-	// PreUpdateEventListener
-	@Override
-	public boolean onPreUpdate(PreUpdateEvent event) {
-		if (allEventListener != null) allEventListener.onPreUpdate(null, event);
-		EVC2Caller evcc = getEventListener(event.getEntity());
-		if (evcc != null) evcc.evc.onPreUpdate(evcc.caller, event);
-		return false;
 	}
 
 	// PostUpdateEventListener
@@ -215,5 +191,9 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 			this.caller = caller;
 		}
 
+	}
+
+	public EVComponent getAllEventListener() {
+		return allEventListener;
 	}
 }
