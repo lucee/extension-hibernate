@@ -61,6 +61,10 @@ component hint="logs out any orm events"  {
 		eventLog( arguments );
 	}
 
+	function onMissingMethod(missingMethodName){
+		systemOutput( "on missing method [#missingMethodName#]", true );
+	}
+
 	private function eventLog( required struct args ){
 		var eventName = CallStackGet( "array" )[2].function;
 		var s = CallStackGet( "array" )[3];
@@ -74,6 +78,17 @@ component hint="logs out any orm events"  {
 			"eventName": eventName,
 			"args": args
 		} );
-	}
 
+		try {
+			if (isNull(arguments.args.entity)) {
+				throw ("entity was null");
+			}
+		} catch(e) {
+			application.ormEventErrorLog.append({ 
+				"error" : e.message & " #eventName#  #listLast(s.template,"/\")#: #s.lineNumber#",
+				"src": this.name,
+				"eventName": eventName
+			} );
+		}
+	}
 }

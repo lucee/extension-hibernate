@@ -33,10 +33,17 @@
 
 	// trigger onClear
 	ormClearSession();
-	events = [];
+	result = {
+		events: [],
+		errors: []
+	};
 
 	loop array=application.ormEventLog item="a" {
-		arrayAppend(events, a.eventName);
+		arrayAppend(result.events, a.eventName);
 	};
-	echo( events.toJson() );
+
+	loop array=application.ormEventErrorLog item="a" {
+		arrayAppend(result.errors, a);
+	};
+	echo( result.toJson() );
 </cfscript>

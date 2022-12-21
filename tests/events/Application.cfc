@@ -16,11 +16,13 @@ component {
 
 	function onApplicationStart() {
 		application.ormEventLog = [];
+		application.ormEventErrorLog = [];
 	}
 
 	public function onRequestStart() {
 		setting requesttimeout=10;
 		application.ormEventLog = [];
+		application.ormEventErrorLog = [];
 		if ( url.keyExists( "flushcache" ) ){
 			componentCacheClear();
 		}
