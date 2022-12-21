@@ -75,6 +75,21 @@ component hint="logs out any orm events"  {
 		var s = CallStackGet( "array" )[3];
 		systemOutput( "------- #eventName#  #listLast(s.template,"/\")#: #s.lineNumber#", true );
 		systemOutput( "arguments: " & structKeyList(args), true);
+
+		if ( !isNull(args.2 ) ){  // only postNew, preUpdate should have two args
+			if ( isSimpleValue( args.2 ) ){
+				systemOutput("simple arguments.2: " & args.2, true);
+			} else if ( isStruct( args.2) ) {
+				systemOutput("struct arguments.2: " & args.2.toJson(), true);
+			} else {
+				try {
+					systemOutput("arguments.2: " & args.2.toJson(), true);
+				} catch (e) {
+					systemOutput("arguments.2: " & e.message, true);
+				}
+			}
+		}
+
 		//if ( ! structKeyExists( application, "ormEventLog" ) )
 		//    application.ormEventLog = [];
 		application.ormEventLog.append( {
@@ -94,6 +109,7 @@ component hint="logs out any orm events"  {
 					if (obj.fullname neq "testAdditional.events.Code")
 						throw "wrong entity: " & obj.fullname;
 				} catch( e ) {
+					systemOutput( e.message, true );
 					throw e.message;	
 				}
 			}
