@@ -6,14 +6,18 @@ component hint="logs out any orm events"  {
 	}
 
 	// Currently not implemented
-	function preFlush(  entity ){
+	function preFlush(  entity ){ // entities
 		eventLog( arguments );
 	}
 	function onFlush( entity ) {
 		eventLog( arguments );
 	}
 	// Currently not implemented
-	function postFlush( entity ){
+	function postFlush( entity ){ // entities
+		eventLog( arguments );
+	}
+
+	function postNew( any entity, any entityName ){
 		eventLog( arguments );
 	}
 
@@ -31,7 +35,8 @@ component hint="logs out any orm events"  {
 		eventLog( arguments );
 	}
 
-	function preUpdate( entity ){
+	function preUpdate( entity, Struct oldData  ){
+		systemOutput(oldData, true);
 		eventLog( arguments );
 	}
 	function postUpdate( entity ){
@@ -69,8 +74,7 @@ component hint="logs out any orm events"  {
 		var eventName = CallStackGet( "array" )[2].function;
 		var s = CallStackGet( "array" )[3];
 		systemOutput( "------- #eventName#  #listLast(s.template,"/\")#: #s.lineNumber#", true );
-		// systemOutput(args, true);
-		
+		systemOutput( "arguments: " & structKeyList(args), true);
 		//if ( ! structKeyExists( application, "ormEventLog" ) )
 		//    application.ormEventLog = [];
 		application.ormEventLog.append( {
@@ -80,9 +84,20 @@ component hint="logs out any orm events"  {
 		} );
 
 		try {
-			if (isNull(arguments.args.entity)) {
+			if ( isNull(arguments.args.entity ) ) {
 				throw ("entity was null");
 			}
+
+			if (isObject( args.entity ) ){
+				try {
+					var obj = GetComponentMetaData(args.entity);
+					if (obj.fullname neq "testAdditional.events.Code")
+						throw "wrong entity: " & obj.fullname;
+				} catch( e ) {
+					throw e.message;	
+				}
+			}
+
 		} catch(e) {
 			application.ormEventErrorLog.append({ 
 				"error" : e.message & " #eventName#  #listLast(s.template,"/\")#: #s.lineNumber#",
