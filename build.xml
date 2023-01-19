@@ -13,6 +13,7 @@
   <property name="dist"  location="dist"/>
   <property name="src" location="source/java/src"/>
   <property name="srcImg" location="source/images"/>
+  <property name="docs.dir"  location="docs/"/>
   
   <buildnumber file="build.number"/>
   
@@ -77,6 +78,11 @@ lucee-core-version: "${luceeCoreVersion}"
     <javac srcdir="${temp}" target="1.8" destdir="${build}" debug="true" debuglevel="lines,vars,source">
       <classpath refid="classpath" />
     </javac>
+  </target>
+  
+  <!-- Generate javadocs for current project into ${doc.dir} -->
+  <target name="doc" depends="init" description="generate documentation">
+    <javadoc sourcepath="${src}" destdir="${docs.dir}"/>
   </target>
 
   <target name="dist" depends="compile"
