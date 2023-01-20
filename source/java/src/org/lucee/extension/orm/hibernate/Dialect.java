@@ -8,11 +8,9 @@ import java.util.Iterator;
 import org.apache.felix.framework.BundleWiringImpl.BundleClassLoader;
 import org.osgi.framework.Bundle;
 
-import lucee.loader.engine.CFMLEngineFactory;
 import lucee.loader.util.Util;
 import lucee.runtime.db.DataSource;
 import lucee.runtime.type.Struct;
-import lucee.runtime.util.ListUtil;
 
 public class Dialect {
 	private static Struct dialects = CommonUtil.createStruct();
@@ -24,7 +22,6 @@ public class Dialect {
 			Bundle b = bcl.getBundle();
 
 			// List all XML files in the OSGI-INF directory and below
-			ListUtil util = CFMLEngineFactory.getInstance().getListUtil();
 			Enumeration<URL> e = b.findEntries("org/hibernate/dialect", "*.class", true);
 			String path;
 			while (e.hasMoreElements()) {
@@ -141,10 +138,10 @@ public class Dialect {
 	}
 
 	/**
-	 * return a SQL dialect that match the given Name
+	 * Get the Hibernate dialect for the given Datasource
 	 * 
-	 * @param name
-	 * @return
+	 * @param The datasource to check dialect on
+	 * @return the string dialect value, like "org.hibernate.dialect.PostgreSQLDialect"
 	 */
 	public static String getDialect(DataSource ds) {
 		String name = ds.getClassDefinition().getClassName();
@@ -156,19 +153,23 @@ public class Dialect {
 		return getDialect(name);
 	}
 
+	/**
+	 * Return a SQL dialect that match the given Name
+	 * 
+	 * @param Dialect name, like "Oracle" or "MySQL57"
+	 * @return the full dialect string name, like "org.hibernate.dialect.OracleDialect" or "org.hibernate.dialect.MySQL57Dialect"
+	 */
 	public static String getDialect(String name) {
-		String d = _getDialect(name);
-
-		// print.e(name + ":" + d);
-		return d;
-	}
-
-	public static String _getDialect(String name) {
 		if (Util.isEmpty(name)) return null;
 		String dialect = (String) dialects.get(CommonUtil.createKey(name), null);
 		return dialect;
 	}
 
+	/**
+	 * Get an iterator of dialect key names
+	 * 
+	 * @return a String iteratator to iterate over all known dialects
+	 */
 	public static Iterator<String> getDialectNames() {
 		return dialects.keysAsStringIterator();
 	}
