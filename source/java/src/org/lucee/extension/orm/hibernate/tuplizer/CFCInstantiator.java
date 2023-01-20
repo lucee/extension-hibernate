@@ -32,9 +32,8 @@ public class CFCInstantiator implements Instantiator {
 	/**
 	 * Constructor of the class
 	 * 
-	 * @param entityMetamodel
-	 * 
-	 * @param mappingInfo
+	 * @param entityMetamodel Hibernate EntityMetamodel object
+	 * @param mappingInfo Hibernate PersistentClass mapping info for this CFC
 	 */
 	public CFCInstantiator(EntityMetamodel entityMetamodel, PersistentClass mappingInfo) {
 		this.entityName = mappingInfo.getEntityName();

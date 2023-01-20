@@ -26,8 +26,8 @@ public class HibernateORMTransaction implements ORMTransaction {
 	 * tx.begin();
 	 * </pre>
 	 * 
-	 * @param session
-	 * @param autoManage
+	 * @param session Hibernate session to open a transaction on
+	 * @param autoManage Should the Transaction be auto-managed
 	 */
 	public HibernateORMTransaction(Session session, boolean autoManage) {
 		this.session = session;
@@ -77,6 +77,7 @@ public class HibernateORMTransaction implements ORMTransaction {
 	 * <li>Will commit if transaction already committed. 🤯
 	 * <li>May flush the session or clear the session depending on transaction state and autoManage settings.
 	 * <li>(currently) closes the session on execution. (See LDEV-4017)
+	 * </ul>
 	 */
 	@Override
 	public void end() {

@@ -22,9 +22,9 @@ public final class CFCSetter implements Setter {
 	/**
 	 * Constructor of the class
 	 * 
-	 * @param key
-	 * @param type
-	 * @param entityName
+	 * @param key String name of the persistent property
+	 * @param type Hibernate Type of this persistent property
+	 * @param entityName String name of the Hibernate entity this property is defined on
 	 */
 	public CFCSetter(String key, Type type, String entityName) {
 		this.key = CommonUtil.createKey(key);
