@@ -52,6 +52,11 @@ public class HibernateORMEngine implements ORMEngine {
 	public HibernateORMEngine() {
 	}
 
+	/**
+	 * Instantiate the  Hibernate session and factory data.
+	 * 
+	 * @param pc PageContext
+	 */
 	@Override
 	public void init(PageContext pc) throws PageException {
 		SessionFactoryData data = getSessionFactoryData(pc, INIT_CFCS);
@@ -69,9 +74,13 @@ public class HibernateORMEngine implements ORMEngine {
 		}
 	}
 
-	/*
-	 * QueryPlanCache getQueryPlanCache(PageContext pc) throws PageException { return
-	 * getSessionFactoryData(pc,INIT_NOTHING).getQueryPlanCache(); }
+	/**
+	 * Reload the ORM session.
+	 * 
+	 * Will NOT reload if force is false and the given pageContext already has a session factory.
+	 * 
+	 * @param pc The current page context object
+	 * @param force Force reload all session factory data.
 	 */
 
 	/*
@@ -361,6 +370,12 @@ public class HibernateORMEngine implements ORMEngine {
 		return "Hibernate";
 	}
 
+	/**
+	 * Get the ORM configuration for the given PageContext
+	 * 
+	 * @param pc PageContext object
+	 * @return ORMConfiguration
+	 */
 	@Override
 	public ORMConfiguration getConfiguration(PageContext pc) {
 		ApplicationContext ac = pc.getApplicationContext();
@@ -373,8 +388,7 @@ public class HibernateORMEngine implements ORMEngine {
 	 * @param session
 	 * @param entityName name of the entity to get
 	 * @param unique create a unique version that can be manipulated
-	 * @param init call the nit method of the cfc or not
-	 * @return
+	 * @return Lucee Component
 	 * @throws PageException
 	 */
 	public Component create(PageContext pc, HibernateORMSession session, String entityName, boolean unique) throws PageException {
