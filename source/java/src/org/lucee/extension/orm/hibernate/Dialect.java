@@ -12,6 +12,9 @@ import lucee.loader.util.Util;
 import lucee.runtime.db.DataSource;
 import lucee.runtime.type.Struct;
 
+/**
+ * Hibernate Dialect manager
+ */
 public class Dialect {
 	private static Struct dialects = CommonUtil.createStruct();
 
@@ -163,6 +166,15 @@ public class Dialect {
 		if (Util.isEmpty(name)) return null;
 		String dialect = (String) dialects.get(CommonUtil.createKey(name), null);
 		return dialect;
+	}
+
+	/**
+	 * Get all configurable dialects
+	 * 
+	 * @return the configured dialects
+	 */
+	public static Struct getDialects(){
+		return dialects;
 	}
 
 	/**
