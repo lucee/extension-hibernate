@@ -143,7 +143,7 @@ public class Dialect {
 	/**
 	 * Get the Hibernate dialect for the given Datasource
 	 * 
-	 * @param The datasource to check dialect on
+	 * @param ds - Datasource object to check dialect on
 	 * @return the string dialect value, like "org.hibernate.dialect.PostgreSQLDialect"
 	 */
 	public static String getDialect(DataSource ds) {
@@ -159,7 +159,7 @@ public class Dialect {
 	/**
 	 * Return a SQL dialect that match the given Name
 	 * 
-	 * @param Dialect name, like "Oracle" or "MySQL57"
+	 * @param name - Dialect name like "Oracle" or "MySQL57"
 	 * @return the full dialect string name, like "org.hibernate.dialect.OracleDialect" or "org.hibernate.dialect.MySQL57Dialect"
 	 */
 	public static String getDialect(String name) {

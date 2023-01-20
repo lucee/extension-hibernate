@@ -25,6 +25,7 @@ public class HibernateORMTransaction implements ORMTransaction {
 	 * HibernateORMTransaction tx = new HibernateORMTransaction( session, true );
 	 * tx.begin();
 	 * </pre>
+	 * 
 	 * @param session
 	 * @param autoManage
 	 */
@@ -62,7 +63,7 @@ public class HibernateORMTransaction implements ORMTransaction {
 	/**
 	 * Mark the transaction for rollback.
 	 * 
-	 * Will only execute a rollback on {@link end}
+	 * Will only execute a rollback on {@link #end()}
 	 */
 	@Override
 	public void rollback() {

@@ -112,6 +112,10 @@
                   </goals>
                </execution>
             </executions>
+            <configuration>
+               <reportOutputDirectory>${project.basedir}</reportOutputDirectory>
+               <destDir>docs</destDir>
+            </configuration>
          </plugin>
 
          <plugin>

@@ -303,6 +303,9 @@ public class SessionFactoryData {
 		return sources.values().toArray(new DataSource[sources.size()]);
 	}
 
+	/**
+	 * Call all SessionFactory objects to ensure they're all built
+	 */
 	public void init() {
 		Iterator<Key> it = cfcs.keySet().iterator();
 		while (it.hasNext()) {

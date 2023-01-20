@@ -19,6 +19,12 @@ Many improvements in the works:
 * Fix session close at end of transaction issue (LDEV-4017)
 * Drop hardcoded Hibernate dependencies from Lucee core
   * drop hardcoded ORM engine def from Lucee core
+* `getORMEngine()` - CFML method to retrieve the ORM engine
+
+## New Features/Methods
+
+* API docs are now committed to `docs/`
+* `Dialect.getDialects()` - list all available dialects
 
 ## Build
 

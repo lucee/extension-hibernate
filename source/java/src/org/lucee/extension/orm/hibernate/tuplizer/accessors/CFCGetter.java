@@ -34,8 +34,8 @@ public class CFCGetter implements Getter {
 	 * Constructor of the class
 	 * 
 	 * @param key
-	 * @param string
 	 * @param type
+	 * @param entityName
 	 */
 	public CFCGetter(String key, Type type, String entityName) {
 		this.key = CommonUtil.createKey(key);

@@ -400,10 +400,9 @@ public class HibernateCaster {
 	/**
 	 * translate CFMl specific types to Hibernate/SQL specific types
 	 * 
-	 * @param engine
 	 * @param ci
 	 * @param value
-	 * @return
+	 * @param isArray
 	 * @throws PageException
 	 */
 	public static Object toSQL(ColumnInfo ci, Object value, RefBoolean isArray) throws PageException {
@@ -413,10 +412,9 @@ public class HibernateCaster {
 	/**
 	 * translate CFMl specific types to Hibernate/SQL specific types
 	 * 
-	 * @param engine
 	 * @param type
 	 * @param value
-	 * @return
+	 * @param isArray
 	 * @throws PageException
 	 */
 	public static Object toSQL(Type type, Object value, RefBoolean isArray) throws PageException {
@@ -428,10 +426,9 @@ public class HibernateCaster {
 	/**
 	 * translate CFMl specific type to SQL specific types
 	 * 
-	 * @param engine
 	 * @param sqlType
 	 * @param value
-	 * @return
+	 * @param isArray
 	 * @throws PageException
 	 */
 	private static Object toSQL(int sqlType, Object value, RefBoolean isArray) throws PageException {
@@ -609,7 +606,7 @@ public class HibernateCaster {
 	 * return the full name (package and name) of a component
 	 * 
 	 * @param cfc
-	 * @return
+	 * @return Full name of a component.
 	 */
 	public static String toComponentName(Component cfc) {
 		return cfc.getPageSource().getComponentName();

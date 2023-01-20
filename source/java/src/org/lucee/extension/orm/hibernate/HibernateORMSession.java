@@ -154,6 +154,11 @@ public class HibernateORMSession implements ORMSession {
 		return !s.isConnected();
 	}
 
+	/**
+	 * Get the configured SessionFactoryData for this HibernateORMSession object
+	 * 
+	 * @return SessionFactoryData used to create this session
+	 */
 	public SessionFactoryData getSessionFactoryData() {
 		return data;
 	}
@@ -312,6 +317,11 @@ public class HibernateORMSession implements ORMSession {
 		}
 	}
 
+	/**
+	 * Refresh (not reload) this entity in the (native) Hibernate session object.
+	 * 
+	 * {@link org.hibernate.Session#refresh(Object) }
+	*/
 	@Override
 	public void reload(PageContext pc, Object obj) throws PageException {
 		Component cfc = HibernateCaster.toComponent(obj);

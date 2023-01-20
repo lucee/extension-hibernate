@@ -23,8 +23,8 @@ public final class CFCSetter implements Setter {
 	 * Constructor of the class
 	 * 
 	 * @param key
-	 * @param string
 	 * @param type
+	 * @param entityName
 	 */
 	public CFCSetter(String key, Type type, String entityName) {
 		this.key = CommonUtil.createKey(key);
