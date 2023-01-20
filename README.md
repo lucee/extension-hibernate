@@ -28,6 +28,11 @@ Using ant builds (for now):
 * `ant compile` - compile code
 * `ant dist` - Package the `.lex` extension file
 
+Using the Maven builds:
+
+* `mvn test` run java-based tests
+* `mvn javadoc:javadoc` generate java docs
+
 ## Contributing
 
 First, make sure you have the java JRE and JDK installed.
