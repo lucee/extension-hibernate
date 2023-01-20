@@ -6,6 +6,9 @@ import org.hibernate.resource.transaction.spi.TransactionStatus;
 
 import lucee.runtime.orm.ORMTransaction;
 
+/**
+ * Hibernate Transaction wrapper object. Useful for opening, closing, and general management of a single transaction.
+ */
 public class HibernateORMTransaction implements ORMTransaction {
 
 	private Transaction trans;
@@ -13,11 +16,26 @@ public class HibernateORMTransaction implements ORMTransaction {
 	private boolean doRollback;
 	private boolean autoManage;
 
+	/**
+	 * Constructor. Does NOT open a Hibernate transaction at this time.
+	 * <p>
+	 * To open a Hibernate transaction, call begin() after this method:
+	 * 
+	 * <pre>
+	 * HibernateORMTransaction tx = new HibernateORMTransaction( session, true );
+	 * tx.begin();
+	 * </pre>
+	 * @param session
+	 * @param autoManage
+	 */
 	public HibernateORMTransaction(Session session, boolean autoManage) {
 		this.session = session;
 		this.autoManage = autoManage;
 	}
 
+	/**
+	 * Open a new Hibernate session.
+	 */
 	@Override
 	public void begin() {
 		if (autoManage) {
@@ -31,16 +49,34 @@ public class HibernateORMTransaction implements ORMTransaction {
 
 	}
 
+	/**
+	 * Commit the transaction.
+	 * 
+	 * Just kidding... right now this method does nothing.
+	 */
 	@Override
 	public void commit() {
 		// do nothing
 	}
 
+	/**
+	 * Mark the transaction for rollback.
+	 * 
+	 * Will only execute a rollback on {@link end}
+	 */
 	@Override
 	public void rollback() {
 		doRollback = true;
 	}
 
+	/**
+	 * Wrap up the transaction.
+	 * <ul>
+	 * <li>Will roll back if rollback() called.
+	 * <li>Will commit if transaction already committed. 🤯
+	 * <li>May flush the session or clear the session depending on transaction state and autoManage settings.
+	 * <li>(currently) closes the session on execution. (See LDEV-4017)
+	 */
 	@Override
 	public void end() {
 		try {
