@@ -1,12 +1,17 @@
-/dist
-temp
-**/.DS_Store
+# Editor and OS artifacts
+.vscode
+.DS_Store
 **/.svn/
 /*.project
 va specific
+
+# build files/dist
+bin
+build
+dist
+temp
 *.class
 target
-target/*
 *.lock
 *.DS_Store
 /cache
