@@ -100,4 +100,13 @@ public class HibernateORMTransaction implements ORMTransaction {
 		}
 
 	}
+
+	/**
+	 * Retrieve the internal Hibernate transaction
+	 * 
+	 * @return a Hibernate {@link org.hibernate.Transaction} object.
+	 */
+	public Transaction getTransaction(){
+		return trans;
+	}
 }
