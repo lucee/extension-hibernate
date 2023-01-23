@@ -20,7 +20,7 @@
       <class>org.lucee.extension.orm.hibernate.HibernateORMEngine</class>
 
       <!-- Dependency versions -->
-      <lucee.version>5.3.9.133</lucee.version>
+      <lucee.version>5.3.10.97</lucee.version>
       <hibernate.version>5.4.29.Final</hibernate.version>
 
       <!-- What version of the JDK should we compile against? -->
