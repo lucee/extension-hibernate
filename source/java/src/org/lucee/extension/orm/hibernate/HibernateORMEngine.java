@@ -12,7 +12,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tuple.entity.EntityTuplizerFactory;
 import org.lucee.extension.orm.hibernate.event.EventListenerIntegrator;
-import org.lucee.extension.orm.hibernate.event.InterceptorImpl;
 import org.lucee.extension.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
 import org.lucee.extension.orm.hibernate.util.XMLUtil;
 import org.w3c.dom.Document;
@@ -203,24 +202,20 @@ public class HibernateORMEngine implements ORMEngine {
 
 	private static void addEventListeners(PageContext pc, SessionFactoryData data, Key key) throws PageException {
 		if (!data.getORMConfiguration().eventHandling()) return;
-		String eventHandler = data.getORMConfiguration().eventHandler();
+		String eventHandlerPath = data.getORMConfiguration().eventHandler();
 
 		EventListenerIntegrator integrator = data.getEventListenerIntegrator();
-		if (!Util.isEmpty(eventHandler, true)) {
-			// try {
-			Component c = pc.loadComponent(eventHandler.trim());
-			if (c != null) {
-				integrator.setAllEventListener(c);
+		if (!Util.isEmpty(eventHandlerPath, true)) {
+			Component eventHandler = pc.loadComponent( eventHandlerPath.trim() );
+			if (eventHandler != null) {
+				integrator.setGlobalEventListener( eventHandler );
 			}
 		}
-
-		Configuration conf = data.getConfiguration(key).config;
-		conf.setInterceptor(new InterceptorImpl(integrator != null ? integrator.getAllEventListener() : null));
 
 		Iterator<CFCInfo> it = data.getCFCs(key).values().iterator();
 		while (it.hasNext()) {
 			CFCInfo info = it.next();
-			integrator.setEventListene(info.getCFC());
+			integrator.appendEventListenerCFC(info.getCFC());
 		}
 	}
 

@@ -32,6 +32,9 @@ import lucee.runtime.ComponentScope;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.type.Struct;
 
+/**
+ * Entity tuplizer for handling CFC getters, setters, identifiers, and such.
+ */
 public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 
 	// private static CFCAccessor accessor = new CFCAccessor();
