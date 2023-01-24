@@ -1,10 +1,15 @@
 <cfsetting showdebugoutput="false">
 <cfscript>
 	code = entityNew( 'Code' );
-	arr = entityLoad("Code");
+	code.setId( 100 );
+	code.setCode( 'a' );
+	// should trigger preInsert, postInsert, and onFlush
+	entitySave( code );
 	ormFlush();
-	// trigger onClear
+
 	ormClearSession();
+	arr = entityLoad( "Code", 100 );
+	
 	result = {
 		events: [],
 		errors: []

@@ -11,7 +11,8 @@ component {
 		autoManageSession: false,
 		flushAtRequestEnd: false,
 		useDBForMapping: false,
-		dialect: "h2"
+		dialect: "h2",
+		skipCFCWithError : false
 	};
 
 	function onApplicationStart() {
