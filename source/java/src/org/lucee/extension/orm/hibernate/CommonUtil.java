@@ -136,9 +136,6 @@ public class CommonUtil {
 	private static lucee.runtime.util.ListUtil list;
 	private static DBUtil db;
 	private static ORMUtil orm;
-	// private static Method mGetDataSourceManager;
-	// private static Method mGetConnection;
-	// private static Method mReleaseConnection;
 
 	private static Method mGetDatasourceConnection;
 	private static Method mReleaseDatasourceConnection;
@@ -704,23 +701,19 @@ public class CommonUtil {
 		}
 	}
 
-	public static DataSource getDataSource(PageContext pc, String dsn, DataSource defaultValue) {
-		if (Util.isEmpty(dsn, true) || dsn.equals("__default__")) return orm().getDefaultDataSource(pc, defaultValue);
-		return pc.getDataSource(dsn.trim(), defaultValue);
-	}
-
+	/**
+	 * Get the datasource defined for the provided name, or the default if name is null.
+	 * 
+	 * @see {@link lucee.runtime.PageContext#getDataSource(String)}
+	 * @param pc Lucee's PageContext object.
+	 * @param name Datasource name, or <code>null</code> to retrieve the default
+	 * @return A Datasource object
+	 * @throws PageException
+	 */
 	public static DataSource getDataSource(PageContext pc, String name) throws PageException {
 		if (Util.isEmpty(name, true)) return orm().getDefaultDataSource(pc);
 		return pc.getDataSource(name);
 	}
-
-	/*
-	 * private static Object getDatasourceManager(PageContext pc) throws PageException { try { if
-	 * (mGetDataSourceManager == null || pc.getClass() != mGetDataSourceManager.getDeclaringClass())
-	 * mGetDataSourceManager = pc.getClass().getMethod("getDataSourceManager", ZEROC); return
-	 * mGetDataSourceManager.invoke(pc, ZEROO); } catch (Exception e) { throw
-	 * CFMLEngineFactory.getInstance().getCastUtil().toPageException(e); } }
-	 */
 
 	public static DatasourceConnection getDatasourceConnection(PageContext pc, DataSource ds, String user, String pass, boolean transactionSensitive) throws PageException {
 		if (transactionSensitive) {
@@ -738,13 +731,6 @@ public class CommonUtil {
 		catch (Exception e) {
 			throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
 		}
-		/*
-		 * Object manager = getDatasourceManager(pc); try { if (mGetConnection == null || manager.getClass()
-		 * != mGetConnection.getDeclaringClass()) { mGetConnection =
-		 * manager.getClass().getMethod("getConnection", GET_CONN); } return (DatasourceConnection)
-		 * mGetConnection.invoke(manager, new Object[] { pc, ds, user, pass }); } catch (Exception e) {
-		 * throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e); }
-		 */
 	}
 
 	public static void releaseDatasourceConnection(PageContext pc, DatasourceConnection dc, boolean transactionSensitive) throws PageException {
@@ -764,14 +750,6 @@ public class CommonUtil {
 		catch (Exception e) {
 			throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
 		}
-
-		/*
-		 * Object manager = getDatasourceManager(pc); try { if (mReleaseConnection == null ||
-		 * manager.getClass() != mReleaseConnection.getDeclaringClass()) { mReleaseConnection =
-		 * manager.getClass().getMethod("releaseConnection", REL_CONN); } mReleaseConnection.invoke(manager,
-		 * new Object[] { pc, dc }); } catch (Exception e) { throw
-		 * CFMLEngineFactory.getInstance().getCastUtil().toPageException(e); }
-		 */
 	}
 
 	public static Mapping createMapping(Config config, String virtual, String physical) {
