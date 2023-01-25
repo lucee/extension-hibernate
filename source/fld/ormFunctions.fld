@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE func-lib PUBLIC "-//Railo//DTD CFML Function Library 1.0//EN"
+	"dtd/web-cfmfunctionlibrary_1_0.dtd">
+<!-- http://www.getrailo.com/j2ee/dtd/web-jspfunctionlibrary_1_0.dtd -->
+<func-lib>
+	<flib-version>1.00</flib-version>
+	<short-name>Hibernate-extension</short-name>
+	<uri>https://github.com/michaelborn/extension-hibernate-fork</uri>
+	<display-name>Hibernate</display-name>
+	<description>
+		Functions to interact with Hibernate
+	</description>
+
+	
+</func-lib>

@@ -14,7 +14,9 @@
   <property name="src" location="source/java/src"/>
   <property name="srcImg" location="source/images"/>
   <property name="docs.dir"  location="docs/"/>
-  
+  <property name="tld" location="source/tld"/>
+  <property name="fld" location="source/fld"/>
+
   <buildnumber file="build.number"/>
   
 
@@ -88,6 +90,15 @@ lucee-core-version: "${luceeCoreVersion}"
   <target name="dist" depends="compile"
         description="generate the distribution" >
     
+    <!-- copy the tlds necessary -->
+    <copy file="${tld}/ormTags.tldx" tofile="${dist}/extension/tlds/ormTags.tldx" />
+    <replace file="${dist}/extension/tlds/ormTags.tldx" token="{bundle-name}" value="${bundlename}" />
+    <replace file="${dist}/extension/tlds/ormTags.tldx" token="{bundle-version}" value="${bundleversion}${build.number}${versionAppendix}" />
+
+    <!-- copy the flds necessary -->
+    <copy file="${fld}/ormFunctions.fld" tofile="${dist}/extension/flds/ormFunctions.fld" />
+    <replace file="${dist}/extension/flds/ormFunctions.fld" token="{bundle-name}" value="${bundlename}" />
+    <replace file="${dist}/extension/flds/ormFunctions.fld" token="{bundle-version}" value="${bundleversion}${build.number}${versionAppendix}" />
  
     <!-- Put everything in ${build} into .jar file -->
     <jar 
