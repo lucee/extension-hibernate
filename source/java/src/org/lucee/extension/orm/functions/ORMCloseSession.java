@@ -16,12 +16,13 @@
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  * 
  **/
-package lucee.runtime.functions.orm;
+package org.lucee.extension.orm.functions;
 
-import lucee.commons.lang.StringUtil;
+import org.lucee.extension.orm.hibernate.util.ORMUtil;
+
+import lucee.loader.util.Util;
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
-import lucee.runtime.orm.ORMUtil;
 
 public class ORMCloseSession {
 
@@ -30,7 +31,7 @@ public class ORMCloseSession {
 	}
 
 	public static String call(PageContext pc, String datasource) throws PageException {
-		if (StringUtil.isEmpty(datasource, true)) ORMUtil.getSession(pc).close(pc);
+		if (Util.isEmpty(datasource, true)) ORMUtil.getSession(pc).close(pc);
 		else ORMUtil.getSession(pc).close(pc, datasource.trim());
 		return null;
 	}

@@ -16,23 +16,22 @@
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  * 
  **/
-package lucee.runtime.functions.orm;
+package org.lucee.extension.orm.functions;
+
+import org.lucee.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.ORMUtil;
 
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
-import lucee.runtime.op.Caster;
-import lucee.runtime.op.Decision;
 import lucee.runtime.orm.ORMSession;
-import lucee.runtime.orm.ORMUtil;
 import lucee.runtime.type.Struct;
-import lucee.runtime.type.StructImpl;
 
 public class EntityLoad {
 
 	public static Object call(PageContext pc, String name) throws PageException {
 
 		ORMSession session = ORMUtil.getSession(pc);
-		return session.loadAsArray(pc, name, new StructImpl());
+		return session.loadAsArray(pc, name, CommonUtil.createStruct());
 	}
 
 	public static Object call(PageContext pc, String name, Object idOrFilter) throws PageException {
@@ -43,38 +42,38 @@ public class EntityLoad {
 		ORMSession session = ORMUtil.getSession(pc);
 
 		// id
-		if (Decision.isSimpleValue(idOrFilter)) {
+		if (CommonUtil.isSimpleValue(idOrFilter)) {
 			// id,unique
-			if (Decision.isCastableToBoolean(uniqueOrOptions)) {
+			if (CommonUtil.isCastableToBoolean(uniqueOrOptions)) {
 				// id,unique=true
-				if (Caster.toBooleanValue(uniqueOrOptions)) return session.load(pc, name, Caster.toString(idOrFilter));
+				if (CommonUtil.toBooleanValue(uniqueOrOptions)) return session.load(pc, name, CommonUtil.toString(idOrFilter));
 				// id,unique=false
-				return session.loadAsArray(pc, name, Caster.toString(idOrFilter));
+				return session.loadAsArray(pc, name, CommonUtil.toString(idOrFilter));
 			}
-			else if (Decision.isString(uniqueOrOptions)) {
-				return session.loadAsArray(pc, name, Caster.toString(idOrFilter), Caster.toString(uniqueOrOptions));
+			else if (CommonUtil.isString(uniqueOrOptions)) {
+				return session.loadAsArray(pc, name, CommonUtil.toString(idOrFilter), CommonUtil.toString(uniqueOrOptions));
 			}
 
 			// id,options
-			return session.loadAsArray(pc, name, Caster.toString(idOrFilter));
+			return session.loadAsArray(pc, name, CommonUtil.toString(idOrFilter));
 		}
 
 		// filter,[unique|sortorder]
-		if (Decision.isSimpleValue(uniqueOrOptions)) {
+		if (CommonUtil.isSimpleValue(uniqueOrOptions)) {
 			// filter,unique
-			if (Decision.isBoolean(uniqueOrOptions)) {
-				if (Caster.toBooleanValue(uniqueOrOptions)) return session.load(pc, name, Caster.toStruct(idOrFilter));
-				return session.loadAsArray(pc, name, Caster.toStruct(idOrFilter));
+			if (CommonUtil.isBoolean(uniqueOrOptions)) {
+				if (CommonUtil.toBooleanValue(uniqueOrOptions)) return session.load(pc, name, CommonUtil.toStruct(idOrFilter));
+				return session.loadAsArray(pc, name, CommonUtil.toStruct(idOrFilter));
 			}
 			// filter,sortorder
-			return session.loadAsArray(pc, name, Caster.toStruct(idOrFilter), (Struct) null, Caster.toString(uniqueOrOptions));
+			return session.loadAsArray(pc, name, CommonUtil.toStruct(idOrFilter), (Struct) null, CommonUtil.toString(uniqueOrOptions));
 		}
 		// filter,options
-		return session.loadAsArray(pc, name, Caster.toStruct(idOrFilter), Caster.toStruct(uniqueOrOptions));
+		return session.loadAsArray(pc, name, CommonUtil.toStruct(idOrFilter), CommonUtil.toStruct(uniqueOrOptions));
 	}
 
 	public static Object call(PageContext pc, String name, Object filter, Object order, Object options) throws PageException {
 		ORMSession session = ORMUtil.getSession(pc);
-		return session.loadAsArray(pc, name, Caster.toStruct(filter), Caster.toStruct(options), Caster.toString(order));
+		return session.loadAsArray(pc, name, CommonUtil.toStruct(filter), CommonUtil.toStruct(options), CommonUtil.toString(order));
 	}
 }

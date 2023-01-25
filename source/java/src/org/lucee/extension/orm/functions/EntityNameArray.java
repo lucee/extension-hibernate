@@ -16,19 +16,22 @@
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  * 
  **/
-package lucee.runtime.functions.orm;
+package org.lucee.extension.orm.functions;
+
+import org.lucee.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.ORMUtil;
 
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMSession;
-import lucee.runtime.orm.ORMUtil;
 import lucee.runtime.type.Array;
-import lucee.runtime.type.ArrayImpl;
 
 public class EntityNameArray {
 
 	public static Array call(PageContext pc) throws PageException {
-		ORMSession sess = ORMUtil.getSession(pc);
-		return new ArrayImpl(sess.getEntityNames());
+		return CommonUtil.toArray(
+			ORMUtil.getSession(pc)
+					.getEntityNames()
+		);
 	}
 }

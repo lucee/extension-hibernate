@@ -16,7 +16,10 @@
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  * 
  **/
-package lucee.runtime.functions.orm;
+package org.lucee.extension.orm.functions;
+
+import org.lucee.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.ORMUtil;
 
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -24,14 +27,10 @@ import java.util.Map.Entry;
 import lucee.runtime.Component;
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
-import lucee.runtime.op.Caster;
 import lucee.runtime.orm.ORMSession;
-import lucee.runtime.orm.ORMUtil;
 import lucee.runtime.type.Collection.Key;
-import lucee.runtime.type.KeyImpl;
 import lucee.runtime.type.Struct;
 import lucee.runtime.type.UDF;
-import lucee.runtime.type.util.KeyConstants;
 
 public class EntityNew {
 
@@ -53,15 +52,15 @@ public class EntityNew {
 		if (properties == null) return;
 
 		// argumentCollection
-		if (properties.size() == 1 && properties.containsKey(KeyConstants._argumentCollection) && !c.containsKey(KeyConstants._setArgumentCollection)) {
-			properties = Caster.toStruct(properties.get(KeyConstants._argumentCollection));
+		if (properties.size() == 1 && properties.containsKey( CommonUtil.createKey( "argumentCollection" ) ) && !c.containsKey( CommonUtil.createKey( "setArgumentCollection" ) )) {
+			properties = CommonUtil.toStruct(properties.get( CommonUtil.createKey( "argumentCollection" ) ));
 		}
 
 		Iterator<Entry<Key, Object>> it = properties.entryIterator();
 		Entry<Key, Object> e;
 		while (it.hasNext()) {
 			e = it.next();
-			Key funcName = KeyImpl.init("set" + e.getKey().getString());
+			Key funcName = CommonUtil.createKey( "set" + e.getKey().getString() );
 			if (ignoreNotExisting) {
 				if (c.get(funcName, null) instanceof UDF) c.call(pc, funcName, new Object[] { e.getValue() });
 			}

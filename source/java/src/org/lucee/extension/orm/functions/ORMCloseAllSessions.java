@@ -16,11 +16,12 @@
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  * 
  **/
-package lucee.runtime.functions.orm;
+package org.lucee.extension.orm.functions;
+
+import org.lucee.extension.orm.hibernate.util.ORMUtil;
 
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
-import lucee.runtime.orm.ORMUtil;
 
 public class ORMCloseAllSessions {
 	public static String call(PageContext pc) throws PageException {
