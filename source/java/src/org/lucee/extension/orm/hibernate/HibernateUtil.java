@@ -369,15 +369,6 @@ public class HibernateUtil {
 	}
 
 	public static boolean isApplicationName(PageContext pc, String name) {
-		String lcn = name.toLowerCase();
-		if (!lcn.startsWith("application.")) return false;
-
-		Info info = CFMLEngineFactory.getInstance().getInfo();
-		String[] extensions = pc.getRequestDialect() == CFMLEngine.DIALECT_CFML ? info.getCFMLComponentExtensions() : info.getLuceeComponentExtensions();
-
-		for (int i = 0; i < extensions.length; i++) {
-			if (lcn.equalsIgnoreCase("application." + extensions[i])) return true;
-		}
-		return false;
+		return name.toLowerCase().equalsIgnoreCase("application.cfc");
 	}
 }
