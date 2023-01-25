@@ -16,5 +16,8 @@ va specific
 *.DS_Store
 /cache
 
+# Test artifacts
+WEB-INF/
+
 # Lucee source for CFML tests
 /lucee
