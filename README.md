@@ -6,11 +6,13 @@ A Hibernate for the rest of us!
 
 Many improvements in the works:
 
+* API docs are now committed to `docs/` ✅
+* `Dialect.getDialects()` - list all available dialects ✅
+* Support for configuring the [Hibernate Flush mode](https://docs.jboss.org/hibernate/orm/5.4/javadocs/org/hibernate/FlushMode.html) (MANUAL, COMMIT, AUTO, ALWAYS)
 * Improved logging
 * Improved configuration support (both Hibernate and extension-level)
 * More utility/helper methods
 * better transaction isolation level support
-* Better support for entity lock modes
 * more Hibernate passthrough
 * allow grabbing the current DB connection
 * Faster ORM reloads
@@ -18,26 +20,11 @@ Many improvements in the works:
 * Fix open session issues
 * Fix session close at end of transaction issue (LDEV-4017)
 * Drop hardcoded Hibernate dependencies from Lucee core
+  * Entire `lucee.runtime.orm` package
   * drop hardcoded ORM engine def from Lucee core
 * `getORMEngine()` - CFML method to retrieve the ORM engine
-
-## New Features/Methods
-
-* API docs are now committed to `docs/`
-* `Dialect.getDialects()` - list all available dialects
-
-## Build
-
-Using ant builds (for now):
-
-* `ant clean` - clean build directories
-* `ant compile` - compile code
-* `ant dist` - Package the `.lex` extension file
-
-Using the Maven builds:
-
-* `mvn test` run java-based tests
-* `mvn javadoc:javadoc` generate java docs
+* Better support for entity lock modes
+* Reduce usage of reflection
 
 ## Contributing
 
@@ -52,7 +39,41 @@ To get started with this extension:
 5. Change code...
 6. Lint / validate via `ant compile`
 7. Build extension via `ant dist`
-8. Upload `.lex` to Lucee server admin and test.
+8. Test via `./test.sh`
+
+## Build
+
+Using ant builds (for now):
+
+* `ant clean` - clean build directories
+* `ant compile` - compile code
+* `ant dist` - Package the extension into a Lucee-installable `.lex` extension file
+
+Using the Maven builds:
+
+* `mvn test` run java-based (junit) tests
+* `mvn javadoc:javadoc` generate java docs
+
+## Testing
+
+See Lucee documentation on [testing-a-lucee-extension-locally](https://docs.lucee.org/guides/working-with-source/building-and-testing-extensions.html#testing-a-lucee-extension-locally).
+
+To run CFML tests against the extension:
+
+1. Check out [lucee/Lucee](https://github.com/lucee/lucee) to the parent directory - `git clone git@github.com:lucee/Lucee.git ../lucee`
+2. Check out [lucee/script-runner](https://github.com/lucee/script-runner) to the parent directory - `git clone git@github.com:lucee/Lucee.git ../script-runner`.
+
+Run tests from the extension root:
+
+```bash
+./test.sh
+```
+
+To build a .lex and test it immediately, chain `ant dist` and `./test.sh`:
+
+```bash
+ant dist && ./test.sh
+```
 
 ## Thanks
 
