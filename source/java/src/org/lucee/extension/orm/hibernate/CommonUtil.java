@@ -13,8 +13,11 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.nio.charset.Charset;
 import java.sql.ResultSet;
+import java.sql.Clob;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -49,12 +52,15 @@ import lucee.runtime.type.Query;
 import lucee.runtime.type.Struct;
 import lucee.runtime.type.dt.DateTime;
 import lucee.runtime.type.scope.Argument;
+import lucee.runtime.ext.function.Function;
 import lucee.runtime.util.Cast;
 import lucee.runtime.util.Creation;
 import lucee.runtime.util.DBUtil;
 import lucee.runtime.util.Decision;
 import lucee.runtime.util.ORMUtil;
 import lucee.runtime.util.Operation;
+import lucee.runtime.op.Castable;
+import lucee.runtime.type.ObjectWrap;
 
 public class CommonUtil {
 
@@ -464,6 +470,10 @@ public class CommonUtil {
 		return caster().toStruct(obj, defaultValue);
 	}
 
+	// public static Struct toStruct(Object o, boolean caseSensitive) throws PageException {
+	// 	return caster().toStruct(o, caseSensitive);
+	// }
+
 	public static SQLItem toSQLItem(Object value, int type) {
 		return db().toSQLItem(value, type);
 	}
@@ -506,6 +516,54 @@ public class CommonUtil {
 
 	public static boolean isStruct(Object obj) {
 		return decision().isStruct(obj);
+	}
+
+	/**
+	 * See if a given value is coercable to a string.
+	 * <p>
+	 * Blatantly copied from Lucee core because it's not in the Lucee loader, so we don't have access to run it without reflection.
+	 * 
+	 * @see {@link lucee.runtime.op.Decision#isString( Object ) }
+	 * @param obj Value to compare
+	 * @return Boolean, true if value is a String or castable to a String.
+	 */
+	public static boolean isString(Object o) {
+		if (o instanceof String) return true;
+		else if (o instanceof Boolean) return true;
+		else if (o instanceof Number) return true;
+		else if (o instanceof Date) return true;
+		else if (o instanceof Castable) {
+			return ((Castable) o).castToString("this is a unique string") != "this is a unique string";
+
+		}
+		else if (o instanceof Clob) return true;
+		else if (o instanceof Node) return true;
+		else if (o instanceof Map || o instanceof List || o instanceof Function) return false;
+		else if (o == null) return true;
+		else if (o instanceof ObjectWrap) return isString(((ObjectWrap) o).getEmbededObject(""));
+		return true;
+	}
+
+	public static boolean isSimpleValue(Object obj) {
+		return decision().isSimpleValue(obj);
+	}
+
+	public static boolean isCastableToBoolean(Object obj) {
+		return decision().isCastableToBoolean(obj);
+	}
+	public static boolean isCastableToArray(Object o){
+		return decision().isCastableToArray( o );
+	}
+	public static boolean isCastableToStruct(Object o){
+		return decision().isCastableToStruct( o );
+	}
+
+	public static boolean isBinary(Object obj) {
+		return decision().isBinary(obj);
+	}
+
+	public static boolean isBoolean(Object obj) {
+		return decision().isBinary(obj);
 	}
 
 	public static boolean isAnyType(String type) {
@@ -917,6 +975,10 @@ public class CommonUtil {
 		return XMLUtil.toString(node, omitXMLDecl, indent, publicId, systemId, encoding);
 	}
 
+	public static String toBase64(Object o) throws PageException {
+		return caster().toBase64( o );
+	}
+
 	public static Locale toLocale(String strLocale) throws PageException {
 		return caster().toLocale(strLocale);
 	}
@@ -935,5 +997,33 @@ public class CommonUtil {
 
 	public static Calendar toCalendar(DateTime date, TimeZone timeZone, Locale locale) {
 		return caster().toCalendar(date.getTime(), timeZone, locale);
+	}
+
+	/**
+	 * Tests if this string starts with the specified prefix.
+	 * <p>
+	 * Blatantly copied from the Lucee core, since we don't have access to this method without reflection.
+	 *
+	 * @see {@link lucee.commons.lang.StringUtil#startsWith( String str, char prefix )}
+	 * @param str string to check first char
+	 * @param prefix the prefix.
+	 * @return is first of given type
+	 */
+	public static boolean startsWith(String str, char prefix) {
+		return str != null && str.length() > 0 && str.charAt(0) == prefix;
+	}
+
+	/**
+	 * Tests if this string ends with the specified suffix.
+	 * <p>
+	 * Blatantly copied from the Lucee core, since we don't have access to this method without reflection.
+	 *
+	 * @see {@link lucee.commons.lang.StringUtil#endsWith( String str, char suffix )}
+	 * @param str string to check first char
+	 * @param suffix the suffix.
+	 * @return is last of given type
+	 */
+	public static boolean endsWith(String str, char suffix) {
+		return str != null && str.length() > 0 && str.charAt(str.length() - 1) == suffix;
 	}
 }
