@@ -11,11 +11,11 @@
 # Path to the checked out Lucee source
 # Note that the tests run are pulled from this directory,
 # so you'll have best luck (up to date tests) if you check out the tag that matches the LUCEE_VERSION variable.
-LUCEE_PATH="../lucee/"
+LUCEE_PATH="$PWD/../lucee/"
 
 # Path to the checked out lucee/script-runner project,
 # which is what sets up and runs the CFML-based tests
-LUCEE_SCRIPT_RUNNER_PATH="../script-runner/"
+LUCEE_SCRIPT_RUNNER_PATH="$PWD/../script-runner/"
 
 # Lucee version to use to run tests on
 # The tests themselves, however, will be sourced from `LUCEE_PATH/test`.
