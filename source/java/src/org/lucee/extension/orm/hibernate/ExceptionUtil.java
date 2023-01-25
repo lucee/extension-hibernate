@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.runtime.Component;
 import lucee.runtime.db.DataSource;
+// import lucee.runtime.exp.NativeException;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMSession;
 import lucee.runtime.type.Collection.Key;
@@ -12,6 +13,29 @@ import lucee.runtime.type.Collection.Key;
 public class ExceptionUtil {
 
 	private static Method setAdditional;
+
+	/**
+	 * Create a generic PageException with the given message.
+	 * Utilizes Lucee's <code>lucee.runtime.op.ExceptonImpl</code> under the hood.
+	 * 
+	 * @param message Exception message
+	 * @return A PageException object
+	 */
+	public static PageException createException( String message ) {
+		return CFMLEngineFactory.getInstance().getExceptionUtil().createApplicationException( message );
+	}
+
+	/**
+	 * Create a generic PageException with the given message and detail.
+	 * Utilizes Lucee's <code>lucee.runtime.op.ExceptonImpl</code> under the hood.
+	 * 
+	 * @param message Exception message
+	 * @param detail Exception detail string
+	 * @return A PageException object
+	 */
+	public static PageException createException( String message, String detail ) {
+		return CFMLEngineFactory.getInstance().getExceptionUtil().createApplicationException( message, detail );
+	}
 
 	public static PageException createException(SessionFactoryData data, Component cfc, String msg, String detail) {
 
@@ -60,5 +84,21 @@ public class ExceptionUtil {
 		catch (Throwable t) {
 			if (t instanceof ThreadDeath) throw (ThreadDeath) t;
 		}
+	}
+	/**
+	 * A java.lang.ThreadDeath must never be caught, so any catch(Throwable t) must go through this
+	 * method in order to ensure that the throwable is not of type ThreadDeath
+	 *
+	 * @param t the thrown Throwable
+	 */
+	public static void rethrowIfNecessary(Throwable t) {
+		if (unwrap(t) instanceof ThreadDeath) throw (ThreadDeath) t; // never catch a ThreadDeath
+	}
+	private static Throwable unwrap(Throwable t) {
+		if (t == null) return t;
+		// if (t instanceof NativeException) return unwrap(((NativeException) t).getException());
+		Throwable cause = t.getCause();
+		if (cause != null && cause != t) return unwrap(cause);
+		return t;
 	}
 }
