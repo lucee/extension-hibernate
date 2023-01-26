@@ -274,7 +274,7 @@ public class ORMUtil {
 		// pc = ThreadLocalPageContext.get(pc);
 		Object datasource = pc.getApplicationContext().getORMDataSource();
 
-		if ( datasource != null ) {
+		if ( datasource == null ) {
 			throw ExceptionUtil.createException("missing datasource definition in Application.cfc/cfapplication" );
 		}
 		return datasource instanceof DataSource ? (DataSource) datasource : pc.getDataSource(CommonUtil.toString( datasource ));

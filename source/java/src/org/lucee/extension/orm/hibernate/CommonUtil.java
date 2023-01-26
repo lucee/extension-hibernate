@@ -563,7 +563,7 @@ public class CommonUtil {
 	}
 
 	public static boolean isBoolean(Object obj) {
-		return decision().isBinary(obj);
+		return decision().isBoolean(obj);
 	}
 
 	public static boolean isAnyType(String type) {
