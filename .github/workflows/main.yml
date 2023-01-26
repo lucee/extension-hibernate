@@ -43,7 +43,7 @@ jobs:
       with:
         repository: lucee/lucee
         path: lucee
-    - name: Run Lucee Test Suite (testFilter="orm")
+    - name: Run Lucee Test Suite (testLabels="orm")
       uses: lucee/script-runner@main
       with:
         webroot: ${{ github.workspace }}/lucee/test
