@@ -110,7 +110,7 @@ public class HibernateORMEngine implements ORMEngine {
 	private SessionFactoryData getOrBuildSessionFactoryData( PageContext pc ) throws PageException{
 		if ( !isInitializedForApplication( pc.getApplicationContext().getName() ) ){
 			SessionFactoryData data = buildSessionFactoryData( pc );
-			data.init();// init all factories
+			data.init();
 		}
 		return getSessionFactory( pc.getApplicationContext().getName() );
 	}
@@ -161,15 +161,15 @@ public class HibernateORMEngine implements ORMEngine {
 			// arr=null;
 				synchronized (data) {
 
-					if (ormConf.autogenmap()) {
-						data.tmpList = HibernateSessionFactory.loadComponents(pc, this, ormConf);
-
-						data.clearCFCs();
+					if ( !ormConf.autogenmap() ) {
+						throw ExceptionUtil.createException(data, null, "orm setting autogenmap=false is not supported yet", null);
 					}
-					else throw ExceptionUtil.createException(data, null, "orm setting autogenmap=false is not supported yet", null);
+
+					data.tmpList = HibernateSessionFactory.loadComponents(pc, this, ormConf);
+					data.clearCFCs();
 
 					// load entities
-					if (data.tmpList != null && data.tmpList.size() > 0) {
+					if ( data.hasTempCFCs() ) {
 						data.getNamingStrategy();// called here to make sure, it is called in the right context the
 													// first one
 

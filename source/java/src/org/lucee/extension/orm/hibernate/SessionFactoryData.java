@@ -34,6 +34,9 @@ import lucee.runtime.type.Struct;
 
 public class SessionFactoryData {
 
+	/**
+	 * Use during ORM initialization for tracking the in-progress list of Component entities.
+	 */
 	public List<Component> tmpList;
 
 	private final Map<Key, DataSource> sources = new HashMap<Key, DataSource>();
@@ -125,7 +128,7 @@ public class SessionFactoryData {
 		}
 
 		// if parsing is in progress, the cfc can be found here
-		if (tmpList != null) {
+		if ( hasTempCFCs() ) {
 			Iterator<Component> it = tmpList.iterator();
 			while (it.hasNext()) {
 				cfc = it.next();
@@ -146,10 +149,8 @@ public class SessionFactoryData {
 		Component cfc;
 		List<String> names = new ArrayList<String>();
 
-		List<Component> list = tmpList;
-		if (list != null) {
-			int index = 0;
-			Iterator<Component> it2 = list.iterator();
+		if ( hasTempCFCs() ) {
+			Iterator<Component> it2 = tmpList.iterator();
 			while (it2.hasNext()) {
 				cfc = it2.next();
 				names.add(cfc.getName());
@@ -330,5 +331,13 @@ public class SessionFactoryData {
 
 	public EventListenerIntegrator getEventListenerIntegrator() {
 		return eventListenerIntegrator;
+	}
+
+	/**
+	 * See if we have loaded entities. (ORM-ish CFML Components)
+	 * @return True if entity list is not null and not empty.
+	 */
+	public boolean hasTempCFCs(){
+		return tmpList != null && !tmpList.isEmpty();
 	}
 }
