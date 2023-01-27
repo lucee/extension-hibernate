@@ -1,6 +1,5 @@
 package org.lucee.extension.orm.hibernate;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -8,8 +7,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.EntityMode;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 import org.hibernate.tuple.entity.EntityTuplizerFactory;
 import org.lucee.extension.orm.hibernate.event.EventListenerIntegrator;
 import org.lucee.extension.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
@@ -19,9 +16,7 @@ import org.w3c.dom.Element;
 
 import lucee.commons.io.log.Log;
 import lucee.commons.io.res.Resource;
-import lucee.loader.engine.CFMLEngine;
 import lucee.loader.engine.CFMLEngineFactory;
-import lucee.loader.util.Util;
 import lucee.runtime.Component;
 import lucee.runtime.PageContext;
 import lucee.runtime.db.DataSource;
@@ -247,7 +242,7 @@ public class HibernateORMEngine implements ORMEngine {
 		String eventHandlerPath = data.getORMConfiguration().eventHandler();
 
 		EventListenerIntegrator integrator = data.getEventListenerIntegrator();
-		if (!Util.isEmpty(eventHandlerPath, true)) {
+		if (eventHandlerPath != null && !eventHandlerPath.trim().isEmpty() ) {
 			Component eventHandler = pc.loadComponent( eventHandlerPath.trim() );
 			if (eventHandler != null) {
 				integrator.setGlobalEventListener( eventHandler );
