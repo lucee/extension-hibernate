@@ -42,6 +42,19 @@ To get started with this extension:
 7. Build extension via `ant dist`
 8. Test via `./test.sh`
 
+### Database Testing
+
+For testing on a specific database platform, create a `.env` file in `tests/` with database credentials:
+
+```bash
+cd tests
+cp .env.example .env
+```
+
+And edit the `MSSQL_*` or `MYSQL_*`, etc. keys to match your database credentials.
+
+This `.env` file will be sourced in as environment variables while running tests via `./test.sh`.
+
 ## Build
 
 Using ant builds (for now):

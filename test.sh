@@ -42,6 +42,15 @@ if [ ! -f `echo "dist/*.lex"` ]; then
     exit 1;
 fi
 
+# Import .env and export to environment
+# Useful for testing MSSQL, MYSQL with secret credentials
+# @see https://stackoverflow.com/a/30969768
+if [ -f "tests/.env" ]; then
+    set -o allexport
+    source tests/.env
+    set +o allexport
+fi
+
 # Run the tests
 ant \
     -buildfile "${LUCEE_SCRIPT_RUNNER_PATH}" \
