@@ -106,5 +106,5 @@ jobs:
       - name: Commit Javadocs
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-
+          file_pattern: "docs"
           commit_message: "📘 DOC: Rebuild API Javadocs"
