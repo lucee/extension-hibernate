@@ -1,0 +1,9 @@
+org.lucee.extension.orm.hibernate
+org.lucee.extension.orm.hibernate.naming
+org.lucee.extension.orm.hibernate.jdbc
+org.lucee.extension.orm.hibernate.event
+org.lucee.extension.orm.hibernate.util
+org.lucee.extension.orm.hibernate.tuplizer
+org.lucee.extension.orm.hibernate.tuplizer.accessors
+org.lucee.extension.orm.hibernate.tuplizer.proxy
+org.lucee.extension.orm.functions
