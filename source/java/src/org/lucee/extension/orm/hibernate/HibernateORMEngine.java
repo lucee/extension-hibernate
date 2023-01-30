@@ -270,21 +270,10 @@ public class HibernateORMEngine implements ORMEngine {
 			// create mapping
 			if (true || xmlLastMod < cfcCompTime) {// MUSTMUST
 				data.reset();
-				Document doc = null;
-				try {
-					doc = CommonUtil.newDocument();
-				}
-				catch (Exception e) {
-					Log log = pc.getConfig().getLog("orm");
-					log.error("hibernate", e);
-				}
-
-				root = doc.createElement("hibernate-mapping");
-				doc.appendChild(root);
 				pc.addPageSource(cfc.getPageSource(), true);
 				DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds, null, null, false);
 				try {
-					HBMCreator.createXMLMapping(pc, dc, cfc, root, data);
+					root = HBMCreator.createXMLMapping(pc, dc, cfc, data);
 				}
 				finally {
 					pc.removeLastPageSource(true);

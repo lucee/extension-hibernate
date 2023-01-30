@@ -9,6 +9,7 @@ Many improvements in the works:
 * API docs are now committed to `docs/` ✅
 * `Dialect.getDialects()` - list all available dialects ✅
 * Fix session close at end of transaction issue (LDEV-4017) ✅
+* Fix "String or binary data would be truncated" on `varchar` columns (LDEV-4150) ✅
 * Support for configuring the [Hibernate Flush mode](https://docs.jboss.org/hibernate/orm/5.4/javadocs/org/hibernate/FlushMode.html) (MANUAL, COMMIT, AUTO, ALWAYS)
 * Improved logging
 * Improved configuration support (both Hibernate and extension-level)

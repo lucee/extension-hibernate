@@ -36,7 +36,21 @@ public class HBMCreator {
 	private static final Collection.Key KEY = CommonUtil.createKey("key");
 	private static final Collection.Key TYPE = CommonUtil.createKey("type");
 
-	public static void createXMLMapping(PageContext pc, DatasourceConnection dc, Component cfc, Element hibernateMapping, SessionFactoryData data) throws PageException {
+	/**
+	 * Generate an XML node tree defining a Hibernate mapping for the given Component
+	 * 
+	 * @param pc Lucee PageContext object
+	 * @param dc Lucee DatasourceConnection object
+	 * @param cfc Lucee Component to create the mapping XML for
+	 * @param data SessionFactoryData instance to pull Hibernate metadata from
+	 * @return XML root node
+	 * @throws PageException
+	 */
+	public static Element createXMLMapping(PageContext pc, DatasourceConnection dc, Component cfc, SessionFactoryData data) throws PageException {
+		Document doc = CommonUtil.newDocument();
+
+		Element hibernateMapping = doc.createElement("hibernate-mapping");
+		doc.appendChild(hibernateMapping);
 
 		// MUST Support for embeded objects
 		Struct meta = cfc.getMetaData(pc);
@@ -51,9 +65,6 @@ public class HBMCreator {
 
 		Map<String, PropertyCollection> joins = new HashMap<String, PropertyCollection>();
 		PropertyCollection propColl = splitJoins(cfc, joins, _props, data);
-
-		// create class element and attach
-		Document doc = CommonUtil.getDocument(hibernateMapping);
 
 		StringBuilder comment = new StringBuilder();
 		comment.append("\nsource:").append(cfc.getPageSource().getDisplayPath());
@@ -171,6 +182,7 @@ public class HBMCreator {
 		// join
 		addJoin(cfc, clazz, pc, joins, columnsInfo, tableName, dc, data);
 
+		return hibernateMapping;
 	}
 
 	private static Property[] getProperties(PageContext pc, Component cfc, DatasourceConnection dc, Struct meta, boolean isClass, boolean recursivePersistentMappedSuperclass,
@@ -826,6 +838,7 @@ public class HBMCreator {
 			property.setAttribute("formula", "(" + str + ")");
 		}
 		else {
+			String length = null;
 			// property.setAttribute("column",columnName);
 
 			Element column = doc.createElement("column");
@@ -846,7 +859,10 @@ public class HBMCreator {
 
 			// length
 			Integer i = toInteger(cfc, meta, "length", data);
-			if (i != null && i > 0) column.setAttribute("length", CommonUtil.toString(i.intValue()));
+			if (i != null && i > 0) {
+				length = CommonUtil.toString(i.intValue());
+				column.setAttribute("length", length);
+			}
 
 			// not-null
 			b = toBoolean(cfc, meta, "notnull", data);
@@ -862,7 +878,12 @@ public class HBMCreator {
 
 			// sql-type
 			str = toString(cfc, prop, meta, "sqltype", data);
-			if (!Util.isEmpty(str, true)) column.setAttribute("sql-type", str);
+			if (!Util.isEmpty(str, true)) {
+				if ( ( str == "varchar" || str == "nvarchar" ) && length != null ) {
+					str += "(" + length + ")";
+				}
+				column.setAttribute("sql-type", str);
+			}
 
 			// unique
 			b = toBoolean(cfc, meta, "unique", data);
