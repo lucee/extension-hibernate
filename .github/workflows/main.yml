@@ -57,7 +57,7 @@ jobs:
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: always()
       with:
-        files: ${{ github.workspace }}/lucee/test/reports/junit-test-results-${{luceeVersion}}.xml
+        files: ${{ github.workspace }}/lucee/test/reports/junit-test-results-${{env.luceeVersion}}.xml
         check_name: "Test Results"
 
   maven_build:
