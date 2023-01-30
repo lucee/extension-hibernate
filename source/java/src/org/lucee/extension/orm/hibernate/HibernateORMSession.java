@@ -293,7 +293,7 @@ public class HibernateORMSession implements ORMSession {
 		else _delete(pc, HibernateCaster.toComponent(obj), null);
 	}
 
-	public void _delete(PageContext pc, Component cfc, Key dsn) throws PageException {
+	private void _delete(PageContext pc, Component cfc, Key dsn) throws PageException {
 		if (dsn == null) dsn = CommonUtil.toKey(CommonUtil.getDataSourceName(pc, cfc));
 		data.checkExistent(pc, cfc);
 		try {
