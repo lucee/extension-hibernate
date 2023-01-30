@@ -10,7 +10,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      luceeVersion: light-6.0.0.316-SNAPSHOT
+      luceeVersion: 6.0.0.316-SNAPSHOT
 
     steps:
     - uses: actions/checkout@v3
@@ -48,7 +48,7 @@ jobs:
       with:
         webroot: ${{ github.workspace }}/lucee/test
         execute: /bootstrap-tests.cfm
-        luceeVersion: ${{ env.luceeVersion }}
+        luceeVersion: light-${{ env.luceeVersion }}
         extensionDir: ${{ github.workspace }}/dist
       env:
         testLabels: orm
@@ -57,7 +57,7 @@ jobs:
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: always()
       with:
-        files: ${{ github.workspace }}/lucee/test/reports/junit-test-results.xml
+        files: ${{ github.workspace }}/lucee/test/reports/junit-test-results-${{luceeVersion}}.xml
         check_name: "Test Results"
 
   maven_build:
