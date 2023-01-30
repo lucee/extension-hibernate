@@ -523,7 +523,7 @@ public class CommonUtil {
 	 * <p>
 	 * Blatantly copied from Lucee core because it's not in the Lucee loader, so we don't have access to run it without reflection.
 	 * 
-	 * @see {@link lucee.runtime.op.Decision#isString( Object ) }
+	 * @link https://github.com/lucee/Lucee/blob/6.0/core/src/main/java/lucee/runtime/op/Decision.java#L964
 	 * @param o Value to compare
 	 * @return Boolean, true if value is a String or castable to a String.
 	 */
@@ -762,7 +762,6 @@ public class CommonUtil {
 	/**
 	 * Get the datasource defined for the provided name, or the default if name is null.
 	 * 
-	 * @see {@link lucee.runtime.PageContext#getDataSource(String)}
 	 * @param pc Lucee's PageContext object.
 	 * @param name Datasource name, or <code>null</code> to retrieve the default
 	 * @return A Datasource object
@@ -1004,7 +1003,7 @@ public class CommonUtil {
 	 * <p>
 	 * Blatantly copied from the Lucee core, since we don't have access to this method without reflection.
 	 *
-	 * @see {@link lucee.commons.lang.StringUtil#startsWith( String str, char prefix )}
+	 * @link https://github.com/lucee/Lucee/blob/6.0/core/src/main/java/lucee/commons/lang/StringUtil.java#L870
 	 * @param str string to check first char
 	 * @param prefix the prefix.
 	 * @return is first of given type
@@ -1018,7 +1017,7 @@ public class CommonUtil {
 	 * <p>
 	 * Blatantly copied from the Lucee core, since we don't have access to this method without reflection.
 	 *
-	 * @see {@link lucee.commons.lang.StringUtil#endsWith( String str, char suffix )}
+	 * @link https://github.com/lucee/Lucee/blob/6.0/core/src/main/java/lucee/commons/lang/StringUtil.java#L870
 	 * @param str string to check first char
 	 * @param suffix the suffix.
 	 * @return is last of given type

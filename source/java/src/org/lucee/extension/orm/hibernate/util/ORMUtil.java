@@ -309,7 +309,6 @@ public class ORMUtil {
 	 * @param pc Lucee PageContext object
 	 * @param cfc a Lucee / CFML Component object
 	 * @return Lucee Datasource object
-	 * @throws PageException
 	 */
 	public static DataSource getDataSource(PageContext pc, Component cfc, DataSource defaultValue) {
 		// pc = ThreadLocalPageContext.get(pc);
