@@ -68,6 +68,13 @@ public class HibernateORMSession implements ORMSession {
 			getSession(pc);
 		}
 
+		/**
+		 * Retrieve the current session if found, or open a new session if necessary.
+		 * 
+		 * @param pc PageContext object. (Unused.)
+		 * @return The open and bound hibernate Session.
+		 * @throws PageException
+		 */
 		public Session getSession(PageContext pc) throws PageException {
 			if (s == null || !s.isOpen()) s = factory.openSession();
 			return s;
@@ -235,6 +242,12 @@ public class HibernateORMSession implements ORMSession {
 
 	}
 
+	/**
+	 * Delete an entity from the Hibernate session
+	 * 
+	 * @param pc Lucee PageContext
+	 * @param obj Hibernate Entity object OR an Array of objects
+	 */
 	@Override
 	public void delete(PageContext pc, Object obj) throws PageException {
 		if (CommonUtil.isArray(obj)) {
