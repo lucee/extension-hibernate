@@ -191,7 +191,7 @@ public class HibernateORMSession implements ORMSession {
 		SessionAndConn sac = new SessionAndConn(pc, factory, ds);
 
 		sessions.put(CommonUtil.toKey(ds.getName()), sac);
-		sac.getSession(pc).setFlushMode(FlushMode.MANUAL);
+		sac.getSession(pc).setHibernateFlushMode(FlushMode.MANUAL);
 		return sac.getSession(pc);
 	}
 
