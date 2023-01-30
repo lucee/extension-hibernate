@@ -115,6 +115,8 @@
             <configuration>
                <reportOutputDirectory>${project.basedir}</reportOutputDirectory>
                <destDir>docs</destDir>
+               <additionalparam>-Xdoclint:none</additionalparam>
+               <failOnError>false</failOnError>
             </configuration>
          </plugin>
 
