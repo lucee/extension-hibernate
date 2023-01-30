@@ -82,7 +82,7 @@ jobs:
 
   javadocs:
     runs-on: ubuntu-latest
-
+    if: "!contains(github.event.head_commit.message, '__CI__')"
     steps:
       - uses: actions/checkout@v3
         with:
@@ -107,4 +107,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           file_pattern: "docs"
-          commit_message: "📘 DOC: Rebuild API Javadocs"
+          commit_message: "📘 DOC: Rebuild API Javadocs __CI__"
