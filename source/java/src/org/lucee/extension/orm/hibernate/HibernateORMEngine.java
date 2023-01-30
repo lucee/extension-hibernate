@@ -265,7 +265,7 @@ public class HibernateORMEngine implements ORMEngine {
 			DataSource ds = CommonUtil.getDataSource(pc, cfc);
 			StringBuilder sb = new StringBuilder();
 
-			long xmlLastMod = loadMapping(sb, ormConf, cfc);
+			long xmlLastMod = HBMCreator.loadMapping(sb, ormConf, cfc);
 			Element root;
 			// create mapping
 			if (true || xmlLastMod < cfcCompTime) {// MUSTMUST
@@ -285,7 +285,7 @@ public class HibernateORMEngine implements ORMEngine {
 				catch (Exception e) {
 					throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
 				}
-				saveMapping(ormConf, cfc, root);
+				HBMCreator.saveMapping(ormConf, cfc, root);
 			}
 			// load
 			else {
@@ -306,36 +306,6 @@ public class HibernateORMEngine implements ORMEngine {
 			data.addCFC(entityName, new CFCInfo(HibernateUtil.getCompileTime(pc, cfc.getPageSource()), xml, cfc, ds));
 		}
 
-	}
-
-	private static void saveMapping(ORMConfiguration ormConf, Component cfc, Element hm) {
-		if (ormConf.saveMapping()) {
-			Resource res = cfc.getPageSource().getResource();
-			if (res != null) {
-				res = res.getParentResource().getRealResource(res.getName() + ".hbm.xml");
-				try {
-					CommonUtil.write(res, CommonUtil.toString(hm, false, true, HibernateSessionFactory.HIBERNATE_3_PUBLIC_ID, HibernateSessionFactory.HIBERNATE_3_SYSTEM_ID,
-							CommonUtil.UTF8().name()), CommonUtil.UTF8(), false);
-				}
-				catch (Exception e) {
-				}
-			}
-		}
-	}
-
-	private static long loadMapping(StringBuilder sb, ORMConfiguration ormConf, Component cfc) {
-
-		Resource res = cfc.getPageSource().getResource();
-		if (res != null) {
-			res = res.getParentResource().getRealResource(res.getName() + ".hbm.xml");
-			try {
-				sb.append(CommonUtil.toString(res, CommonUtil.UTF8()));
-				return res.lastModified();
-			}
-			catch (Exception e) {
-			}
-		}
-		return 0;
 	}
 
 	@Override

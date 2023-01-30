@@ -21,6 +21,8 @@ import lucee.runtime.exp.PageException;
 import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
 import lucee.runtime.type.Struct;
+import lucee.runtime.orm.ORMConfiguration;
+import lucee.commons.io.res.Resource;
 
 public class HBMCreator {
 
@@ -1810,6 +1812,51 @@ public class HBMCreator {
 		return i;
 	}
 
+
+	/**
+	 * Save the XML dom to a hibernate mapping file (myEntity.hbm.xml)
+	 * 
+	 * @param ormConf the ORM configuration object
+	 * @param cfc Lucee Component (entity) that we're saving the mapping for
+	 * @param hm hibernate mapping XML DOM root node
+	 */
+	public static void saveMapping(ORMConfiguration ormConf, Component cfc, Element hm) {
+		if (ormConf.saveMapping()) {
+			Resource res = cfc.getPageSource().getResource();
+			if (res != null) {
+				res = res.getParentResource().getRealResource(res.getName() + ".hbm.xml");
+				try {
+					CommonUtil.write(res, CommonUtil.toString(hm, false, true, HibernateSessionFactory.HIBERNATE_3_PUBLIC_ID, HibernateSessionFactory.HIBERNATE_3_SYSTEM_ID,
+							CommonUtil.UTF8().name()), CommonUtil.UTF8(), false);
+				}
+				catch (Exception e) {
+				}
+			}
+		}
+	}
+
+	/**
+	 * Get the last modified date on a hibernate mapping file (myEntity.hbm.xml)
+	 * 
+	 * @param sb StringBuilder object
+	 * @param ormConf the ORM configuration
+	 * @param cfc Lucee Component (entity) for which to load the HBM mapping xml file
+	 * @return
+	 */
+	public static long loadMapping(StringBuilder sb, ORMConfiguration ormConf, Component cfc) {
+
+		Resource res = cfc.getPageSource().getResource();
+		if (res != null) {
+			res = res.getParentResource().getRealResource(res.getName() + ".hbm.xml");
+			try {
+				sb.append(CommonUtil.toString(res, CommonUtil.UTF8()));
+				return res.lastModified();
+			}
+			catch (Exception e) {
+			}
+		}
+		return 0;
+	}
 }
 
 class PropertyCollection {
