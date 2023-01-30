@@ -1,3 +1,4 @@
+org.lucee.extension.orm.functions
 org.lucee.extension.orm.hibernate
 org.lucee.extension.orm.hibernate.event
 org.lucee.extension.orm.hibernate.jdbc
