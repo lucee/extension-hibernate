@@ -299,8 +299,8 @@ public class EventListenerIntegrator implements Integrator,
 	/**
 	 * Fire the event listener UDF, if found, on the entity component
 	 * 
+	 * @param listener the Lucee Component on which to fire this listener method
 	 * @param name event type name to fire, for example "preInsert" or "preDelete"
-	 * @param entity the entity from event.getEntity()
 	 * @param event the Hibernate event object.
 	 * @param data A struct of data to pass to the event
 	 */

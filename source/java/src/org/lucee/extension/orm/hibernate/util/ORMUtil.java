@@ -306,9 +306,9 @@ public class ORMUtil {
 	 * if the given component has defined a datasource in the meta data, lucee is returning this
 	 * datasource, otherwise the default orm datasource is returned
 	 * 
-	 * @param pc
-	 * @param cfc
-	 * @return
+	 * @param pc Lucee PageContext object
+	 * @param cfc a Lucee / CFML Component object
+	 * @return Lucee Datasource object
 	 * @throws PageException
 	 */
 	public static DataSource getDataSource(PageContext pc, Component cfc, DataSource defaultValue) {
@@ -334,9 +334,9 @@ public class ORMUtil {
 	 * if the given component has defined a datasource in the meta data, lucee is returning this
 	 * datasource, otherwise the default orm datasource is returned
 	 * 
-	 * @param pc
-	 * @param cfc
-	 * @return
+	 * @param pc Lucee PageContext object
+	 * @param cfc a Lucee / CFML Component object
+	 * @return Lucee Datasource object
 	 * @throws PageException
 	 */
 	public static DataSource getDataSource(PageContext pc, Component cfc) throws PageException {

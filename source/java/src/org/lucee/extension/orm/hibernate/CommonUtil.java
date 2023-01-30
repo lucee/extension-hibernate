@@ -524,7 +524,7 @@ public class CommonUtil {
 	 * Blatantly copied from Lucee core because it's not in the Lucee loader, so we don't have access to run it without reflection.
 	 * 
 	 * @see {@link lucee.runtime.op.Decision#isString( Object ) }
-	 * @param obj Value to compare
+	 * @param o Value to compare
 	 * @return Boolean, true if value is a String or castable to a String.
 	 */
 	public static boolean isString(Object o) {
