@@ -9,6 +9,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '__CI__')"
     env:
       luceeVersion: 6.0.0.316-SNAPSHOT
 
@@ -62,6 +63,7 @@ jobs:
 
   maven_build:
     runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '__CI__')"
 
     steps:
       - uses: actions/checkout@v3
