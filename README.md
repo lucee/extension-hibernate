@@ -8,17 +8,17 @@ Many improvements in the works:
 
 * API docs are now committed to `docs/` ✅
 * `Dialect.getDialects()` - list all available dialects ✅
+* Fix session close at end of transaction issue (LDEV-4017) ✅
 * Support for configuring the [Hibernate Flush mode](https://docs.jboss.org/hibernate/orm/5.4/javadocs/org/hibernate/FlushMode.html) (MANUAL, COMMIT, AUTO, ALWAYS)
 * Improved logging
 * Improved configuration support (both Hibernate and extension-level)
 * More utility/helper methods
-* better transaction isolation level support
+* Support for [MS SQL's `SNAPSHOT` isolation level](https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/sql/snapshot-isolation-in-sql-server)
 * more Hibernate passthrough
 * allow grabbing the current DB connection
 * Faster ORM reloads
 * Better connection management (fix open connection issues)
 * Fix open session issues
-* Fix session close at end of transaction issue (LDEV-4017)
 * Drop hardcoded Hibernate dependencies from Lucee core
   * Entire `lucee.runtime.orm` package
   * drop hardcoded ORM engine def from Lucee core
