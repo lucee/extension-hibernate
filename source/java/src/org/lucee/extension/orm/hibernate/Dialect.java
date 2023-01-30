@@ -149,7 +149,7 @@ public class Dialect {
 	public static String getDialect(DataSource ds) {
 		String name = ds.getClassDefinition().getClassName();
 		if ("net.sourceforge.jtds.jdbc.Driver".equalsIgnoreCase(name)) {
-			String dsn = ds.getDsnTranslated();
+			String dsn = ds.getConnectionStringTranslated();
 			if (dsn.toLowerCase().indexOf("sybase") != -1) return getDialect("Sybase");
 			return getDialect("SQLServer");
 		}
