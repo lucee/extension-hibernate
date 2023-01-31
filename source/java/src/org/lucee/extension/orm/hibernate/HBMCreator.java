@@ -1817,21 +1817,18 @@ public class HBMCreator {
 	/**
 	 * Save the XML dom to a hibernate mapping file (myEntity.hbm.xml)
 	 * 
-	 * @param ormConf the ORM configuration object
 	 * @param cfc Lucee Component (entity) that we're saving the mapping for
 	 * @param hm hibernate mapping XML DOM root node
 	 */
-	public static void saveMapping(ORMConfiguration ormConf, Component cfc, Element hm) {
-		if (ormConf.saveMapping()) {
-			Resource res = cfc.getPageSource().getResource();
-			if (res != null) {
-				res = res.getParentResource().getRealResource(res.getName() + ".hbm.xml");
-				try {
-					CommonUtil.write(res, CommonUtil.toString(hm, false, true, HibernateSessionFactory.HIBERNATE_3_PUBLIC_ID, HibernateSessionFactory.HIBERNATE_3_SYSTEM_ID,
-							CommonUtil.UTF8().name()), CommonUtil.UTF8(), false);
-				}
-				catch (Exception e) {
-				}
+	public static void saveMapping(Component cfc, Element hm) {
+		Resource res = cfc.getPageSource().getResource();
+		if (res != null) {
+			res = res.getParentResource().getRealResource(res.getName() + ".hbm.xml");
+			try {
+				CommonUtil.write(res, CommonUtil.toString(hm, false, true, HibernateSessionFactory.HIBERNATE_3_PUBLIC_ID, HibernateSessionFactory.HIBERNATE_3_SYSTEM_ID,
+						CommonUtil.UTF8().name()), CommonUtil.UTF8(), false);
+			}
+			catch (Exception e) {
 			}
 		}
 	}

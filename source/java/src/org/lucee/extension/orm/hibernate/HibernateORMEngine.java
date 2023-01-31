@@ -267,7 +267,9 @@ public class HibernateORMEngine implements ORMEngine {
 					Element root;
 					root = HBMCreator.createXMLMapping(pc, dc, cfc, data);
 					xml = XMLUtil.toString(root.getChildNodes(), true, true);
-					HBMCreator.saveMapping(ormConf, cfc, root);
+					if (ormConf.saveMapping()) {
+						HBMCreator.saveMapping(cfc, root);
+					}
 				}
 				catch (Exception e) {
 					throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
