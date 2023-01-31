@@ -1,5 +1,6 @@
 package org.lucee.extension.orm.hibernate;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1836,25 +1837,46 @@ public class HBMCreator {
 	}
 
 	/**
-	 * Get the last modified date on a hibernate mapping file (myEntity.hbm.xml)
+	 * Get the hibernate mapping XML as a string.
 	 * 
-	 * @param sb StringBuilder object
 	 * @param cfc Lucee Component (entity) for which to load the HBM mapping xml file
-	 * @return
+	 * @return A giant XML string
 	 */
-	public static long loadMapping(StringBuilder sb, Component cfc) {
+	public static String loadMapping(Component cfc) throws PageException, IOException {
 
+		Resource resource = getMappingResource( cfc );
+		if (resource == null) throw ExceptionUtil.createException( "Hibernate mapping not found for entity: " + cfc.getName() );
+
+		String xml = CommonUtil.toString(resource, CommonUtil.UTF8());
+		// return CommonUtil.toXML(xml).getOwnerDocument().getDocumentElement();
+		return xml;
+	}
+
+    /**
+     * Get the last modified time for this component's mapping. Will return 0 if no mapping found.
+	 * 
+	 * @param cfc The Lucee component (persistent entity) we're pulling the modification date for
+	 * @return A <code>long</code> value representing the time the file was last modified, measured in
+	 *         milliseconds since the epoch (00:00:00 GMT, January 1, 1970), or <code>0L</code> if the
+	 *         file does not exist or if an I/O error occurs
+	 * @see lucee.commons.io.res.Resource#lastModified();
+     */
+	public static long getMappingLastModified( Component cfc ){
+		Resource res = getMappingResource( cfc );
+		if (res == null) return 0;
+		return res.lastModified();
+	}
+
+	/**
+	 * Get the HBM mapping file ( i.e. `models/myEntity.hbm.xml`) for this persistent Component/entity.
+	 * 
+	 * @param cfc Lucee Component
+	 * @return Lucee Resource, i.e. a Lucee-fied File object
+	 */
+	public static Resource getMappingResource( Component cfc ){
 		Resource res = cfc.getPageSource().getResource();
-		if (res != null) {
-			res = res.getParentResource().getRealResource(res.getName() + ".hbm.xml");
-			try {
-				sb.append(CommonUtil.toString(res, CommonUtil.UTF8()));
-				return res.lastModified();
-			}
-			catch (Exception e) {
-			}
-		}
-		return 0;
+		if (res == null) return null;
+		return res.getParentResource().getRealResource(res.getName() + ".hbm.xml");
 	}
 }
 

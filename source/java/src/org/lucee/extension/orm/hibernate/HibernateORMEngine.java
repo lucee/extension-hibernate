@@ -263,44 +263,33 @@ public class HibernateORMEngine implements ORMEngine {
 		long cfcCompTime = HibernateUtil.getCompileTime(pc, cfc.getPageSource());
 		if (info == null || (CommonUtil.equals(info.getCFC(), cfc))) {// && info.getModified()!=cfcCompTime
 			DataSource ds = CommonUtil.getDataSource(pc, cfc);
-			StringBuilder sb = new StringBuilder();
-
-			long xmlLastMod = HBMCreator.loadMapping(sb, cfc);
-			Element root;
 			// create mapping
-			if (true || xmlLastMod < cfcCompTime) {// MUSTMUST
+			if ( true || ormConf.autogenmap() && HBMCreator.getMappingLastModified( cfc ) < cfcCompTime) {// MUSTMUST
 				data.reset();
 				pc.addPageSource(cfc.getPageSource(), true);
 				DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds, null, null, false);
 				try {
+					Element root;
 					root = HBMCreator.createXMLMapping(pc, dc, cfc, data);
+					xml = XMLUtil.toString(root.getChildNodes(), true, true);
+					HBMCreator.saveMapping(ormConf, cfc, root);
+				}
+				catch (Exception e) {
+					throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
 				}
 				finally {
 					pc.removeLastPageSource(true);
 					CommonUtil.releaseDatasourceConnection(pc, dc, false);
 				}
-				try {
-					xml = XMLUtil.toString(root.getChildNodes(), true, true);
-				}
-				catch (Exception e) {
-					throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
-				}
-				HBMCreator.saveMapping(ormConf, cfc, root);
 			}
 			// load
 			else {
-				xml = sb.toString();
 				try {
-					root = CommonUtil.toXML(xml).getOwnerDocument().getDocumentElement();
+					xml = HBMCreator.loadMapping( cfc );
 				}
 				catch (Exception e) {
 					throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
 				}
-				/*
-				 * print.o("1+++++++++++++++++++++++++++++++++++++++++"); print.o(xml);
-				 * print.o("2+++++++++++++++++++++++++++++++++++++++++"); print.o(root);
-				 * print.o("3+++++++++++++++++++++++++++++++++++++++++");
-				 */
 
 			}
 			data.addCFC(entityName, new CFCInfo(HibernateUtil.getCompileTime(pc, cfc.getPageSource()), xml, cfc, ds));
