@@ -1821,9 +1821,8 @@ public class HBMCreator {
 	 * @param hm hibernate mapping XML DOM root node
 	 */
 	public static void saveMapping(Component cfc, Element hm) {
-		Resource res = cfc.getPageSource().getResource();
+		Resource res = getMappingResource( cfc );
 		if (res != null) {
-			res = res.getParentResource().getRealResource(res.getName() + ".hbm.xml");
 			try {
 				CommonUtil.write(res, CommonUtil.toString(hm, false, true, HibernateSessionFactory.HIBERNATE_3_PUBLIC_ID, HibernateSessionFactory.HIBERNATE_3_SYSTEM_ID,
 						CommonUtil.UTF8().name()), CommonUtil.UTF8(), false);
