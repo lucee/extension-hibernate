@@ -265,7 +265,7 @@ public class HibernateORMEngine implements ORMEngine {
 			DataSource ds = CommonUtil.getDataSource(pc, cfc);
 			StringBuilder sb = new StringBuilder();
 
-			long xmlLastMod = HBMCreator.loadMapping(sb, ormConf, cfc);
+			long xmlLastMod = HBMCreator.loadMapping(sb, cfc);
 			Element root;
 			// create mapping
 			if (true || xmlLastMod < cfcCompTime) {// MUSTMUST

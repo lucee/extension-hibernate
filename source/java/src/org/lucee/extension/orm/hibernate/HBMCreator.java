@@ -1839,11 +1839,10 @@ public class HBMCreator {
 	 * Get the last modified date on a hibernate mapping file (myEntity.hbm.xml)
 	 * 
 	 * @param sb StringBuilder object
-	 * @param ormConf the ORM configuration
 	 * @param cfc Lucee Component (entity) for which to load the HBM mapping xml file
 	 * @return
 	 */
-	public static long loadMapping(StringBuilder sb, ORMConfiguration ormConf, Component cfc) {
+	public static long loadMapping(StringBuilder sb, Component cfc) {
 
 		Resource res = cfc.getPageSource().getResource();
 		if (res != null) {
