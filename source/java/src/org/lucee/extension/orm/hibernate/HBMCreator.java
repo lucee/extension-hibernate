@@ -22,10 +22,30 @@ import lucee.runtime.exp.PageException;
 import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
 import lucee.runtime.type.Struct;
-import lucee.runtime.orm.ORMConfiguration;
 import lucee.commons.io.res.Resource;
 
 public class HBMCreator {
+
+	/**
+	 * Hibernate DOCTYPE mapping ID
+	 * 
+	 * @see https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects
+	 */
+	public static final String HIBERNATE_3_PUBLIC_ID = "-//Hibernate/Hibernate Mapping DTD 3.0//EN";
+
+	/**
+	 * Hibernate doctype reference
+	 * 
+	 * @see https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects
+	 */
+	public static final String HIBERNATE_3_SYSTEM_ID = "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd";
+
+	/**
+	 * Full XML doctype for Hibernate mappings
+	 * 
+	 * @see https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects
+	 */
+	public static final String HIBERNATE_3_DOCTYPE_DEFINITION = "<!DOCTYPE hibernate-mapping PUBLIC \"" + HIBERNATE_3_PUBLIC_ID + "\" \"" + HIBERNATE_3_SYSTEM_ID + "\">";
 
 	private static final Collection.Key PROPERTY = CommonUtil.createKey("property");
 	private static final Collection.Key LINK_TABLE = CommonUtil.createKey("linktable");
@@ -1824,7 +1844,7 @@ public class HBMCreator {
 		Resource res = getMappingResource( cfc );
 		if (res != null) {
 			try {
-				CommonUtil.write(res, CommonUtil.toString(hm, false, true, HibernateSessionFactory.HIBERNATE_3_PUBLIC_ID, HibernateSessionFactory.HIBERNATE_3_SYSTEM_ID,
+				CommonUtil.write(res, CommonUtil.toString(hm, false, true, HBMCreator.HIBERNATE_3_PUBLIC_ID, HBMCreator.HIBERNATE_3_SYSTEM_ID,
 						CommonUtil.UTF8().name()), CommonUtil.UTF8(), false);
 			}
 			catch (Exception e) {

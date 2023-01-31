@@ -59,10 +59,6 @@ import lucee.runtime.util.TemplateUtil;
 
 public class HibernateSessionFactory {
 
-	public static final String HIBERNATE_3_PUBLIC_ID = "-//Hibernate/Hibernate Mapping DTD 3.0//EN";
-	public static final String HIBERNATE_3_SYSTEM_ID = "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd";
-	public static final String HIBERNATE_3_DOCTYPE_DEFINITION = "<!DOCTYPE hibernate-mapping PUBLIC \"" + HIBERNATE_3_PUBLIC_ID + "\" \"" + HIBERNATE_3_SYSTEM_ID + "\">";
-
 	public static Configuration createConfiguration(Log log, String mappings, DataSource ds, String user, String pass, SessionFactoryData data, String applicationContextName)
 			throws SQLException, IOException, PageException {
 		ORMConfiguration ormConf = data.getORMConfiguration();
@@ -333,7 +329,7 @@ public class HibernateSessionFactory {
 			Set<String> done = new HashSet<String>();
 			StringBuilder mapping = new StringBuilder();
 			mapping.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-			mapping.append(HIBERNATE_3_DOCTYPE_DEFINITION + "\n");
+			mapping.append(HBMCreator.HIBERNATE_3_DOCTYPE_DEFINITION + "\n");
 			mapping.append("<hibernate-mapping>\n");
 			Iterator<Entry<String, CFCInfo>> _it = e.getValue().entrySet().iterator();
 			Entry<String, CFCInfo> entry;
