@@ -161,10 +161,6 @@ public class HibernateORMEngine implements ORMEngine {
 			// arr=null;
 				synchronized (data) {
 
-					if ( !ormConf.autogenmap() ) {
-						throw ExceptionUtil.createException(data, null, "orm setting autogenmap=false is not supported yet", null);
-					}
-
 					data.tmpList = HibernateSessionFactory.loadComponents(pc, this, ormConf);
 					data.clearCFCs();
 
@@ -260,11 +256,10 @@ public class HibernateORMEngine implements ORMEngine {
 		String entityName = HibernateCaster.getEntityName(cfc);
 		CFCInfo info = data.getCFC(entityName, null);
 		String xml;
-		long cfcCompTime = HibernateUtil.getCompileTime(pc, cfc.getPageSource());
-		if (info == null || (CommonUtil.equals(info.getCFC(), cfc))) {// && info.getModified()!=cfcCompTime
+		if (info == null || (CommonUtil.equals(info.getCFC(), cfc))) {
 			DataSource ds = CommonUtil.getDataSource(pc, cfc);
-			// create mapping
-			if ( true || ormConf.autogenmap() && HBMCreator.getMappingLastModified( cfc ) < cfcCompTime) {// MUSTMUST
+
+			if ( ormConf.autogenmap() ) {
 				data.reset();
 				pc.addPageSource(cfc.getPageSource(), true);
 				DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds, null, null, false);
