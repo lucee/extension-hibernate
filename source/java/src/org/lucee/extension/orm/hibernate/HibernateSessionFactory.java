@@ -339,7 +339,7 @@ public class HibernateSessionFactory {
 			Entry<String, CFCInfo> entry;
 			while (_it.hasNext()) {
 				entry = _it.next();
-				createMappings(ormConf, entry.getKey(), entry.getValue(), done, mapping, data);
+				createMappings(entry.getKey(), entry.getValue(), done, mapping, data);
 
 			}
 			mapping.append("</hibernate-mapping>");
@@ -348,7 +348,7 @@ public class HibernateSessionFactory {
 		return mappings;
 	}
 
-	private static void createMappings(ORMConfiguration ormConf, String key, CFCInfo value, Set<String> done, StringBuilder mappings, SessionFactoryData data) {
+	private static void createMappings(String key, CFCInfo value, Set<String> done, StringBuilder mappings, SessionFactoryData data) {
 		if (done.contains(key)) return;
 		CFCInfo v;
 		String ext = value.getCFC().getExtends();
@@ -364,7 +364,7 @@ public class HibernateSessionFactory {
 			ext = HibernateUtil.id(CommonUtil.last(ext, ".").trim());
 			if (!done.contains(ext)) {
 				v = data.getCFC(ext, null);
-				if (v != null) createMappings(ormConf, ext, v, done, mappings, data);
+				if (v != null) createMappings(ext, v, done, mappings, data);
 			}
 		}
 
