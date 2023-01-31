@@ -242,16 +242,12 @@ public class HibernateUtil {
 			if (cfc.equalTo(cfcName)) return true;
 
 			if (cfcName.indexOf('.') != -1) {
-				Info info = CFMLEngineFactory.getInstance().getInfo();
-				String[] extensions = HibernateUtil.merge(info.getCFMLComponentExtensions(), info.getLuceeComponentExtensions());
 				String prefix = cfcName.replace('.', '/') + ".";
 				Resource[] locations = ormConf.getCfcLocations();
 				Resource res;
 				for (int i = 0; i < locations.length; i++) {
-					for (int y = 0; y < extensions.length; y++) {
-						res = locations[i].getRealResource(prefix + extensions[y]);
-						if (res.equals(cfc.getPageSource().getResource())) return true;
-					}
+					res = locations[i].getRealResource(prefix + "cfc");
+					if (res.equals(cfc.getPageSource().getResource())) return true;
 				}
 				return false;
 			}

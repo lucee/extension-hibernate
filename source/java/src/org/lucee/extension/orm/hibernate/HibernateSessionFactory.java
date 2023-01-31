@@ -370,9 +370,8 @@ public class HibernateSessionFactory {
 
 	public static List<Component> loadComponents(PageContext pc, HibernateORMEngine engine, ORMConfiguration ormConf) throws PageException {
 		CFMLEngine en = CFMLEngineFactory.getInstance();
-		String[] ext = HibernateUtil.merge(en.getInfo().getCFMLComponentExtensions(), en.getInfo().getLuceeComponentExtensions());
 
-		ResourceFilter filter = en.getResourceUtil().getExtensionResourceFilter(ext, true);
+		ResourceFilter filter = en.getResourceUtil().getExtensionResourceFilter("cfc", true);
 		List<Component> components = new ArrayList<Component>();
 		loadComponents(pc, engine, components, ormConf.getCfcLocations(), filter, ormConf);
 		return components;
