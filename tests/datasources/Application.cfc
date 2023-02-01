@@ -9,7 +9,7 @@ component {
 		dialect: "h2",
 		skipCFCWithError : false,
         datasource : "h2",
-		saveMapping : true
+		saveMapping : false
 	};
 
 	function onApplicationStart() {
