@@ -206,7 +206,7 @@ public class HibernateORMEngine implements ORMEngine {
 
 		Log log = pc.getConfig().getLog("orm");
 
-		Iterator<Entry<Key, String>> it = HibernateSessionFactory.createMappings(ormConf, data).entrySet().iterator();
+		Iterator<Entry<Key, String>> it = HibernateSessionFactory.assembleMappingsByDatasource(data).entrySet().iterator();
 		Entry<Key, String> e;
 		while (it.hasNext()) {
 			e = it.next();
@@ -264,11 +264,11 @@ public class HibernateORMEngine implements ORMEngine {
 				pc.addPageSource(cfc.getPageSource(), true);
 				DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds, null, null, false);
 				try {
-					Element root;
-					root = HBMCreator.createXMLMapping(pc, dc, cfc, data);
-					xml = XMLUtil.toString(root.getChildNodes(), true, true);
+					xml = HBMCreator.toMappingString(
+						HBMCreator.createXMLMapping(pc, dc, cfc, data)
+					);
 					if (ormConf.saveMapping()) {
-						HBMCreator.saveMapping(cfc, root);
+						HBMCreator.saveMapping(cfc, xml);
 					}
 				}
 				catch (Exception e) {

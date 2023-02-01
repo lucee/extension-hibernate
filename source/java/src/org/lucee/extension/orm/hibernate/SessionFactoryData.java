@@ -229,6 +229,9 @@ public class SessionFactoryData {
 		return factory;
 	}
 
+	/**
+	 * Reset the session factory and clear all known configuration.
+	 */
 	public void reset() {
 		configurations.clear();
 		Iterator<SessionFactory> it = factories.values().iterator();

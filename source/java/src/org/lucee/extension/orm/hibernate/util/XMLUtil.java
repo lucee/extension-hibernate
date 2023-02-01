@@ -2,15 +2,23 @@ package org.lucee.extension.orm.hibernate.util;
 
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.io.StringWriter;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.TransformerFactory;
 
 import lucee.commons.io.res.Resource;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.runtime.exp.PageException;
+
+import org.lucee.extension.orm.hibernate.CommonUtil;
 
 public class XMLUtil {
 
@@ -61,30 +69,27 @@ public class XMLUtil {
 			throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
 		}
 	}
-
-	// toString(node, omitXMLDecl, indent, publicId, systemId, encoding);
-	public static String toString(NodeList nodeList, boolean omitXMLDecl, boolean indent) throws PageException {
-		// FUTURE use interface from loader
-		try {
-			Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass("lucee.runtime.text.xml.XMLCaster");
-			Method method = clazz.getMethod("toString", new Class[] { NodeList.class, boolean.class, boolean.class });
-			return (String) method.invoke(null, new Object[] { nodeList, omitXMLDecl, indent });
+	
+	/**
+	 * Generate an XML string from the provided w3c Document Element.
+	 * 
+	 * @param document The root element of an XML document.
+	 * @return a fully-formed and formatted XML string. Does not append or prepend <xml> tags or DOCTYPE, etc.
+	 * @throws PageException
+	 */
+	public static String toString( Element document ) throws PageException{
+		try{
+			TransformerFactory tf = TransformerFactory.newInstance();
+			Transformer transformer = tf.newTransformer();
+			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8" );
+			StringWriter writer = new StringWriter();
+			transformer.transform(new DOMSource(document), new StreamResult(writer));
+			return writer.toString();
 		}
 		catch (Exception e) {
-			throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
-		}
-	}
-
-	// toString(node, omitXMLDecl, indent, publicId, systemId, encoding);
-	public static String toString(Node node, boolean omitXMLDecl, boolean indent, String publicId, String systemId, String encoding) throws PageException {
-		// FUTURE use interface from loader
-		try {
-			Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass("lucee.runtime.text.xml.XMLCaster");
-			Method method = clazz.getMethod("toString", new Class[] { Node.class, boolean.class, boolean.class, String.class, String.class, String.class });
-			return (String) method.invoke(null, new Object[] { node, omitXMLDecl, indent, publicId, systemId, encoding });
-		}
-		catch (Exception e) {
-			throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
+			throw CommonUtil.toPageException(e);
 		}
 	}
 

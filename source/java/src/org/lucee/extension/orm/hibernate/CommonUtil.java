@@ -970,10 +970,6 @@ public class CommonUtil {
 		return orm().getPropertyValue(cfc, name, defaultValue);
 	}
 
-	public static String toString(Node node, boolean omitXMLDecl, boolean indent, String publicId, String systemId, String encoding) throws PageException {
-		return XMLUtil.toString(node, omitXMLDecl, indent, publicId, systemId, encoding);
-	}
-
 	public static String toBase64(Object o) throws PageException {
 		return caster().toBase64( o );
 	}

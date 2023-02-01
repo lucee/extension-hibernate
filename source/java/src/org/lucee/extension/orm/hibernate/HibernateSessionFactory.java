@@ -33,6 +33,8 @@ import org.hibernate.tool.hbm2ddl.SchemaExport.Action;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.hibernate.tool.schema.TargetType;
 import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
+import org.lucee.extension.orm.hibernate.util.XMLUtil;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -113,7 +115,7 @@ public class HibernateSessionFactory {
 				Element root = doc.getDocumentElement();
 				root.setAttribute("name", b64);
 
-				xml = CommonUtil.toString(root, false, true, null, null, CommonUtil.UTF8().name());
+				xml = XMLUtil.toString(root);
 			}
 
 			if (!cacheConfig.isFile()) {
@@ -320,7 +322,7 @@ public class HibernateSessionFactory {
 		}
 	}
 
-	public static Map<Key, String> createMappings(ORMConfiguration ormConf, SessionFactoryData data) {
+	public static Map<Key, String> assembleMappingsByDatasource(SessionFactoryData data) {
 		Map<Key, String> mappings = new HashMap<Key, String>();
 		Iterator<Entry<Key, Map<String, CFCInfo>>> it = data.getCFCs().entrySet().iterator();
 		while (it.hasNext()) {
@@ -328,30 +330,27 @@ public class HibernateSessionFactory {
 
 			Set<String> done = new HashSet<String>();
 			StringBuilder mapping = new StringBuilder();
-			mapping.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-			mapping.append(HBMCreator.HIBERNATE_3_DOCTYPE_DEFINITION + "\n");
-			mapping.append("<hibernate-mapping>\n");
+			mapping.append( HBMCreator.getXMLOpen() );
+			mapping.append( "<hibernate-mapping>" );
 			Iterator<Entry<String, CFCInfo>> _it = e.getValue().entrySet().iterator();
-			Entry<String, CFCInfo> entry;
-			while (_it.hasNext()) {
-				entry = _it.next();
-				createMappings(entry.getKey(), entry.getValue(), done, mapping, data);
-
-			}
-			mapping.append("</hibernate-mapping>");
+			_it.forEachRemaining( entry -> {
+				mapping.append( assembleMappingForCFC(entry.getKey(), entry.getValue(), done, data) );
+			});
+			mapping.append( "</hibernate-mapping>" );
 			mappings.put(e.getKey(), mapping.toString());
 		}
 		return mappings;
 	}
 
-	private static void createMappings(String key, CFCInfo value, Set<String> done, StringBuilder mappings, SessionFactoryData data) {
-		if (done.contains(key)) return;
+	private static String assembleMappingForCFC(String key, CFCInfo value, Set<String> done, SessionFactoryData data) {
+		if (done.contains(key)) return "";
 		CFCInfo v;
+		StringBuilder mappings = new StringBuilder();
 		String ext = value.getCFC().getExtends();
 		if (!Util.isEmpty(ext)) {
 			try {
-				Component base = data.getEntityByCFCName(ext, false);
-				ext = HibernateCaster.getEntityName(base);
+				Component parent = data.getEntityByCFCName(ext, false);
+				ext = HibernateCaster.getEntityName(parent);
 			}
 			catch (Throwable t) {
 				if (t instanceof ThreadDeath) throw (ThreadDeath) t;
@@ -360,12 +359,17 @@ public class HibernateSessionFactory {
 			ext = HibernateUtil.id(CommonUtil.last(ext, ".").trim());
 			if (!done.contains(ext)) {
 				v = data.getCFC(ext, null);
-				if (v != null) createMappings(ext, v, done, mappings, data);
+				if (v != null) {
+					mappings.append( 
+						HBMCreator.stripXMLOpenClose( assembleMappingForCFC(ext, v, done, data) )
+					);
+				}
 			}
 		}
 
-		mappings.append(value.getXML());
+		mappings.append( HBMCreator.stripXMLOpenClose( value.getXML() ) );
 		done.add(key);
+		return mappings.toString();
 	}
 
 	public static List<Component> loadComponents(PageContext pc, HibernateORMEngine engine, ORMConfiguration ormConf) throws PageException {

@@ -21,6 +21,7 @@ import lucee.runtime.db.DatasourceConnection;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
+import org.lucee.extension.orm.hibernate.util.XMLUtil;
 import lucee.runtime.type.Struct;
 import lucee.commons.io.res.Resource;
 
@@ -38,7 +39,8 @@ public class HBMCreator {
 	 * 
 	 * @see https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects
 	 */
-	public static final String HIBERNATE_3_SYSTEM_ID = "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd";
+	// public static final String HIBERNATE_3_SYSTEM_ID = "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd";
+	public static final String HIBERNATE_3_SYSTEM_ID = "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd";
 
 	/**
 	 * Full XML doctype for Hibernate mappings
@@ -1833,19 +1835,30 @@ public class HBMCreator {
 		return i;
 	}
 
+	/**
+	 * Convert the document to a file-ready XML string.
+	 * <p>
+	 * Will prepend the XML head tags.
+	 * 
+	 * @param document The W3C document root element for converting to an XML string
+	 * @return a fully-formed HBM XML document ready to save to a file.
+	 * @throws PageException
+	 */
+	public static String toMappingString( Element document ) throws PageException{
+		return getXMLOpen() + XMLUtil.toString( document );
+	}
 
 	/**
 	 * Save the XML dom to a hibernate mapping file (myEntity.hbm.xml)
 	 * 
 	 * @param cfc Lucee Component (entity) that we're saving the mapping for
-	 * @param hm hibernate mapping XML DOM root node
+	 * @param xml Fully-formed hibernate mapping XML
 	 */
-	public static void saveMapping(Component cfc, Element hm) {
+	public static void saveMapping(Component cfc, String xml) {
 		Resource res = getMappingResource( cfc );
 		if (res != null) {
 			try {
-				CommonUtil.write(res, CommonUtil.toString(hm, false, true, HBMCreator.HIBERNATE_3_PUBLIC_ID, HBMCreator.HIBERNATE_3_SYSTEM_ID,
-						CommonUtil.UTF8().name()), CommonUtil.UTF8(), false);
+				CommonUtil.write(res, xml, CommonUtil.UTF8(), false);
 			}
 			catch (Exception e) {
 			}
@@ -1893,6 +1906,31 @@ public class HBMCreator {
 		Resource res = cfc.getPageSource().getResource();
 		if (res == null) return null;
 		return res.getParentResource().getRealResource(res.getName() + ".hbm.xml");
+	}
+
+	/**
+	 * Get the opening of a Hibernate mapping XML file, including <xml> tag and DOCTYPE declaration
+	 */
+	public static String getXMLOpen(){
+		StringBuilder xml = new StringBuilder();
+		xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		xml.append(HIBERNATE_3_DOCTYPE_DEFINITION + "\n");
+		// xml.append("<hibernate-mapping>\n");
+		return xml.toString();
+	}
+
+	/**
+	 * Strip the open/close tags (i.e. `<xml>`, `<!DOCTYPE>`, `<hibernate-mapping>`) from an hbm.xml file.
+	 * <p>
+	 * Useful for assembling multiple entities into a single `<hibernate-mapping>` element for sending to Hibernate.
+	 * 
+	 * @param xml XML string from which to strip open and close tags
+	 * @return an XML string with the DOCTYPE, `<xml>` and `<hibernate-mapping>` elements removed
+	 */
+	public static String stripXMLOpenClose( String xml ){
+		return xml.replaceAll("<\\?xml[^>]+>", "")
+					.replaceAll("<!DOCTYPE[^>]+>", "")
+					.replaceAll("</?hibernate-mapping>", "");
 	}
 }
 
