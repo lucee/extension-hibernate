@@ -67,6 +67,7 @@ Using the Maven builds:
 
 * `mvn test` run java-based (junit) tests
 * `mvn javadoc:javadoc` generate java docs
+* `mvn formatter:format` [format java source](https://code.revelc.net/formatter-maven-plugin/usage.html)
 
 ## Testing
 
