@@ -79,14 +79,8 @@ jobs:
           java-version: '${{matrix.java_version}}'
           distribution: 'temurin'
 
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: maven-cache
-
       - name: Build with Maven
-        run: mvn --batch-mode -f pom.xml -Dlucee.version=${{matrix.lucee_version}} -Djdk.version=${{matrix.java_version}} -compile
+        run: mvn --batch-mode -f pom.xml -Dlucee.version=${{matrix.lucee_version}} -Djdk.version=${{matrix.java_version}} compile
 
   javadocs:
     runs-on: ubuntu-latest
