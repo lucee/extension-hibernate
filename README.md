@@ -6,13 +6,15 @@ A Hibernate for the rest of us!
 
 ### Features and Bug Fixes
 
-* Fix session close at end of transaction issue (LDEV-4017) 🐛🐛🐛
-* Fix "String or binary data would be truncated" on `varchar` columns (LDEV-4150) 🐛
-* Add support for `this.ormSettings.autogenmap = false` (LDEV-3525) 🤖
+* Fix [LDEV-4017](https://luceeserver.atlassian.net/browse/LDEV-4017) (session closed at end of transaction) 🐛🐛🐛
+* Fix [LDEV-4150](https://luceeserver.atlassian.net/browse/LDEV-4150) ("String or binary data would be truncated" on `varchar` columns) 🐛
+* Fix [LDEV-2049](https://luceeserver.atlassian.net/browse/LDEV-4308) (certain events don't emit) 🐛
+* Implemented LDEV-3525 (support for `this.ormSettings.autogenmap = false`) 🤖 📁
+* Moved all `ORM*()`, `entity*()` methods such as `ORMReload()`, `entitySave()` to extension
 
 ### Build Improvements
 
-* API docs are now auto-generated with Maven and committed to `docs/` 📖
+* Auto-generated API docs 📖
 * One-liner to build and test the extension, along with README build/test/contribution docs 🔨
 * Auto-formatting of all Java source code via `formatter-maven-plugin` 🤖
 * Automatic compilation test on java 8, 11 and 17 🤖
@@ -30,7 +32,6 @@ A Hibernate for the rest of us!
 * Drop hardcoded Hibernate dependencies from Lucee core
   * Entire `lucee.runtime.orm` package
   * drop hardcoded ORM engine def from Lucee core
-* `getORMEngine()` - CFML method to retrieve the ORM engine
 * Better support for entity lock modes
 * Reduce use of reflection
 
