@@ -15,22 +15,21 @@ import lucee.runtime.exp.PageException;
  */
 public class CFCLazyInitializer extends AbstractLazyInitializer implements Serializable {
 
-	CFCLazyInitializer(String entityName, Serializable id, SessionImplementor session) {
-		super(entityName, id, session);
-	}
+    CFCLazyInitializer(String entityName, Serializable id, SessionImplementor session) {
+        super(entityName, id, session);
+    }
 
-	public Component getCFC() {
-		try {
-			return CommonUtil.toComponent(getImplementation());
-		}
-		catch (PageException pe) {
-			throw new HibernatePageException(pe);
-		}
-	}
+    public Component getCFC() {
+        try {
+            return CommonUtil.toComponent(getImplementation());
+        } catch (PageException pe) {
+            throw new HibernatePageException(pe);
+        }
+    }
 
-	@Override
-	public Class getPersistentClass() {
-		throw new UnsupportedOperationException("dynamic-map entity representation");
-	}
+    @Override
+    public Class getPersistentClass() {
+        throw new UnsupportedOperationException("dynamic-map entity representation");
+    }
 
 }

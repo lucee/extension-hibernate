@@ -1,3 +1,4 @@
+
 // extension classes
 import org.lucee.extension.orm.hibernate.jdbc.DataSourceConfig;
 
@@ -10,14 +11,14 @@ import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Disabled;
 
-@Disabled( "Weird 'cannot find symbol' error with Lucee Datasource classes" )
+@Disabled("Weird 'cannot find symbol' error with Lucee Datasource classes")
 class DatasourceConfigTest {
 
     DataSourceConfig dsc;
 
     // @Test
     // void canInitialize(){
-    //     dsc = new DataSourceConfig( new DataSourceImpl(), new Configuration() );
+    // dsc = new DataSourceConfig( new DataSourceImpl(), new Configuration() );
     // }
 
 }

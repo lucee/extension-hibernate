@@ -21,25 +21,25 @@ class HibernateORMEngineTest {
     HibernateORMEngine engine = new HibernateORMEngine();
 
     @Test
-    void canInitialize(){
-        assertEquals( 0, engine.getMode() );
+    void canInitialize() {
+        assertEquals(0, engine.getMode());
     }
 
     // @Test
     // void testSaveMapping() {
-    //     @Mock
-    //     Resource mapping = Mockito.mock( Resource.class );
-    //     Mockito.when( mapping.toString() ).thenReturn( "Person.cfc" );
+    // @Mock
+    // Resource mapping = Mockito.mock( Resource.class );
+    // Mockito.when( mapping.toString() ).thenReturn( "Person.cfc" );
 
-    //     @Mock
-    //     Element xml = Mockito.mock( Element.class );
-    //     Mockito.when( xml.toString() ).thenReturn( "<xml></xml>" );
+    // @Mock
+    // Element xml = Mockito.mock( Element.class );
+    // Mockito.when( xml.toString() ).thenReturn( "<xml></xml>" );
 
-    //     assertNotNull( xml );
-    //     assertNotNull( mapping );
+    // assertNotNull( xml );
+    // assertNotNull( mapping );
 
-    //     engine.saveMapping( xml, mapping );
-    //     assertTrue( new File( "person.hbm.xml" ).exists() );
+    // engine.saveMapping( xml, mapping );
+    // assertTrue( new File( "person.hbm.xml" ).exists() );
     // }
 
 }

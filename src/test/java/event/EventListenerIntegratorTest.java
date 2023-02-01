@@ -13,7 +13,7 @@ import org.mockito.Mockito;
 
 public class EventListenerIntegratorTest {
     @Test
-    public void canInitialize(){
+    public void canInitialize() {
         EventListenerIntegrator integrator = new EventListenerIntegrator();
     }
 }

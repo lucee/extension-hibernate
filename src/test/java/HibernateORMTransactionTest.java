@@ -16,13 +16,13 @@ public class HibernateORMTransactionTest {
     @Mock
     private Session MockSession;
 
-    public HibernateORMTransactionTest(){
-        MockSession = Mockito.mock( org.hibernate.engine.spi.SessionDelegatorBaseImpl.class );
+    public HibernateORMTransactionTest() {
+        MockSession = Mockito.mock(org.hibernate.engine.spi.SessionDelegatorBaseImpl.class);
     }
 
     @Test
-    public void canInitialize(){
+    public void canInitialize() {
         Boolean autoManage = false;
-        new HibernateORMTransaction( MockSession, autoManage );
+        new HibernateORMTransaction(MockSession, autoManage);
     }
 }
