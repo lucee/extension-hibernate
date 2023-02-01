@@ -2,60 +2,63 @@
 
 A Hibernate for the rest of us!
 
-## Why
+## Improvements
 
-Many improvements in the works:
+### Features and Bug Fixes
 
-* API docs are now committed to `docs/` ✅
-* `Dialect.getDialects()` - list all available dialects ✅
-* Fix session close at end of transaction issue (LDEV-4017) ✅
-* Fix "String or binary data would be truncated" on `varchar` columns (LDEV-4150) ✅
+* Fix session close at end of transaction issue (LDEV-4017) 🐛🐛🐛
+* Fix "String or binary data would be truncated" on `varchar` columns (LDEV-4150) 🐛
+* Add support for `this.ormSettings.autogenmap = false` (LDEV-3525) 🤖
+
+### Build Improvements
+
+* API docs are now auto-generated with Maven and committed to `docs/` 📖
+* One-liner to build and test the extension, along with README build/test/contribution docs 🔨
+* Auto-formatting of all Java source code via `formatter-maven-plugin` 🤖
+* Automatic compilation test on java 8, 11 and 17 🤖
+
+### In The Works
+
 * Support for configuring the [Hibernate Flush mode](https://docs.jboss.org/hibernate/orm/5.4/javadocs/org/hibernate/FlushMode.html) (MANUAL, COMMIT, AUTO, ALWAYS)
+* Support for [MS SQL's `SNAPSHOT` isolation level](https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/sql/snapshot-isolation-in-sql-server)
 * Improved logging
 * Improved configuration support (both Hibernate and extension-level)
-* More utility/helper methods
-* Support for [MS SQL's `SNAPSHOT` isolation level](https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/sql/snapshot-isolation-in-sql-server)
-* more Hibernate passthrough
 * allow grabbing the current DB connection
 * Faster ORM reloads
 * Better connection management (fix open connection issues)
-* Fix open session issues
+* Fix open/orphaned session issues causing memory leaks
 * Drop hardcoded Hibernate dependencies from Lucee core
   * Entire `lucee.runtime.orm` package
   * drop hardcoded ORM engine def from Lucee core
 * `getORMEngine()` - CFML method to retrieve the ORM engine
 * Better support for entity lock modes
-* Reduce usage of reflection
+* Reduce use of reflection
 
 ## Contributing
 
-First, make sure you have the java JRE and JDK installed.
+### Dependencies
 
-Then [install ant](https://www.osradar.com/install-apache-ant-ubuntu-20-04/) if not installed.
+* the Java JRE
+* the Java JDK
+* [ant](https://www.osradar.com/install-apache-ant-ubuntu-20-04/)
+* [maven](https://linuxize.com/post/how-to-install-apache-maven-on-ubuntu-20-04/)
 
-To get started with this extension:
+### Getting Started
 
 1. Install this repo - `git clone git@github.com:michaelborn/extension-hibernate-fork.git`
 2. Check out the `FORK` branch - `git checkout FORK`
-5. Change code...
-6. Lint / validate via `ant compile`
-7. Build extension via `ant dist`
-8. Test via `./test.sh`
+3. Make changes..
+4. Lint / validate via `ant compile`
+5. [Build extension via `ant dist`](#building)
+6. [Test via `./test.sh`](#testing)
 
-### Database Testing
+**Before you send a PR:**
 
-For testing on a specific database platform, create a `.env` file in `tests/` with database credentials:
+1. Don't forget to run tests!
+   1. (if you can't get tests to pass, ask for help!)
+2. Format java source code: `mvn formatter:format`
 
-```bash
-cd tests
-cp .env.example .env
-```
-
-And edit the `MSSQL_*` or `MYSQL_*`, etc. keys to match your database credentials.
-
-This `.env` file will be sourced in as environment variables while running tests via `./test.sh`.
-
-## Build
+## Building
 
 Using ant builds (for now):
 
@@ -89,6 +92,19 @@ To build a .lex and test it immediately, chain `ant dist` and `./test.sh`:
 ```bash
 ant dist && ./test.sh
 ```
+
+### Database Testing
+
+For testing on a specific database platform, create a `.env` file in `tests/` with database credentials:
+
+```bash
+cd tests
+cp .env.example .env
+```
+
+And edit the `MSSQL_*` or `MYSQL_*`, etc. keys to match your database credentials.
+
+This `.env` file will be sourced in as environment variables while running tests via `./test.sh`.
 
 ## Thanks
 
