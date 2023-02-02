@@ -197,9 +197,7 @@ public class HibernateSessionFactory {
 
         if (ormConf.secondaryCacheEnabled()) {
             if (cacheConfig != null && cacheConfig.isFile()) {
-                configuration.setProperty("hibernate.cache.provider_configuration_file_resource_path",
-                        cacheConfig.getAbsolutePath());
-                configuration.setProperty("cache.provider_configuration_file_resource_path",
+                configuration.setProperty(AvailableSettings.CACHE_PROVIDER_CONFIG,
                         cacheConfig.getAbsolutePath());
                 if (cacheConfig instanceof File)
                     configuration.setProperty("net.sf.ehcache.configurationResourceName",
@@ -212,19 +210,9 @@ public class HibernateSessionFactory {
             if (cacheProviderFactory != null) {
                 setProperty(configuration, AvailableSettings.CACHE_REGION_FACTORY, cacheProviderFactory);
             }
-            // AvailableSettings.CACHE_REGION_FACTORY
-            // hibernate.cache.region.factory_class
-            // hibernate.cache.use_second_level_cache
-
-            // <property
-            // name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
             // <property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
 
             configuration.setProperty(AvailableSettings.USE_QUERY_CACHE, "true");
-            // <prop
-            // key="hibernate.cache.provider_configuration_file_resource_path">hibernate-ehcache.xml</prop>
-
-            // hibernate.cache.provider_class=org.hibernate.cache.EhCacheProvider
         }
 
         schemaExport(log, configuration, ds, user, pass, data);
@@ -247,6 +235,8 @@ public class HibernateSessionFactory {
 
     /**
      * Generate an XML-format ehcache config file for the given cache name
+     * <p>
+     * TODO: Add support for diskSpoolBufferSizeMB and clearOnFlush, added in ACF 9.0.1
      * 
      * @param cacheName Name of the cache
      * @return XML string with formatting and line breaks
