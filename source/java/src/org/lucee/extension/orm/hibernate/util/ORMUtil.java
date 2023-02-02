@@ -23,8 +23,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import org.lucee.extension.orm.hibernate.ExceptionUtil;
-import org.lucee.extension.orm.hibernate.CommonUtil;
 import lucee.runtime.orm.ORMSession;
 import lucee.loader.engine.CFMLEngine;
 import lucee.runtime.Component;

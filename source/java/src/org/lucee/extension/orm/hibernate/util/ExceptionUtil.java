@@ -1,6 +1,8 @@
-package org.lucee.extension.orm.hibernate;
+package org.lucee.extension.orm.hibernate.util;
 
 import java.lang.reflect.Method;
+
+import org.lucee.extension.orm.hibernate.SessionFactoryData;
 
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.runtime.Component;

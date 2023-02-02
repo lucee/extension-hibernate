@@ -17,13 +17,13 @@ import org.hibernate.tuple.Instantiator;
 import org.hibernate.tuple.entity.AbstractEntityTuplizer;
 import org.hibernate.tuple.entity.EntityMetamodel;
 import org.hibernate.type.Type;
-import org.lucee.extension.orm.hibernate.CommonUtil;
 import org.lucee.extension.orm.hibernate.HBMCreator;
 import org.lucee.extension.orm.hibernate.HibernateCaster;
-import org.lucee.extension.orm.hibernate.HibernateUtil;
 import org.lucee.extension.orm.hibernate.tuplizer.accessors.CFCGetter;
 import org.lucee.extension.orm.hibernate.tuplizer.accessors.CFCSetter;
 import org.lucee.extension.orm.hibernate.tuplizer.proxy.CFCHibernateProxyFactory;
+import org.lucee.extension.orm.hibernate.util.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.HibernateUtil;
 
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.loader.util.Util;

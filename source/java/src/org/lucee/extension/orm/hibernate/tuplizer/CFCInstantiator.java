@@ -8,12 +8,12 @@ import java.util.Set;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.tuple.Instantiator;
 import org.hibernate.tuple.entity.EntityMetamodel;
-import org.lucee.extension.orm.hibernate.CommonUtil;
 import org.lucee.extension.orm.hibernate.HibernateCaster;
 import org.lucee.extension.orm.hibernate.HibernateORMEngine;
 import org.lucee.extension.orm.hibernate.HibernateORMSession;
 import org.lucee.extension.orm.hibernate.HibernatePageException;
-import org.lucee.extension.orm.hibernate.HibernateUtil;
+import org.lucee.extension.orm.hibernate.util.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.HibernateUtil;
 
 import lucee.runtime.Component;
 import lucee.runtime.PageContext;

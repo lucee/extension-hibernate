@@ -1,4 +1,4 @@
-package org.lucee.extension.orm.hibernate;
+package org.lucee.extension.orm.hibernate.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -27,7 +27,6 @@ import java.util.TimeZone;
 
 import org.hibernate.JDBCException;
 import org.hibernate.exception.ConstraintViolationException;
-import org.lucee.extension.orm.hibernate.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 

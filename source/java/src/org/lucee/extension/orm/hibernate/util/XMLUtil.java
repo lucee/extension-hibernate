@@ -18,8 +18,6 @@ import lucee.commons.io.res.Resource;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.runtime.exp.PageException;
 
-import org.lucee.extension.orm.hibernate.CommonUtil;
-
 public class XMLUtil {
 
     public static InputSource toInputSource(Object obj) throws PageException {

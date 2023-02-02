@@ -33,6 +33,10 @@ import org.hibernate.tool.hbm2ddl.SchemaExport.Action;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.hibernate.tool.schema.TargetType;
 import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
+import org.lucee.extension.orm.hibernate.util.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.ExceptionUtil;
+import org.lucee.extension.orm.hibernate.util.HibernateUtil;
+import org.lucee.extension.orm.hibernate.util.ORMConfigurationUtil;
 import org.lucee.extension.orm.hibernate.util.XMLUtil;
 
 import org.w3c.dom.Document;

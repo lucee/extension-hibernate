@@ -21,6 +21,11 @@ import lucee.runtime.db.DatasourceConnection;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
+
+import org.lucee.extension.orm.hibernate.util.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.ExceptionUtil;
+import org.lucee.extension.orm.hibernate.util.HibernateUtil;
+import org.lucee.extension.orm.hibernate.util.ORMConfigurationUtil;
 import org.lucee.extension.orm.hibernate.util.XMLUtil;
 import lucee.runtime.type.Struct;
 import lucee.commons.io.res.Resource;

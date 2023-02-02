@@ -1,4 +1,4 @@
-package org.lucee.extension.orm.hibernate;
+package org.lucee.extension.orm.hibernate.util;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -12,6 +12,11 @@ import org.hibernate.HibernateException;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.ComponentType;
 import org.hibernate.type.Type;
+import org.lucee.extension.orm.hibernate.ColumnInfo;
+import org.lucee.extension.orm.hibernate.HibernateCaster;
+import org.lucee.extension.orm.hibernate.HibernateORMEngine;
+import org.lucee.extension.orm.hibernate.HibernateORMSession;
+import org.lucee.extension.orm.hibernate.SessionFactoryData;
 
 import lucee.Info;
 import lucee.commons.io.res.Resource;

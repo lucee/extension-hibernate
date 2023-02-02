@@ -1,6 +1,7 @@
 package org.lucee.extension.orm.hibernate;
 
 import org.hibernate.HibernateException;
+import org.lucee.extension.orm.hibernate.util.CommonUtil;
 
 import lucee.runtime.PageContext;
 import lucee.runtime.PageSource;

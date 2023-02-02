@@ -18,8 +18,8 @@
  **/
 package org.lucee.extension.orm.functions;
 
-import org.lucee.extension.orm.hibernate.CommonUtil;
-import org.lucee.extension.orm.hibernate.ExceptionUtil;
+import org.lucee.extension.orm.hibernate.util.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.ExceptionUtil;
 import org.lucee.extension.orm.hibernate.util.ORMUtil;
 
 import java.util.List;

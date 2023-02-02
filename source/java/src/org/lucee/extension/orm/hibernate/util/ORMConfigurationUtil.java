@@ -1,4 +1,4 @@
-package org.lucee.extension.orm.hibernate;
+package org.lucee.extension.orm.hibernate.util;
 
 import java.lang.reflect.Method;
 

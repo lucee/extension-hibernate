@@ -11,11 +11,11 @@ import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.property.access.spi.Getter;
 import org.hibernate.type.Type;
-import org.lucee.extension.orm.hibernate.CommonUtil;
 import org.lucee.extension.orm.hibernate.HibernateCaster;
 import org.lucee.extension.orm.hibernate.HibernateORMEngine;
 import org.lucee.extension.orm.hibernate.HibernatePageException;
-import org.lucee.extension.orm.hibernate.HibernateUtil;
+import org.lucee.extension.orm.hibernate.util.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.HibernateUtil;
 
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.runtime.Component;

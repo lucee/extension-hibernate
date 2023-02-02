@@ -16,6 +16,9 @@ import org.lucee.extension.orm.hibernate.jdbc.DataSourceConfig;
 import org.lucee.extension.orm.hibernate.naming.CFCNamingStrategy;
 import org.lucee.extension.orm.hibernate.naming.DefaultNamingStrategy;
 import org.lucee.extension.orm.hibernate.naming.SmartNamingStrategy;
+import org.lucee.extension.orm.hibernate.util.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.ExceptionUtil;
+import org.lucee.extension.orm.hibernate.util.HibernateUtil;
 
 import lucee.commons.io.log.Log;
 import lucee.loader.engine.CFMLEngineFactory;

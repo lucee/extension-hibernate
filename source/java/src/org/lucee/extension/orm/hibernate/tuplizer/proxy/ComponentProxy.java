@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.lucee.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.CommonUtil;
 
 import lucee.commons.lang.types.RefBoolean;
 import lucee.runtime.Component;
