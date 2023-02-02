@@ -193,11 +193,22 @@ public class SessionFactoryData {
 
     }
 
-    // Datasource specific
+    /**
+     * Get the Hibernate configuration for the given datasource name.
+     * 
+     * @param ds Datasource object
+     * @return an instance of the {@link org.lucee.extension.orm.hibernate.jdbc.DataSourceConfig} object
+     */
     public DataSourceConfig getConfiguration(DataSource ds) {
         return configurations.get(CommonUtil.toKey(ds.getName()));
     }
 
+    /**
+     * Get the Hibernate configuration for the given datasource name.
+     * 
+     * @param key Datasource name, as a Lucee collection key
+     * @return an instance of the {@link org.lucee.extension.orm.hibernate.jdbc.DataSourceConfig} object
+     */
     public DataSourceConfig getConfiguration(Key key) {
         return configurations.get(key);
     }
