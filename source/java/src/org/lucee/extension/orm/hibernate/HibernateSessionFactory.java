@@ -161,10 +161,8 @@ public class HibernateSessionFactory {
 
                 // Echo all executed SQL to stdout
                 .setProperty(AvailableSettings.SHOW_SQL, CommonUtil.toString(ormConf.logSQL()))
-                .setProperty("hibernate.format_sql", CommonUtil.toString(ormConf.logSQL()))
                 // formatting of SQL logged to the console
                 .setProperty(AvailableSettings.FORMAT_SQL, CommonUtil.toString(ormConf.logSQL()))
-                .setProperty("hibernate.format_sql", CommonUtil.toString(ormConf.logSQL()))
                 // Specifies whether secondary caching should be enabled
                 .setProperty(AvailableSettings.USE_SECOND_LEVEL_CACHE,
                         CommonUtil.toString(ormConf.secondaryCacheEnabled()))
