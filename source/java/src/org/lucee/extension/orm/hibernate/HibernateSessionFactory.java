@@ -451,7 +451,7 @@ public class HibernateSessionFactory {
      */
     private static void loadComponents(PageContext pc, HibernateORMEngine engine, List<Component> components,
             Resource[] reses, ResourceFilter filter, ORMConfiguration ormConf) throws PageException {
-        Mapping[] mappings = createMappings(pc, reses);
+        Mapping[] mappings = createFileMappings(pc, reses);
         ApplicationContext ac = pc.getApplicationContext();
         Mapping[] existing = ac.getComponentMappings();
         if (existing == null)
@@ -554,7 +554,7 @@ public class HibernateSessionFactory {
      * @param resources Array of Resource objects, i.e. a file path
      * @return a Mapping object used to locate a file resource
      */
-    public static Mapping[] createMappings(PageContext pc, Resource[] resources) {
+    public static Mapping[] createFileMappings(PageContext pc, Resource[] resources) {
 
         Mapping[] mappings = new Mapping[resources.length];
         Config config = pc.getConfig();
