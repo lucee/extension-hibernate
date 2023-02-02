@@ -175,9 +175,9 @@ public class HibernateSessionFactory {
         String schema = ORMConfigurationUtil.getSchema(ormConf, ds.getName());
 
         if (!Util.isEmpty(catalog))
-            configuration.setProperty("hibernate.default_catalog", catalog);
+            configuration.setProperty(AvailableSettings.DEFAULT_CATALOG, catalog);
         if (!Util.isEmpty(schema))
-            configuration.setProperty("hibernate.default_schema", schema);
+            configuration.setProperty(AvailableSettings.DEFAULT_SCHEMA, schema);
 
         if (ormConf.secondaryCacheEnabled()) {
             if (cacheConfig != null && cacheConfig.isFile()) {
@@ -204,7 +204,7 @@ public class HibernateSessionFactory {
             // name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
             // <property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
 
-            configuration.setProperty("hibernate.cache.use_query_cache", "true");
+            configuration.setProperty(AvailableSettings.USE_QUERY_CACHE, "true");
             // <prop
             // key="hibernate.cache.provider_configuration_file_resource_path">hibernate-ehcache.xml</prop>
 
