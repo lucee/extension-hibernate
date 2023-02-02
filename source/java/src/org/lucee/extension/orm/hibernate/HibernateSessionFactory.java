@@ -420,6 +420,14 @@ public class HibernateSessionFactory {
         return mappings.toString();
     }
 
+    /**
+     * Load and return persistent entities using the ORM configuration
+     * 
+     * @param pc Lucee PageContext object
+     * @param engine ORM engine
+     * @param ormConf ORM configuration object.
+     * @throws PageException
+     */
     public static List<Component> loadComponents(PageContext pc, HibernateORMEngine engine, ORMConfiguration ormConf)
             throws PageException {
         CFMLEngine en = CFMLEngineFactory.getInstance();
@@ -430,6 +438,17 @@ public class HibernateSessionFactory {
         return components;
     }
 
+    /**
+     * Load persistent entities from the given directory
+     * 
+     * @param pc Lucee PageContext object
+     * @param engine ORM engine
+     * @param components The current list of components. Any discovered components will be appended to this list.
+     * @param res The directory to search for Components.
+     * @param filter The file filter - probably just a Lucee-fied ".cfc" filter
+     * @param ormConf ORM configuration object.
+     * @throws PageException
+     */
     private static void loadComponents(PageContext pc, HibernateORMEngine engine, List<Component> components,
             Resource[] reses, ResourceFilter filter, ORMConfiguration ormConf) throws PageException {
         Mapping[] mappings = createMappings(pc, reses);
@@ -455,6 +474,18 @@ public class HibernateSessionFactory {
         }
     }
 
+    /**
+     * Load persistent entities from the given cfclocation Mapping directory
+     * 
+     * @param pc Lucee PageContext object
+     * @param engine ORM engine
+     * @param cfclocation Lucee {@link lucee.runtime.Mapping} pointing to a directory where .cfc Components are located.
+     * @param components The current list of components. Any discovered components will be appended to this list.
+     * @param res The directory to search for Components, OR the file to (potentially) import into the Hibernate configuration.
+     * @param filter The file filter - probably just a Lucee-fied ".cfc" filter
+     * @param ormConf ORM configuration object.
+     * @throws PageException
+     */
     private static void loadComponents(PageContext pc, HibernateORMEngine engine, Mapping cfclocation,
             List<Component> components, Resource res, ResourceFilter filter, ORMConfiguration ormConf)
             throws PageException {
@@ -514,6 +545,15 @@ public class HibernateSessionFactory {
         }
     }
 
+    /**
+     * Create CF mappings for locating persistent entities.
+     * <p>
+     * Used when importing persistent entities from the configured <code>this.ormsettings.cfclocation</code> array.
+     * 
+     * @param pc Lucee PageContext
+     * @param resources Array of Resource objects, i.e. a file path
+     * @return a Mapping object used to locate a file resource
+     */
     public static Mapping[] createMappings(PageContext pc, Resource[] resources) {
 
         Mapping[] mappings = new Mapping[resources.length];
