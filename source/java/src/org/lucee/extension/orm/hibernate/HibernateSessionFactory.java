@@ -61,6 +61,22 @@ import lucee.runtime.util.TemplateUtil;
 
 public class HibernateSessionFactory {
 
+    /**
+     * Build out Hibernate configuration using the application's `this.ormSettings`, datasource, and generated mappings.
+     * 
+     * @param log Lucee logger object, configured for the ORM log
+     * @param mappings Mapping XML document as a string
+     * @param ds Datasource to operate on
+     * @param user Username for the configured datasource
+     * @param pass Password for the configured datasource
+     * @param data The extension {@link org.lucee.extension.orm.hibernate.SessionFactoryData}
+     * @param applicationContextName Application name
+     * 
+     * @return Hibernate Configuration object
+     * @throws SQLException
+     * @throws IOException
+     * @throws PageException
+     */
     public static Configuration createConfiguration(Log log, String mappings, DataSource ds, String user, String pass,
             SessionFactoryData data, String applicationContextName) throws SQLException, IOException, PageException {
         ORMConfiguration ormConf = data.getORMConfiguration();
@@ -216,12 +232,25 @@ public class HibernateSessionFactory {
         return configuration;
     }
 
+    /**
+     * Set a complex property on the provided Hibernate Configuration object.
+     * 
+     * @param configuration Hibernate configuration on which to add a property
+     * @param name New setting / property name
+     * @param value Any value or object, like a {@link ConnectionProviderImpl} instance
+     */
     private static void setProperty(Configuration configuration, String name, Object value) {
         Properties props = new Properties();
         props.put(name, value);
         configuration.addProperties(props);
     }
 
+    /**
+     * Generate an XML-format ehcache config file for the given cache name
+     * 
+     * @param cacheName Name of the cache
+     * @return XML string with formatting and line breaks
+     */
     private static String createEHConfigXML(String cacheName) {
         return new StringBuilder().append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>").append("<ehcache")
                 .append("    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"")
@@ -237,6 +266,20 @@ public class HibernateSessionFactory {
                 .append("</ehcache>").toString();
     }
 
+    /**
+     * Generate the database schema based on the configured settings (dropcreate, update, etc.)
+     * 
+     * @param log Lucee logger object
+     * @param configuration Hibernate configuration
+     * @param ds Datasource
+     * @param user Datasource username
+     * @param pass Datasource password
+     * @param data Session factory data container
+     * 
+     * @throws PageException
+     * @throws SQLException
+     * @throws IOException
+     */
     private static void schemaExport(Log log, Configuration configuration, DataSource ds, String user, String pass,
             SessionFactoryData data) throws PageException, SQLException, IOException {
         ORMConfiguration ormConf = data.getORMConfiguration();
