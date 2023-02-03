@@ -25,6 +25,8 @@
 
       <!-- What version of the JDK should we compile against? -->
       <jdk.version>1.8</jdk.version>
+      <maven.compiler.target>${jdk.version}</maven.compiler.target>
+      <maven.compiler.source>${jdk.version}</maven.compiler.source>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>
 
@@ -124,10 +126,6 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
             <version>3.3</version>
-            <configuration>
-					<source>${jdk.version}</source>
-					<target>${jdk.version}</target>
-            </configuration>
 
          </plugin>
 
