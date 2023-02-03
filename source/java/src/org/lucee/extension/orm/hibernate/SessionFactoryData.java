@@ -200,8 +200,10 @@ public class SessionFactoryData {
 
     /**
      * Get the Hibernate configuration for the given datasource name.
-     * 
-     * @param ds Datasource object
+     *
+     * @param ds
+     *            Datasource object
+     *
      * @return an instance of the {@link org.lucee.extension.orm.hibernate.jdbc.DataSourceConfig} object
      */
     public DataSourceConfig getConfiguration(DataSource ds) {
@@ -210,8 +212,10 @@ public class SessionFactoryData {
 
     /**
      * Get the Hibernate configuration for the given datasource name.
-     * 
-     * @param key Datasource name, as a Lucee collection key
+     *
+     * @param key
+     *            Datasource name, as a Lucee collection key
+     *
      * @return an instance of the {@link org.lucee.extension.orm.hibernate.jdbc.DataSourceConfig} object
      */
     public DataSourceConfig getConfiguration(Key key) {
@@ -221,15 +225,9 @@ public class SessionFactoryData {
     public void setConfiguration(Log log, String mappings, DataSource ds, String user, String pass,
             String applicationContextName) throws PageException, SQLException, IOException {
 
-        Configuration configuration = new ConfigurationBuilder()
-            .withDatasource(ds)
-            .withDatasourceCreds(user, pass)
-            .withORMConfig(getORMConfiguration())
-            .withEventListener( getEventListenerIntegrator() )
-            .withApplicationName(applicationContextName)
-            .withXMLMappings(mappings)
-            .withLog(log)
-            .build();
+        Configuration configuration = new ConfigurationBuilder().withDatasource(ds).withDatasourceCreds(user, pass)
+                .withORMConfig(getORMConfiguration()).withEventListener(getEventListenerIntegrator())
+                .withApplicationName(applicationContextName).withXMLMappings(mappings).withLog(log).build();
         configurations.put(CommonUtil.toKey(ds.getName()), new DataSourceConfig(ds, configuration));
         HibernateSessionFactory.schemaExport(log, configuration, ds, user, pass, this);
     }
