@@ -124,12 +124,12 @@ public class HibernatePageException extends HibernateException implements IPageE
 
     @Override
     public Struct getAdditional() {
-        return pe.getAddional();
+        return pe.getAdditional();
     }
 
     @Override
     public Struct getAddional() {
-        return pe.getAddional();
+        return pe.getAdditional();
     }
 
     @Override
