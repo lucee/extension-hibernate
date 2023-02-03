@@ -426,7 +426,13 @@ public class HibernateUtil {
         return ret;
     }
 
-    public static boolean isApplicationName(PageContext pc, String name) {
+    /**
+     * Check filename string against known application.cfc name.
+     * 
+     * @param name Filename to check
+     * @return True if string matches 'application.cfc'.
+     */
+    public static boolean isApplicationName(String name) {
         return name.toLowerCase().equalsIgnoreCase("application.cfc");
     }
 }

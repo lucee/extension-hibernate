@@ -329,7 +329,7 @@ public class HibernateSessionFactory {
                     loadComponents(pc, engine, cfclocation, components, children[i], filter, ormConf);
             }
         } else if (res.isFile()) {
-            if (!HibernateUtil.isApplicationName(pc, res.getName())) {
+            if (!HibernateUtil.isApplicationName(res.getName())) {
                 try {
 
                     // MUST still a bad solution
