@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.cfg.Configuration;
 import org.hibernate.SessionFactory;
 import org.hibernate.engine.query.spi.QueryPlanCache;
 import org.hibernate.internal.SessionFactoryImpl;
@@ -17,6 +18,7 @@ import org.lucee.extension.orm.hibernate.naming.CFCNamingStrategy;
 import org.lucee.extension.orm.hibernate.naming.DefaultNamingStrategy;
 import org.lucee.extension.orm.hibernate.naming.SmartNamingStrategy;
 import org.lucee.extension.orm.hibernate.util.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.ConfigurationBuilder;
 import org.lucee.extension.orm.hibernate.util.ExceptionUtil;
 import org.lucee.extension.orm.hibernate.util.HibernateUtil;
 
@@ -218,8 +220,18 @@ public class SessionFactoryData {
 
     public void setConfiguration(Log log, String mappings, DataSource ds, String user, String pass,
             String applicationContextName) throws PageException, SQLException, IOException {
-        configurations.put(CommonUtil.toKey(ds.getName()), new DataSourceConfig(ds, HibernateSessionFactory
-                .createConfiguration(log, mappings, ds, user, pass, this, applicationContextName)));
+
+        Configuration configuration = new ConfigurationBuilder()
+            .withDatasource(ds)
+            .withDatasourceCreds(user, pass)
+            .withORMConfig(getORMConfiguration())
+            .withEventListener( getEventListenerIntegrator() )
+            .withApplicationName(applicationContextName)
+            .withXMLMappings(mappings)
+            .withLog(log)
+            .build();
+        configurations.put(CommonUtil.toKey(ds.getName()), new DataSourceConfig(ds, configuration));
+        HibernateSessionFactory.schemaExport(log, configuration, ds, user, pass, this);
     }
 
     public SessionFactory buildSessionFactory(Key datasSourceName) {
