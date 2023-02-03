@@ -23,7 +23,6 @@ import org.lucee.extension.orm.hibernate.util.ORMUtil;
 
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
-import lucee.runtime.orm.ORMSession;
 import lucee.runtime.type.Array;
 
 public class EntityNameArray {

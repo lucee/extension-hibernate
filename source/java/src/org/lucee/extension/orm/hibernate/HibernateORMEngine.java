@@ -13,9 +13,6 @@ import org.lucee.extension.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
 import org.lucee.extension.orm.hibernate.util.CommonUtil;
 import org.lucee.extension.orm.hibernate.util.ExceptionUtil;
 import org.lucee.extension.orm.hibernate.util.HibernateUtil;
-import org.lucee.extension.orm.hibernate.util.XMLUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import lucee.commons.io.log.Log;
 import lucee.commons.io.res.Resource;

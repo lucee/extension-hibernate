@@ -19,12 +19,8 @@
 package org.lucee.extension.orm.hibernate.util;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map.Entry;
 
 import lucee.runtime.orm.ORMSession;
-import lucee.loader.engine.CFMLEngine;
 import lucee.runtime.Component;
 import lucee.runtime.PageContext;
 // import lucee.runtime.PageContextImpl;
@@ -33,7 +29,6 @@ import lucee.runtime.orm.ORMEngine;
 import lucee.runtime.db.DataSource;
 // import lucee.runtime.engine.ThreadLocalPageContext;
 import lucee.runtime.exp.PageException;
-import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
 import lucee.runtime.type.Struct;
 import lucee.loader.util.Util;

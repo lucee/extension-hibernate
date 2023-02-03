@@ -1,11 +1,8 @@
 package org.lucee.extension.orm.hibernate.event;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.io.FileWriter;
-import java.io.IOException;
 
 import org.hibernate.HibernateException;
 import org.hibernate.boot.Metadata;

@@ -18,9 +18,7 @@ import org.lucee.extension.orm.hibernate.HibernateORMEngine;
 import org.lucee.extension.orm.hibernate.HibernateORMSession;
 import org.lucee.extension.orm.hibernate.SessionFactoryData;
 
-import lucee.Info;
 import lucee.commons.io.res.Resource;
-import lucee.loader.engine.CFMLEngine;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.loader.util.Util;
 import lucee.runtime.Component;
