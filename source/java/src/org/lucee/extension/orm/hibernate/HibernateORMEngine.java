@@ -30,10 +30,6 @@ import lucee.runtime.type.Collection.Key;
 
 public class HibernateORMEngine implements ORMEngine {
 
-    private static final int INIT_NOTHING = 1;
-    private static final int INIT_CFCS = 2;
-    private static final int INIT_ALL = 2;
-
     private Map<String, SessionFactoryData> factories = new ConcurrentHashMap<String, SessionFactoryData>();
 
     static {
