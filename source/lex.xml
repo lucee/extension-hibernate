@@ -12,6 +12,20 @@
             <directory>${project.build.directory}/META-INF/</directory>
             <outputDirectory>/META-INF/</outputDirectory>
         </fileSet>
+        <!--
+            Uncomment for including the libs/ dir instead of dependencies.
+            The libs dir are custom OSGI bundles from Lucee, and are guaranteed to install on Lucee.
+            (As opposed to the project dependencies, some of which are normal jars and will not install on Lucee.)
+            Hence, we need to use the libs/ until we get a better solution figured out.
+        -->
+        <fileSet>
+            <directory>${project.basedir}/source/java/libs</directory>
+            <outputDirectory>/jars/</outputDirectory>
+            <excludes>
+                <exclude>javax.servlet.jar</exclude>
+                <exclude>lucee.jar</exclude>
+            </excludes>
+        </fileSet>
     </fileSets>
     <files>
         <file>
@@ -23,12 +37,20 @@
             <outputDirectory>/jars</outputDirectory>
         </file>
     </files>
-    <dependencySets>
+    <!-- 
+        Uncomment to attempt a build using project dependencies...
+        Note we have to manually exclude test dependencies, and some non-OSGI jars that Lucee throws exceptions on.
+        <dependencySets>
         <dependencySet>
-            <!-- might have to re-enable to get hibernate's dependencies working.-->
-            <!-- <useTransitiveDependencies>false</useTransitiveDependencies> -->
             <outputDirectory>/jars</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>
+            <excludes>
+                <exclude>org.glassfish.jaxb:txw2</exclude>
+                <exclude>org.junit.jupiter:*</exclude>
+                <exclude>org.mockito:*</exclude>
+                <exclude>org.dom4j:*</exclude>
+                <exclude>org.glassfish.jaxb:jaxb-runtime</exclude>
+            </excludes>
         </dependencySet>
-    </dependencySets>
+    </dependencySets> -->
 </assembly>

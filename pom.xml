@@ -5,7 +5,7 @@
    <groupId>org.lucee</groupId>
    <artifactId>hibernate.extension</artifactId>
    <!-- look into the maven release plugin to automate bumping the version.-->
-   <version>5.4.29.67-BETA</version>
+   <version>5.4.29.75-BETA</version>
    <packaging>bundle</packaging>
 
    <name>Ortus Hibernate Extension</name>
@@ -141,10 +141,8 @@
                      <Export-Package>
                         org.lucee.extension.orm.hibernate,org.lucee.extension.orm.hibernate.jdbc
                      </Export-Package>
-                     <Import-Package>
-                        !lucee.*;,
-                        *
-                     </Import-Package>
+                     <Import-Package>net.sf.ehcache.hibernate</Import-Package>
+                     <Require-Bundle>org.lucee.hibernate;bundle-version=5.4.29.1,org.lucee.antlr;bundle-version=2.7.6,org.lucee.dom4j;bundle-version=1.6.1,org.lucee.javassist;bundle-version=3.9.0.GA,org.lucee.jta;bundle-version=1.1.0,slf4j.api;bundle-version=1.7.36,org.apache.commons.collections;bundle-version=3.2.1,org.lucee.xml.apis;bundle-version=1.4.1,com.fasterxml.classmate;bundle-version=1.5.1,net.bytebuddy.byte-buddy;bundle-version=1.10.21,org.lucee.hibernate-annotations;bundle-version=5.1.2.Final,javax.persistence-api;bundle-version=2.2,org.lucee.hibernate-ehcache;bundle-version=5.4.29.Final,org.lucee.ehcache;bundle-version=2.10.6,jakarta.xml.bind-api;bundle-version=2.3.3,org.glassfish.jaxb.runtime;bundle-version=2.3.4</Require-Bundle>
                      
                      <!-- 
                         See:
@@ -371,7 +369,7 @@ lucee-core-version: ${lucee.version}
       <dependency>
          <groupId>com.sun.xml.bind</groupId>
          <artifactId>jaxb-osgi</artifactId>
-         <version>4.0.1</version>
+         <version>2.3.7</version>
       </dependency>
 
    </dependencies>
