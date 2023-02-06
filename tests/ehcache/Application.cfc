@@ -2,7 +2,6 @@ component {
 
 	this.name = "orm-ehcache";
 	this.datasources["h2"] = server.getDatasource("h2", "#getDirectoryFromPath(getCurrentTemplatePath())#/datasource/db" );
-	this.datasources["h2_otherDB"] = server.getDatasource("h2", "#getDirectoryFromPath(getCurrentTemplatePath())#/datasource/otherDB" );
 	this.ormEnabled = true;
 	this.ormSettings = {
 		dbcreate: "dropcreate",
