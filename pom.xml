@@ -5,7 +5,7 @@
    <groupId>org.lucee</groupId>
    <artifactId>hibernate.extension</artifactId>
    <!-- look into the maven release plugin to automate bumping the version.-->
-   <version>5.4.29.20-BETA</version>
+   <version>5.4.29.67-BETA</version>
    <packaging>bundle</packaging>
 
    <name>Ortus Hibernate Extension</name>
@@ -126,7 +126,6 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
             <version>3.3</version>
-
          </plugin>
 
          <plugin>
@@ -158,6 +157,8 @@
          </plugin>
 
          <!--
+            Generate the top-level MANIFEST.MF containing properties for this extension.
+
             Turns out using the NAME attribute for the lucee extension name breaks the jar manifest spec. 🤦‍♂️
             See https://github.com/codehaus-plexus/plexus-archiver/blob/7eb5a660a9ccb2968ce4f172baaa949c72e87f87/src/main/java/org/codehaus/plexus/archiver/jar/Manifest.java#L556
 
@@ -177,7 +178,7 @@
                      <goal>echo</goal>
                   </goals>
                   <configuration>
-                     <fromFile>/${project.basedir}/source/java/src/META-INF/MANIFEST.MF</fromFile>
+                     <fromFile>/${project.basedir}/source/java/src/META-INF/EXTENSION.MF</fromFile>
                      <!-- warning: this plugin appears to wrongly interpolate properties,
                      so ${project.build.directory} ends up creating the full /home/user/path INSIDE this current directory.
                      The best workaround appears to be not using those properties, and hardcoding a RELATIVE path instead.-->
@@ -191,7 +192,8 @@
                      <goal>echo</goal>
                   </goals>
                   <configuration>
-                     <message>name: ${name}
+                     <message>
+name: ${name}
 id: ${id}
 description: ${description}
 version: ${project.version}
@@ -233,6 +235,9 @@ lucee-core-version: ${lucee.version}
          </plugin>
 
          <!-- https://stackoverflow.com/a/26638952 -->
+         <!--
+            Rename the .zip archive tp a Lucee-friendly .lex file extension
+         -->
          <plugin>
             <groupId>com.coderplus.maven.plugins</groupId>
             <artifactId>copy-rename-maven-plugin</artifactId>
@@ -298,16 +303,18 @@ lucee-core-version: ${lucee.version}
 	</dependencyManagement>
 
    <dependencies>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter</artifactId>
-			<scope>test</scope>
-		</dependency>
+      <dependency>
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter</artifactId>
+         <version>5.9.2</version>
+         <scope>test</scope>
+      </dependency>
 
       <dependency>
          <groupId>org.mockito</groupId>
          <artifactId>mockito-inline</artifactId>
          <version>4.0.0</version>
+         <scope>test</scope>
       </dependency>
       <dependency>
          <groupId>org.mockito</groupId>
@@ -325,6 +332,12 @@ lucee-core-version: ${lucee.version}
          <scope>provided</scope>
       </dependency>
 
+      <dependency>
+         <groupId>org.lucee</groupId>
+         <artifactId>txw2</artifactId>
+         <version>2011.8.9</version>
+      </dependency>
+
       <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
       <dependency>
          <groupId>org.hibernate</groupId>
@@ -337,6 +350,14 @@ lucee-core-version: ${lucee.version}
          <groupId>org.hibernate</groupId>
          <artifactId>hibernate-ehcache</artifactId>
          <version>${hibernate.version}</version>
+
+         <!-- https://maven.apache.org/guides/introduction/introduction-to-optional-and-excludes-dependencies.html#how-to-use-dependency-exclusions -->
+         <exclusions>
+            <exclusion>
+               <groupId>org.glassfish.jaxb</groupId>
+               <artifactId>txw2</artifactId>
+            </exclusion>
+         </exclusions> 
       </dependency>
       <!-- w3c.dom - 1.1.0 -->
       <dependency>
@@ -344,6 +365,13 @@ lucee-core-version: ${lucee.version}
          <artifactId>dom</artifactId>
          <type>jar</type>
          <version>1.1.0</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-osgi -->
+      <dependency>
+         <groupId>com.sun.xml.bind</groupId>
+         <artifactId>jaxb-osgi</artifactId>
+         <version>4.0.1</version>
       </dependency>
 
    </dependencies>
