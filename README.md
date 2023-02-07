@@ -34,6 +34,12 @@ A Hibernate for the rest of us!
   * drop hardcoded ORM engine def from Lucee core
 * Better support for entity lock modes
 * Reduce use of reflection
+* Re-enable support for other cache providers (JBossCache, OSCache, SwarmCache, HashTable)
+* Full Maven builds (no Ant)
+* Drop embedded dependency jars
+* upgrade dependencies:
+  * EHCache 2.10.6 ➡ 3.10
+  * W3C DOM library
 
 ## Contributing
 
