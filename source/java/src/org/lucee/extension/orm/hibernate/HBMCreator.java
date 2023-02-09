@@ -134,13 +134,8 @@ public class HBMCreator {
             propColl = splitJoins(cfc, joins, _props, data);
 
             String ext = CommonUtil.last(extend, ".").trim();
-            try {
-                Component base = data.getEntityByCFCName(ext, false);
-                ext = HibernateCaster.getEntityName(base);
-            } catch (Exception e) {
-                Log log = pc.getConfig().getLog("orm");
-                log.error("hibernate", e);
-            }
+            Component base = data.getEntityByCFCName(ext, false);
+            ext = HibernateCaster.getEntityName(base);
 
             String discriminatorValue = toString(cfc, null, meta, "discriminatorValue", data);
             if (!Util.isEmpty(discriminatorValue, true)) {
