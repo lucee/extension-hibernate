@@ -868,14 +868,6 @@ public class CommonUtil {
         return arr;
     }
 
-    public static Document getDocument(Node node) {
-        return XMLUtil.getDocument(node);
-    }
-
-    public static Document newDocument() throws PageException {
-        return XMLUtil.newDocument();
-    }
-
     public static void setFirst(Node parent, Node node) {
         XMLUtil.setFirst(parent, node);
     }
