@@ -12,7 +12,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import lucee.commons.io.log.Log;
 import lucee.loader.util.Util;
 import lucee.runtime.Component;
 import lucee.runtime.PageContext;
@@ -55,17 +54,17 @@ public class HBMCreator {
     public static final String HIBERNATE_3_DOCTYPE_DEFINITION = "<!DOCTYPE hibernate-mapping PUBLIC \""
             + HIBERNATE_3_PUBLIC_ID + "\" \"" + HIBERNATE_3_SYSTEM_ID + "\">";
 
-    private static final Collection.Key PROPERTY = CommonUtil.createKey("property");
-    private static final Collection.Key LINK_TABLE = CommonUtil.createKey("linktable");
-    private static final Collection.Key CFC = CommonUtil.createKey("cfc");
-    private static final Collection.Key GENERATOR = CommonUtil.createKey("generator");
-    private static final Collection.Key PARAMS = CommonUtil.createKey("params");
-    private static final Collection.Key SEQUENCE = CommonUtil.createKey("sequence");
+    private static final Collection.Key PROPERTY        = CommonUtil.createKey("property");
+    private static final Collection.Key LINK_TABLE      = CommonUtil.createKey("linktable");
+    private static final Collection.Key CFC             = CommonUtil.createKey("cfc");
+    private static final Collection.Key GENERATOR       = CommonUtil.createKey("generator");
+    private static final Collection.Key PARAMS          = CommonUtil.createKey("params");
+    private static final Collection.Key SEQUENCE        = CommonUtil.createKey("sequence");
     private static final Collection.Key UNIQUE_KEY_NAME = CommonUtil.createKey("uniqueKeyName");
-    private static final Collection.Key GENERATED = CommonUtil.createKey("generated");
-    private static final Collection.Key FIELDTYPE = CommonUtil.createKey("fieldtype");
-    private static final Collection.Key KEY = CommonUtil.createKey("key");
-    private static final Collection.Key TYPE = CommonUtil.createKey("type");
+    private static final Collection.Key GENERATED       = CommonUtil.createKey("generated");
+    private static final Collection.Key FIELDTYPE       = CommonUtil.createKey("fieldtype");
+    private static final Collection.Key KEY             = CommonUtil.createKey("key");
+    private static final Collection.Key TYPE            = CommonUtil.createKey("type");
 
     /**
      * Generate an XML node tree defining a Hibernate mapping for the given Component
@@ -85,7 +84,7 @@ public class HBMCreator {
      */
     public static Element createXMLMapping(PageContext pc, DatasourceConnection dc, Component cfc,
             SessionFactoryData data) throws PageException {
-        Document doc = CommonUtil.newDocument();
+        Document doc = XMLUtil.newDocument();
 
         Element hibernateMapping = doc.createElement("hibernate-mapping");
         doc.appendChild(hibernateMapping);
@@ -134,13 +133,8 @@ public class HBMCreator {
             propColl = splitJoins(cfc, joins, _props, data);
 
             String ext = CommonUtil.last(extend, ".").trim();
-            try {
-                Component base = data.getEntityByCFCName(ext, false);
-                ext = HibernateCaster.getEntityName(base);
-            } catch (Exception e) {
-                Log log = pc.getConfig().getLog("orm");
-                log.error("hibernate", e);
-            }
+            Component base = data.getEntityByCFCName(ext, false);
+            ext = HibernateCaster.getEntityName(base);
 
             String discriminatorValue = toString(cfc, null, meta, "discriminatorValue", data);
             if (!Util.isEmpty(discriminatorValue, true)) {
@@ -424,7 +418,7 @@ public class HBMCreator {
         if (properties.length == 0)
             return;
 
-        Document doc = CommonUtil.getDocument(clazz);
+        Document doc = XMLUtil.getDocument(clazz);
 
         Element join = doc.createElement("join");
         clazz.appendChild(join);
@@ -638,7 +632,7 @@ public class HBMCreator {
             String tableName, SessionFactoryData data) throws PageException {
         Struct meta;
 
-        Document doc = CommonUtil.getDocument(clazz);
+        Document doc = XMLUtil.getDocument(clazz);
         Element cid = doc.createElement("composite-id");
         clazz.appendChild(cid);
 
@@ -716,7 +710,7 @@ public class HBMCreator {
         Struct meta = prop.getDynamicAttributes();
         String str;
 
-        Document doc = CommonUtil.getDocument(clazz);
+        Document doc = XMLUtil.getDocument(clazz);
         Element id = doc.createElement("id");
         clazz.appendChild(id);
 
@@ -867,7 +861,7 @@ public class HBMCreator {
         if (Util.isEmpty(className, true))
             return null;
 
-        Document doc = CommonUtil.getDocument(id);
+        Document doc = XMLUtil.getDocument(id);
         Element generator = doc.createElement("generator");
         id.appendChild(generator);
 
@@ -939,7 +933,7 @@ public class HBMCreator {
 
         ColumnInfo info = getColumnInfo(columnsInfo, tableName, columnName, null);
 
-        Document doc = CommonUtil.getDocument(clazz);
+        Document doc = XMLUtil.getDocument(clazz);
         final Element property = doc.createElement("property");
         clazz.appendChild(property);
 
@@ -1067,7 +1061,7 @@ public class HBMCreator {
 
         Boolean b;
 
-        Document doc = CommonUtil.getDocument(clazz);
+        Document doc = XMLUtil.getDocument(clazz);
         Element x2o;
 
         // column
@@ -1180,7 +1174,7 @@ public class HBMCreator {
     private static void createXMLMappingCollection(Element clazz, PageContext pc, Component cfc, Property prop,
             SessionFactoryData data) throws PageException {
         Struct meta = prop.getDynamicAttributes();
-        Document doc = CommonUtil.getDocument(clazz);
+        Document doc = XMLUtil.getDocument(clazz);
         Element el = null;
 
         // collection type
@@ -1330,7 +1324,7 @@ public class HBMCreator {
             Element clazz, PageContext pc, Property prop, SessionFactoryData data) throws PageException {
         Element el = createXMLMappingXToMany(propColl, clazz, pc, cfc, prop, data);
         Struct meta = prop.getDynamicAttributes();
-        Document doc = CommonUtil.getDocument(clazz);
+        Document doc = XMLUtil.getDocument(clazz);
         Element m2m = doc.createElement("many-to-many");
         el.appendChild(m2m);
 
@@ -1429,7 +1423,7 @@ public class HBMCreator {
             Element clazz, PageContext pc, Property prop, SessionFactoryData data) throws PageException {
         Element el = createXMLMappingXToMany(propColl, clazz, pc, cfc, prop, data);
         Struct meta = prop.getDynamicAttributes();
-        Document doc = CommonUtil.getDocument(clazz);
+        Document doc = XMLUtil.getDocument(clazz);
         Element x2m;
 
         // order-by
@@ -1458,7 +1452,7 @@ public class HBMCreator {
     private static Element createXMLMappingXToMany(PropertyCollection propColl, Element clazz, PageContext pc,
             Component cfc, Property prop, SessionFactoryData data) throws PageException {
         final Struct meta = prop.getDynamicAttributes();
-        Document doc = CommonUtil.getDocument(clazz);
+        Document doc = XMLUtil.getDocument(clazz);
         Element el = null;
 
         // collection type
@@ -1692,7 +1686,7 @@ public class HBMCreator {
         Struct meta = prop.getDynamicAttributes();
         Boolean b;
 
-        Document doc = CommonUtil.getDocument(clazz);
+        Document doc = XMLUtil.getDocument(clazz);
         clazz = getJoin(clazz);
 
         Element m2o = doc.createElement("many-to-one");
@@ -1868,7 +1862,7 @@ public class HBMCreator {
         String str;
         Boolean b;
 
-        Document doc = CommonUtil.getDocument(clazz);
+        Document doc = XMLUtil.getDocument(clazz);
         Element timestamp = doc.createElement("timestamp");
         clazz.appendChild(timestamp);
 
@@ -1929,7 +1923,7 @@ public class HBMCreator {
             SessionFactoryData data) throws PageException {
         Struct meta = prop.getDynamicAttributes();
 
-        Document doc = CommonUtil.getDocument(clazz);
+        Document doc = XMLUtil.getDocument(clazz);
         Element version = doc.createElement("version");
         clazz.appendChild(version);
 
