@@ -55,17 +55,17 @@ public class HBMCreator {
     public static final String HIBERNATE_3_DOCTYPE_DEFINITION = "<!DOCTYPE hibernate-mapping PUBLIC \""
             + HIBERNATE_3_PUBLIC_ID + "\" \"" + HIBERNATE_3_SYSTEM_ID + "\">";
 
-    private static final Collection.Key PROPERTY = CommonUtil.createKey("property");
-    private static final Collection.Key LINK_TABLE = CommonUtil.createKey("linktable");
-    private static final Collection.Key CFC = CommonUtil.createKey("cfc");
-    private static final Collection.Key GENERATOR = CommonUtil.createKey("generator");
-    private static final Collection.Key PARAMS = CommonUtil.createKey("params");
-    private static final Collection.Key SEQUENCE = CommonUtil.createKey("sequence");
+    private static final Collection.Key PROPERTY        = CommonUtil.createKey("property");
+    private static final Collection.Key LINK_TABLE      = CommonUtil.createKey("linktable");
+    private static final Collection.Key CFC             = CommonUtil.createKey("cfc");
+    private static final Collection.Key GENERATOR       = CommonUtil.createKey("generator");
+    private static final Collection.Key PARAMS          = CommonUtil.createKey("params");
+    private static final Collection.Key SEQUENCE        = CommonUtil.createKey("sequence");
     private static final Collection.Key UNIQUE_KEY_NAME = CommonUtil.createKey("uniqueKeyName");
-    private static final Collection.Key GENERATED = CommonUtil.createKey("generated");
-    private static final Collection.Key FIELDTYPE = CommonUtil.createKey("fieldtype");
-    private static final Collection.Key KEY = CommonUtil.createKey("key");
-    private static final Collection.Key TYPE = CommonUtil.createKey("type");
+    private static final Collection.Key GENERATED       = CommonUtil.createKey("generated");
+    private static final Collection.Key FIELDTYPE       = CommonUtil.createKey("fieldtype");
+    private static final Collection.Key KEY             = CommonUtil.createKey("key");
+    private static final Collection.Key TYPE            = CommonUtil.createKey("type");
 
     /**
      * Generate an XML node tree defining a Hibernate mapping for the given Component
