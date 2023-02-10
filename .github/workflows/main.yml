@@ -115,11 +115,13 @@ jobs:
       - name: Generate Javadocs
         run: mvn --batch-mode -f pom.xml javadoc:javadoc
 
-      - name: Commit Javadocs
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          file_pattern: "docs"
-          commit_message: "📘 DOC: Rebuild API Javadocs __CI__"
+      ## TODO: Publish apidocs to S3
+
+      # - name: Commit Javadocs
+      #   uses: stefanzweifel/git-auto-commit-action@v4
+      #   with:
+      #     file_pattern: "docs"
+      #     commit_message: "📘 DOC: Rebuild API Javadocs __CI__"
 
   format:
     runs-on: ubuntu-latest
