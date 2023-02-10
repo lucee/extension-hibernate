@@ -1,63 +1,30 @@
-# Ortus Lucee Hibernate Extension
+# Lucee Hibernate Extension (ORM)
 
-A Hibernate for the rest of us!
+[![Java CI](https://github.com/lucee/extension-hibernate/actions/workflows/main.yml/badge.svg?branch=5.4)](https://github.com/lucee/extension-hibernate/actions/workflows/main.yml) 5.4
 
-## Improvements
+[![Java CI](https://github.com/lucee/extension-hibernate/actions/workflows/main.yml/badge.svg?branch=3.5.5)](https://github.com/lucee/extension-hibernate/actions/workflows/main.yml) 3.5.5
 
-### Features and Bug Fixes
+[![Java CI](https://github.com/lucee/extension-hibernate/actions/workflows/main.yml/badge.svg)](https://github.com/lucee/extension-hibernate/actions/workflows/main.yml) Master
 
-* Fix [LDEV-4017](https://luceeserver.atlassian.net/browse/LDEV-4017) (session closed at end of transaction) 🐛🐛🐛
-* Fix [LDEV-4150](https://luceeserver.atlassian.net/browse/LDEV-4150) ("String or binary data would be truncated" on `varchar` columns) 🐛
-* Fix [LDEV-2049](https://luceeserver.atlassian.net/browse/LDEV-4308) (certain events don't emit) 🐛
-* Implemented LDEV-3525 (support for `this.ormSettings.autogenmap = false`) 🤖 📁
-* Moved all `ORM*()`, `entity*()` methods such as `ORMReload()`, `entitySave()` to extension
+* A [Hibernate ORM](https://hibernate.org/orm/) wrapper for the [Lucee CFML language](https://www.lucee.org/)
 
-### Build Improvements
-
-* Auto-generated API docs 📖
-* One-liner to build and test the extension, along with README build/test/contribution docs 🔨
-* Auto-formatting of all Java source code via `formatter-maven-plugin` 🤖
-* Automatic compilation test on java 8, 11 and 17 🤖
-
-### In The Works
-
-* Support for configuring the [Hibernate Flush mode](https://docs.jboss.org/hibernate/orm/5.4/javadocs/org/hibernate/FlushMode.html) (MANUAL, COMMIT, AUTO, ALWAYS)
-* Support for [MS SQL's `SNAPSHOT` isolation level](https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/sql/snapshot-isolation-in-sql-server)
-* Improved logging
-* Improved configuration support (both Hibernate and extension-level)
-* allow grabbing the current DB connection
-* Faster ORM reloads
-* Better connection management (fix open connection issues)
-* Fix open/orphaned session issues causing memory leaks
-* Drop hardcoded Hibernate dependencies from Lucee core
-  * Entire `lucee.runtime.orm` package
-  * drop hardcoded ORM engine def from Lucee core
-* Better support for entity lock modes
-* Reduce use of reflection
-* Re-enable support for other cache providers (JBossCache, OSCache, SwarmCache, HashTable)
-* Full Maven builds (no Ant)
-* Drop embedded dependency jars
-* upgrade dependencies:
-  * EHCache 2.10.6 ➡ 3.10
-  * W3C DOM library
+* Issues: https://luceeserver.atlassian.net/issues/?jql=labels%20%3D%20%22orm%22
+* Documentation: https://docs.lucee.org/categories/orm.html
 
 ## Contributing
 
-### Dependencies
+You will need to install the following for extension development:
 
-* the Java JRE
-* the Java JDK
+* Java 1.8+ (JRE and JDK)
 * [ant](https://www.osradar.com/install-apache-ant-ubuntu-20-04/)
 * [maven](https://linuxize.com/post/how-to-install-apache-maven-on-ubuntu-20-04/)
 
 ### Getting Started
 
-1. Install this repo - `git clone git@github.com:michaelborn/extension-hibernate-fork.git`
-2. Check out the `FORK` branch - `git checkout FORK`
-3. Make changes..
-4. Lint / validate via `ant compile`
-5. [Build extension via `ant dist`](#building)
-6. [Test via `./test.sh`](#testing)
+1. Install the repo - `git clone git@github.com:lucee/extension-hibernate.git`
+2. Make changes..
+3. [Build extension via `ant dist`](#building)
+4. Test via `./test.sh` (See [#Testing](#testing) for more info)
 
 **Before you send a PR:**
 
@@ -78,6 +45,7 @@ Using the Maven builds:
 * `mvn test` run java-based (junit) tests
 * `mvn javadoc:javadoc` generate java docs
 * `mvn formatter:format` [format java source](https://code.revelc.net/formatter-maven-plugin/usage.html)
+* `mvn verify` Run OWASP dependency checker to look for vulnerabilities
 
 ## Testing
 
@@ -112,7 +80,3 @@ cp .env.example .env
 And edit the `MSSQL_*` or `MYSQL_*`, etc. keys to match your database credentials.
 
 This `.env` file will be sourced in as environment variables while running tests via `./test.sh`.
-
-## Thanks
-
-Thanks to Lucee for the hard work and original source code. 👋

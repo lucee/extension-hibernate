@@ -274,6 +274,12 @@ public class HibernateORMEngine implements ORMEngine {
             if (ormConf.autogenmap()) {
                 data.reset();
                 pc.addPageSource(cfc.getPageSource(), true);
+                // 
+                /**
+                 * TODO: Create a map of connections per datasource.
+                 * Then we can grab and reuse existing connections based on the component's datasource annotation.
+                 * This should save a good bit of time from opening and releasing connections hundreds of times for a single ORM reload.
+                 */
                 DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds, null, null, false);
                 try {
                     xml = HBMCreator.toMappingString(HBMCreator.createXMLMapping(pc, dc, cfc, data));
