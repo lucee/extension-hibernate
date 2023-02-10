@@ -5,7 +5,7 @@
 	<tlib-version>1.0</tlib-version>
 	<cfml-version>1.0</cfml-version>
 	<short-name>Hibernate-extension</short-name>
-	<uri>https://github.com/michaelborn/extension-hibernate-fork</uri>
+	<uri>https://github.com/lucee/extension-hibernate</uri>
 	<display-name>Hibernate</display-name>
 	<description>
 		Tags to interact with Hibernate
