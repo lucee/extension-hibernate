@@ -16,8 +16,9 @@
 You will need to install the following for extension development:
 
 * Java 1.8+ (JRE and JDK)
-* [ant](https://www.osradar.com/install-apache-ant-ubuntu-20-04/)
-* [maven](https://linuxize.com/post/how-to-install-apache-maven-on-ubuntu-20-04/)
+* [ant](https://www.osradar.com/install-apache-ant-ubuntu-20-04/) (for building the extension `.lex` file)
+* [maven](https://linuxize.com/post/how-to-install-apache-maven-on-ubuntu-20-04/) (for other automated tooling)
+* [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/) (for managing test database servers)
 
 ### Getting Started
 
@@ -56,7 +57,15 @@ To run CFML tests against the extension:
 1. Check out [lucee/Lucee](https://github.com/lucee/lucee) to the parent directory - `git clone git@github.com:lucee/Lucee.git ../lucee`
 2. Check out [lucee/script-runner](https://github.com/lucee/script-runner) to the parent directory - `git clone git@github.com:lucee/Lucee.git ../script-runner`.
 
-Run tests from the extension root:
+Next, start the test databases using the Docker-compose setup:
+
+```bash
+cd tests && docker-compose up
+```
+
+This will start Postgres, MySQL, and MSSQL containers using the credentials specified in `tests/.env`.
+
+Finally, you can run tests from the extension root:
 
 ```bash
 ./test.sh
@@ -67,16 +76,3 @@ To build a .lex and test it immediately, chain `ant dist` and `./test.sh`:
 ```bash
 ant dist && ./test.sh
 ```
-
-### Database Testing
-
-For testing on a specific database platform, create a `.env` file in `tests/` with database credentials:
-
-```bash
-cd tests
-cp .env.example .env
-```
-
-And edit the `MSSQL_*` or `MYSQL_*`, etc. keys to match your database credentials.
-
-This `.env` file will be sourced in as environment variables while running tests via `./test.sh`.
