@@ -354,24 +354,6 @@ public class HibernateORMEngine implements ORMEngine {
         if (cfc != null)
             return cfc;
 
-        // SessionFactoryData oldData = getSessionFactoryData(pc, INIT_NOTHING);
-        // Map<Key, SessionFactory> oldFactories = oldData.getFactories();
-        // SessionFactoryData newData = getSessionFactoryData(pc, INIT_CFCS);
-        // Map<Key, SessionFactory> newFactories = newData.getFactories();
-
-        // Iterator<Entry<Key, SessionFactory>> it = oldFactories.entrySet().iterator();
-        // Entry<Key, SessionFactory> e;
-        // SessionFactory newSF;
-        // while (it.hasNext()) {
-        // e = it.next();
-        // newSF = newFactories.get(e.getKey());
-        // if (e.getValue() != newSF) {
-        // session.resetSession(pc, newSF, e.getKey(), oldData);
-        // cfc = _create(pc, entityName, unique, data);
-        // if (cfc != null) return cfc;
-        // }
-        // }
-
         ORMConfiguration ormConf = pc.getApplicationContext().getORMConfiguration();
         Resource[] locations = ormConf.getCfcLocations();
 
