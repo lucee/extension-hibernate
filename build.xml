@@ -41,6 +41,10 @@
     <mkdir dir="${dist}/extension/jars"/>
   </target>
 
+  <!-- Output the project version for use in versioning S3 artifact uploads -->
+  <target name="version">
+    <echo>${bundleversion}${build.number}${versionAppendix}</echo>
+  </target>
 
   <target name="copy" depends="init" description="copy source file to temp" >
     <!-- copy the source -->
