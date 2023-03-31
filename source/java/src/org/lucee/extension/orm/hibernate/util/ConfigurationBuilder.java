@@ -33,37 +33,60 @@ import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMConfiguration;
 
 public class ConfigurationBuilder {
+    /**
+     * Store username and password for the configured datasource
+     */
     private HashMap<String, String> datasourceCreds = new HashMap<>();
+
+    /**
+     * The event listener which will proxy Hibernate's Java events to the eventHandler CFC.
+     */
     private EventListenerIntegrator eventListener;
+
+    /**
+     * The connection provider Hibernate should use if it needs to aquire its own database connections
+     */
     private ConnectionProvider connectionProvider;
+
+    /**
+     * Hibernate Configuration object
+     */
     private Configuration configuration;
+
+    /**
+     * Application ORM configuration set in the Application.cfc's <code>this.ormSettings</code>.
+     */
     private ORMConfiguration ormConf;
+
+    /**
+     * The extension {@link org.lucee.extension.orm.hibernate.SessionFactoryData}
+     */
     private SessionFactoryData data;
+
+    /**
+     * Application name, used as a unique key to identify a configuration set.
+     */
     private String applicationName;
+
+    /**
+     * Datasource to operate on
+     */
     private DataSource datasource;
+
+    /**
+     * Mapping XML document as a string
+     */
     private String xmlMappings;
+
+    /**
+     * Lucee logger object, configured for the ORM log
+     */
     private Log log;
 
     /**
      * Build out Hibernate configuration using the application's `this.ormSettings`, datasource, and generated mappings.
      *
-     * @param log
-     *            Lucee logger object, configured for the ORM log
-     * @param mappings
-     *            Mapping XML document as a string
-     * @param ds
-     *            Datasource to operate on
-     * @param user
-     *            Username for the configured datasource
-     * @param pass
-     *            Password for the configured datasource
-     * @param data
-     *            The extension {@link org.lucee.extension.orm.hibernate.SessionFactoryData}
-     * @param applicationName
-     *            Application name
-     *
      * @return Hibernate Configuration object
-     *
      * @throws SQLException
      * @throws IOException
      * @throws PageException

@@ -34,14 +34,14 @@ public class HBMCreator {
     /**
      * Hibernate DOCTYPE mapping ID
      *
-     * @see https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects
+     * @see <a href="https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects">Hibernate documentation schema-generation-database-objects</a>
      */
     public static final String HIBERNATE_3_PUBLIC_ID = "-//Hibernate/Hibernate Mapping DTD 3.0//EN";
 
     /**
      * Hibernate doctype reference
      *
-     * @see https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects
+     * @see <a href="https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects">Hibernate documentation schema-generation-database-objects</a>
      */
     // public static final String HIBERNATE_3_SYSTEM_ID = "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd";
     public static final String HIBERNATE_3_SYSTEM_ID = "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd";
@@ -49,7 +49,7 @@ public class HBMCreator {
     /**
      * Full XML doctype for Hibernate mappings
      *
-     * @see https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects
+     * @see <a href="https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects">Hibernate documentation schema-generation-database-objects</a>
      */
     public static final String HIBERNATE_3_DOCTYPE_DEFINITION = "<!DOCTYPE hibernate-mapping PUBLIC \""
             + HIBERNATE_3_PUBLIC_ID + "\" \"" + HIBERNATE_3_SYSTEM_ID + "\">";
@@ -2131,7 +2131,7 @@ public class HBMCreator {
      *         since the epoch (00:00:00 GMT, January 1, 1970), or <code>0L</code> if the file does not exist or if an
      *         I/O error occurs
      *
-     * @see lucee.commons.io.res.Resource#lastModified();
+     * @see {lucee.commons.io.res.Resource#lastModified}
      */
     public static long getMappingLastModified(Component cfc) {
         Resource res = getMappingResource(cfc);
