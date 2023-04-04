@@ -41,7 +41,7 @@ jobs:
           DEST_DIR: "lucee/hibernate-extension/${{ env.VERSION }}/"
 
   tag_and_release:
-    needs: javadocs
+    needs: [build, test, javadocs]
     steps:
       - uses: actions/checkout@v3
 
@@ -68,7 +68,7 @@ jobs:
           body: ${{ steps.tag_version.outputs.changelog }}
 
   publish:
-    needs: [build, tag_and_release]
+    needs: [tag_and_release]
     steps:
       - name: Get Project Version
         id: current_version

@@ -34,8 +34,8 @@ jobs:
       with:
         name: hibernate_${{ env.VERSION }}.lex
         path: dist/*.lex
-    
-  test
+
+  test:
     runs-on: ubuntu-latest
     needs: build
     env:
