@@ -157,3 +157,31 @@ jobs:
         with:
           file_pattern: "docs"
           commit_message: "🤖 CI: Auto-format Java source __CI__"
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: build,javadocs,format
+    steps:
+      - name: Get Project Version for Javadocs Versioning
+        id: current_version
+        # For Maven builds (future)
+        # run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
+        # For Ant builds (still the default)
+        run: echo "VERSION=`ant -silent -quiet version`" >> $GITHUB_ENV
+
+      - name: Download Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: hibernate-lex
+          path: dist/*.lex
+
+      - name: Upload Artifact to S3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_DOWNLOADS_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
+          SOURCE_DIR: "dist/*.lex"
+          DEST_DIR: "lucee/extensions/hibernate/${{ env.VERSION }}/"
