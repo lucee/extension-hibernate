@@ -17,7 +17,7 @@
       <bundlename>hibernate-extension</bundlename>
       <id>FAD1E8CB-4F45-4184-86359145767C29DE</id>
       <description>Hibernate ORM (Hibernate in short) is an object-relational mapping library for the Java language, providing a framework for mapping an object-oriented domain model to a traditional relational database. Hibernate solves object-relational impedance mismatch problems by replacing direct persistence-related database accesses with high-level object handling functions.</description>
-      <class>org.lucee.extension.orm.hibernate.HibernateORMEngine</class>
+      <class>com.ortussolutions.hibernate.HibernateORMEngine</class>
 
       <!-- Dependency versions -->
       <lucee.version>5.3.10.97</lucee.version>
@@ -137,9 +137,9 @@
                   <instructions>
                      <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                      <Bundle-Name>${project.artifactId}</Bundle-Name>
-                     <Private-Package>org.lucee.extension.orm.hibernate</Private-Package>
+                     <Private-Package>com.ortussolutions.hibernate</Private-Package>
                      <Export-Package>
-                        org.lucee.extension.orm.hibernate,org.lucee.extension.orm.hibernate.jdbc
+                        com.ortussolutions.hibernate,com.ortussolutions.hibernate.jdbc
                      </Export-Package>
                      <Import-Package>net.sf.ehcache.hibernate</Import-Package>
                      <Require-Bundle>org.lucee.hibernate;bundle-version=5.4.29.1,org.lucee.antlr;bundle-version=2.7.6,org.lucee.dom4j;bundle-version=1.6.1,org.lucee.javassist;bundle-version=3.9.0.GA,org.lucee.jta;bundle-version=1.1.0,slf4j.api;bundle-version=1.7.36,org.apache.commons.collections;bundle-version=3.2.1,org.lucee.xml.apis;bundle-version=1.4.1,com.fasterxml.classmate;bundle-version=1.5.1,net.bytebuddy.byte-buddy;bundle-version=1.10.21,org.lucee.hibernate-annotations;bundle-version=5.1.2.Final,javax.persistence-api;bundle-version=2.2,org.lucee.hibernate-ehcache;bundle-version=5.4.29.Final,org.lucee.ehcache;bundle-version=2.10.6,jakarta.xml.bind-api;bundle-version=2.3.3,org.glassfish.jaxb.runtime;bundle-version=2.3.4</Require-Bundle>
