@@ -1,7 +1,7 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // extension classes
-import org.lucee.extension.orm.hibernate.event.EventListenerIntegrator;
+import com.ortussolutions.hibernate.event.EventListenerIntegrator;
 
 // Lucee stuffs
 import lucee.runtime.Component;

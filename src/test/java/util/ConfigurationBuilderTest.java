@@ -7,9 +7,9 @@ import java.sql.SQLException;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.AvailableSettings;
 import org.junit.jupiter.api.Test;
-import org.lucee.extension.orm.hibernate.event.EventListenerIntegrator;
-import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
-import org.lucee.extension.orm.hibernate.util.ConfigurationBuilder;
+import com.ortussolutions.hibernate.event.EventListenerIntegrator;
+import com.ortussolutions.hibernate.jdbc.ConnectionProviderImpl;
+import com.ortussolutions.hibernate.util.ConfigurationBuilder;
 
 import org.mockito.Mock;
 import org.mockito.Mockito;

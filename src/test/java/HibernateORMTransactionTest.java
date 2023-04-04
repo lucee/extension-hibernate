@@ -2,7 +2,7 @@ package test.java;
 
 import org.hibernate.Session;
 import org.hibernate.engine.spi.SessionDelegatorBaseImpl;
-import org.lucee.extension.orm.hibernate.HibernateORMTransaction;
+import com.ortussolutions.hibernate.HibernateORMTransaction;
 
 // Testing and mocking
 import org.junit.jupiter.api.Test;

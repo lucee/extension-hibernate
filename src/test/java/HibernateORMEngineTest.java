@@ -1,9 +1,9 @@
-package org.lucee.extension.orm.hibernate;
+package com.ortussolutions.hibernate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // extension classes
-import org.lucee.extension.orm.hibernate.HibernateORMEngine;
+import com.ortussolutions.hibernate.HibernateORMEngine;
 
 // Lucee stuffs
 import lucee.runtime.Component;

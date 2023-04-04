@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import org.lucee.extension.orm.hibernate.util.HibernateUtil;
+import com.ortussolutions.hibernate.util.HibernateUtil;
 
 public class HibernateUtilTest {
 

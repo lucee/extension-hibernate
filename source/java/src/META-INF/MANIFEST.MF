@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Export-Package: org.lucee.extension.orm.hibernate,org.lucee.extension.orm.hibernate.jdbc
+Export-Package: com.ortussolutions.hibernate,com.ortussolutions.hibernate.jdbc
 Import-Package: net.sf.ehcache.hibernate
 Require-Bundle: org.lucee.hibernate;bundle-version=5.4.29.1,
  org.lucee.antlr;bundle-version=2.7.6,
