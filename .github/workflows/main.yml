@@ -1,14 +1,14 @@
 # This workflow will build a Java project with Ant
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-ant
 
-name: Java CI
+name: Extension Build
 
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
+    name: Ant Build
 
-    runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '__CI__')"
 
     steps:
@@ -32,10 +32,10 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: hibernate-lex
+        name: hibernate_${{ env.VERSION }}.lex
         path: dist/*.lex
     
-  test:
+  test
     runs-on: ubuntu-latest
     needs: build
     env:
@@ -63,10 +63,17 @@ jobs:
         restore-keys: |
           lucee-downloads
 
+    - name: Read version
+      id: current_version
+      # For Maven builds (future)
+      # run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
+      # For Ant builds (still the default)
+      run: echo "VERSION=`ant -silent -quiet version`" >> $GITHUB_ENV
+
     - name: Download Artifact
       uses: actions/download-artifact@master
       with:
-        name: hibernate-lex
+        name: hibernate_${{ env.VERSION }}.lex
         path: dist/*.lex
 
     - name: Run Lucee Test Suite (testLabels="orm")
@@ -87,90 +94,23 @@ jobs:
         files: ${{ github.workspace }}/lucee/test/reports/junit-test-results-${{env.luceeVersion}}.xml
         check_name: "Test Results"
 
-  # maven_build:
-  #   runs-on: ubuntu-latest
-  #   if: "!contains(github.event.head_commit.message, '__CI__')"
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       lucee_version: ["5.3.10.97"]
-  #       java_version: [ "8", "11", "17" ]
-
-  #   steps:
-  #     - uses: actions/checkout@v3
-
-  #     - name: Set up JDK
-  #       uses: actions/setup-java@v3
-  #       with:
-  #         java-version: '${{matrix.java_version}}'
-  #         distribution: 'temurin'
-
-  #     - name: Build with Maven
-  #       run: mvn --batch-mode -f pom.xml -Dlucee.version=${{matrix.lucee_version}} -Djdk.version=${{matrix.java_version}} compile
-
-  javadocs:
-    runs-on: ubuntu-latest
+  maven_build:
+    name: Maven Build
     if: "!contains(github.event.head_commit.message, '__CI__')"
+    strategy:
+      fail-fast: false
+      matrix:
+        lucee_version: ["5.3.10.97"]
+        java_version: [ "8", "11", "17" ]
+
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up JDK 8
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: '8'
+          java-version: '${{matrix.java_version}}'
           distribution: 'temurin'
 
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: maven-cache
-
-      - name: Generate Javadocs
-        run: mvn --batch-mode -f pom.xml javadoc:javadoc
-
-      - name: Get Project Version for Javadocs Versioning
-        id: current_version
-        # For Maven builds (future)
-        # run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
-        # For Ant builds (still the default)
-        run: echo "VERSION=`ant -silent -quiet version`" >> $GITHUB_ENV
-
-      - name: Upload API Docs to S3
-        uses: jakejarvis/s3-sync-action@master
-        with:
-          args: --acl public-read
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_APIDOCS_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
-          SOURCE_DIR: "docs"
-          DEST_DIR: "lucee/hibernate-extension/${{ env.VERSION }}/"
-
-  publish:
-    runs-on: ubuntu-latest
-    needs: [build, javadocs]
-    steps:
-      - name: Get Project Version for Javadocs Versioning
-        id: current_version
-        # For Maven builds (future)
-        # run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
-        # For Ant builds (still the default)
-        run: echo "VERSION=`ant -silent -quiet version`" >> $GITHUB_ENV
-
-      - name: Download Artifact
-        uses: actions/download-artifact@master
-        with:
-          name: hibernate-lex
-          path: dist/*.lex
-
-      - name: Upload Artifact to S3
-        uses: jakejarvis/s3-sync-action@master
-        with:
-          args: --acl public-read
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_DOWNLOADS_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
-          SOURCE_DIR: "dist/*.lex"
-          DEST_DIR: "lucee/extensions/hibernate/${{ env.VERSION }}/"
+      - name: Build with Maven
+        run: mvn --batch-mode -f pom.xml -Dlucee.version=${{matrix.lucee_version}} -Djdk.version=${{matrix.java_version}} compile
