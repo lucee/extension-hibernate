@@ -16,32 +16,26 @@
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  *
  **/
-package org.lucee.extension.orm.functions;
+package com.ortussolutions.hibernate.functions;
 
-import com.ortussolutions.hibernate.util.CommonUtil;
 import com.ortussolutions.hibernate.util.ORMUtil;
 
+import lucee.loader.util.Util;
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
-import lucee.runtime.ext.function.BIF;
+import lucee.runtime.orm.ORMSession;
 
-public class ORMGetSession extends BIF {
-
-    private static final long serialVersionUID = 349899413869883140L;
-
-    public static Object call(PageContext pc) throws PageException {
-        return call(pc, null);
+public class ORMEvictEntity {
+    public static String call(PageContext pc, String entityName) throws PageException {
+        return call(pc, entityName, null);
     }
 
-    public static Object call(PageContext pc, String datasource) throws PageException {
-        String dsn = ORMUtil.getDataSource(pc, datasource).getName();
-        return ORMUtil.getSession(pc).getRawSession(dsn);
-    }
-
-    @Override
-    public Object invoke(PageContext pc, Object[] args) throws PageException {
-        if (args.length == 0)
-            return call(pc);
-        return call(pc, CommonUtil.toString(args[0]));
+    public static String call(PageContext pc, String entityName, String primaryKey) throws PageException {
+        ORMSession session = ORMUtil.getSession(pc);
+        if (Util.isEmpty(primaryKey))
+            session.evictEntity(pc, entityName);
+        else
+            session.evictEntity(pc, entityName, primaryKey);
+        return null;
     }
 }

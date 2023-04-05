@@ -1,4 +1,4 @@
-package org.lucee.extension.orm.functions;
+package com.ortussolutions.hibernate.functions;
 
 import com.ortussolutions.hibernate.util.CommonUtil;
 import com.ortussolutions.hibernate.util.ORMUtil;

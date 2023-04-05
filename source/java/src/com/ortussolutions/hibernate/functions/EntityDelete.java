@@ -16,25 +16,18 @@
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  *
  **/
-package org.lucee.extension.orm.functions;
+package com.ortussolutions.hibernate.functions;
 
 import com.ortussolutions.hibernate.util.ORMUtil;
 
-import lucee.loader.util.Util;
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
+import lucee.runtime.orm.ORMSession;
 
-public class ORMClearSession {
-
-    public static String call(PageContext pc) throws PageException {
-        return call(pc, null);
-    }
-
-    public static String call(PageContext pc, String datasource) throws PageException {
-        if (Util.isEmpty(datasource, true))
-            ORMUtil.getSession(pc).clear(pc);
-        else
-            ORMUtil.getSession(pc).clear(pc, datasource.trim());
+public class EntityDelete {
+    public static String call(PageContext pc, Object obj) throws PageException {
+        ORMSession session = ORMUtil.getSession(pc);
+        session.delete(pc, obj);
         return null;
     }
 }

@@ -16,23 +16,24 @@
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  *
  **/
-package org.lucee.extension.orm.functions;
+package com.ortussolutions.hibernate.functions;
 
 import com.ortussolutions.hibernate.util.ORMUtil;
 
+import lucee.loader.util.Util;
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
-import lucee.runtime.orm.ORMSession;
 
-public class EntityLoadByExample {
-    public static Object call(PageContext pc, Object sampleEntity) throws PageException {
-        return call(pc, sampleEntity, false);
+public class ORMFlush {
+    public static String call(PageContext pc) throws PageException {
+        return call(pc, null);
     }
 
-    public static Object call(PageContext pc, Object sampleEntity, boolean unique) throws PageException {
-        ORMSession session = ORMUtil.getSession(pc);
-        if (unique)
-            return session.loadByExample(pc, sampleEntity);
-        return session.loadByExampleAsArray(pc, sampleEntity);
+    public static String call(PageContext pc, String datasource) throws PageException {
+        if (Util.isEmpty(datasource, true))
+            ORMUtil.getSession(pc).flush(pc);
+        else
+            ORMUtil.getSession(pc).flush(pc, datasource.trim());
+        return null;
     }
 }

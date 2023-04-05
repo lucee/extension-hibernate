@@ -14,7 +14,7 @@
 	<!-- EntityDelete -->
 	<function>
 		<name>EntityDelete</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.EntityDelete</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.EntityDelete</class>
 		<description>Deletes the record from the database for the specified entity.
 EntityDelete(entity)</description>
 		<argument>
@@ -31,7 +31,7 @@ EntityDelete(entity)</description>
 	<!-- EntityLoad -->
 	<function>
 		<name>entityLoad</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.EntityLoad</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.EntityLoad</class>
 		<description>Loads and returns an array of entities of the specified entityName.
 EntityLoad (entityName, filterCriteria [,unique]
 EntityLoad(entityName, filterCriteria, sortOrder [, options])</description>
@@ -88,7 +88,7 @@ The following options to customize the output (only used when second argument is
 	<!-- EntityLoadByPK -->
 	<function>
 		<name>EntityLoadByPK</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.EntityLoadByPK</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.EntityLoadByPK</class>
 		<description>Loads and returns an array of objects for given primary key.</description>
 		<argument>
 			<name>name</name>
@@ -118,7 +118,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 	<!-- EntityLoadByExample -->
 	<function>
 		<name>EntityLoadByExample</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.EntityLoadByExample</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.EntityLoadByExample</class>
 		<description>Loads and returns an array of objects that match the sample entity.
 entityLoadByExample(sampleEntity,[unique])</description>
 		<argument>
@@ -143,7 +143,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 	<!-- EntityMerge -->
 	<function>
 		<name>EntityMerge</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.EntityMerge</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.EntityMerge</class>
 		<description>Attaches given entity to current ORM session</description>
 		<argument>
 			<name>entity</name>
@@ -159,7 +159,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 	<!-- EntityNew -->
 	<function>
 		<name>EntityNew</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.EntityNew</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.EntityNew</class>
 		<description>Creates a new instance of the persistent CFC with the entity name that you provide.</description>
 		<argument>
 			<name>entityName</name>
@@ -181,7 +181,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 	<!-- EntityNameArray -->
 	<function>
 		<name>EntityNameArray</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.EntityNameArray</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.EntityNameArray</class>
 		<description>return all loaded entities as array</description>
 		<return>
 			<type>array</type>
@@ -191,7 +191,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 	<!-- EntityNameList -->
 	<function>
 		<name>EntityNameList</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.EntityNameList</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.EntityNameList</class>
 		<description>return all loaded entities as string list</description>
 		<argument>
 			<name>delimiter</name>
@@ -207,7 +207,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 	<!-- EntityReload -->
 	<function>
 		<name>EntityReload</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.EntityReload</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.EntityReload</class>
 		<description>Reloads data for an entity that is already loaded.</description>
 		<argument>
 			<name>entity</name>
@@ -223,7 +223,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 	<!-- EntitySave -->
 	<function>
 		<name>EntitySave</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.EntitySave</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.EntitySave</class>
 		<description>Saves or updates data of the entity and all related entities to the database.
 EntitySave(entity, [forceInsert])</description>
 		<argument>
@@ -246,7 +246,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- EntityToQuery -->
 	<function>
 		<name>EntityToQuery</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.EntityToQuery</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.EntityToQuery</class>
 		<description>Converts the input entity object or the input array of entity objects to a query object.</description>
 		<argument>
 			<name>entity</name>
@@ -269,7 +269,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMExecuteQuery -->
 	<function>
 		<name>ORMExecuteQuery</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.ORMExecuteQuery</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.ORMExecuteQuery</class>
 		<description>Runs the HQL on the default data source specified for the application.</description>
 		<argument>
 			<name>hql</name>
@@ -304,7 +304,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMClearSession -->
 	<function>
 		<name>ORMClearSession</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.ORMClearSession</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.ORMClearSession</class>
 		<description>Removes all the entities that are loaded or created in the session. This clears the first level cache and removes the objects that are not yet saved to the database.</description>
 		<argument>
 			<name>datasource</name>
@@ -319,7 +319,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMCloseSession -->
 	<function>
 		<name>ORMCloseSession</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.ORMCloseSession</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.ORMCloseSession</class>
 		<description>Closes the current ORM session.</description>
 		<argument>
 			<name>datasource</name>
@@ -334,7 +334,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMCloseAllSession -->
 	<function>
 		<name>ORMCloseAllSessions</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.ORMCloseAllSessions</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.ORMCloseAllSessions</class>
 		<description>Closes all ORM session.</description>
 		<return>
 			<type>void</type>
@@ -343,7 +343,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMEvictCollection -->
 	<function>
 		<name>ORMEvictCollection</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.ORMEvictCollection</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.ORMEvictCollection</class>
 		<description>This will remove all the entries with the specified relation/collection name in the specified component. 
 ormEvictCollection(componentName,relationName,[id])</description>
 		
@@ -373,7 +373,7 @@ ormEvictCollection(componentName,relationName,[id])</description>
 	<!-- ORMEvictEntity -->
 	<function>
 		<name>ORMEvictEntity</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.ORMEvictEntity</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.ORMEvictEntity</class>
 		<description>This will remove all the entries for the specified component name from the entity cache.
 ormEvictEntity(componentName,[id])</description>
 		
@@ -397,7 +397,7 @@ ormEvictEntity(componentName,[id])</description>
 	<!-- ORMEvictQueries -->
 	<function>
 		<name>ORMEvictQueries</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.ORMEvictQueries</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.ORMEvictQueries</class>
 		<description>This will remove all the queries from the named query cache. 
 If name is not specified, all queries from default cache will be removed.
 ormEvictQueries([cacheName])</description>
@@ -421,7 +421,7 @@ ormEvictQueries([cacheName])</description>
 	<!-- ORMFlush -->
 	<function>
 		<name>ORMFlush</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.ORMFlush</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.ORMFlush</class>
 		<description>Flushes the current ORM session. ORMFlush flushes all the pending CRUD operations in that request. Any changes made in the objects, in the current ORM session, are saved to the database.</description>
 		<argument>
 			<name>datasource</name>
@@ -436,7 +436,7 @@ ormEvictQueries([cacheName])</description>
 	<!-- ORMGetSession -->
 	<function>
 		<name>ORMGetSession</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.ORMGetSession</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.ORMGetSession</class>
 		<description>Returns the current ORM session</description>
 		<argument>
 			<name>datasource</name>
@@ -451,7 +451,7 @@ ormEvictQueries([cacheName])</description>
 	<!-- ORMGetSessionFactory -->
 	<function>
 		<name>ORMGetSessionFactory</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.ORMGetSessionFactory</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.ORMGetSessionFactory</class>
 		<description>Returns ORM session factory instance</description>
 		<argument>
 			<name>datasource</name>
@@ -466,7 +466,7 @@ ormEvictQueries([cacheName])</description>
 	<!-- ORMReload -->
 	<function>
 		<name>ORMReload</name>
-		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.extension.orm.functions.ORMReload</class>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">com.ortussolutions.hibernate.functions.ORMReload</class>
 		<description>Returns ORM session factory instance</description>
 		<return>
 			<type>void</type>

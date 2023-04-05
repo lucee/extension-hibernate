@@ -16,7 +16,7 @@
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  *
  **/
-package org.lucee.extension.orm.functions;
+package com.ortussolutions.hibernate.functions;
 
 import com.ortussolutions.hibernate.util.ORMUtil;
 
@@ -24,14 +24,10 @@ import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMSession;
 
-public class EntityNameList {
+public class EntityMerge {
 
-    public static String call(PageContext pc) throws PageException {
-        return call(pc, ",");
-    }
-
-    public static String call(PageContext pc, String delimiter) throws PageException {
-        ORMSession sess = ORMUtil.getSession(pc);
-        return String.join(",", sess.getEntityNames());
+    public static Object call(PageContext pc, Object obj) throws PageException {
+        ORMSession session = ORMUtil.getSession(pc);
+        return session.merge(pc, obj);
     }
 }

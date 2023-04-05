@@ -16,24 +16,19 @@
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  *
  **/
-package org.lucee.extension.orm.functions;
+package com.ortussolutions.hibernate.functions;
 
 import com.ortussolutions.hibernate.util.ORMUtil;
 
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
+import lucee.runtime.orm.ORMSession;
 
-public class ORMEvictQueries {
-    public static String call(PageContext pc) throws PageException {
-        return call(pc, null, null);
-    }
+public class EntityReload {
 
-    public static String call(PageContext pc, String cacheName) throws PageException {
-        return call(pc, cacheName, null);
-    }
-
-    public static String call(PageContext pc, String cacheName, String datasource) throws PageException {
-        ORMUtil.getSession(pc).evictQueries(pc, cacheName, datasource);
+    public static String call(PageContext pc, Object obj) throws PageException {
+        ORMSession session = ORMUtil.getSession(pc);
+        session.reload(pc, obj);
         return null;
     }
 }
