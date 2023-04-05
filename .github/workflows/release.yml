@@ -84,7 +84,7 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: hibernate_${{ env.VERSION }}.lex
-          path: dist/*.lex
+          path: dist/
 
       - name: Upload Artifact to S3
         uses: jakejarvis/s3-sync-action@master

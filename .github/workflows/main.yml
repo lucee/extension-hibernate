@@ -83,7 +83,7 @@ jobs:
       uses: actions/download-artifact@master
       with:
         name: hibernate_${{ env.VERSION }}.lex
-        path: dist/*.lex
+        path: dist/
 
     - name: Run Lucee Test Suite (testLabels="orm")
       uses: lucee/script-runner@main
