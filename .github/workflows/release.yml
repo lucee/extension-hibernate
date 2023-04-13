@@ -8,6 +8,12 @@ on:
       - master
 
 jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  test:
+    uses: ./.github/workflows/test.yml
+
   javadocs:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '__CI__')"
