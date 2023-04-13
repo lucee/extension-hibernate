@@ -13,7 +13,10 @@
   <property name="dist"  location="dist"/>
   <property name="src" location="source/java/src"/>
   <property name="srcImg" location="source/images"/>
-  
+  <property name="docs.dir"  location="docs/"/>
+  <property name="tld" location="source/tld"/>
+  <property name="fld" location="source/fld"/>
+
   <buildnumber file="build.number"/>
   
 
@@ -38,6 +41,10 @@
     <mkdir dir="${dist}/extension/jars"/>
   </target>
 
+  <!-- Output the project version for use in versioning S3 artifact uploads -->
+  <target name="version">
+    <echo>${bundleversion}${build.number}${versionAppendix}</echo>
+  </target>
 
   <target name="copy" depends="init" description="copy source file to temp" >
     <!-- copy the source -->
@@ -74,14 +81,28 @@ lucee-core-version: "${luceeCoreVersion}"
   <target name="compile" depends="copy"
         description="compile the source " >
     <!-- Compile ACF-Infinspan source -->
-    <javac srcdir="${temp}" destdir="${build}" debug="true" debuglevel="lines,vars,source">
+    <javac srcdir="${temp}" target="1.8" destdir="${build}" debug="true" debuglevel="lines,vars,source">
       <classpath refid="classpath" />
     </javac>
+  </target>
+  
+  <!-- Generate javadocs for current project into ${doc.dir} -->
+  <target name="doc" depends="init" description="generate documentation">
+    <javadoc sourcepath="${src}" destdir="${docs.dir}"/>
   </target>
 
   <target name="dist" depends="compile"
         description="generate the distribution" >
     
+    <!-- copy the tlds necessary -->
+    <copy file="${tld}/ormTags.tldx" tofile="${dist}/extension/tlds/ormTags.tldx" />
+    <replace file="${dist}/extension/tlds/ormTags.tldx" token="{bundle-name}" value="${bundlename}" />
+    <replace file="${dist}/extension/tlds/ormTags.tldx" token="{bundle-version}" value="${bundleversion}${build.number}${versionAppendix}" />
+
+    <!-- copy the flds necessary -->
+    <copy file="${fld}/ormFunctions.fld" tofile="${dist}/extension/flds/ormFunctions.fld" />
+    <replace file="${dist}/extension/flds/ormFunctions.fld" token="{bundle-name}" value="${bundlename}" />
+    <replace file="${dist}/extension/flds/ormFunctions.fld" token="{bundle-version}" value="${bundleversion}${build.number}${versionAppendix}" />
  
     <!-- Put everything in ${build} into .jar file -->
     <jar 
@@ -102,7 +123,7 @@ lucee-core-version: "${luceeCoreVersion}"
         <exclude name="**/javax.servlet.jar"/>
         <exclude name="**/lucee.jar"/>
         <exclude name="**/org-apache-felix-main-*.jar"/>
-        <exclude name="**/ehcache-*.jar"/>
+        <!-- <exclude name="**/ehcache-*.jar"/> -->
         <exclude name="**/xml-apis-*.jar"/>
 
       </fileset>

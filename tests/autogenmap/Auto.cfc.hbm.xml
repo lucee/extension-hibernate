@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="Auto" lazy="true" node="testAdditional.autogenmap.Auto" table="Auto">
+        <id name="id" type="string">
+            <column name="id"/>
+        </id>
+        <property name="make" type="string">
+            <column name="make"/>
+        </property>
+        <property name="model" type="string">
+            <column name="model"/>
+        </property>
+    </class>
+</hibernate-mapping>

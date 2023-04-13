@@ -1,0 +1,46 @@
+
+version: "3.9"
+services:
+
+  mysql:
+    platform: linux/x86_64 # Needed for Mac's on the M1 chip
+    image: mysql:5
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "${MYSQL_PORT}:3306"
+
+  postgres:
+    image: postgres:11.3
+    environment:
+      POSTGRES_USER: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DATABASE}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    environment:
+      MSSQL_SA_PASSWORD: ${MSSQL_PASSWORD}
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+    volumes:
+      # Mounted entrypoint for initdb scripts
+      - ./docker/mssql:/docker-entrypoint-initdb.d
+    ports:
+      - "${MSSQL_PORT}:1433"
+    entrypoint: /docker-entrypoint-initdb.d/entrypoint.sh /opt/mssql/bin/sqlservr
+
+  # TODO: Re-enable when MongoDB testing is fixed in Lucee 6
+  # mongo:
+  #   image: mongo
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+  #     MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+  #     MONGO_INITDB_DATABASE: ${MONGODB_DB}
+  #   volumes:
+  #     - ./docker/mongo:/docker-entrypoint-initdb.d
+  #   ports:
+  #     - "${MONGODB_PORT}:27017"

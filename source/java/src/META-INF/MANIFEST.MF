@@ -1,18 +1,23 @@
 Manifest-Version: 1.0
-Export-Package: org.lucee.extension.orm.hibernate,org.lucee.extension.orm.hibernate.jdbc
+Export-Package: com.ortussolutions.hibernate,com.ortussolutions.hibernate.jdbc
 Import-Package: net.sf.ehcache.hibernate
-Require-Bundle: org.lucee.hibernate;bundle-version=5.4.27.Final,
- org.lucee.persistence-api;bundle-version=2.2,
+Require-Bundle: org.lucee.hibernate;bundle-version=5.4.29.1,
  org.lucee.antlr;bundle-version=2.7.6,
  org.lucee.dom4j;bundle-version=1.6.1,
  org.lucee.javassist;bundle-version=3.9.0.GA,
  org.lucee.jta;bundle-version=1.1.0,
- slf4j.api;bundle-version=1.7.12,
+ slf4j.api;bundle-version=1.7.36,
  org.apache.commons.collections;bundle-version=3.2.1,
  org.lucee.xalan;bundle-version=2.7.2,
  org.lucee.xml.xerces;bundle-version=2.11.0,
  org.lucee.xml.apis;bundle-version=1.4.1,
- org.lucee.xml;bundle-version=1.0.0.0,
- org.lucee.ehcache;bundle-version=2.10.3
+ com.fasterxml.classmate;bundle-version=1.5.1,
+ net.bytebuddy.byte-buddy;bundle-version=1.10.21,
+ org.lucee.hibernate-annotations;bundle-version=5.1.2.Final,
+ javax.persistence-api;bundle-version=2.2,
+ org.lucee.hibernate-ehcache;bundle-version=5.4.29.Final,
+ org.lucee.ehcache;bundle-version=2.10.6,
+ jakarta.xml.bind-api;bundle-version=2.3.3,
+ org.glassfish.jaxb.runtime;bundle-version=2.3.4
 Require-Bundle-Fragment: slf4j.nop;bundle-version=1.7.12
 Bundle-ManifestVersion: 2
