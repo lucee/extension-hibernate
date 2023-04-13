@@ -9,11 +9,8 @@ on: [push, pull_request, workflow_dispatch]
       - master
 
 jobs:
-  build:
-    uses: ./.github/workflows/build.yml
-
-  test:
-    uses: ./.github/workflows/test.yml
+  build_and_test:
+    uses: ./.github/workflows/build_and_test.yml
 
   maven_build:
     name: Maven Build
