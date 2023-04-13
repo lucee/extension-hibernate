@@ -1,4 +1,4 @@
-name: Test
+name: Build and Test
 
 # We are a reusable Workflow only
 on:
