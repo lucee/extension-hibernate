@@ -24,11 +24,27 @@ import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMSession;
 
-public class EntityReload {
+import lucee.runtime.ext.function.BIF;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.engine.CFMLEngine;
+
+/**
+ * CFML built-in function to reload an ORM entity.
+ */
+public class EntityReload extends BIF {
 
     public static String call(PageContext pc, Object obj) throws PageException {
         ORMSession session = ORMUtil.getSession(pc);
         session.reload(pc, obj);
         return null;
+    }
+
+    @Override
+    public Object invoke(PageContext pc, Object[] args) throws PageException {
+        CFMLEngine engine = CFMLEngineFactory.getInstance();
+
+        if (args.length == 1) return call(pc, args[0]);
+
+        throw engine.getExceptionUtil().createFunctionException(pc, "EntityReload", 1, 1, args.length);
     }
 }

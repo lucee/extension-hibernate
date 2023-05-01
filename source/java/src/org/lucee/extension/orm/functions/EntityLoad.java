@@ -26,7 +26,15 @@ import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMSession;
 import lucee.runtime.type.Struct;
 
-public class EntityLoad {
+import lucee.runtime.util.Cast;
+import lucee.runtime.ext.function.BIF;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.engine.CFMLEngine;
+
+/**
+ * CFML built-in function to load an ORM entity or entities by ID or criteria
+ */
+public class EntityLoad extends BIF {
 
     public static Object call(PageContext pc, String name) throws PageException {
 
@@ -81,5 +89,18 @@ public class EntityLoad {
         ORMSession session = ORMUtil.getSession(pc);
         return session.loadAsArray(pc, name, CommonUtil.toStruct(filter), CommonUtil.toStruct(options),
                 CommonUtil.toString(order));
+    }
+
+    @Override
+    public Object invoke(PageContext pc, Object[] args) throws PageException {
+        CFMLEngine engine = CFMLEngineFactory.getInstance();
+        Cast cast = engine.getCastUtil();
+
+        if (args.length == 1) return call(pc, cast.toString(args[0]));
+        if (args.length == 2) return call(pc, cast.toString(args[0]), args[1]);
+        if (args.length == 3) return call(pc, cast.toString(args[0]), args[1], args[2]);
+        if (args.length == 4) return call(pc, cast.toString(args[0]), args[1], args[2], args[3]);
+
+        throw engine.getExceptionUtil().createFunctionException(pc, "EntityLoad", 1, 4, args.length);
     }
 }

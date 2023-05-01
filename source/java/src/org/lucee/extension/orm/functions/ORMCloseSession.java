@@ -23,8 +23,15 @@ import org.lucee.extension.orm.hibernate.util.ORMUtil;
 import lucee.loader.util.Util;
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
+import lucee.runtime.util.Cast;
+import lucee.runtime.ext.function.BIF;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.engine.CFMLEngine;
 
-public class ORMCloseSession {
+/**
+ * CFML built-in function to close the ORM session for the named datasource.
+ */
+public class ORMCloseSession extends BIF {
 
     public static String call(PageContext pc) throws PageException {
         return call(pc, null);
@@ -36,5 +43,16 @@ public class ORMCloseSession {
         else
             ORMUtil.getSession(pc).close(pc, datasource.trim());
         return null;
+    }
+
+    @Override
+    public Object invoke(PageContext pc, Object[] args) throws PageException {
+        CFMLEngine engine = CFMLEngineFactory.getInstance();
+        Cast cast = engine.getCastUtil();
+
+        if (args.length == 0) return call(pc);
+        if (args.length == 1) return call(pc, cast.toString(args[0]));
+
+        throw engine.getExceptionUtil().createFunctionException(pc, "ORMCloseSession", 0, 1, args.length);
     }
 }

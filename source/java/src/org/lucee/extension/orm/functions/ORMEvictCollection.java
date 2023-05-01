@@ -24,8 +24,15 @@ import lucee.loader.util.Util;
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMSession;
+import lucee.runtime.util.Cast;
+import lucee.runtime.ext.function.BIF;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.engine.CFMLEngine;
 
-public class ORMEvictCollection {
+/**
+ * CFML built-in function to evict a collection for the given entity/collection name.
+ */
+public class ORMEvictCollection extends BIF {
     public static String call(PageContext pc, String entityName, String collectionName) throws PageException {
         return call(pc, entityName, collectionName, null);
     }
@@ -38,5 +45,16 @@ public class ORMEvictCollection {
         else
             session.evictCollection(pc, entityName, collectionName, primaryKey);
         return null;
+    }
+
+    @Override
+    public Object invoke(PageContext pc, Object[] args) throws PageException {
+        CFMLEngine engine = CFMLEngineFactory.getInstance();
+        Cast cast = engine.getCastUtil();
+
+        if (args.length == 2) return call(pc, cast.toString(args[0]), cast.toString(args[1]));
+        if (args.length == 3) return call(pc, cast.toString(args[0]), cast.toString(args[1]), cast.toString(args[2]));
+
+        throw engine.getExceptionUtil().createFunctionException(pc, "ORMEvictCollection", 2, 3, args.length);
     }
 }

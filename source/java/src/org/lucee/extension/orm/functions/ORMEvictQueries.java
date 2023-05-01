@@ -22,8 +22,15 @@ import org.lucee.extension.orm.hibernate.util.ORMUtil;
 
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
+import lucee.runtime.util.Cast;
+import lucee.runtime.ext.function.BIF;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.engine.CFMLEngine;
 
-public class ORMEvictQueries {
+/**
+ * CFML built-in function to evict queries from the named query cache.
+ */
+public class ORMEvictQueries extends BIF {
     public static String call(PageContext pc) throws PageException {
         return call(pc, null, null);
     }
@@ -35,5 +42,17 @@ public class ORMEvictQueries {
     public static String call(PageContext pc, String cacheName, String datasource) throws PageException {
         ORMUtil.getSession(pc).evictQueries(pc, cacheName, datasource);
         return null;
+    }
+
+    @Override
+    public Object invoke(PageContext pc, Object[] args) throws PageException {
+        CFMLEngine engine = CFMLEngineFactory.getInstance();
+        Cast cast = engine.getCastUtil();
+
+        if (args.length == 0) return call(pc);
+        if (args.length == 1) return call(pc, cast.toString(args[0]));
+        if (args.length == 2) return call(pc, cast.toString(args[0]), cast.toString(args[1]));
+
+        throw engine.getExceptionUtil().createFunctionException(pc, "ORMEvictQueries", 0, 2, args.length);
     }
 }

@@ -23,8 +23,15 @@ import org.lucee.extension.orm.hibernate.util.ORMUtil;
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMSession;
+import lucee.runtime.util.Cast;
+import lucee.runtime.ext.function.BIF;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.engine.CFMLEngine;
 
-public class EntityNameList {
+/**
+ * CFML built-in function to retrieve a list of all ORM entity names.
+ */
+public class EntityNameList extends BIF {
 
     public static String call(PageContext pc) throws PageException {
         return call(pc, ",");
@@ -32,6 +39,17 @@ public class EntityNameList {
 
     public static String call(PageContext pc, String delimiter) throws PageException {
         ORMSession sess = ORMUtil.getSession(pc);
-        return String.join(",", sess.getEntityNames());
+        return String.join(delimiter, sess.getEntityNames());
+    }
+
+    @Override
+    public Object invoke(PageContext pc, Object[] args) throws PageException {
+        CFMLEngine engine = CFMLEngineFactory.getInstance();
+        Cast cast = engine.getCastUtil();
+
+        if (args.length == 0) return call(pc);
+        if (args.length == 1) return call(pc, cast.toString(args[0]));
+
+        throw engine.getExceptionUtil().createFunctionException(pc, "EntityNameList", 0, 1, args.length);
     }
 }

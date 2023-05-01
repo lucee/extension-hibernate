@@ -24,8 +24,15 @@ import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMSession;
 import lucee.runtime.type.Query;
+import lucee.runtime.util.Cast;
+import lucee.runtime.ext.function.BIF;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.engine.CFMLEngine;
 
-public class EntityToQuery {
+/**
+ * CFML built-in function to convert an entity to a query object.
+ */
+public class EntityToQuery extends BIF {
 
     public static Query call(PageContext pc, Object obj) throws PageException {
         return call(pc, obj, null);
@@ -35,5 +42,16 @@ public class EntityToQuery {
         ORMSession session = ORMUtil.getSession(pc);
         return session.toQuery(pc, obj, name);
 
+    }
+
+    @Override
+    public Object invoke(PageContext pc, Object[] args) throws PageException {
+        CFMLEngine engine = CFMLEngineFactory.getInstance();
+        Cast cast = engine.getCastUtil();
+
+        if (args.length == 1) return call(pc, args[0]);
+        if (args.length == 2) return call(pc, args[0], cast.toString(args[1]));
+
+        throw engine.getExceptionUtil().createFunctionException(pc, "EntityToQuery", 1, 2, args.length);
     }
 }

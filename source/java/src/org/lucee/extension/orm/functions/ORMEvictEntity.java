@@ -24,8 +24,15 @@ import lucee.loader.util.Util;
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMSession;
+import lucee.runtime.util.Cast;
+import lucee.runtime.ext.function.BIF;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.engine.CFMLEngine;
 
-public class ORMEvictEntity {
+/**
+ * CFML built-in function to evict an entity from the current ORM session.
+ */
+public class ORMEvictEntity extends BIF {
     public static String call(PageContext pc, String entityName) throws PageException {
         return call(pc, entityName, null);
     }
@@ -37,5 +44,16 @@ public class ORMEvictEntity {
         else
             session.evictEntity(pc, entityName, primaryKey);
         return null;
+    }
+
+    @Override
+    public Object invoke(PageContext pc, Object[] args) throws PageException {
+        CFMLEngine engine = CFMLEngineFactory.getInstance();
+        Cast cast = engine.getCastUtil();
+
+        if (args.length == 1) return call(pc, cast.toString(args[0]));
+        if (args.length == 2) return call(pc, cast.toString(args[0]), cast.toString(args[1]));
+
+        throw engine.getExceptionUtil().createFunctionException(pc, "ORMEvictEntity", 1, 2, args.length);
     }
 }

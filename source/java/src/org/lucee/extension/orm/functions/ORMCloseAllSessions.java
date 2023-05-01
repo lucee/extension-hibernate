@@ -22,10 +22,25 @@ import org.lucee.extension.orm.hibernate.util.ORMUtil;
 
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
+import lucee.runtime.ext.function.BIF;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.engine.CFMLEngine;
 
-public class ORMCloseAllSessions {
+/**
+ * CFML built-in function to close all open ORM sessions.
+ */
+public class ORMCloseAllSessions extends BIF {
     public static String call(PageContext pc) throws PageException {
         ORMUtil.getSession(pc).closeAll(pc);
         return null;
+    }
+
+    @Override
+    public Object invoke(PageContext pc, Object[] args) throws PageException {
+        CFMLEngine engine = CFMLEngineFactory.getInstance();
+
+        if (args.length == 0) return call(pc);
+
+        throw engine.getExceptionUtil().createFunctionException(pc, "ORMCloseAllSessions", 0, 0, args.length);
     }
 }
