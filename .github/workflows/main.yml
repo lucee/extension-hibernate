@@ -1,9 +1,15 @@
 name: Extension Build
 
-on: [push, pull_request, workflow_dispatch]
-  branches-ignore:
-      - main
-      - master
+on: 
+  workflow_dispatch:
+  push:
+    branches-ignore:
+        - main
+        - master
+  pull_request:
+    branches-ignore:
+        - main
+        - master
 
 jobs:
   build_and_test:
