@@ -5,7 +5,7 @@
 <func-lib>
 	<flib-version>1.00</flib-version>
 	<short-name>Hibernate-extension</short-name>
-	<uri>https://github.com/lucee/extension-hibernate</uri>
+	<uri>https://github.com/ortus-solutions/extension-hibernate</uri>
 	<display-name>Hibernate</display-name>
 	<description>
 		Functions to interact with Hibernate
