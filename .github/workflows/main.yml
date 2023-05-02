@@ -1,5 +1,3 @@
-# This workflow will build a Java project with Ant
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-ant
 name: Extension Build
 
 on: [push, pull_request, workflow_dispatch]
