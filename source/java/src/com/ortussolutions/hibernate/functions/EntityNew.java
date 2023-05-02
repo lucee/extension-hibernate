@@ -32,7 +32,15 @@ import lucee.runtime.type.Collection.Key;
 import lucee.runtime.type.Struct;
 import lucee.runtime.type.UDF;
 
-public class EntityNew {
+import lucee.runtime.util.Cast;
+import lucee.runtime.ext.function.BIF;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.engine.CFMLEngine;
+
+/**
+ * CFML built-in function to create a new instance of a Hibernate session entity.
+ */
+public class EntityNew extends BIF {
 
     public static Object call(PageContext pc, String name) throws PageException {
         return call(pc, name, null);
@@ -72,5 +80,16 @@ public class EntityNew {
                 c.call(pc, funcName, new Object[] { e.getValue() });
             }
         }
+    }
+
+    @Override
+    public Object invoke(PageContext pc, Object[] args) throws PageException {
+        CFMLEngine engine = CFMLEngineFactory.getInstance();
+        Cast cast = engine.getCastUtil();
+
+        if (args.length == 1) return call(pc, cast.toString(args[0]));
+        if (args.length == 2) return call(pc, cast.toString(args[0]), cast.toStruct(args[1]));
+
+        throw engine.getExceptionUtil().createFunctionException(pc, "EntityNew", 1, 2, args.length);
     }
 }

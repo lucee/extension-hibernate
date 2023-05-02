@@ -23,11 +23,26 @@ import com.ortussolutions.hibernate.util.ORMUtil;
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMSession;
+import lucee.runtime.ext.function.BIF;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.engine.CFMLEngine;
 
-public class EntityMerge {
+/**
+ * Merge a detached or transient entity into the Hibernate session.
+ */
+public class EntityMerge extends BIF {
 
     public static Object call(PageContext pc, Object obj) throws PageException {
         ORMSession session = ORMUtil.getSession(pc);
         return session.merge(pc, obj);
+    }
+
+    @Override
+    public Object invoke(PageContext pc, Object[] args) throws PageException {
+        CFMLEngine engine = CFMLEngineFactory.getInstance();
+
+        if (args.length == 1) return call(pc, args[0]);
+
+        throw engine.getExceptionUtil().createFunctionException(pc, "EntityMerge", 1, 1, args.length);
     }
 }

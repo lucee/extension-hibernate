@@ -93,13 +93,8 @@ lucee-core-version: "${luceeCoreVersion}"
 
   <target name="dist" depends="compile"
         description="generate the distribution" >
-    
-    <!-- copy the tlds necessary -->
-    <copy file="${tld}/ormTags.tldx" tofile="${dist}/extension/tlds/ormTags.tldx" />
-    <replace file="${dist}/extension/tlds/ormTags.tldx" token="{bundle-name}" value="${bundlename}" />
-    <replace file="${dist}/extension/tlds/ormTags.tldx" token="{bundle-version}" value="${bundleversion}${build.number}${versionAppendix}" />
 
-    <!-- copy the flds necessary -->
+    <!-- copy the flds used for informing Lucee of the CFML built-in methods -->
     <copy file="${fld}/ormFunctions.fld" tofile="${dist}/extension/flds/ormFunctions.fld" />
     <replace file="${dist}/extension/flds/ormFunctions.fld" token="{bundle-name}" value="${bundlename}" />
     <replace file="${dist}/extension/flds/ormFunctions.fld" token="{bundle-version}" value="${bundleversion}${build.number}${versionAppendix}" />
