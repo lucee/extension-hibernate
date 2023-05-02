@@ -19,6 +19,7 @@ va specific
 
 # Test artifacts
 WEB-INF/
+tests/datasource
 
 # Lucee source for CFML tests
 /lucee
