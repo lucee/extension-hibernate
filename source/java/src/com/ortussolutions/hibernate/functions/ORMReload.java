@@ -24,8 +24,14 @@ import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMConfiguration;
 import lucee.runtime.orm.ORMSession;
+import lucee.runtime.ext.function.BIF;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.engine.CFMLEngine;
 
-public class ORMReload {
+/**
+ * CFML built-in function to flush the current session.
+ */
+public class ORMReload extends BIF {
     public static String call(PageContext pc) throws PageException {
 
         // flush and close session
@@ -40,5 +46,14 @@ public class ORMReload {
         pc.getApplicationContext().reinitORM(pc);
         ORMUtil.resetEngine(pc, true);
         return null;
+    }
+
+    @Override
+    public Object invoke(PageContext pc, Object[] args) throws PageException {
+        CFMLEngine engine = CFMLEngineFactory.getInstance();
+
+        if (args.length == 0) return call(pc);
+
+        throw engine.getExceptionUtil().createFunctionException(pc, "ORMReload", 0, 0, args.length);
     }
 }

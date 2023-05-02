@@ -24,10 +24,26 @@ import com.ortussolutions.hibernate.util.ORMUtil;
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.type.Array;
-
-public class EntityNameArray {
+import lucee.runtime.ext.function.BIF;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.engine.CFMLEngine;
+/**
+ * CFML built-in function to retrieve an array of all ORM entity names.
+ */
+public class EntityNameArray extends BIF {
 
     public static Array call(PageContext pc) throws PageException {
-        return CommonUtil.toArray(ORMUtil.getSession(pc).getEntityNames());
+        return CommonUtil.toArray(
+            ORMUtil.getSession(pc).getEntityNames()
+        );
+    }
+
+    @Override
+    public Object invoke(PageContext pc, Object[] args) throws PageException {
+        CFMLEngine engine = CFMLEngineFactory.getInstance();
+
+        if (args.length == 0) return call(pc);
+
+        throw engine.getExceptionUtil().createFunctionException(pc, "entityNameArray", 0, 0, args.length);
     }
 }

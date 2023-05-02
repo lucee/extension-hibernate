@@ -32,7 +32,15 @@ import lucee.runtime.orm.ORMSession;
 import lucee.runtime.type.Array;
 import lucee.runtime.type.Struct;
 
-public class ORMExecuteQuery {
+import lucee.runtime.util.Cast;
+import lucee.runtime.ext.function.BIF;
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.engine.CFMLEngine;
+
+/**
+ * CFML built-in function to execute an HQL query through Hibernate ORM.
+ */
+public class ORMExecuteQuery extends BIF {
 
     public static Object call(PageContext pc, String hql) throws PageException {
         return _call(pc, hql, null, false, null);
@@ -57,21 +65,9 @@ public class ORMExecuteQuery {
         return _call(pc, hql, paramsOrUnique, false, CommonUtil.toStruct(uniqueOrQueryOptions));
     }
 
-    public static Object call(PageContext pc, String hql, Object params, String oUnique, Object oQueryOptions)
+    public static Object call(PageContext pc, String hql, Object params, boolean isUnique, Struct queryOptions)
             throws PageException {
-        boolean unique;
-        if (oUnique == null || oUnique.isEmpty())
-            unique = false;
-        else
-            unique = CommonUtil.toBooleanValue(oUnique);
-
-        Struct queryOptions;
-        if (oQueryOptions == null)
-            queryOptions = null;
-        else
-            queryOptions = CommonUtil.toStruct(oQueryOptions);
-
-        return _call(pc, hql, params, unique, queryOptions);
+        return _call(pc, hql, params, isUnique, queryOptions);
     }
 
     private static Object _call(PageContext pc, String hql, Object params, boolean unique, Struct queryOptions)
@@ -104,5 +100,22 @@ public class ORMExecuteQuery {
         if (obj instanceof Map<?, ?> && !(obj instanceof Struct))
             return CommonUtil.toStruct(obj);
         return obj;
+    }
+
+    @Override
+    public Object invoke(PageContext pc, Object[] args) throws PageException {
+        CFMLEngine engine = CFMLEngineFactory.getInstance();
+        Cast cast = engine.getCastUtil();
+
+        if (args.length == 1) return call(pc, cast.toString(args[0]));
+        if (args.length == 2) return call(pc, cast.toString(args[0]), args[1]);
+        if (args.length == 3) return call(pc, cast.toString(args[0]), args[1], args[2]);
+        if (args.length == 4) {
+            Struct queryOptions = null;
+            if (args[1] != null){ queryOptions = cast.toStruct(args[1]); }
+            return call(pc, cast.toString(args[0]), args[1], cast.toBoolean(args[1],false), queryOptions);
+        }
+
+        throw engine.getExceptionUtil().createFunctionException(pc, "ORMExecuteQuery", 1, 4, args.length);
     }
 }
