@@ -113,7 +113,6 @@ jobs:
         with:
           forgeboxAPIKey: ${{ secrets.FORGEBOX_TOKEN }}
 
-      - uses: Ortus-Solutions/commandbox-action@v1.0.2
-        run: |
+      - run: |
           box package set location="https://s3.amazonaws.com/downloads.ortussolutions.com/lucee/extensions/hibernate/${{ env.VERSION }}/hibernate_${{ env.VERSION }}.lex/"
           box publish
