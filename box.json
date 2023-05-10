@@ -1,0 +1,19 @@
+{
+    "name":"Lucee Hibernate extension",
+    "version":"5.4.29",
+    "location":"https://downloads.ortussolutions.com/lucee/extensions/hibernate/",
+    "type":"lucee-extensions",
+    "slug":"D062D72F-F8A2-46F0-8CBC91325B2F067B",
+    "shortDescription":"Hibernate ORM wrapper for CFML",
+    "description":"This extension provides a CFML interface to the popular Hibernate ORM library",
+    "author":"Ortus Solutions",
+    "homepage":"https://github.com/ortus-solutions/extension-hibernate",
+    "documentation":"https://github.com/ortus-solutions/extension-hibernate/blob/master/README.md",
+    "bugs":"https://ortussolutions.atlassian.net/jira/software/c/projects/LHE/issues",
+    "private":true,
+    "projectURL":"https://github.com/ortus-solutions/extension-hibernate",
+    "repository":{
+        "type":"git",
+        "URL":"https://github.com/ortus-solutions/extension-hibernate"
+    }
+}

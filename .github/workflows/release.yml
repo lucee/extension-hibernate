@@ -49,6 +49,8 @@ jobs:
     needs: [build_and_test, javadocs]
     steps:
       - uses: actions/checkout@v3
+        with:
+          token: ${{secrets.GH_TOKEN}}
 
       - name: Get Version Tag
         id: current_version
@@ -83,6 +85,12 @@ jobs:
         # For Ant builds (still the default)
         run: echo "VERSION=`ant -silent -quiet version`" >> $GITHUB_ENV
 
+      - name: Setup Java
+        uses: actions/setup-java@v3.9.0
+        with:
+          distribution: "temurin"
+          java-version: "11"
+
       - name: Download Artifact
         uses: actions/download-artifact@master
         with:
@@ -99,3 +107,13 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
           SOURCE_DIR: "dist/*.lex"
           DEST_DIR: "lucee/extensions/hibernate/${{ env.VERSION }}/"
+
+      - name: Setup CommandBox
+        uses: Ortus-Solutions/setup-commandbox@main
+        with:
+          forgeboxAPIKey: ${{ secrets.FORGEBOX_TOKEN }}
+
+      - uses: Ortus-Solutions/commandbox-action@v1.0.2
+        run: |
+          box package set location="https://s3.amazonaws.com/downloads.ortussolutions.com/lucee/extensions/hibernate/${{ env.VERSION }}/hibernate_${{ env.VERSION }}.lex/"
+          box publish

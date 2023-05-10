@@ -63,7 +63,7 @@
     <echo file="${dist}/extension/META-INF/MANIFEST.MF">Manifest-Version: 1.0
 Built-Date: ${NOW}
 version: "${bundleversion}${build.number}${versionAppendix}"
-id: "FAD1E8CB-4F45-4184-86359145767C29DE"
+id: "D062D72F-F8A2-46F0-8CBC91325B2F067B"
 name: ${label}
 description: ${description}
 start-bundles: false

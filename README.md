@@ -8,7 +8,7 @@
 
 * A [Hibernate ORM](https://hibernate.org/orm/) wrapper for the [Lucee CFML language](https://www.lucee.org/)
 
-* Issues: https://luceeserver.atlassian.net/issues/?jql=labels%20%3D%20%22orm%22
+* Issues: https://ortussolutions.atlassian.net/jira/software/c/projects/LHE/issues
 * Documentation: https://docs.lucee.org/categories/orm.html
 
 ## Contributing
