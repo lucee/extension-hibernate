@@ -59,7 +59,10 @@ jobs:
         # For Ant builds (still the default)
         run: echo "TAG=`ant -silent -quiet version`" >> $GITHUB_ENV
 
-      - run: git tag -a ${{ env.TAG }}
+      - run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git tag -a ${{ env.TAG }}
 
       - name: Read the changelog
         id: changelog
