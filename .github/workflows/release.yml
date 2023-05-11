@@ -65,18 +65,22 @@ jobs:
         with:
           TAG_NAME: ${{ env.VERSION }}
 
-      - name: Create a GitHub release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ env.VERSION }}
-          name: Release ${{ env.VERSION }}
-          body: ${{ steps.tag_version.outputs.changelog }}
-
       - name: Download Artifact
         uses: actions/download-artifact@master
         with:
           name: hibernate_${{ env.VERSION }}.lex
-          path: .tmp/
+          path: .tmp/hibernate_${{ env.VERSION }}.lex
+
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+          artifacts: .tmp/hibernate_${{ env.VERSION }}.lex
+          replacesArtifacts: true
+          tag: ${{ env.VERSION }}
+          name: Release ${{ env.VERSION }}
+          body: ${{ steps.tag_version.outputs.changelog }}
 
       - name: Upload Artifact to S3
         uses: jakejarvis/s3-sync-action@master
@@ -86,7 +90,7 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.AWS_DOWNLOADS_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
-          SOURCE_DIR: ".tmp/"
+          SOURCE_DIR: ".tmp/hibernate_${{ env.VERSION }}.lex"
           DEST_DIR: "lucee/extensions/hibernate/${{ env.VERSION }}/"
 
   publish:
@@ -114,7 +118,11 @@ jobs:
         uses: Ortus-Solutions/setup-commandbox@main
         with:
           forgeboxAPIKey: ${{ secrets.FORGEBOX_TOKEN }}
-
+      - name: Setup CommandBox
+        uses: Ortus-Solutions/setup-commandbox@v2.0.1
+        with:
+          forgeboxAPIKey: ${{ secrets.FORGEBOX_TOKEN }}
+https://s3.amazonaws.com/downloads.ortussolutions.com/lucee/extensions/hibernate/5.4.29.22/hibernate-orm-5.4.29.23.lex
       - run: |
           box package set version=${{ env.VERSION }}
           box package set location="https://s3.amazonaws.com/downloads.ortussolutions.com/lucee/extensions/hibernate/${{ env.VERSION }}/hibernate_${{ env.VERSION }}.lex/"
