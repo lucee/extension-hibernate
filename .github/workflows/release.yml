@@ -76,7 +76,7 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: hibernate_${{ env.VERSION }}.lex
-          path: dist/
+          path: .tmp/
 
       - name: Upload Artifact to S3
         uses: jakejarvis/s3-sync-action@master
@@ -86,7 +86,7 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.AWS_DOWNLOADS_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
-          SOURCE_DIR: "dist/hibernate_${{ env.VERSION }}.lex"
+          SOURCE_DIR: ".tmp/"
           DEST_DIR: "lucee/extensions/hibernate/${{ env.VERSION }}/"
 
   publish:
