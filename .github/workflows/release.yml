@@ -76,7 +76,7 @@ jobs:
         with:
           allowUpdates: true
           artifactErrorsFailBuild: true
-          artifacts: .tmp/
+          artifacts: .tmp/hibernate_${{ env.VERSION }}.lex
           replacesArtifacts: true
           tag: ${{ env.VERSION }}
           name: Release ${{ env.VERSION }}
