@@ -121,5 +121,5 @@ jobs:
 
       - run: |
           box package set version=${{ env.VERSION }}
-          box package set location="https://s3.amazonaws.com/downloads.ortussolutions.com/lucee/extensions/hibernate/${{ env.VERSION }}/hibernate_${{ env.VERSION }}.lex/"
+          box package set location="https://s3.amazonaws.com/downloads.ortussolutions.com/lucee/extensions/hibernate/${{ env.VERSION }}/hibernate_${{ env.VERSION }}.lex"
           box publish
