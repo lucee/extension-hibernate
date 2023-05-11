@@ -1,5 +1,5 @@
 {
-    "name":"Lucee Hibernate extension",
+    "name":"Ortus ORM Extension",
     "version":"5.4.29",
     "location":"https://downloads.ortussolutions.com/lucee/extensions/hibernate/",
     "type":"lucee-extensions",
@@ -10,6 +10,7 @@
     "homepage":"https://github.com/ortus-solutions/extension-hibernate",
     "documentation":"https://github.com/ortus-solutions/extension-hibernate/blob/master/README.md",
     "bugs":"https://ortussolutions.atlassian.net/jira/software/c/projects/LHE/issues",
+    "thumbnail": "https://s3.amazonaws.com/downloads.ortussolutions.com/lucee/extensions/hibernate/logo.png",
     "private":false,
     "projectURL":"https://github.com/ortus-solutions/extension-hibernate",
     "repository":{
