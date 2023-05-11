@@ -40,6 +40,9 @@ jobs:
     - name: Build with Ant
       run: ant -noinput -verbose -buildfile build.xml
 
+    - name: Rename .lex to fix build number
+      run: mv dist/hibernate-orm-*.lex dist/hibernate_${{ env.VERSION }}.lex 
+
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
