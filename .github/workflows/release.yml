@@ -3,9 +3,8 @@ name: Publish a Release
 
 on:
   push:
-    branches:
-      - main
-      - master
+    tags:
+      - v[0-9]+.*
 
 jobs:
   build_and_test:
@@ -44,7 +43,7 @@ jobs:
           SOURCE_DIR: "docs"
           DEST_DIR: "lucee/hibernate-extension/${{ env.VERSION }}/"
 
-  tag_and_release:
+  gh_release:
     runs-on: ubuntu-latest
     needs: [build_and_test, javadocs]
     steps:
@@ -57,42 +56,20 @@ jobs:
         # For Maven builds (future)
         # run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
         # For Ant builds (still the default)
-        run: echo "TAG=`ant -silent -quiet version`" >> $GITHUB_ENV
-
-      - run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
-          git tag -a ${{ env.TAG }}
+        run: echo "VERSION=`ant -silent -quiet version`" >> $GITHUB_ENV
 
       - name: Read the changelog
         id: changelog
         uses: 3liz/changelog-release@0.2.0
         with:
-          TAG_NAME: ${{ env.TAG }}
+          TAG_NAME: ${{ env.VERSION }}
 
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ env.TAG }}
-          name: Release ${{ env.TAG }}
+          tag: ${{ env.VERSION }}
+          name: Release ${{ env.VERSION }}
           body: ${{ steps.tag_version.outputs.changelog }}
-
-  publish:
-    runs-on: ubuntu-latest
-    needs: [tag_and_release]
-    steps:
-      - name: Get Project Version
-        id: current_version
-        # For Maven builds (future)
-        # run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
-        # For Ant builds (still the default)
-        run: echo "VERSION=`ant -silent -quiet version`" >> $GITHUB_ENV
-
-      - name: Setup Java
-        uses: actions/setup-java@v3.9.0
-        with:
-          distribution: "temurin"
-          java-version: "11"
 
       - name: Download Artifact
         uses: actions/download-artifact@master
@@ -111,11 +88,29 @@ jobs:
           SOURCE_DIR: "dist/*.lex"
           DEST_DIR: "lucee/extensions/hibernate/${{ env.VERSION }}/"
 
+  publish:
+    runs-on: ubuntu-latest
+    needs: [gh_release]
+    steps:
+      - name: Get Project Version
+        id: current_version
+        # For Maven builds (future)
+        # run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
+        # For Ant builds (still the default)
+        run: echo "VERSION=`ant -silent -quiet version`" >> $GITHUB_ENV
+
+      - name: Setup Java
+        uses: actions/setup-java@v3.9.0
+        with:
+          distribution: "temurin"
+          java-version: "11"
+
       - name: Setup CommandBox
         uses: Ortus-Solutions/setup-commandbox@main
         with:
           forgeboxAPIKey: ${{ secrets.FORGEBOX_TOKEN }}
 
       - run: |
+          box package set version=${{ env.VERSION }}
           box package set location="https://s3.amazonaws.com/downloads.ortussolutions.com/lucee/extensions/hibernate/${{ env.VERSION }}/hibernate_${{ env.VERSION }}.lex/"
           box publish
