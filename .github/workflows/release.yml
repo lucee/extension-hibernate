@@ -69,7 +69,7 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@master
         with:
-          name: hibernate-lex
+          name: ortus_orm_${{ env.VERSION }}.lex
           path: .tmp/
 
       - name: Create a GitHub release

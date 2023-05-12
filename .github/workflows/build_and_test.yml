@@ -54,7 +54,7 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: hibernate-lex
+        name: ortus_orm_${{ env.VERSION }}.lex
         path: dist/*.lex
 
     - name: Checkout Lucee
