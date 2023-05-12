@@ -52,12 +52,13 @@ jobs:
         with:
           token: ${{secrets.GH_TOKEN}}
 
-      - name: Get Version Tag
-        id: current_version
-        # For Maven builds (future)
-        # run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
-        # For Ant builds (still the default)
-        run: echo "VERSION=`ant -silent -quiet version`" >> $GITHUB_ENV
+      - name: Download built version number
+        uses: actions/download-artifact@master
+        with:
+          name: extension-version
+
+      - name: Read version file
+        run: echo "VERSION=`cat version.txt" >> $GITHUB_ENV
 
       - name: Read the changelog
         id: changelog
@@ -68,7 +69,7 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@master
         with:
-          name: hibernate_${{ env.VERSION }}.lex
+          name: hibernate-lex
           path: .tmp/
 
       - name: Create a GitHub release
@@ -76,10 +77,10 @@ jobs:
         with:
           allowUpdates: true
           artifactErrorsFailBuild: true
-          artifacts: .tmp/hibernate_${{ env.VERSION }}.lex
+          artifacts: .tmp/ortus_orm_${{ env.VERSION }}.lex
           replacesArtifacts: true
           tag: ${{ env.VERSION }}
-          name: Release ${{ env.VERSION }}
+          name: ${{ env.VERSION }}
           body: ${{ steps.tag_version.outputs.changelog }}
 
       - name: Upload Artifact to S3
@@ -112,12 +113,13 @@ jobs:
         with:
           token: ${{secrets.GH_TOKEN}}
 
-      - name: Get Project Version
-        id: current_version
-        # For Maven builds (future)
-        # run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
-        # For Ant builds (still the default)
-        run: echo "VERSION=`ant -silent -quiet version`" >> $GITHUB_ENV
+      - name: Download built version number
+        uses: actions/download-artifact@master
+        with:
+          name: extension-version
+
+      - name: Read version file
+        run: echo "VERSION=`cat version.txt" >> $GITHUB_ENV
 
       - name: Setup Java
         uses: actions/setup-java@v3.9.0
@@ -132,5 +134,5 @@ jobs:
 
       - run: |
           box package set version=${{ env.VERSION }}
-          box package set location="https://s3.amazonaws.com/downloads.ortussolutions.com/lucee/extensions/hibernate/${{ env.VERSION }}/hibernate_${{ env.VERSION }}.lex"
+          box package set location="https://s3.amazonaws.com/downloads.ortussolutions.com/lucee/extensions/hibernate/${{ env.VERSION }}/ortus_orm_${{ env.VERSION }}.lex"
           box publish

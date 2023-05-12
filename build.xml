@@ -131,7 +131,7 @@ lucee-core-version: "${luceeCoreVersion}"
     </copy>
 
     <!-- Zip everything  -->
-    <zip destfile="${dist}/hibernate-orm-${bundleversion}${build.number}${versionAppendix}.lex">
+    <zip destfile="${dist}/ortus_orm_${bundleversion}${build.number}${versionAppendix}.lex">
       <zipfileset dir="${dist}/extension"/>
     </zip>
 		
