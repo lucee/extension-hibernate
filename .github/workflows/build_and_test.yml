@@ -31,16 +31,16 @@ jobs:
         path: ~/.m2
         key: lucee-script-runner-maven-cache
 
-    - name: Build with Ant
-      run: ant -noinput -verbose -buildfile build.xml
-
-    # It's important this runs AFTER the ant build increments the build number
+    # It's important this runs BEFORE the ant build increments the build number
     - name: Read version
       id: current_version
       # For Maven builds (future)
       # run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
       # For Ant builds (still the default)
       run: echo "VERSION=`ant -silent -quiet version`" >> $GITHUB_ENV
+
+    - name: Build with Ant
+      run: ant -noinput -verbose -buildfile build.xml
 
     - name: Write out build version
       run: echo ${{ env.VERSION }} > version.txt
