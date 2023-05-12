@@ -33,17 +33,18 @@ jobs:
 
     # It's important this runs BEFORE the ant build increments the build number
     - name: Read version
-      id: current_version
       # For Maven builds (future)
       # run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
       # For Ant builds (still the default)
-      run: echo "VERSION=`ant -silent -quiet version`" >> $GITHUB_ENV
-
-    - name: Build with Ant
-      run: ant -noinput -verbose -buildfile build.xml
+      run: |
+        echo "VERSION=`ant -silent -quiet version`" >> $GITHUB_ENV
+        git checkout -- build.number
 
     - name: Write out build version
       run: echo ${{ env.VERSION }} > version.txt
+
+    - name: Build with Ant
+      run: ant -noinput -verbose -buildfile build.xml
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
