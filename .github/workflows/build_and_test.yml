@@ -11,6 +11,8 @@ jobs:
   build:
     name: Ant Build
     runs-on: ubuntu-latest
+    env:
+      luceeVersion: 6.0.0.316-SNAPSHOT
 
     if: "!contains(github.event.head_commit.message, '__CI__')"
 
