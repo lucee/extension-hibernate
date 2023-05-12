@@ -58,7 +58,7 @@ jobs:
           name: extension-version
 
       - name: Read version file
-        run: echo "VERSION=`cat version.txt" >> $GITHUB_ENV
+        run: echo "VERSION=`cat version.txt`" >> $GITHUB_ENV
 
       - name: Read the changelog
         id: changelog
@@ -119,7 +119,7 @@ jobs:
           name: extension-version
 
       - name: Read version file
-        run: echo "VERSION=`cat version.txt" >> $GITHUB_ENV
+        run: echo "VERSION=`cat version.txt`" >> $GITHUB_ENV
 
       - name: Setup Java
         uses: actions/setup-java@v3.9.0
