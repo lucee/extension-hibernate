@@ -82,7 +82,7 @@ jobs:
           replacesArtifacts: true
           tag: ${{ env.VERSION }}
           name: v${{ env.VERSION }}
-          body: ${{ steps.tag_version.outputs.changelog }}
+          body: ${{ steps.changelog.outputs.markdown }}
 
       - name: Upload Artifact to S3
         uses: jakejarvis/s3-sync-action@master
