@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.4.29.23] - 2023-05-15
+
 ### Fixed
 
 * ORMExecuteQuery ignores `"unique"` argument if `options` struct is passed
