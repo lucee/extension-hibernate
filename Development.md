@@ -63,3 +63,29 @@ To build a .lex and test it immediately, chain `ant dist` and `./test.sh`:
 ```bash
 ant dist && ./test.sh
 ```
+
+## Publishing a Release
+
+Releasing is *mostly* automated. You will need to, at a minimum:
+
+1. Merge all changes to `master`
+2. Add changelog notes to `CHANGELOG.md`
+3. Bump the build number
+4. Commit `build.number` and `CHANGELOG.md` changes
+5. Create a git tag with the new version number
+6. Push up the tag via `git push --tags`
+
+The `bump.sh` program automates the above steps. To use it, simply:
+
+1. Add changelog notes to `CHANGELOG.md`
+2. Run `bump.sh`
+
+Once the git tag is pushed, the `release` GitHub workflow will kick in and:
+
+1. compile and test the extension
+2. format all java source code
+3. create javadocs
+4. push up the built artifact to S3
+5. push up javadocs to S3
+6. publish the extension to Forgebox
+7. create a GitHub release with changelog release notes
