@@ -112,8 +112,8 @@ public class ORMExecuteQuery extends BIF {
         if (args.length == 3) return call(pc, cast.toString(args[0]), args[1], args[2]);
         if (args.length == 4) {
             Struct queryOptions = null;
-            if (args[1] != null){ queryOptions = cast.toStruct(args[1]); }
-            return call(pc, cast.toString(args[0]), args[1], cast.toBoolean(args[1],false), queryOptions);
+            if (args[3] != null){ queryOptions = cast.toStruct(args[3]); }
+            return call(pc, cast.toString(args[0]), args[1], cast.toBoolean(args[2],false), queryOptions);
         }
 
         throw engine.getExceptionUtil().createFunctionException(pc, "ORMExecuteQuery", 1, 4, args.length);
