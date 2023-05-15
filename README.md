@@ -6,6 +6,7 @@
 
 * Issues: https://ortussolutions.atlassian.net/jira/software/c/projects/LHE/issues
 * Documentation: https://docs.lucee.org/categories/orm.html
+* Javadocs: https://apidocs.ortussolutions.com/#/lucee/hibernate-extension/
 
 ## Installation
 
