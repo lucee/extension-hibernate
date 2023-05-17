@@ -73,14 +73,6 @@ jobs:
           name: ortus_orm_${{ env.VERSION }}.lex
           path: .tmp/
 
-      - name: Assemble Release Notes
-        run: |
-          echo ${{ steps.changelog.outputs.markdown }} >> release.md
-          echo '---' >> release.md
-          echo '' >> release.md
-          echo '- [View on Forgebox](https://forgebox.io/view/D062D72F-F8A2-46F0-8CBC91325B2F067B/version/${{ env.VERSION }}) 🔍' >> release.md
-          echo '- [Read the javadocs](https://s3.amazonaws.com/apidocs.ortussolutions.com/lucee/hibernate-extension/${{ env.VERSION }}/index.html) 📖' >> release.md
-
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
         with:
@@ -90,7 +82,7 @@ jobs:
           replacesArtifacts: true
           tag: ${{ env.VERSION }}
           name: v${{ env.VERSION }}
-          bodyFile: release.md
+          body: ${{ steps.changelog.outputs.markdown }}
 
       - name: Upload Artifact to S3
         uses: jakejarvis/s3-sync-action@master
