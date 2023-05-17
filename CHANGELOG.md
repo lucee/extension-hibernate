@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.4.29.24] - 2023-05-17
+
+### Security
+
+* Upgraded dom4j library from 1.6.1 to 2.1.4. This removes two potential vulnerabilities in dom4j's XML parsing capabilities.
+  * [See vulnerability info at mvnrepository.com](https://mvnrepository.com/artifact/dom4j/dom4j/1.6.1)
+
 ## [5.4.29.23] - 2023-05-15
 
 ### Fixed
