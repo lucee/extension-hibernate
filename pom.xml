@@ -142,7 +142,7 @@
                         com.ortussolutions.hibernate,com.ortussolutions.hibernate.jdbc
                      </Export-Package>
                      <Import-Package>net.sf.ehcache.hibernate</Import-Package>
-                     <Require-Bundle>org.lucee.hibernate;bundle-version=5.4.29.1,org.lucee.antlr;bundle-version=2.7.6,org.lucee.dom4j;bundle-version=1.6.1,org.lucee.javassist;bundle-version=3.9.0.GA,org.lucee.jta;bundle-version=1.1.0,slf4j.api;bundle-version=1.7.36,org.apache.commons.collections;bundle-version=3.2.1,org.lucee.xml.apis;bundle-version=1.4.1,com.fasterxml.classmate;bundle-version=1.5.1,net.bytebuddy.byte-buddy;bundle-version=1.10.21,org.lucee.hibernate-annotations;bundle-version=5.1.2.Final,javax.persistence-api;bundle-version=2.2,org.lucee.hibernate-ehcache;bundle-version=5.4.29.Final,org.lucee.ehcache;bundle-version=2.10.6,jakarta.xml.bind-api;bundle-version=2.3.3,org.glassfish.jaxb.runtime;bundle-version=2.3.4</Require-Bundle>
+                     <Require-Bundle>org.lucee.hibernate;bundle-version=5.4.29.1,org.lucee.antlr;bundle-version=2.7.6,org.lucee.javassist;bundle-version=3.9.0.GA,org.lucee.jta;bundle-version=1.1.0,slf4j.api;bundle-version=1.7.36,org.apache.commons.collections;bundle-version=3.2.1,org.lucee.xml.apis;bundle-version=1.4.1,com.fasterxml.classmate;bundle-version=1.5.1,net.bytebuddy.byte-buddy;bundle-version=1.10.21,org.lucee.hibernate-annotations;bundle-version=5.1.2.Final,javax.persistence-api;bundle-version=2.2,org.lucee.hibernate-ehcache;bundle-version=5.4.29.Final,org.lucee.ehcache;bundle-version=2.10.6,jakarta.xml.bind-api;bundle-version=2.3.3,org.glassfish.jaxb.runtime;bundle-version=2.3.4</Require-Bundle>
                      
                      <!-- 
                         See:
@@ -357,12 +357,12 @@ lucee-core-version: ${lucee.version}
             </exclusion>
          </exclusions> 
       </dependency>
-      <!-- w3c.dom - 1.1.0 -->
+
+      <!-- https://mvnrepository.com/artifact/org.apache.servicemix.bundles/org.apache.servicemix.bundles.dom4j -->
       <dependency>
-         <groupId>w3c</groupId>
-         <artifactId>dom</artifactId>
-         <type>jar</type>
-         <version>1.1.0</version>
+         <groupId>org.apache.servicemix.bundles</groupId>
+         <artifactId>org.apache.servicemix.bundles.dom4j</artifactId>
+         <version>2.1.4_1</version>
       </dependency>
 
       <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-osgi -->
@@ -389,9 +389,9 @@ lucee-core-version: ${lucee.version}
    </repositories>
 
    <scm>
-      <url>https://github.com/michaelborn/extension-hibernate</url>
-      <connection>scm:git:git://github.com/michaelborn/extension-hibernate.git</connection>
-      <developerConnection>scm:git:git@github.com:michaelborn/extension-hibernate.git</developerConnection>
+      <url>https://github.com/Ortus-Solutions/extension-hibernate</url>
+      <connection>scm:git:git://github.com/Ortus-Solutions/extension-hibernate.git</connection>
+      <developerConnection>scm:git:git@github.com:Ortus-Solutions/extension-hibernate.git</developerConnection>
       <tag>${project.version}</tag>
    </scm>
 

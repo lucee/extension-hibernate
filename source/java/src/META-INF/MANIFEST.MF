@@ -3,7 +3,6 @@ Export-Package: com.ortussolutions.hibernate,com.ortussolutions.hibernate.jdbc
 Import-Package: net.sf.ehcache.hibernate
 Require-Bundle: org.lucee.hibernate;bundle-version=5.4.29.1,
  org.lucee.antlr;bundle-version=2.7.6,
- org.lucee.dom4j;bundle-version=1.6.1,
  org.lucee.javassist;bundle-version=3.9.0.GA,
  org.lucee.jta;bundle-version=1.1.0,
  slf4j.api;bundle-version=1.7.36,

@@ -24,6 +24,8 @@
             <excludes>
                 <exclude>javax.servlet.jar</exclude>
                 <exclude>lucee.jar</exclude>
+                <exclude>org-apache-felix-main-*.jar</exclude>
+                <exclude>xml-apis-*.jar</exclude>
             </excludes>
         </fileSet>
     </fileSets>
