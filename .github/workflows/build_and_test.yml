@@ -84,7 +84,7 @@ jobs:
         testAdditional: ${{ github.workspace }}/tests
 
     - name: Publish Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v1
+      uses: EnricoMi/publish-unit-test-result-action@v2.7.0
       if: always()
       with:
         files: ${{ github.workspace }}/lucee/test/reports/junit-test-results-${{env.luceeVersion}}.xml
