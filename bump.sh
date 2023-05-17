@@ -23,4 +23,5 @@ git commit -m "🚀 RELEASE: $VERSION"
 
 # tag and push to trigger a build and forgebox publish
 git tag -a $VERSION -m "$VERSION"
+git push
 git push --tags
