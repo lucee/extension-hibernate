@@ -1,5 +1,5 @@
 component hint="logs out any orm events"  {
-	this.name = "global"; // used for logging out events
+	this.name = "EventHandler"; // used for logging out events
 
 	function init(){
 		return this;

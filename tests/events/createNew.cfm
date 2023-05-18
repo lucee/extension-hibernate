@@ -3,10 +3,11 @@
 	code = entityNew( 'Code' );
 	code.setId( 1 );
 	code.setCode( 'a' );
-	// should trigger preInsert, postInsert, and onFlush
+	// trigger preInsert and postInsert
 	entitySave( code );
-// should trigger onFlush event
+	// trigger onFlush
 	ormFlush();
+	// trigger onClear
     ormClearSession();
     result = {
 		events: [],
@@ -14,7 +15,7 @@
 	};
 
 	loop array=application.ormEventLog item="a" {
-		arrayAppend(result.events, a.eventName);
+		arrayAppend(result.events, "#a.src#.#a.eventName#");
 	};
 
 	loop array=application.ormEventErrorLog item="a" {

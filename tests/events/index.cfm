@@ -39,7 +39,7 @@
 	};
 
 	loop array=application.ormEventLog item="a" {
-		arrayAppend(result.events, a.eventName);
+		arrayAppend(result.events, "#a.src#.#a.eventName#");
 	};
 
 	loop array=application.ormEventErrorLog item="a" {

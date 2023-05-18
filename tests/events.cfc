@@ -31,7 +31,27 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				systemOutput("ERROR: " & err.error, true, true);
 			}
 		}
-		local.expectedEvents =  [ "onFlush", "preLoad", "postLoad", "preLoad", "postLoad", "onDelete", "onFlush", "preInsert", "postInsert", "preUpdate", "postUpdate", "preDelete", "postDelete", "onClear" ];
+		local.expectedEvents =  [
+			"EventHandler.onFlush",
+			"EventHandler.preLoad", "Code.preLoad",
+			"EventHandler.postLoad", "Code.postLoad",
+			"EventHandler.preLoad", "Code.preLoad",
+			"EventHandler.postLoad", "Code.postLoad",
+			"EventHandler.onDelete",
+			"EventHandler.onFlush",
+			"EventHandler.preInsert", "Code.preInsert",
+			"EventHandler.postInsert", "Code.postInsert",
+			"EventHandler.preUpdate", "Code.preUpdate",
+			"EventHandler.postUpdate", "Code.postUpdate",
+			"EventHandler.preDelete", "Code.preDelete",
+			"EventHandler.postDelete", "Code.postDelete",
+			"EventHandler.onClear"
+		];
+		// much easier to debug a missing event type
+		for( var event in local.expectedEvents ){
+			expect( res.events ).toInclude( event );
+		}
+		// ensure events are emitted in correct order
 		expect( res.events ).toBe( expectedEvents );
 		expect( res.errors.len() ).toBe( 0, "errors" );
 	}
@@ -48,8 +68,18 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				systemOutput("ERROR: " & err.error, true, true);
 			}
 		}
-		local.expectedEvents =  [ "onFlush", "preInsert", "postInsert", "onClear" ];
-		expect( res.events ).toBe( expectedEvents ); 
+		local.expectedEvents =  [
+			"EventHandler.onFlush",
+			"EventHandler.preInsert", "Code.preInsert",
+			"EventHandler.postInsert", "Code.postInsert",
+			"EventHandler.onClear"
+		];
+		// much easier to debug a missing event type
+		for( var event in local.expectedEvents ){
+			expect( res.events ).toInclude( event );
+		}
+		// ensure events are emitted in correct order
+		expect( res.events ).toBe( expectedEvents );
 		expect( res.errors.len() ).toBe( 0, "errors" );
 	}
 
@@ -65,8 +95,19 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				systemOutput("ERROR: " & err.error, true, true);
 			}
 		}		
-		local.expectedEvents =  [ "onFlush", "preInsert", "postInsert", "onClear", "preLoad", "postLoad" ];
-		expect( res.events ).toBe( expectedEvents ); 
+		local.expectedEvents =  [
+			"EventHandler.onFlush",
+			"EventHandler.preInsert", "Code.preInsert",
+			"EventHandler.postInsert", "Code.postInsert",
+			"EventHandler.onClear",
+			"EventHandler.preLoad", "Code.preLoad",
+			"EventHandler.postLoad", "Code.postLoad"
+		];
+		// much easier to debug a missing event type
+		for( var event in local.expectedEvents ){
+			expect( res.events ).toInclude( event );
+		}
+		// ensure events are emitted in correct order
 		expect( res.errors.len() ).toBe( 0, "errors" );
 	}
 
