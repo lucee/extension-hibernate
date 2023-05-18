@@ -187,13 +187,13 @@
                   </goals>
                   <configuration>
                      <message>
-                        name: ${name}
-                        id: ${id}
-                        description: ${description}
-                        version: ${project.version}
-                        orm:
-                        [{'class':'${class}','name':'${project.artifactId}','version':'${project.version}'}]
-                        lucee-core-version: ${lucee.version}
+name: ${name}
+id: ${id}
+description: ${description}
+version: ${project.version}
+orm:
+[{'class':'${class}','name':'${project.artifactId}','version':'${project.version}'}]
+lucee-core-version: ${lucee.version}
                      </message>
                      <!-- warning: this plugin appears to wrongly interpolate properties,
                      so ${project.build.directory} ends up creating the full /home/user/path INSIDE this current
