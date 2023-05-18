@@ -353,11 +353,11 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
      *
      * @return true if method found
      */
-    public static boolean componentHasMethod(Component comp, Collection.Key methodName) {
+    private boolean componentHasMethod(Component comp, Collection.Key methodName) {
         return comp.get(methodName, null) instanceof UDF;
     }
 
-    private static void _fireOnComponent(Component cfc, Key name, Object... args) {
+    private void _fireOnComponent(Component cfc, Key name, Object... args) {
         if (!componentHasMethod(cfc, name)) {
             return;
         }
@@ -393,7 +393,7 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
      *
      * @return A struct
      */
-    private static Struct entityStateToStruct(String[] properties, Object[] values) {
+    private Struct entityStateToStruct(String[] properties, Object[] values) {
         Struct entityState = CommonUtil.createStruct();
 
         if (values != null && properties != null && values.length == properties.length) {
