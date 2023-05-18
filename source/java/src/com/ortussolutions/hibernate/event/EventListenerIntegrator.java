@@ -70,7 +70,26 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
      * The EventHandler CFC defined in the application's `this.ormSettings.eventHandler`.
      */
     private Component GlobalEventListener;
+
+    /**
+     * All entities with potential event listener methods.
+     */
     private Map<String, Component> eventListeners = new ConcurrentHashMap<>();
+
+	public static final Key ON_EVICT = CommonUtil.createKey("onEvict");
+	public static final Key ON_DIRTY_CHECK = CommonUtil.createKey("onDirtyCheck");
+	public static final Key ON_DELETE = CommonUtil.createKey("onDelete");
+	public static final Key ON_CLEAR = CommonUtil.createKey("onClear");
+	public static final Key ON_AUTO_FLUSH = CommonUtil.createKey("onAutoFlush");
+	public static final Key ON_FLUSH = CommonUtil.createKey("onFlush");
+	public static final Key PRE_INSERT = CommonUtil.createKey("preInsert");
+	public static final Key PRE_UPDATE = CommonUtil.createKey("preUpdate");
+	public static final Key POST_LOAD = CommonUtil.createKey("postLoad");
+	public static final Key PRE_LOAD = CommonUtil.createKey("preLoad");
+	public static final Key POST_DELETE = CommonUtil.createKey("postDelete");
+	public static final Key PRE_DELETE = CommonUtil.createKey("preDelete");
+	public static final Key POST_UPDATE = CommonUtil.createKey("postUpdate");
+    public static final Key POST_INSERT = CommonUtil.createKey("postInsert");
 
     @Override
     public void integrate(Metadata metadata, SessionFactoryImplementor sessionFactory,
@@ -136,12 +155,12 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
     @Override
     public boolean onPreInsert(PreInsertEvent event) {
         Struct state = entityStateToStruct(event.getPersister().getPropertyNames(), event.getState());
-        fireEventOnGlobalListener(CommonUtil.PRE_INSERT, event.getEntity(), event, state);
+        fireEventOnGlobalListener(EventListenerIntegrator.PRE_INSERT, event.getEntity(), event, state);
 
         // fire on entity
         Component listener = getEventListener(event.getEntity());
         if (listener != null) {
-            fireEventOnEntityListener(listener, CommonUtil.PRE_INSERT, event, state);
+            fireEventOnEntityListener(listener, EventListenerIntegrator.PRE_INSERT, event, state);
         }
 
         return false;
@@ -149,23 +168,23 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 
     @Override
     public void onPostInsert(PostInsertEvent event) {
-        fireEventOnGlobalListener(CommonUtil.POST_INSERT, event.getEntity(), event, null);
+        fireEventOnGlobalListener(EventListenerIntegrator.POST_INSERT, event.getEntity(), event, null);
 
         // fire on entity
         Component listener = getEventListener(event.getEntity());
         if (listener != null) {
-            fireEventOnEntityListener(listener, CommonUtil.POST_INSERT, event, null);
+            fireEventOnEntityListener(listener, EventListenerIntegrator.POST_INSERT, event, null);
         }
     }
 
     // PreDeleteEventListener
     @Override
     public boolean onPreDelete(PreDeleteEvent event) {
-        fireEventOnGlobalListener(CommonUtil.PRE_DELETE, event.getEntity(), event, null);
+        fireEventOnGlobalListener(EventListenerIntegrator.PRE_DELETE, event.getEntity(), event, null);
 
         Component listener = getEventListener(event.getEntity());
         if (listener != null) {
-            fireEventOnEntityListener(listener, CommonUtil.PRE_DELETE, event, null);
+            fireEventOnEntityListener(listener, EventListenerIntegrator.PRE_DELETE, event, null);
         }
         return false;
     }
@@ -173,11 +192,11 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
     // PostDeleteEventListener
     @Override
     public void onPostDelete(PostDeleteEvent event) {
-        fireEventOnGlobalListener(CommonUtil.POST_DELETE, event.getEntity(), event, null);
+        fireEventOnGlobalListener(EventListenerIntegrator.POST_DELETE, event.getEntity(), event, null);
 
         Component listener = getEventListener(event.getEntity());
         if (listener != null) {
-            fireEventOnEntityListener(listener, CommonUtil.POST_DELETE, event, null);
+            fireEventOnEntityListener(listener, EventListenerIntegrator.POST_DELETE, event, null);
         }
     }
 
@@ -185,11 +204,11 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
     @Override
     public boolean onPreUpdate(PreUpdateEvent event) {
         Struct oldState = entityStateToStruct(event.getPersister().getPropertyNames(), event.getOldState());
-        fireEventOnGlobalListener(CommonUtil.PRE_UPDATE, event.getEntity(), event, oldState);
+        fireEventOnGlobalListener(EventListenerIntegrator.PRE_UPDATE, event.getEntity(), event, oldState);
 
         Component listener = getEventListener(event.getEntity());
         if (listener != null) {
-            fireEventOnEntityListener(listener, CommonUtil.PRE_UPDATE, event, oldState);
+            fireEventOnEntityListener(listener, EventListenerIntegrator.PRE_UPDATE, event, oldState);
         }
         return false;
     }
@@ -197,33 +216,33 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
     // PostUpdateEventListener
     @Override
     public void onPostUpdate(PostUpdateEvent event) {
-        fireEventOnGlobalListener(CommonUtil.POST_UPDATE, event.getEntity(), event, null);
+        fireEventOnGlobalListener(EventListenerIntegrator.POST_UPDATE, event.getEntity(), event, null);
 
         Component listener = getEventListener(event.getEntity());
         if (listener != null) {
-            fireEventOnEntityListener(listener, CommonUtil.POST_UPDATE, event, null);
+            fireEventOnEntityListener(listener, EventListenerIntegrator.POST_UPDATE, event, null);
         }
     }
 
     // PreLoadEventListener
     @Override
     public void onPreLoad(PreLoadEvent event) {
-        fireEventOnGlobalListener(CommonUtil.PRE_LOAD, event.getEntity(), event, null);
+        fireEventOnGlobalListener(EventListenerIntegrator.PRE_LOAD, event.getEntity(), event, null);
 
         Component listener = getEventListener(event.getEntity());
         if (listener != null) {
-            fireEventOnEntityListener(listener, CommonUtil.PRE_LOAD, event, null);
+            fireEventOnEntityListener(listener, EventListenerIntegrator.PRE_LOAD, event, null);
         }
     }
 
     // PostLoadEventListener
     @Override
     public void onPostLoad(PostLoadEvent event) {
-        fireEventOnGlobalListener(CommonUtil.POST_LOAD, event.getEntity(), event, null);
+        fireEventOnGlobalListener(EventListenerIntegrator.POST_LOAD, event.getEntity(), event, null);
 
         Component listener = getEventListener(event.getEntity());
         if (listener != null) {
-            fireEventOnEntityListener(listener, CommonUtil.POST_LOAD, event, null);
+            fireEventOnEntityListener(listener, EventListenerIntegrator.POST_LOAD, event, null);
         }
     }
 
@@ -231,48 +250,48 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
     public void onFlush(FlushEvent event) throws HibernateException {
         // Sadly, the FlushEvent does not allow / provide a method to retrieve the entity.
         Object entity = null;
-        fireEventOnGlobalListener(CommonUtil.ON_FLUSH, entity, event, null);
+        fireEventOnGlobalListener(EventListenerIntegrator.ON_FLUSH, entity, event, null);
     }
 
     @Override
     public void onAutoFlush(AutoFlushEvent event) throws HibernateException {
         // Sadly, the AutoFlushEvent does not allow / provide a method to retrieve the entity.
         Object entity = null;
-        fireEventOnGlobalListener(CommonUtil.ON_AUTO_FLUSH, entity, event, null);
+        fireEventOnGlobalListener(EventListenerIntegrator.ON_AUTO_FLUSH, entity, event, null);
     }
 
     @Override
     public void onClear(ClearEvent event) {
         // Sadly, the ClearEvent does not allow / provide a method to retrieve the entity.
         Object entity = null;
-        fireEventOnGlobalListener(CommonUtil.ON_CLEAR, entity, event, null);
+        fireEventOnGlobalListener(EventListenerIntegrator.ON_CLEAR, entity, event, null);
     }
 
     @Override
     public void onDelete(DeleteEvent event) throws HibernateException {
         Object entity = event.getObject();
-        fireEventOnGlobalListener(CommonUtil.ON_DELETE, entity, event, null);
+        fireEventOnGlobalListener(EventListenerIntegrator.ON_DELETE, entity, event, null);
     }
 
     @Override
     public void onDelete(DeleteEvent event, Set transientEntities) throws HibernateException {
         Object entity = event.getObject();
         // TODO: handle transientEntities
-        fireEventOnGlobalListener(CommonUtil.ON_DELETE, entity, event, null);
+        fireEventOnGlobalListener(EventListenerIntegrator.ON_DELETE, entity, event, null);
     }
 
     @Override
     public void onDirtyCheck(DirtyCheckEvent event) throws HibernateException {
         // Sadly, the DirtyCheckEvent does not allow / provide a method to retrieve the entity.
         Object entity = null;
-        fireEventOnGlobalListener(CommonUtil.ON_DIRTY_CHECK, entity, event, null);
+        fireEventOnGlobalListener(EventListenerIntegrator.ON_DIRTY_CHECK, entity, event, null);
     }
 
     @Override
     public void onEvict(EvictEvent event) throws HibernateException {
         // Sadly, the EvictEvent does not allow / provide a method to retrieve the entity.
         Object entity = null;
-        fireEventOnGlobalListener(CommonUtil.ON_EVICT, entity, event, null);
+        fireEventOnGlobalListener(EventListenerIntegrator.ON_EVICT, entity, event, null);
     }
 
     /**

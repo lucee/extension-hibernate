@@ -248,6 +248,7 @@ public class HibernateORMEngine implements ORMEngine {
             return;
         String eventHandlerPath = data.getORMConfiguration().eventHandler();
 
+        // TODO: Load global event handler once for application lifetime, don't load once per entity
         EventListenerIntegrator integrator = data.getEventListenerIntegrator();
         if (eventHandlerPath != null && !eventHandlerPath.trim().isEmpty()) {
             Component eventHandler = pc.loadComponent(eventHandlerPath.trim());

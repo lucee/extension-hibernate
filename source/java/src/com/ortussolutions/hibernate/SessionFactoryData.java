@@ -56,11 +56,15 @@ public class SessionFactoryData {
     private Struct tableInfo = CommonUtil.createStruct();
     private String cfcNamingStrategy;
 
-    private EventListenerIntegrator eventListenerIntegrator = new EventListenerIntegrator();
+    /**
+     * Assists in "integrating" Hibernate events with the CFML EventHandler and entity CFCs
+     */
+    private EventListenerIntegrator eventListenerIntegrator;
 
     public SessionFactoryData(HibernateORMEngine engine, ORMConfiguration ormConf) {
         this.engine = engine;
         this.ormConf = ormConf;
+        this.eventListenerIntegrator = new EventListenerIntegrator();
     }
 
     public ORMConfiguration getORMConfiguration() {
