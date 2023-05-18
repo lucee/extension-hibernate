@@ -1,11 +1,11 @@
 {
     "name":"Ortus ORM Extension",
-    "version":"5.4.29",
+    "version":"5.4.29.25",
     "location":"https://downloads.ortussolutions.com/lucee/extensions/hibernate/",
     "type":"lucee-extensions",
     "slug":"D062D72F-F8A2-46F0-8CBC91325B2F067B",
-    "shortDescription":"Hibernate ORM wrapper for CFML",
-    "description":"This extension provides a CFML interface to the popular Hibernate ORM library",
+    "shortDescription":"Lucee extension providing a Hibernate ORM wrapper for CFML",
+    "description":"The Ortus ORM extension is a Lucee extension which integrates the popular Hibernate ORM library into the Lucee CFML server.",
     "author":"Ortus Solutions",
     "homepage":"https://github.com/ortus-solutions/extension-hibernate",
     "documentation":"https://github.com/ortus-solutions/extension-hibernate/blob/master/README.md",
@@ -16,5 +16,10 @@
     "repository":{
         "type":"git",
         "URL":"https://github.com/ortus-solutions/extension-hibernate"
-    }
+    },
+    "keywords": [
+        "hibernate",
+        "orm",
+        "extension"
+    ]
 }
