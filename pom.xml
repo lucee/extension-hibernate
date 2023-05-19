@@ -16,14 +16,11 @@
       <name>Hibernate ORM Engine</name>
       <bundlename>hibernate-extension</bundlename>
       <id>D062D72F-F8A2-46F0-8CBC91325B2F067B</id>
-      <description>Hibernate ORM (Hibernate in short) is an object-relational mapping library for
-         the Java language, providing a framework for mapping an object-oriented domain model to a
-         traditional relational database. Hibernate solves object-relational impedance mismatch
-         problems by replacing direct persistence-related database accesses with high-level object
-         handling functions.</description>
+      <description>Hibernate ORM (Hibernate in short) is an object-relational mapping library for the Java language, providing a framework for mapping an object-oriented domain model to a traditional relational database. Hibernate solves object-relational impedance mismatch problems by replacing direct persistence-related database accesses with high-level object handling functions.</description>
       <class>com.ortussolutions.hibernate.HibernateORMEngine</class>
 
       <!-- Dependency versions -->
+      <minLuceeVersion>5.3.9.73</minLuceeVersion>
       <lucee.version>5.3.10.97</lucee.version>
       <hibernate.version>5.4.29.Final</hibernate.version>
 
@@ -191,9 +188,8 @@ name: ${name}
 id: ${id}
 description: ${description}
 version: ${project.version}
-orm:
-[{'class':'${class}','name':'${project.artifactId}','version':'${project.version}'}]
-lucee-core-version: ${lucee.version}
+orm: [{'class':'${class}','name':'${project.artifactId}','version':'${project.version}'}]
+lucee-core-version: ${minLuceeVersion}
                      </message>
                      <!-- warning: this plugin appears to wrongly interpolate properties,
                      so ${project.build.directory} ends up creating the full /home/user/path INSIDE this current
