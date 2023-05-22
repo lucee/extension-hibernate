@@ -231,7 +231,6 @@ public class HibernateORMEngine implements ORMEngine {
             /*
              * finally { CommonUtil.releaseDatasourceConnection(pc, dc); }
              */
-            addEventListeners(pc, data, e.getKey());
 
             EntityTuplizerFactory tuplizerFactory = data.getConfiguration(e.getKey()).config.getEntityTuplizerFactory();
             tuplizerFactory.registerDefaultTuplizerClass(EntityMode.MAP, AbstractEntityTuplizerImpl.class);
@@ -239,28 +238,22 @@ public class HibernateORMEngine implements ORMEngine {
 
             data.buildSessionFactory(e.getKey());
         }
+        configureEventHandler(pc, data);
 
         return data;
     }
 
-    private static void addEventListeners(PageContext pc, SessionFactoryData data, Key key) throws PageException {
+    private static void configureEventHandler(PageContext pc, SessionFactoryData data) throws PageException {
         if (!data.getORMConfiguration().eventHandling())
             return;
         String eventHandlerPath = data.getORMConfiguration().eventHandler();
 
-        // TODO: Load global event handler once for application lifetime, don't load once per entity
         EventListenerIntegrator integrator = data.getEventListenerIntegrator();
         if (eventHandlerPath != null && !eventHandlerPath.trim().isEmpty()) {
             Component eventHandler = pc.loadComponent(eventHandlerPath.trim());
             if (eventHandler != null) {
                 integrator.setGlobalEventListener(eventHandler);
             }
-        }
-
-        Iterator<CFCInfo> it = data.getCFCs(key).values().iterator();
-        while (it.hasNext()) {
-            CFCInfo info = it.next();
-            integrator.appendEventListenerCFC(info.getCFC());
         }
     }
 
