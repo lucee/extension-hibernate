@@ -72,6 +72,10 @@ jobs:
       - name: Read version
         run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
 
+      - name: Make it a Snapshot Build
+        if: env.SNAPSHOT != 'false'
+        run: echo "VERSION=${env.VERSION}-snapshot" >> $GITHUB_ENV
+
       - name: Download Artifact
         uses: actions/download-artifact@master
         with:
@@ -157,6 +161,10 @@ jobs:
 
       - name: Read version
         run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
+
+      - name: Make it a Snapshot Build
+        if: env.SNAPSHOT != 'false'
+        run: echo "VERSION=${env.VERSION}-snapshot" >> $GITHUB_ENV
 
       - name: Setup Java
         uses: actions/setup-java@v3.9.0
