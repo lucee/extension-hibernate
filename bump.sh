@@ -24,5 +24,6 @@ box package set version=$NEW_VERSION
 echo "Committing version update..."
 git add pom.xml box.json
 git commit -m "🚀 RELEASE: $NEW_VERSION"
+git push
 
 echo "🚀🚀🚀 Done! Your release is now building on github."
