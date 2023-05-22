@@ -24,7 +24,7 @@ jobs:
 
   javadocs:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '__CI__')" && env.SNAPSHOT == 'false'
+    if: "!contains(github.event.head_commit.message, '__CI__') && env.SNAPSHOT == 'false'"
     steps:
       - uses: actions/checkout@v3
 
