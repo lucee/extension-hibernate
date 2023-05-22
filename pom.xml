@@ -244,7 +244,7 @@ lucee-core-version: ${minLuceeVersion}
                   </goals>
                   <configuration>
                      <sourceFile>${project.build.directory}/${project.build.finalName}-lex.zip</sourceFile>
-                     <destinationFile>${project.build.directory}/${project.build.finalName}.lex</destinationFile>
+                     <destinationFile>${project.build.directory}/ortus_orm_${project.version}.lex</destinationFile>
                   </configuration>
                </execution>
             </executions>
