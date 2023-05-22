@@ -8,7 +8,6 @@ on:
 jobs:
   release:
     uses: ./.github/workflows/release.yml
-    needs: [ build_and_test ]
     secrets: inherit
     with:
       snapshot: true
