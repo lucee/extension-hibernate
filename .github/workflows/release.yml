@@ -37,13 +37,12 @@ jobs:
       - name: Generate Javadocs
         run: mvn --batch-mode -f pom.xml javadoc:javadoc
 
-      - name: Download built version number
-        uses: actions/download-artifact@master
-        with:
-          name: extension-version
-
       - name: Read version
         run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
+
+      - name: Make it a Snapshot Build
+        if: env.SNAPSHOT != 'false'
+        run: echo "VERSION=${env.VERSION}-snapshot" >> $GITHUB_ENV
 
       - name: Upload API Docs to S3
         uses: jakejarvis/s3-sync-action@master
