@@ -24,7 +24,7 @@ jobs:
 
   javadocs:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '__CI__') && env.SNAPSHOT == 'false'"
+    if: "!contains(github.event.head_commit.message, '__CI__')"
     steps:
       - uses: actions/checkout@v3
 
@@ -42,6 +42,7 @@ jobs:
 
       - name: Upload API Docs to S3
         uses: jakejarvis/s3-sync-action@master
+        if: env.SNAPSHOT == 'false'
         with:
           args: --acl public-read
         env:
