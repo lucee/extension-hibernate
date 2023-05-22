@@ -2,6 +2,11 @@
 name: Publish a Release
 
 on:
+  # If you push to master|main this will trigger a stable release
+  push:
+    branches:
+      - master
+      - main
   workflow_dispatch:
   # Reusable workflow : Usually called by a `snapshot` workflow
   workflow_call:
@@ -11,9 +16,6 @@ on:
           required: false
           default: false
           type: boolean
-  push:
-    tags:
-      - v[0-9]+.*
 
 env:
   SNAPSHOT: ${{ inputs.snapshot || false }}
