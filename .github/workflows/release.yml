@@ -146,11 +146,6 @@ jobs:
         with:
           token: ${{secrets.GH_TOKEN}}
 
-      - name: Download built version number
-        uses: actions/download-artifact@master
-        with:
-          name: extension-version
-
       - name: Read version
         run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
 
