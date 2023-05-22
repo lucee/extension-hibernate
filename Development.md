@@ -62,19 +62,16 @@ mvn clean package && ./test.sh
 
 Releasing is *mostly* automated. You will need to, at a minimum:
 
-1. Merge all changes to `master`
-2. Add changelog notes to `CHANGELOG.md`
-3. Bump the build number
-4. Commit `build.number` and `CHANGELOG.md` changes
-5. Create a git tag with the new version number
-6. Push up the tag via `git push --tags`
+1. Update `CHANGELOG.md` with release notes in the `## [Unreleased]` section.
+2. Enter a version number and manually run `bump.sh`.
 
-The `bump.sh` program automates the above steps. To use it, simply:
+To push a new version, run `bump.sh 1.2.3.4` where `1.2.3.4` is the version you wish to release:
 
-1. Add changelog notes to `CHANGELOG.md`
-2. Run `bump.sh 1.2.3.4` where `1.2.3.4` is the version you wish to release.
+```sh
+./bump.sh 5.4.29.25
+```
 
-Once the git tag is pushed, the `release` GitHub workflow will kick in and:
+Once this script pushes to `master`, the `release` GitHub workflow will kick in and:
 
 1. compile and test the extension
 2. format all java source code
@@ -82,4 +79,5 @@ Once the git tag is pushed, the `release` GitHub workflow will kick in and:
 4. push up the built artifact to S3
 5. push up javadocs to S3
 6. publish the extension to Forgebox
-7. create a GitHub release with changelog release notes
+7. create a git tag
+8. create a GitHub release with changelog release notes
