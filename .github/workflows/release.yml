@@ -74,7 +74,9 @@ jobs:
           name: ortus_orm_${{ env.VERSION }}.lex
           path: target/*.lex
 
-      - run: cp target/*.lex .tmp/
+      - run: |
+            mkdir .tmp/
+            mv target/*.lex .tmp/
 
       - name: Commit Changelog To Master
         uses: EndBug/add-and-commit@v9.1.1
