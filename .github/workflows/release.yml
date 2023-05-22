@@ -31,8 +31,8 @@ jobs:
         with:
           name: extension-version
 
-      - name: Read version file
-        run: echo "VERSION=`cat version.txt`" >> $GITHUB_ENV
+      - name: Read version
+        run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
 
       - name: Upload API Docs to S3
         uses: jakejarvis/s3-sync-action@master
@@ -58,8 +58,8 @@ jobs:
         with:
           name: extension-version
 
-      - name: Read version file
-        run: echo "VERSION=`cat version.txt`" >> $GITHUB_ENV
+      - name: Read version
+        run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
 
       - name: Read the changelog
         id: changelog
@@ -119,8 +119,8 @@ jobs:
         with:
           name: extension-version
 
-      - name: Read version file
-        run: echo "VERSION=`cat version.txt`" >> $GITHUB_ENV
+      - name: Read version
+        run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
 
       - name: Setup Java
         uses: actions/setup-java@v3.9.0

@@ -5,13 +5,13 @@ You will need to install the following for extension development:
 * Java 1.8+ (JRE and JDK)
 * [ant](https://www.osradar.com/install-apache-ant-ubuntu-20-04/) (for building the extension `.lex` file)
 * [maven](https://linuxize.com/post/how-to-install-apache-maven-on-ubuntu-20-04/) (for other automated tooling)
-* [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/) (for managing test database servers)
+* Optional: [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/) (for managing test database servers)
 
 ## Getting Started
 
 1. Install the repo - `git clone git@github.com:ortus-solutions/extension-hibernate.git`
 2. Make changes..
-3. [Build extension via `ant dist`](#building)
+3. [Build extension via `mvn package`](#building)
 4. Test via `./test.sh` (See [#Testing](#testing) for more info)
 
 **Before you send a PR:**
@@ -22,14 +22,8 @@ You will need to install the following for extension development:
 
 ## Building
 
-Using ant builds (for now):
-
-* `ant clean` - clean build directories
-* `ant compile` - compile code
-* `ant dist` - Package the extension into a Lucee-installable `.lex` extension file
-
-Using the Maven builds:
-
+* `mvn clean` clean build directories
+* `mvn package` Package the extension into a Lucee-installable `.lex` extension file
 * `mvn test` run java-based (junit) tests
 * `mvn javadoc:javadoc` generate java docs
 * `mvn formatter:format` [format java source](https://code.revelc.net/formatter-maven-plugin/usage.html)
@@ -58,10 +52,10 @@ Finally, you can run tests from the extension root:
 ./test.sh
 ```
 
-To build a .lex and test it immediately, chain `ant dist` and `./test.sh`:
+To build a .lex and test it immediately, chain `mvn clean package` and `./test.sh`:
 
 ```bash
-ant dist && ./test.sh
+mvn clean package && ./test.sh
 ```
 
 ## Publishing a Release
@@ -78,7 +72,7 @@ Releasing is *mostly* automated. You will need to, at a minimum:
 The `bump.sh` program automates the above steps. To use it, simply:
 
 1. Add changelog notes to `CHANGELOG.md`
-2. Run `bump.sh`
+2. Run `bump.sh 1.2.3.4` where `1.2.3.4` is the version you wish to release.
 
 Once the git tag is pushed, the `release` GitHub workflow will kick in and:
 

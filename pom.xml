@@ -1,16 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
 
-   <groupId>org.lucee</groupId>
+   <groupId>com.ortussolutions</groupId>
    <artifactId>hibernate.extension</artifactId>
-   <!-- look into the maven release plugin to automate bumping the version.-->
-   <version>5.4.29.75-BETA</version>
+   <version>5.4.29.25</version>
    <packaging>bundle</packaging>
 
-   <name>Ortus Hibernate Extension</name>
+   <name>Ortus ORM Extension</name>
    <description>Lucee Extension for Hibernate ORM Engine.</description>
-   <url>http://maven.lucee.org/extension/hibernate</url>
+   <url>https://forgebox.io/view/D062D72F-F8A2-46F0-8CBC91325B2F067B</url>
 
    <properties>
       <name>Hibernate ORM Engine</name>
@@ -20,6 +20,7 @@
       <class>com.ortussolutions.hibernate.HibernateORMEngine</class>
 
       <!-- Dependency versions -->
+      <minLuceeVersion>5.3.9.73</minLuceeVersion>
       <lucee.version>5.3.10.97</lucee.version>
       <hibernate.version>5.4.29.Final</hibernate.version>
 
@@ -51,12 +52,25 @@
          </roles>
          <timezone>+1</timezone>
       </developer>
+      <developer>
+         <id>michaelborn</id>
+         <name>Michael Born</name>
+         <email>michael@ortussolutions.com</email>
+         <organization>Ortus Solutions, Corp.</organization>
+         <organizationUrl>https://www.ortussolutions.com/</organizationUrl>
+         <roles>
+            <role>Project-Administrator</role>
+            <role>Developer</role>
+         </roles>
+         <timezone>-4</timezone>
+      </developer>
    </developers>
 
    <build>
       <plugins>
 
-         <!-- https://www.baeldung.com/maven-add-src-directories#add-source-directory-with-build-helper-maven-plugin -->
+         <!--
+         https://www.baeldung.com/maven-add-src-directories#add-source-directory-with-build-helper-maven-plugin -->
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>build-helper-maven-plugin</artifactId>
@@ -66,7 +80,7 @@
                   <id>add-source</id>
                   <phase>generate-sources</phase>
                   <goals>
-                        <goal>add-source</goal>
+                     <goal>add-source</goal>
                   </goals>
                   <configuration>
                      <sources>
@@ -76,31 +90,6 @@
                </execution>
             </executions>
          </plugin>
-         <!-- publish to central maven
-        <plugin>
-          <groupId>org.sonatype.plugins</groupId>
-          <artifactId>nexus-staging-maven-plugin</artifactId>
-          <version>1.6.3</version>
-          <extensions>true</extensions>
-          <configuration>
-            <serverId>ossrh</serverId>
-            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-          </configuration>
-        </plugin> -->
-
-         <!-- 
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>2.5</version>
-          <configuration>
-            <autoVersionSubmodules>true</autoVersionSubmodules>
-            <useReleaseProfile>false</useReleaseProfile>
-            <releaseProfiles>release</releaseProfiles>
-            <goals>deploy</goals>
-          </configuration>
-        </plugin> -->
 
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -129,36 +118,38 @@
          </plugin>
 
          <plugin>
-               <groupId>org.apache.felix</groupId>
-               <artifactId>maven-bundle-plugin</artifactId>
-               <version>5.1.8</version>
-               <extensions>true</extensions>
-               <configuration>
-                  <instructions>
-                     <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                     <Bundle-Name>${project.artifactId}</Bundle-Name>
-                     <Private-Package>com.ortussolutions.hibernate</Private-Package>
-                     <Export-Package>
-                        com.ortussolutions.hibernate,com.ortussolutions.hibernate.jdbc
-                     </Export-Package>
-                     <Import-Package>net.sf.ehcache.hibernate</Import-Package>
-                     <Require-Bundle>org.lucee.hibernate;bundle-version=5.4.29.1,org.lucee.antlr;bundle-version=2.7.6,org.lucee.javassist;bundle-version=3.9.0.GA,org.lucee.jta;bundle-version=1.1.0,slf4j.api;bundle-version=1.7.36,org.apache.commons.collections;bundle-version=3.2.1,org.lucee.xml.apis;bundle-version=1.4.1,com.fasterxml.classmate;bundle-version=1.5.1,net.bytebuddy.byte-buddy;bundle-version=1.10.21,org.lucee.hibernate-annotations;bundle-version=5.1.2.Final,javax.persistence-api;bundle-version=2.2,org.lucee.hibernate-ehcache;bundle-version=5.4.29.Final,org.lucee.ehcache;bundle-version=2.10.6,jakarta.xml.bind-api;bundle-version=2.3.3,org.glassfish.jaxb.runtime;bundle-version=2.3.4</Require-Bundle>
-                     
-                     <!-- 
+            <groupId>org.apache.felix</groupId>
+            <artifactId>maven-bundle-plugin</artifactId>
+            <version>5.1.8</version>
+            <extensions>true</extensions>
+            <configuration>
+               <instructions>
+                  <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                  <Bundle-Name>${project.artifactId}</Bundle-Name>
+                  <Private-Package>com.ortussolutions.hibernate</Private-Package>
+                  <!-- <Export-Package>
+                        com.ortussolutions.hibernate,com.ortussolutions.hibernate.jdbc,com.ortussolutions.hibernate.util
+                     </Export-Package> -->
+                  <Import-Package>net.sf.ehcache.hibernate;,!lucee.*;,!org.osgi.framework;,*</Import-Package>
+                  <Require-Bundle>
+                     org.lucee.hibernate;bundle-version=5.4.29.1,org.lucee.antlr;bundle-version=2.7.6,org.lucee.javassist;bundle-version=3.9.0.GA,org.lucee.jta;bundle-version=1.1.0,slf4j.api;bundle-version=1.7.36,org.apache.commons.collections;bundle-version=3.2.1,org.lucee.xml.apis;bundle-version=1.4.1,com.fasterxml.classmate;bundle-version=1.5.1,net.bytebuddy.byte-buddy;bundle-version=1.10.21,org.lucee.hibernate-annotations;bundle-version=5.1.2.Final,javax.persistence-api;bundle-version=2.2,org.lucee.hibernate-ehcache;bundle-version=5.4.29.Final,org.lucee.ehcache;bundle-version=2.10.6,jakarta.xml.bind-api;bundle-version=2.3.3,org.glassfish.jaxb.runtime;bundle-version=2.3.4</Require-Bundle>
+
+                  <!-- 
                         See:
                         https://liferay.dev/blogs/-/blogs/osgi-and-java-package-imports
                         https://bnd.bndtools.org/instructions/noimportjava.html
                      -->
-                     <_noimportjava>true</_noimportjava>
-                  </instructions>
-               </configuration>
+                  <_noimportjava>true</_noimportjava>
+               </instructions>
+            </configuration>
          </plugin>
 
          <!--
             Generate the top-level MANIFEST.MF containing properties for this extension.
 
             Turns out using the NAME attribute for the lucee extension name breaks the jar manifest spec. 🤦‍♂️
-            See https://github.com/codehaus-plexus/plexus-archiver/blob/7eb5a660a9ccb2968ce4f172baaa949c72e87f87/src/main/java/org/codehaus/plexus/archiver/jar/Manifest.java#L556
+            See
+         https://github.com/codehaus-plexus/plexus-archiver/blob/7eb5a660a9ccb2968ce4f172baaa949c72e87f87/src/main/java/org/codehaus/plexus/archiver/jar/Manifest.java#L556
 
             Thus, we have to manually echo this stuff to a custom extension manifest file,
             then use the maven assembly plugin to copy that file into the resulting .lex extension.
@@ -178,8 +169,10 @@
                   <configuration>
                      <fromFile>/${project.basedir}/source/java/src/META-INF/EXTENSION.MF</fromFile>
                      <!-- warning: this plugin appears to wrongly interpolate properties,
-                     so ${project.build.directory} ends up creating the full /home/user/path INSIDE this current directory.
-                     The best workaround appears to be not using those properties, and hardcoding a RELATIVE path instead.-->
+                     so ${project.build.directory} ends up creating the full /home/user/path INSIDE this current
+                     directory.
+                     The best workaround appears to be not using those properties, and hardcoding a RELATIVE path
+                     instead.-->
                      <toFile>target/META-INF/MANIFEST.MF</toFile>
                   </configuration>
                </execution>
@@ -196,11 +189,13 @@ id: ${id}
 description: ${description}
 version: ${project.version}
 orm: [{'class':'${class}','name':'${project.artifactId}','version':'${project.version}'}]
-lucee-core-version: ${lucee.version}
+lucee-core-version: ${minLuceeVersion}
                      </message>
                      <!-- warning: this plugin appears to wrongly interpolate properties,
-                     so ${project.build.directory} ends up creating the full /home/user/path INSIDE this current directory.
-                     The best workaround appears to be not using those properties, and hardcoding a RELATIVE path instead.-->
+                     so ${project.build.directory} ends up creating the full /home/user/path INSIDE this current
+                     directory.
+                     The best workaround appears to be not using those properties, and hardcoding a RELATIVE path
+                     instead.-->
                      <toFile>target/META-INF/MANIFEST.MF</toFile>
                      <!-- <toFile>test.txt</toFile> -->
                      <append>true</append>
@@ -242,15 +237,15 @@ lucee-core-version: ${lucee.version}
             <version>1.0.1</version>
             <executions>
                <execution>
-               <id>copy-file</id>
-               <phase>package</phase>
-               <goals>
-                  <goal>rename</goal>
-               </goals>
-               <configuration>
-                  <sourceFile>${project.build.directory}/${project.build.finalName}-lex.zip</sourceFile>
-                  <destinationFile>${project.build.directory}/${project.build.finalName}.lex</destinationFile>
-               </configuration>
+                  <id>copy-file</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>rename</goal>
+                  </goals>
+                  <configuration>
+                     <sourceFile>${project.build.directory}/${project.build.finalName}-lex.zip</sourceFile>
+                     <destinationFile>${project.build.directory}/${project.build.finalName}.lex</destinationFile>
+                  </configuration>
                </execution>
             </executions>
          </plugin>
@@ -263,9 +258,9 @@ lucee-core-version: ${lucee.version}
             <version>7.3.2</version>
             <executions>
                <execution>
-                     <goals>
-                        <goal>check</goal>
-                     </goals>
+                  <goals>
+                     <goal>check</goal>
+                  </goals>
                </execution>
             </executions>
          </plugin>
@@ -287,18 +282,17 @@ lucee-core-version: ${lucee.version}
    </build>
 
 
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.junit</groupId>
-				<artifactId>junit-bom</artifactId>
-				<version>5.9.2</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+   <dependencyManagement>
+      <dependencies>
+         <dependency>
+            <groupId>org.junit</groupId>
+            <artifactId>junit-bom</artifactId>
+            <version>5.9.2</version>
+            <type>pom</type>
+            <scope>import</scope>
+         </dependency>
+      </dependencies>
+   </dependencyManagement>
 
    <dependencies>
       <dependency>
@@ -349,16 +343,18 @@ lucee-core-version: ${lucee.version}
          <artifactId>hibernate-ehcache</artifactId>
          <version>${hibernate.version}</version>
 
-         <!-- https://maven.apache.org/guides/introduction/introduction-to-optional-and-excludes-dependencies.html#how-to-use-dependency-exclusions -->
+         <!--
+         https://maven.apache.org/guides/introduction/introduction-to-optional-and-excludes-dependencies.html#how-to-use-dependency-exclusions -->
          <exclusions>
             <exclusion>
                <groupId>org.glassfish.jaxb</groupId>
                <artifactId>txw2</artifactId>
             </exclusion>
-         </exclusions> 
+         </exclusions>
       </dependency>
 
-      <!-- https://mvnrepository.com/artifact/org.apache.servicemix.bundles/org.apache.servicemix.bundles.dom4j -->
+      <!--
+      https://mvnrepository.com/artifact/org.apache.servicemix.bundles/org.apache.servicemix.bundles.dom4j -->
       <dependency>
          <groupId>org.apache.servicemix.bundles</groupId>
          <artifactId>org.apache.servicemix.bundles.dom4j</artifactId>
@@ -373,7 +369,6 @@ lucee-core-version: ${lucee.version}
       </dependency>
 
    </dependencies>
-
 
 
    <repositories>

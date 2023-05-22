@@ -36,9 +36,9 @@ export testFilter=""
 export testAdditional="$PWD/tests"
 
 # Ensure the current extension is compiled for testing.
-if [ ! -f `echo "dist/*.lex"` ]; then
+if [ ! -f `echo "target/*.lex"` ]; then
     echo "Extension file not found! Cannot run tests."
-    echo "Please run 'ant dist' to generate the .lex extension file in dist/"
+    echo "Please run 'mvn clean package' to generate the .lex extension file in target/"
     exit 1;
 fi
 
@@ -57,5 +57,5 @@ ant \
     -DluceeVersion="$LUCEE_VERSION" \
     -Dwebroot="${LUCEE_PATH}test" \
     -Dexecute="/bootstrap-tests.cfm" \
-    -DextensionDir="$PWD/dist" \
+    -DextensionDir="$PWD/target" \
     -DtestAdditional="$PWD/tests"

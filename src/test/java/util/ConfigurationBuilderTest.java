@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.AvailableSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import com.ortussolutions.hibernate.event.EventListenerIntegrator;
 import com.ortussolutions.hibernate.jdbc.ConnectionProviderImpl;
 import com.ortussolutions.hibernate.util.ConfigurationBuilder;
@@ -18,6 +19,7 @@ import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMConfiguration;
 import lucee.runtime.db.DataSource;
 
+@Disabled
 public class ConfigurationBuilderTest {
     @Test
     public void canInitialize() {

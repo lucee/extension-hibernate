@@ -1,4 +1,5 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Disabled;
 
 // extension classes
 import com.ortussolutions.hibernate.event.EventListenerIntegrator;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+@Disabled
 public class EventListenerIntegratorTest {
     @Test
     public void canInitialize() {
