@@ -24,7 +24,7 @@ jobs:
 
   javadocs:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '__CI__')"
+    if: "!contains(github.event.head_commit.message, '__CI__')" && env.SNAPSHOT == 'false'
     steps:
       - uses: actions/checkout@v3
 
@@ -39,10 +39,6 @@ jobs:
 
       - name: Read version
         run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
-
-      - name: Make it a Snapshot Build
-        if: env.SNAPSHOT != 'false'
-        run: echo "VERSION=${env.VERSION}-snapshot" >> $GITHUB_ENV
 
       - name: Upload API Docs to S3
         uses: jakejarvis/s3-sync-action@master
@@ -70,10 +66,6 @@ jobs:
 
       - name: Read version
         run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
-
-      - name: Make it a Snapshot Build
-        if: env.SNAPSHOT != 'false'
-        run: echo "VERSION=${env.VERSION}-snapshot" >> $GITHUB_ENV
 
       - name: Download Artifact
         uses: actions/download-artifact@master
@@ -160,10 +152,6 @@ jobs:
 
       - name: Read version
         run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
-
-      - name: Make it a Snapshot Build
-        if: env.SNAPSHOT != 'false'
-        run: echo "VERSION=${env.VERSION}-snapshot" >> $GITHUB_ENV
 
       - name: Setup Java
         uses: actions/setup-java@v3.9.0
