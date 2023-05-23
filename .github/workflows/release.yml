@@ -82,7 +82,7 @@ jobs:
         uses: thomaseizinger/keep-a-changelog-new-release@1.3.0
         if: env.SNAPSHOT == 'false'
         with:
-          changelogPath: ./changelog.md
+          changelogPath: ./CHANGELOG.md
           tag: v${{ env.VERSION }}
 
       - name: Commit Changelog To Master
@@ -92,7 +92,7 @@ jobs:
           author_name: Github Actions
           author_email: info@ortussolutions.com
           message: 'Finalized changelog for v${{ env.VERSION }}'
-          add: changelog.md
+          add: CHANGELOG.md
 
       - name: Tag Version
         uses: rickstaa/action-create-tag@v1.6.1
@@ -100,6 +100,7 @@ jobs:
         with:
           tag: "v${{ env.VERSION }}"
           force_push_tag: true
+          tag_exists_error: false
           message: "Latest Release v${{ env.VERSION }}"
 
       - name: Read the changelog
@@ -107,6 +108,7 @@ jobs:
         uses: 3liz/changelog-release@0.2.0
         with:
           TAG_NAME: ${{ env.VERSION }}
+          CHANGELOG_FILE: CHANGELOG.md
 
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
