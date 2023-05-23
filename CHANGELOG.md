@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.4.29.25] - 2023-05-23
+
 ## Changed
 
 -   Switched to Maven for a faster, more stable build process
@@ -49,3 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Cuts ORM reload time by 60%
 -   Better build/test documentation
 -   Improved maintenance and build docs
+
+[Unreleased]: https://github.com/Ortus-Solutions/extension-hibernate/compare/v5.4.29.25...HEAD
+
+[5.4.29.25]: https://github.com/Ortus-Solutions/extension-hibernate/compare/80d6ad971c06a955ec0e308f2c8149ee7119654d...v5.4.29.25
