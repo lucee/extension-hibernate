@@ -55,6 +55,7 @@ jobs:
           DEST_DIR: "lucee/hibernate-extension/${{ env.VERSION }}/"
 
   gh_release:
+    if: "!contains(github.event.head_commit.message, '__CI__')"
     runs-on: ubuntu-latest
     needs: [build_and_test, javadocs]
     steps:
@@ -91,7 +92,7 @@ jobs:
         with:
           author_name: Github Actions
           author_email: info@ortussolutions.com
-          message: 'Finalized changelog for v${{ env.VERSION }}'
+          message: '📖 DOC: Finalized changelog for v${{ env.VERSION }} - __CI__'
           add: CHANGELOG.md
 
       - name: Tag Version
@@ -101,7 +102,7 @@ jobs:
           tag: "v${{ env.VERSION }}"
           force_push_tag: true
           tag_exists_error: false
-          message: "Latest Release v${{ env.VERSION }}"
+          message: "Release v${{ env.VERSION }}"
 
       - name: Read the changelog
         id: changelog
