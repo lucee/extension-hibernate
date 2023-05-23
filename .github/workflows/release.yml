@@ -82,7 +82,7 @@ jobs:
       - name: Check for file
         id: changelog_check
         run: |
-          if grep -q "[${{ env.VERSION }}]" CHANGELOG.md ]];then
+          if grep -q "${{ env.VERSION }}" CHANGELOG.md ]];then
             echo "HAS_VERSION=true" >> $GITHUB_OUTPUT
           else
             echo "HAS_VERSION=false" >> $GITHUB_OUTPUT
