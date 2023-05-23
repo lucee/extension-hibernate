@@ -115,10 +115,11 @@ jobs:
 
       - name: Read the changelog
         id: changelog
-        uses: 3liz/changelog-release@0.2.0
+        uses: mindsers/changelog-reader-action@v2
         with:
-          TAG_NAME: ${{ env.VERSION }}
-          CHANGELOG_FILE: CHANGELOG.md
+          validation_level: warn
+          version: ${{ env.VERSION }}
+          path: ./CHANGELOG.md
 
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
@@ -130,7 +131,7 @@ jobs:
           replacesArtifacts: true
           tag: ${{ env.VERSION }}
           name: v${{ env.VERSION }}
-          body: ${{ steps.changelog.outputs.markdown }}
+          body: ${{ steps.changelog.outputs.changes }}
 
       - name: Upload Artifact to S3
         uses: jakejarvis/s3-sync-action@master
