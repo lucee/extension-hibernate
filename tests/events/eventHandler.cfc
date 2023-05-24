@@ -65,40 +65,12 @@ component hint="logs out any orm events"  {
 	private function eventLog( required struct args ){
 		var eventName = CallStackGet( "array" )[2].function;
 		var s = CallStackGet( "array" )[3];
-		systemOutput( "------- #eventName#  #listLast(s.template,"/\")#: #s.lineNumber#", true );
-		systemOutput( "arguments: " & structKeyList(args), true);
+		systemOutput( "------- EventHandler.#eventName#  #listLast(s.template,"/\")#: #s.lineNumber#", true );
 
-		//if ( ! structKeyExists( application, "ormEventLog" ) )
-		//    application.ormEventLog = [];
 		application.ormEventLog.append( {
 			"src": this.name,
 			"eventName": eventName,
 			"args": args
 		} );
-
-		try {
-			// Certain events like onFlush, onClear, onAutoFlush will not have an associated entity.
-			if ( isNull(arguments.args.entity ) ) {
-				return;
-			}
-
-			if (isObject( args.entity ) ){
-				try {
-					var obj = GetComponentMetaData(args.entity);
-					if (obj.fullname neq "testAdditional.events.Code")
-						throw "wrong entity: " & obj.fullname;
-				} catch( e ) {
-					systemOutput( e.message, true );
-					throw e.message;	
-				}
-			}
-
-		} catch(e) {
-			application.ormEventErrorLog.append({ 
-				"error" : e.message & " #eventName#  #listLast(s.template,"/\")#: #s.lineNumber#",
-				"src": this.name,
-				"eventName": eventName
-			} );
-		}
 	}
 }

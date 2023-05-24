@@ -57,12 +57,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 	}
 
 	public void function testEvents_createNew (){
-		systemOutput( "", true );
 		local.uri=createURI("events/createNew.cfm");
 		local.result=_InternalRequest(uri);
 		expect( result.status ).toBe( 200 );
 		local.res = deserializeJson(result.fileContent);
-		systemOutput( res.events, true );
 		if (len(res.errors)){
 			loop array=res.errors, item="local.err"{
 				systemOutput("ERROR: " & err.error, true, true);
@@ -84,12 +82,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 	}
 
 	public void function testEvents_load (){
-		systemOutput( "", true );
 		local.uri=createURI("events/load.cfm");
 		local.result=_InternalRequest(uri);
 		expect( result.status ).toBe( 200 );
 		local.res = deserializeJson(result.fileContent);
-		systemOutput( res.events, true );
 		if (len(res.errors)){
 			loop array=res.errors, item="local.err"{
 				systemOutput("ERROR: " & err.error, true, true);

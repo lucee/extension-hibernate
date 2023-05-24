@@ -3,7 +3,7 @@
 	code = entityNew( 'Code' );
 	code.setId( 1 );
 	code.setCode( 'a' );
-	// should trigger preInsert, postInsert, and onFlush
+	// should trigger preInsert, postInsert
 	entitySave( code );
 
 	// should trigger onFlush event
