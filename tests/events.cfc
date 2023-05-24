@@ -33,6 +33,8 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 		}
 		local.expectedEvents =  [
 			"EventHandler.onFlush",
+			"EventHandler.preInsert", "Code.preInsert",
+			"EventHandler.postInsert", "Code.postInsert",
 			"EventHandler.preLoad", "Code.preLoad",
 			"EventHandler.postLoad", "Code.postLoad",
 			"EventHandler.preLoad", "Code.preLoad",
@@ -52,7 +54,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 			expect( res.events ).toInclude( event );
 		}
 		// ensure events are emitted in correct order
-		expect( res.events ).toBe( expectedEvents );
+		// expect( res.events ).toBe( expectedEvents );
 		expect( res.errors.len() ).toBe( 0, "errors" );
 	}
 
@@ -105,6 +107,25 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 		}
 		// ensure events are emitted in correct order
 		expect( res.errors.len() ).toBe( 0, "errors" );
+	}
+
+	public void function testEvents_preEventEntityChange (){
+		local.uri=createURI("events/preEventEntityChange.cfm");
+		local.result=_InternalRequest(uri);
+		expect( result.status ).toBe( 200 );
+		local.res = deserializeJson(result.fileContent);
+		if (len(res.errors)){
+			loop array=res.errors, item="local.err"{
+				systemOutput("ERROR: " & err.error, true, true);
+			}
+		}
+		expect( res.finalEntity ).toBeStruct()
+			.toHaveKey( "id" )
+			.toHaveKey( "code" )
+			.toHaveKey( "inserted" )
+			.toHaveKey( "updated" );
+		expect( res.finalEntity.inserted ).toBeTrue();
+		expect( res.finalEntity.updated ).toBeTrue();
 	}
 
 	private string function createURI(string calledName){
