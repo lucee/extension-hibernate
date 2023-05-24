@@ -36,6 +36,7 @@ See Lucee documentation on [testing-a-lucee-extension-locally](https://docs.luce
 To run CFML tests against the extension:
 
 1. Check out [lucee/Lucee](https://github.com/lucee/lucee) to the parent directory - `git clone git@github.com:lucee/Lucee.git ../lucee`
+   1. Make sure to checkout the `6.0` branch - `git checkout 6.0`
 2. Check out [lucee/script-runner](https://github.com/lucee/script-runner) to the parent directory - `git clone git@github.com:lucee/Lucee.git ../script-runner`.
 
 Next, start the test databases using the Docker-compose setup:
