@@ -1,6 +1,8 @@
 package com.ortussolutions.hibernate.event;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,12 +43,15 @@ import org.hibernate.event.spi.PreLoadEventListener;
 import org.hibernate.integrator.spi.Integrator;
 import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
+
+import com.ortussolutions.hibernate.HibernateCaster;
 import com.ortussolutions.hibernate.util.CommonUtil;
 
 import lucee.loader.engine.CFMLEngine;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.runtime.Component;
 import lucee.runtime.PageContext;
+import lucee.runtime.component.Property;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
@@ -136,11 +141,14 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 
     @Override
     public boolean onPreInsert(PreInsertEvent event) {
-        Struct state = entityStateToStruct(event.getPersister().getPropertyNames(), event.getState());
+        String[] propertyNames = event.getPersister().getEntityMetamodel().getPropertyNames();
+        Struct state = entityStateToStruct(propertyNames, event.getState());
         fireEventOnGlobalListener(EventListenerIntegrator.PRE_INSERT, event.getEntity(), event, state);
 
-        fireOnEntity(event.getEntity(), EventListenerIntegrator.PRE_INSERT, event, state);
+        fireOnEntity(event.getEntity(), EventListenerIntegrator.PRE_INSERT, event, null);
 
+        Component entity = CommonUtil.toComponent(event.getEntity(), null);
+        if (entity != null) persistEntityChangesToState(event.getState(), propertyNames, entity);
         return false;
     }
 
@@ -171,10 +179,13 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
     // PreUpdateEventListener
     @Override
     public boolean onPreUpdate(PreUpdateEvent event) {
-        Struct oldState = entityStateToStruct(event.getPersister().getPropertyNames(), event.getOldState());
+        String[] propertyNames = event.getPersister().getEntityMetamodel().getPropertyNames();
+        Struct oldState = entityStateToStruct(propertyNames, event.getOldState());
         fireEventOnGlobalListener(EventListenerIntegrator.PRE_UPDATE, event.getEntity(), event, oldState);
 
         fireOnEntity(event.getEntity(), EventListenerIntegrator.PRE_UPDATE, event, oldState);
+        Component entity = CommonUtil.toComponent(event.getEntity(), null);
+        if (entity != null) persistEntityChangesToState(event.getState(), propertyNames, entity);
         return false;
     }
 
@@ -349,5 +360,39 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
             }
         }
         return entityState;
+    }
+
+    /**
+     * Loop over the provided state properties and persist any entity changes to the state object.
+     * <p>
+     * Useful in the case of a "Pre database operation event", where the state to be committed has already been recorded, and any changes made during a `onPreInsert()` or `onPreUpdate()` event will need to be made in the `state` object in order to affect a change in what will be persisted.
+     * <p>
+     * Currently used in onPreInsert and onPreUpdate.
+     * 
+     * See http://anshuiitk.blogspot.com/2010/11/hibernate-pre-database-opertaion-event.html
+     * 
+     * @param state The entity state to persist, from event.getState(). {@link org.hibernate.event.spi.PreInsertEvent}
+     * @param stateProperties Array of properties to update, matching the order of the `state[]` fields.
+     * @param entity The entity to pull a potentially altered value from.
+     */
+    private void persistEntityChangesToState(Object[] state, String[] stateProperties, Component entity) {
+        try{
+            Property[] properties = entity.getProperties(true, false, false, false);
+            for (int n = 0; n < stateProperties.length; ++n) {
+                final String currentProperty = stateProperties[n];
+                Optional<Property> property = Arrays.stream( properties )
+                .filter( prop -> prop.getName() == currentProperty )
+                .findFirst();
+                if ( property.isPresent() ) {
+                    Property theprop = property.get();
+                    if ( theprop.getValue() != null){
+                        Object value = HibernateCaster.toHibernateValue(entity, theprop);
+                        state[n] = value;
+                    }
+                }
+            }
+        } catch( Exception e ){
+            throw new RuntimeException( "Error populating event state for persistance in pre-event listener method: " + e.getMessage(),e);
+        }
     }
 }

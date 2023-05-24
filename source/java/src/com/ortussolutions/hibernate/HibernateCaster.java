@@ -470,6 +470,24 @@ public class HibernateCaster {
     }
 
     /**
+     * Given the Property object (representing a property on a Lucee .cfc Component file), return the value of the property in the correct type as specified by the property's `ormtype` or `type` annotations.
+     * 
+     * @param entity The Lucee component to pull the value from. (Since Lucee's Property.getValue() method returns the default, NOT the actual value, we need to retrieve the value from the ComponentScope object.)
+     * @param property A persistent Property from a persistent component.
+     * @return The property value with the correct Hibernate typing. {@link toHibernateValue(PageContext pc, Object value, String type)}
+     * @throws PageException
+     */
+    public static Object toHibernateValue(Component entity, Property property) throws PageException {
+        PageContext pc = CFMLEngineFactory.getInstance().getThreadPageContext();
+        Object value = entity.getComponentScope().get( CommonUtil.createKey(property.getName()), property.getDefault());
+        Struct meta = (Struct) property.getMetaData();
+        String ormType = CommonUtil.toString(meta.get( CommonUtil.createKey("ormtype"), ""));
+        String fieldType = ormType != "" ? ormType : property.getType();
+        return toHibernateValue( pc, value, fieldType );
+    }
+
+
+    /**
      * translate CFMl specific types to Hibernate/SQL specific types
      *
      * @param ci
