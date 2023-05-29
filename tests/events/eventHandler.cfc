@@ -6,70 +6,69 @@ component hint="logs out any orm events"  {
 	}
 
 	function onFlush( entity ) {
-		eventLog( arguments );
+		eventLog( "onFlush", arguments );
 	}
 
 	function postNew( any entity, any entityName ){
-		eventLog( arguments );
+		eventLog( "postNew", arguments );
 	}
 
 	function preLoad( entity ){
-		eventLog( arguments );
+		eventLog( "preLoad", arguments );
 	}
 	function postLoad( entity ){
-		eventLog( arguments );
+		eventLog( "postLoad", arguments );
 	}
 
 	function preInsert( entity ){
-		eventLog( arguments );
+		eventLog( "preInsert", arguments );
 	}
 	function postInsert( entity ){
-		eventLog( arguments );
+		eventLog( "postInsert", arguments );
 	}
 
 	function preUpdate( entity, Struct oldData  ){
-		systemOutput(oldData, true);
-		eventLog( arguments );
+		eventLog( "preUpdate", arguments );
 	}
 	function postUpdate( entity ){
-		eventLog( arguments );
+		eventLog( "postUpdate", arguments );
 	}
 
 	function preDelete( entity ){
-		eventLog( arguments );
+		eventLog( "preDelete", arguments );
 	}	
 	function onDelete( entity ) {
-		eventLog( arguments );
+		eventLog( "onDelete", arguments );
 	}
 	function postDelete( entity ) {
-		eventLog( arguments );
+		eventLog( "postDelete", arguments );
 	}
 
 	function onEvict() {
-		eventLog( arguments );
+		eventLog( "onEvict", arguments );
 	}
 	function onClear( entity ) {
-		eventLog( arguments );
+		eventLog( "onClear", arguments );
 	}
 	function onDirtyCheck( entity ) {
-		eventLog( arguments );
+		eventLog( "onDirtyCheck", arguments );
 	}
 	function onAutoFlush( entity ) {
-		eventLog( arguments );
+		eventLog( "onAutoFlush", arguments );
 	}
 
 	function onMissingMethod(missingMethodName){
 		systemOutput( "on missing method [#missingMethodName#]", true );
 	}
 
-	private function eventLog( required struct args ){
-		var eventName = CallStackGet( "array" )[2].function;
-		var s = CallStackGet( "array" )[3];
-		systemOutput( "------- EventHandler.#eventName#  #listLast(s.template,"/\")#: #s.lineNumber#", true );
+	private function eventLog( required string eventName, required struct args ){
+		// disabled due to https://luceeserver.atlassian.net/browse/LDEV-3616
+		// var s = CallStackGet( "array" )[3];
+		// systemOutput( "------- EventHandler.#arguments.eventName#  #listLast(s.template,"/\")#: #s.lineNumber#", true );
 
 		application.ormEventLog.append( {
 			"src": this.name,
-			"eventName": eventName,
+			"eventName": arguments.eventName,
 			"args": args
 		} );
 	}
