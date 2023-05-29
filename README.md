@@ -1,6 +1,6 @@
 # Lucee Hibernate Extension (ORM)
 
-<center>![the Ortus ORM Extension logo](logo.png)</center>
+![the Ortus ORM Extension logo](logo.png)
 
 [![Java CI](https://github.com/ortus-solutions/extension-hibernate/actions/workflows/release.yml/badge.svg)](https://github.com/ortus-solutions/extension-hibernate/actions/workflows/release.yml) Latest
 
