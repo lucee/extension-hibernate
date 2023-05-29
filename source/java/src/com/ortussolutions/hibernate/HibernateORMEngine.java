@@ -33,10 +33,9 @@ public class HibernateORMEngine implements ORMEngine {
     private Map<String, SessionFactoryData> factories = new ConcurrentHashMap<String, SessionFactoryData>();
 
     static {
-        // Patch because commandbox otherwise uses com.sun.xml.internal.bind.v2.ContextFactory for unknown
-        // reason
-        // Class clazz = ContextFactory.class;
-        // System.setProperty("javax.xml.bind.context.factory", "com.sun.xml.bind.v2.ContextFactory");
+        // Workaround for certain jaxb-api jars not setting the context factory location.
+        // See LDEV-4276
+        System.setProperty("javax.xml.bind.context.factory", "com.sun.xml.bind.v2.ContextFactory");
     }
 
     public HibernateORMEngine() {
