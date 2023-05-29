@@ -9,11 +9,11 @@
    <packaging>bundle</packaging>
 
    <name>Ortus ORM Extension</name>
-   <description>Lucee Extension for Hibernate ORM Engine.</description>
+   <description>A Lucee Extension to provide a native CFML integration with the Hibernate ORM engine.</description>
    <url>https://forgebox.io/view/D062D72F-F8A2-46F0-8CBC91325B2F067B</url>
 
    <properties>
-      <name>Hibernate ORM Engine</name>
+      <name>Ortus ORM Extension</name>
       <bundlename>hibernate-extension</bundlename>
       <id>D062D72F-F8A2-46F0-8CBC91325B2F067B</id>
       <description>Hibernate ORM (Hibernate in short) is an object-relational mapping library for the Java language, providing a framework for mapping an object-oriented domain model to a traditional relational database. Hibernate solves object-relational impedance mismatch problems by replacing direct persistence-related database accesses with high-level object handling functions.</description>

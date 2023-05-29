@@ -42,7 +42,7 @@ To run CFML tests against the extension:
 Next, start the test databases using the Docker-compose setup:
 
 ```bash
-cd tests && docker-compose up
+docker-compose up -f tests/docker-compose.yml
 ```
 
 This will start Postgres, MySQL, and MSSQL containers using the credentials specified in `tests/.env`.
@@ -77,8 +77,7 @@ Once this script pushes to `master`, the `release` GitHub workflow will kick in 
 1. compile and test the extension
 2. format all java source code
 3. create javadocs
-4. push up the built artifact to S3
-5. push up javadocs to S3
-6. publish the extension to Forgebox
-7. create a git tag
-8. create a GitHub release with changelog release notes
+4. push up the built artifact, javadocs, and the logo to S3
+5. publish the extension to Forgebox
+6. create a git tag
+7. create a GitHub release with changelog release notes

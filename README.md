@@ -1,12 +1,18 @@
 # Lucee Hibernate Extension (ORM)
 
-[![Java CI](https://github.com/ortus-solutions/extension-hibernate/actions/workflows/main.yml/badge.svg)](https://github.com/ortus-solutions/extension-hibernate/actions/workflows/main.yml) Latest
+<center>![the Ortus ORM Extension logo](logo.png)</center>
+
+[![Java CI](https://github.com/ortus-solutions/extension-hibernate/actions/workflows/release.yml/badge.svg)](https://github.com/ortus-solutions/extension-hibernate/actions/workflows/release.yml) Latest
 
 * A [Hibernate ORM](https://hibernate.org/orm/) wrapper for the [Lucee CFML language](https://www.lucee.org/)
 
-* Issues: https://ortussolutions.atlassian.net/jira/software/c/projects/LHE/issues
-* Documentation: https://docs.lucee.org/categories/orm.html
+* Documentation: https://orm-extension.ortusbooks.com
+* Issues: https://ortussolutions.atlassian.net/jira/software/c/projects/OOE/issues
 * Javadocs: https://apidocs.ortussolutions.com/#/lucee/hibernate-extension/
+
+## Requirements
+
+Lucee 5.3.9.73 or above.
 
 ## Installation
 

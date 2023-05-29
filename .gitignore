@@ -4,6 +4,7 @@
 **/.svn/
 /*.project
 va specific
+.notes/
 
 # build files/dist
 /bin

@@ -19,10 +19,8 @@ LUCEE_SCRIPT_RUNNER_PATH="$PWD/../script-runner/"
 
 # Lucee version to use to run tests on
 # The tests themselves, however, will be sourced from `LUCEE_PATH/test`.
-# 
-# Due to LDEV-3616, this must be AT LEAST 6.0.0.316 or the tests will fail with an NPE.
-# @see https://luceeserver.atlassian.net/browse/LDEV-3616
 LUCEE_VERSION=6.0.0.316-SNAPSHOT
+# LUCEE_VERSION=5.3.9.133
 
 # Filter by test label
 export testLabels="orm"
