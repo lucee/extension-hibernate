@@ -5,7 +5,7 @@
 
    <groupId>com.ortussolutions</groupId>
    <artifactId>hibernate.extension</artifactId>
-   <version>5.4.29.26</version>
+   <version>5.4.29.27</version>
    <packaging>bundle</packaging>
 
    <name>Ortus ORM Extension</name>
