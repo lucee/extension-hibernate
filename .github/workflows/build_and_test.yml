@@ -20,8 +20,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lucee_version: ["6.0.0.346-BETA"]
-        java_version: [ "8", "11" ]
+        # Version must exist at https://mvnrepository.com/artifact/org.lucee/lucee
+        lucee_version: ["5.3.9.133","6.0.0.346-BETA"]
+        java_version: [ "8", "11", "17" ]
 
     steps:
     - uses: actions/checkout@v3
