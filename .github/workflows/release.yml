@@ -94,7 +94,7 @@ jobs:
       #   if: env.SNAPSHOT == 'false' && steps.changelog_check.outputs.HAS_VERSION == 'false'
       #   with:
       #     changelogPath: ./CHANGELOG.md
-      #     tag: v${{ env.VERSION }}
+      #     tag: ${{ env.VERSION }}
 
       # - name: Commit Changelog To Master
       #   uses: EndBug/add-and-commit@v9.1.1
@@ -109,7 +109,7 @@ jobs:
         uses: rickstaa/action-create-tag@v1.6.1
         if: env.SNAPSHOT == 'false'
         with:
-          tag: "v${{ env.VERSION }}"
+          tag: "${{ env.VERSION }}"
           force_push_tag: true
           tag_exists_error: false
           message: "Release v${{ env.VERSION }}"
@@ -142,7 +142,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
           SOURCE_DIR: ".tmp/"
-          DEST_DIR: "lucee/extensions/hibernate/${{ env.VERSION }}/"
+          DEST_DIR: "ortussolutions/lucee-extensions/ortus-orm/${{ env.VERSION }}/"
 
       - name: Upload Logo to S3
         uses: jakejarvis/s3-sync-action@master
@@ -153,7 +153,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
           SOURCE_DIR: "source/images/"
-          DEST_DIR: "lucee/extensions/hibernate/"
+          DEST_DIR: "ortussolutions/lucee-extensions/ortus-orm/"
 
   publish:
     runs-on: ubuntu-latest
@@ -179,5 +179,5 @@ jobs:
 
       - run: |
           box package set version=${{ env.VERSION }}
-          box package set location="https://s3.amazonaws.com/downloads.ortussolutions.com/lucee/extensions/hibernate/${{ env.VERSION }}/ortus_orm_${{ env.VERSION }}.lex"
+          box package set location="https://s3.amazonaws.com/downloads.ortussolutions.com/ortussolutions/lucee-extensions/ortus-orm/${{ env.VERSION }}/ortus_orm_${{ env.VERSION }}.lex"
           box publish
