@@ -22,12 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Switched to Maven for a faster, more stable build process
-- Improved entity event listeners for a much speedier ORM startup (8924b58a9058d296e2a783ccfabbf90e26dc9c1b)
-- New and Improved logo for Lucee admin visibility (10bdf56a7a78f0221ab1a6e66a5512a92819e5b7)
+- Improved entity event listeners for a much speedier ORM startup ([8924b58a9058d296e2a783ccfabbf90e26dc9c1b](https://github.com/Ortus-Solutions/extension-hibernate/commit/8924b58a9058d296e2a783ccfabbf90e26dc9c1b))
+- New and Improved logo for Lucee admin visibility ([10bdf56a7a78f0221ab1a6e66a5512a92819e5b7](https://github.com/Ortus-Solutions/extension-hibernate/commit/10bdf56a7a78f0221ab1a6e66a5512a92819e5b7))
 
 ### Fixed
 
-- Entity has no state when listener method (`onPreInsert`, for example) is fired (014814263b5d31b8bac4c17479c2ca731ceb4e7c, [OOE-1](https://ortussolutions.atlassian.net/browse/OOE-1))
+- Entity has no state when listener method (`onPreInsert`, for example) is fired ([014814263b5d31b8bac4c17479c2ca731ceb4e7c](https://github.com/Ortus-Solutions/extension-hibernate/commit/014814263b5d31b8bac4c17479c2ca731ceb4e7c), [OOE-1](https://ortussolutions.atlassian.net/browse/OOE-1))
 
 ## [5.4.29.24] - 2023-05-17
 
