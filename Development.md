@@ -3,7 +3,6 @@
 You will need to install the following for extension development:
 
 * Java 1.8+ (JRE and JDK)
-* [ant](https://www.osradar.com/install-apache-ant-ubuntu-20-04/) (for building the extension `.lex` file)
 * [maven](https://linuxize.com/post/how-to-install-apache-maven-on-ubuntu-20-04/) (for other automated tooling)
 * Optional: [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/) (for managing test database servers)
 
