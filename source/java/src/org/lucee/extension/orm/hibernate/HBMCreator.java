@@ -1,5 +1,6 @@
 package org.lucee.extension.orm.hibernate;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,7 +12,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import lucee.commons.io.log.Log;
 import lucee.loader.util.Util;
 import lucee.runtime.Component;
 import lucee.runtime.PageContext;
@@ -20,9 +20,39 @@ import lucee.runtime.db.DatasourceConnection;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
+
+import org.lucee.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.ExceptionUtil;
+import org.lucee.extension.orm.hibernate.HibernateUtil;
+import org.lucee.extension.orm.hibernate.ORMConfigurationUtil;
+import org.lucee.extension.orm.hibernate.util.XMLUtil;
 import lucee.runtime.type.Struct;
+import lucee.commons.io.res.Resource;
 
 public class HBMCreator {
+
+	/**
+	 * Hibernate DOCTYPE mapping ID
+	 *
+	 * @see https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects
+	 */
+	public static final String HIBERNATE_3_PUBLIC_ID = "-//Hibernate/Hibernate Mapping DTD 3.0//EN";
+
+	/**
+	 * Hibernate doctype reference
+	 *
+	 * @see https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects
+	 */
+	// public static final String HIBERNATE_3_SYSTEM_ID = "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd";
+	public static final String HIBERNATE_3_SYSTEM_ID = "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd";
+
+	/**
+	 * Full XML doctype for Hibernate mappings
+	 *
+	 * @see https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects
+	 */
+	public static final String HIBERNATE_3_DOCTYPE_DEFINITION = "<!DOCTYPE hibernate-mapping PUBLIC \""
+			+ HIBERNATE_3_PUBLIC_ID + "\" \"" + HIBERNATE_3_SYSTEM_ID + "\">";
 
 	private static final Collection.Key PROPERTY = CommonUtil.createKey("property");
 	private static final Collection.Key LINK_TABLE = CommonUtil.createKey("linktable");
@@ -36,7 +66,27 @@ public class HBMCreator {
 	private static final Collection.Key KEY = CommonUtil.createKey("key");
 	private static final Collection.Key TYPE = CommonUtil.createKey("type");
 
-	public static void createXMLMapping(PageContext pc, DatasourceConnection dc, Component cfc, Element hibernateMapping, SessionFactoryData data) throws PageException {
+	/**
+	 * Generate an XML node tree defining a Hibernate mapping for the given Component
+	 *
+	 * @param pc
+	 *            Lucee PageContext object
+	 * @param dc
+	 *            Lucee DatasourceConnection object
+	 * @param cfc
+	 *            Lucee Component to create the mapping XML for
+	 * @param data
+	 *            SessionFactoryData instance to pull Hibernate metadata from
+	 *
+	 * @return XML root node
+	 *
+	 * @throws PageException
+	 */
+	public static Element createXMLMapping(PageContext pc, DatasourceConnection dc, Component cfc, SessionFactoryData data) throws PageException {
+		Document doc = XMLUtil.newDocument();
+
+		Element hibernateMapping = doc.createElement("hibernate-mapping");
+		doc.appendChild(hibernateMapping);
 
 		// MUST Support for embeded objects
 		Struct meta = cfc.getMetaData(pc);
@@ -52,10 +102,7 @@ public class HBMCreator {
 		Map<String, PropertyCollection> joins = new HashMap<String, PropertyCollection>();
 		PropertyCollection propColl = splitJoins(cfc, joins, _props, data);
 
-		// create class element and attach
-		Document doc = CommonUtil.getDocument(hibernateMapping);
-
-		StringBuilder comment = new StringBuilder();
+				StringBuilder comment = new StringBuilder();
 		comment.append("\nsource:").append(cfc.getPageSource().getDisplayPath());
 		comment.append("\ncompilation-time:").append(CommonUtil.createDateTime(HibernateUtil.getCompileTime(pc, cfc.getPageSource())));
 		comment.append("\ndatasource:").append(dc.getDatasource().getName());
@@ -84,14 +131,8 @@ public class HBMCreator {
 			propColl = splitJoins(cfc, joins, _props, data);
 
 			String ext = CommonUtil.last(extend, ".").trim();
-			try {
-				Component base = data.getEntityByCFCName(ext, false);
-				ext = HibernateCaster.getEntityName(base);
-			}
-			catch (Exception e) {
-				Log log = pc.getConfig().getLog("orm");
-				log.error("hibernate", e);
-			}
+			Component base = data.getEntityByCFCName(ext, false);
+			ext = HibernateCaster.getEntityName(base);
 
 			String discriminatorValue = toString(cfc, null, meta, "discriminatorValue", data);
 			if (!Util.isEmpty(discriminatorValue, true)) {
@@ -171,6 +212,7 @@ public class HBMCreator {
 		// join
 		addJoin(cfc, clazz, pc, joins, columnsInfo, tableName, dc, data);
 
+		return hibernateMapping;
 	}
 
 	private static Property[] getProperties(PageContext pc, Component cfc, DatasourceConnection dc, Struct meta, boolean isClass, boolean recursivePersistentMappedSuperclass,
@@ -351,7 +393,7 @@ public class HBMCreator {
 		Property[] properties = coll.getProperties();
 		if (properties.length == 0) return;
 
-		Document doc = CommonUtil.getDocument(clazz);
+		Document doc = XMLUtil.getDocument(clazz);
 
 		Element join = doc.createElement("join");
 		clazz.appendChild(join);
@@ -542,7 +584,7 @@ public class HBMCreator {
 			throws PageException {
 		Struct meta;
 
-		Document doc = CommonUtil.getDocument(clazz);
+		Document doc = XMLUtil.getDocument(clazz);
 		Element cid = doc.createElement("composite-id");
 		clazz.appendChild(cid);
 
@@ -613,7 +655,7 @@ public class HBMCreator {
 		Struct meta = prop.getDynamicAttributes();
 		String str;
 
-		Document doc = CommonUtil.getDocument(clazz);
+		Document doc = XMLUtil.getDocument(clazz);
 		Element id = doc.createElement("id");
 		clazz.appendChild(id);
 
@@ -744,7 +786,7 @@ public class HBMCreator {
 		String className = toString(cfc, prop, meta, "generator", data);
 		if (Util.isEmpty(className, true)) return null;
 
-		Document doc = CommonUtil.getDocument(id);
+		Document doc = XMLUtil.getDocument(id);
 		Element generator = doc.createElement("generator");
 		id.appendChild(generator);
 
@@ -808,7 +850,7 @@ public class HBMCreator {
 
 		ColumnInfo info = getColumnInfo(columnsInfo, tableName, columnName, null);
 
-		Document doc = CommonUtil.getDocument(clazz);
+		Document doc = XMLUtil.getDocument(clazz);
 		final Element property = doc.createElement("property");
 		clazz.appendChild(property);
 
@@ -826,6 +868,7 @@ public class HBMCreator {
 			property.setAttribute("formula", "(" + str + ")");
 		}
 		else {
+			String length = null;
 			// property.setAttribute("column",columnName);
 
 			Element column = doc.createElement("column");
@@ -846,7 +889,10 @@ public class HBMCreator {
 
 			// length
 			Integer i = toInteger(cfc, meta, "length", data);
-			if (i != null && i > 0) column.setAttribute("length", CommonUtil.toString(i.intValue()));
+			if (i != null && i > 0) {
+				length = CommonUtil.toString(i.intValue());
+				column.setAttribute("length", length);
+}
 
 			// not-null
 			b = toBoolean(cfc, meta, "notnull", data);
@@ -862,7 +908,12 @@ public class HBMCreator {
 
 			// sql-type
 			str = toString(cfc, prop, meta, "sqltype", data);
-			if (!Util.isEmpty(str, true)) column.setAttribute("sql-type", str);
+			if (!Util.isEmpty(str, true)) {
+				if ((str == "varchar" || str == "nvarchar") && length != null) {
+					str += "(" + length + ")";
+				}
+				column.setAttribute("sql-type", str);
+			}
 
 			// unique
 			b = toBoolean(cfc, meta, "unique", data);
@@ -913,7 +964,7 @@ public class HBMCreator {
 
 		Boolean b;
 
-		Document doc = CommonUtil.getDocument(clazz);
+		Document doc = XMLUtil.getDocument(clazz);
 		Element x2o;
 
 		// column
@@ -1013,7 +1064,7 @@ public class HBMCreator {
 
 	private static void createXMLMappingCollection(Element clazz, PageContext pc, Component cfc, Property prop, SessionFactoryData data) throws PageException {
 		Struct meta = prop.getDynamicAttributes();
-		Document doc = CommonUtil.getDocument(clazz);
+		Document doc = XMLUtil.getDocument(clazz);
 		Element el = null;
 
 		// collection type
@@ -1148,7 +1199,7 @@ public class HBMCreator {
 			SessionFactoryData data) throws PageException {
 		Element el = createXMLMappingXToMany(propColl, clazz, pc, cfc, prop, data);
 		Struct meta = prop.getDynamicAttributes();
-		Document doc = CommonUtil.getDocument(clazz);
+		Document doc = XMLUtil.getDocument(clazz);
 		Element m2m = doc.createElement("many-to-many");
 		el.appendChild(m2m);
 
@@ -1238,7 +1289,7 @@ public class HBMCreator {
 			SessionFactoryData data) throws PageException {
 		Element el = createXMLMappingXToMany(propColl, clazz, pc, cfc, prop, data);
 		Struct meta = prop.getDynamicAttributes();
-		Document doc = CommonUtil.getDocument(clazz);
+		Document doc = XMLUtil.getDocument(clazz);
 		Element x2m;
 
 		// order-by
@@ -1267,7 +1318,7 @@ public class HBMCreator {
 	private static Element createXMLMappingXToMany(PropertyCollection propColl, Element clazz, PageContext pc, Component cfc, Property prop, SessionFactoryData data)
 			throws PageException {
 		final Struct meta = prop.getDynamicAttributes();
-		Document doc = CommonUtil.getDocument(clazz);
+		Document doc = XMLUtil.getDocument(clazz);
 		Element el = null;
 
 		// collection type
@@ -1472,7 +1523,7 @@ public class HBMCreator {
 		Struct meta = prop.getDynamicAttributes();
 		Boolean b;
 
-		Document doc = CommonUtil.getDocument(clazz);
+		Document doc = XMLUtil.getDocument(clazz);
 		clazz = getJoin(clazz);
 
 		Element m2o = doc.createElement("many-to-one");
@@ -1619,7 +1670,7 @@ public class HBMCreator {
 		String str;
 		Boolean b;
 
-		Document doc = CommonUtil.getDocument(clazz);
+		Document doc = XMLUtil.getDocument(clazz);
 		Element timestamp = doc.createElement("timestamp");
 		clazz.appendChild(timestamp);
 
@@ -1668,7 +1719,7 @@ public class HBMCreator {
 	private static void createXMLMappingVersion(Element clazz, PageContext pc, Component cfc, Property prop, SessionFactoryData data) throws PageException {
 		Struct meta = prop.getDynamicAttributes();
 
-		Document doc = CommonUtil.getDocument(clazz);
+		Document doc = XMLUtil.getDocument(clazz);
 		Element version = doc.createElement("version");
 		clazz.appendChild(version);
 
@@ -1789,6 +1840,118 @@ public class HBMCreator {
 		return i;
 	}
 
+	/**
+	 * Convert the document to a file-ready XML string.
+	 * <p>
+	 * Will prepend the XML head tags.
+	 *
+	 * @param document
+	 *            The W3C document root element for converting to an XML string
+	 *
+	 * @return a fully-formed HBM XML document ready to save to a file.
+	 *
+	 * @throws PageException
+	 */
+	public static String toMappingString(Element document) throws PageException {
+		return getXMLOpen() + XMLUtil.toString(document);
+	}
+
+	/**
+	 * Save the XML dom to a hibernate mapping file (myEntity.hbm.xml)
+	 *
+	 * @param cfc
+	 *            Lucee Component (entity) that we're saving the mapping for
+	 * @param xml
+	 *            Fully-formed hibernate mapping XML
+	 */
+	public static void saveMapping(Component cfc, String xml) {
+		Resource res = getMappingResource(cfc);
+		if (res != null) {
+			try {
+				CommonUtil.write(res, xml, CommonUtil.UTF8(), false);
+			} catch (Exception e) {
+			}
+		}
+	}
+
+	/**
+	 * Get the hibernate mapping XML as a string.
+	 *
+	 * @param cfc
+	 *            Lucee Component (entity) for which to load the HBM mapping xml file
+	 *
+	 * @return A giant XML string
+	 */
+	public static String loadMapping(Component cfc) throws PageException, IOException {
+
+		Resource resource = getMappingResource(cfc);
+		if (resource == null)
+			throw ExceptionUtil.createException("Hibernate mapping not found for entity: " + cfc.getName());
+
+		String xml = CommonUtil.toString(resource, CommonUtil.UTF8());
+		// return CommonUtil.toXML(xml).getOwnerDocument().getDocumentElement();
+		return xml;
+	}
+
+	/**
+	 * Get the last modified time for this component's mapping. Will return 0 if no mapping found.
+	 *
+	 * @param cfc
+	 *            The Lucee component (persistent entity) we're pulling the modification date for
+	 *
+	 * @return A <code>long</code> value representing the time the file was last modified, measured in milliseconds
+	 *         since the epoch (00:00:00 GMT, January 1, 1970), or <code>0L</code> if the file does not exist or if an
+	 *         I/O error occurs
+	 *
+	 * @see lucee.commons.io.res.Resource#lastModified();
+	 */
+	public static long getMappingLastModified(Component cfc) {
+		Resource res = getMappingResource(cfc);
+		if (res == null)
+			return 0;
+		return res.lastModified();
+	}
+
+	/**
+	 * Get the HBM mapping file ( i.e. `models/myEntity.hbm.xml`) for this persistent Component/entity.
+	 *
+	 * @param cfc
+	 *            Lucee Component
+	 *
+	 * @return Lucee Resource, i.e. a Lucee-fied File object
+	 */
+	public static Resource getMappingResource(Component cfc) {
+		Resource res = cfc.getPageSource().getResource();
+		if (res == null)
+			return null;
+		return res.getParentResource().getRealResource(res.getName() + ".hbm.xml");
+	}
+
+	/**
+	 * Get the opening of a Hibernate mapping XML file, including <xml> tag and DOCTYPE declaration
+	 */
+	public static String getXMLOpen() {
+		StringBuilder xml = new StringBuilder();
+		xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		xml.append(HIBERNATE_3_DOCTYPE_DEFINITION + "\n");
+		// xml.append("<hibernate-mapping>\n");
+		return xml.toString();
+	}
+
+	/**
+	 * Strip the open/close tags (i.e. `<xml>`, `<!DOCTYPE>`, `<hibernate-mapping>`) from an hbm.xml file.
+	 * <p>
+	 * Useful for assembling multiple entities into a single `<hibernate-mapping>` element for sending to Hibernate.
+	 *
+	 * @param xml
+	 *            XML string from which to strip open and close tags
+	 *
+	 * @return an XML string with the DOCTYPE, `<xml>` and `<hibernate-mapping>` elements removed
+	 */
+	public static String stripXMLOpenClose(String xml) {
+		return xml.replaceAll("<\\?xml[^>]+>", "").replaceAll("<!DOCTYPE[^>]+>", "").replaceAll("</?hibernate-mapping>",
+				"");
+	}
 }
 
 class PropertyCollection {

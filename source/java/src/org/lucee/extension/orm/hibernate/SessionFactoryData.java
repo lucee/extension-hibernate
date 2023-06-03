@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.cfg.Configuration;
 import org.hibernate.SessionFactory;
 import org.hibernate.engine.query.spi.QueryPlanCache;
 import org.hibernate.internal.SessionFactoryImpl;
@@ -34,6 +35,9 @@ import lucee.runtime.type.Struct;
 
 public class SessionFactoryData {
 
+	/**
+	 * Use during ORM initialization for tracking the in-progress list of Component entities.
+	 */
 	public List<Component> tmpList;
 
 	private final Map<Key, DataSource> sources = new HashMap<Key, DataSource>();
@@ -125,7 +129,7 @@ public class SessionFactoryData {
 		}
 
 		// if parsing is in progress, the cfc can be found here
-		if (tmpList != null) {
+		if (hasTempCFCs()) {
 			Iterator<Component> it = tmpList.iterator();
 			while (it.hasNext()) {
 				cfc = it.next();
@@ -146,10 +150,8 @@ public class SessionFactoryData {
 		Component cfc;
 		List<String> names = new ArrayList<String>();
 
-		List<Component> list = tmpList;
-		if (list != null) {
-			int index = 0;
-			Iterator<Component> it2 = list.iterator();
+		if (hasTempCFCs()) {
+			Iterator<Component> it2 = tmpList.iterator();
 			while (it2.hasNext()) {
 				cfc = it2.next();
 				names.add(cfc.getName());
@@ -184,18 +186,38 @@ public class SessionFactoryData {
 
 	}
 
-	// Datasource specific
+	/**
+	 * Get the Hibernate configuration for the given datasource name.
+	 *
+	 * @param ds
+	 *            Datasource object
+	 *
+	 * @return an instance of the {@link org.lucee.extension.orm.hibernate.jdbc.DataSourceConfig} object
+	 */
 	public DataSourceConfig getConfiguration(DataSource ds) {
 		return configurations.get(CommonUtil.toKey(ds.getName()));
 	}
 
+	/**
+	 * Get the Hibernate configuration for the given datasource name.
+	 *
+	 * @param key
+	 *            Datasource name, as a Lucee collection key
+	 *
+	 * @return an instance of the {@link org.lucee.extension.orm.hibernate.jdbc.DataSourceConfig} object
+	 */
 	public DataSourceConfig getConfiguration(Key key) {
 		return configurations.get(key);
 	}
 
-	public void setConfiguration(Log log, String mappings, DataSource ds, String user, String pass, String applicationContextName) throws PageException, SQLException, IOException {
-		configurations.put(CommonUtil.toKey(ds.getName()),
-				new DataSourceConfig(ds, HibernateSessionFactory.createConfiguration(log, mappings, ds, user, pass, this, applicationContextName)));
+	public void setConfiguration(Log log, String mappings, DataSource ds, String user, String pass,
+			String applicationContextName) throws PageException, SQLException, IOException {
+
+		Configuration configuration = new ConfigurationBuilder().withDatasource(ds).withDatasourceCreds(user, pass)
+				.withORMConfig(getORMConfiguration()).withEventListener(getEventListenerIntegrator())
+				.withApplicationName(applicationContextName).withXMLMappings(mappings).withLog(log).build();
+		configurations.put(CommonUtil.toKey(ds.getName()), new DataSourceConfig(ds, configuration));
+		HibernateSessionFactory.schemaExport(log, configuration, ds, user, pass, this);
 	}
 
 	public SessionFactory buildSessionFactory(Key datasSourceName) {
@@ -228,6 +250,9 @@ public class SessionFactoryData {
 		return factory;
 	}
 
+	/**
+	 * Reset the session factory and clear all known configuration.
+	 */
 	public void reset() {
 		configurations.clear();
 		Iterator<SessionFactory> it = factories.values().iterator();
@@ -303,6 +328,9 @@ public class SessionFactoryData {
 		return sources.values().toArray(new DataSource[sources.size()]);
 	}
 
+	/**
+	 * Call all SessionFactory objects to ensure they're all built
+	 */
 	public void init() {
 		Iterator<Key> it = cfcs.keySet().iterator();
 		while (it.hasNext()) {
@@ -327,5 +355,14 @@ public class SessionFactoryData {
 
 	public EventListenerIntegrator getEventListenerIntegrator() {
 		return eventListenerIntegrator;
+	}
+
+	/**
+	 * See if we have loaded entities. (ORM-ish CFML Components)
+	 *
+	 * @return True if entity list is not null and not empty.
+	 */
+	public boolean hasTempCFCs() {
+		return tmpList != null && !tmpList.isEmpty();
 	}
 }

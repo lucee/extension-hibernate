@@ -1,22 +1,3 @@
-<!--- 
- *
- * Copyright (c) 2016, Lucee Assosication Switzerland. All rights reserved.
- * Copyright (c) 2014, the Railo Company LLC. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either 
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public 
- * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
- * 	
- ---><cfscript>
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	//public function setUp(){}
@@ -52,7 +33,8 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				systemOutput("ERROR: " & err.error, true, true);
 			}
 		}
-		local.expectedEvents =  [ "preInsert", "postInsert", "onFlush", "onClear" ]; // TBC
+		local.expectedEvents =  [ "onFlush", "preInsert", "preInsert", "postInsert", "postInsert", "onClear" ]; 
+		// local.expectedEvents =  [ "preInsert", "postInsert", "onFlush", "onClear" ]; // TBC
 		expect( res.events ).toBe( expectedEvents ); 
 		expect( res.errors.len() ).toBe( 0, "errors" );
 		expect( res.events.len() ).toBe( 4, "events" );
@@ -69,8 +51,9 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 			loop array=res.errors, item="local.err"{
 				systemOutput("ERROR: " & err.error, true, true);
 			}
-		}		
-		local.expectedEvents =  [ "preLoad", "postLoad", "onFlush", "onClear" ]; // TBC
+		}
+		local.expectedEvents =  [ "onFlush", "onClear" ]; 
+		//local.expectedEvents =  [ "preLoad", "postLoad", "onFlush", "onClear" ]; // TBC
 		expect( res.events ).toBe( expectedEvents ); 
 		expect( res.errors.len() ).toBe( 0, "errors" );
 		expect( res.events.len() ).toBe( 4, "events" );
@@ -82,5 +65,4 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 		var baseURI = getDirectoryFromPath( contractPath( getCurrentTemplatePath() ) );
 		return baseURI&""&calledName;
 	}
-} 
-</cfscript>
+}

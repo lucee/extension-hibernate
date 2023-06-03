@@ -35,7 +35,7 @@ component hint="logs out any orm events"  {
 		eventLog( arguments );
 	}
 
-	function preUpdate( entity, Struct oldData  ){
+	function preUpdate( entity, oldData  ){
 		systemOutput(oldData, true);
 		eventLog( arguments );
 	}
@@ -80,10 +80,10 @@ component hint="logs out any orm events"  {
 			if ( isSimpleValue( args.2 ) ){
 				systemOutput("simple arguments.2: " & args.2, true);
 			} else if ( isStruct( args.2) ) {
-				systemOutput("struct arguments.2: " & args.2.toJson(), true);
+				systemOutput("struct arguments.2: " & serializeJson(args.2), true); // hmm??
 			} else {
 				try {
-					systemOutput("arguments.2: " & args.2.toJson(), true);
+					systemOutput("arguments.2: " & args.2.getClass(), true); //hmm?
 				} catch (e) {
 					systemOutput("arguments.2: " & e.message, true);
 				}
@@ -97,6 +97,13 @@ component hint="logs out any orm events"  {
 			"eventName": eventName,
 			"args": args
 		} );
+
+		var noEntityExpected = {
+			"onFlush" : true,
+			"onClear" : true
+		};
+
+		if (structKeyExists(noEntityExpected, eventName)) return;
 
 		try {
 			if ( isNull(arguments.args.entity ) ) {

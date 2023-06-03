@@ -34,8 +34,11 @@ public class CFCGetter implements Getter {
 	 * Constructor of the class
 	 * 
 	 * @param key
-	 * @param string
+     *            Persistent property name
 	 * @param type
+     *            Persistent property type
+     * @param entityName
+     *            Name of the Hibernate entity to retrieve the value from
 	 */
 	public CFCGetter(String key, Type type, String entityName) {
 		this.key = CommonUtil.createKey(key);
