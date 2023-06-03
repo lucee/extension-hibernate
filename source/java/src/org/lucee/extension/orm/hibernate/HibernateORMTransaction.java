@@ -88,23 +88,20 @@ public class HibernateORMTransaction implements ORMTransaction {
 	@Override
 	public void end() {
 		// try was removed in ortus branch
-		try {
-			if (doRollback) {
-				trans.rollback();
-				if (autoManage) {
-					session.clear();
-				}
-			}
-			else {
-				if (trans.getStatus() == TransactionStatus.COMMITTED) {
-					trans.commit();
-				}
-				session.flush();
+		
+		if (doRollback) {
+			trans.rollback();
+			if (autoManage) {
+				session.clear();
 			}
 		}
-		finally {
-			session.close();
+		else {
+			if (trans.getStatus() == TransactionStatus.COMMITTED) {
+				trans.commit();
+			}
+			session.flush();
 		}
+
 	}
 
 	/**
