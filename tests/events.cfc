@@ -26,18 +26,14 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 		local.result=_InternalRequest(uri);
 		expect( result.status ).toBe( 200 );
 		local.res = deserializeJson(result.fileContent);
-		// systemOutput( res.events, true );
 		if (len(res.errors)){
 			loop array=res.errors, item="local.err"{
 				systemOutput("ERROR: " & err.error, true, true);
 			}
 		}
+		local.expectedEvents =  [ "onFlush", "preLoad", "postLoad", "preLoad", "postLoad", "onDelete", "onFlush", "preInsert", "postInsert", "preUpdate", "postUpdate", "preDelete", "postDelete", "onClear" ];
+		expect( res.events ).toBe( expectedEvents );
 		expect( res.errors.len() ).toBe( 0, "errors" );
-		expect( res.events.len() ).toBe( 20, "events" ); // TBC
-		// expect( trim( result.fileContent ) ).toBe( arrExpectedEvents ); // TODO this should be an array of event names
-		/*
-		i.e. arrExpectedEvents to be something like this
-		["preInsert","preInsert","postInsert","postInsert","preInsert","preInsert","preLoad","preLoad","postLoad","postLoad","postInsert","postInsert","postUpdate","postUpdate","preDelete","preDelete","postDelete","postDelete"] */
 	}
 
 	public void function testEvents_createNew (){
@@ -52,10 +48,9 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				systemOutput("ERROR: " & err.error, true, true);
 			}
 		}
-		local.expectedEvents =  [ "preInsert", "postInsert", "onFlush", "onClear" ]; // TBC
+		local.expectedEvents =  [ "onFlush", "preInsert", "postInsert", "onClear" ];
 		expect( res.events ).toBe( expectedEvents ); 
 		expect( res.errors.len() ).toBe( 0, "errors" );
-		expect( res.events.len() ).toBe( 4, "events" );
 	}
 
 	public void function testEvents_load (){
@@ -70,10 +65,9 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				systemOutput("ERROR: " & err.error, true, true);
 			}
 		}		
-		local.expectedEvents =  [ "preLoad", "postLoad", "onFlush", "onClear" ]; // TBC
+		local.expectedEvents =  [ "onFlush", "preInsert", "postInsert", "onClear", "preLoad", "postLoad" ];
 		expect( res.events ).toBe( expectedEvents ); 
 		expect( res.errors.len() ).toBe( 0, "errors" );
-		expect( res.events.len() ).toBe( 4, "events" );
 	}
 
 	private string function createURI(string calledName){

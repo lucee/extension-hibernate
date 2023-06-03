@@ -5,15 +5,7 @@ component hint="logs out any orm events"  {
 		return this;
 	}
 
-	// Currently not implemented
-	function preFlush(  entity ){ // entities
-		eventLog( arguments );
-	}
 	function onFlush( entity ) {
-		eventLog( arguments );
-	}
-	// Currently not implemented
-	function postFlush( entity ){ // entities
 		eventLog( arguments );
 	}
 
@@ -76,20 +68,6 @@ component hint="logs out any orm events"  {
 		systemOutput( "------- #eventName#  #listLast(s.template,"/\")#: #s.lineNumber#", true );
 		systemOutput( "arguments: " & structKeyList(args), true);
 
-		if ( !isNull(args.2 ) ){  // only postNew, preUpdate should have two args
-			if ( isSimpleValue( args.2 ) ){
-				systemOutput("simple arguments.2: " & args.2, true);
-			} else if ( isStruct( args.2) ) {
-				systemOutput("struct arguments.2: " & args.2.toJson(), true);
-			} else {
-				try {
-					systemOutput("arguments.2: " & args.2.toJson(), true);
-				} catch (e) {
-					systemOutput("arguments.2: " & e.message, true);
-				}
-			}
-		}
-
 		//if ( ! structKeyExists( application, "ormEventLog" ) )
 		//    application.ormEventLog = [];
 		application.ormEventLog.append( {
@@ -99,8 +77,9 @@ component hint="logs out any orm events"  {
 		} );
 
 		try {
+			// Certain events like onFlush, onClear, onAutoFlush will not have an associated entity.
 			if ( isNull(arguments.args.entity ) ) {
-				throw ("entity was null");
+				return;
 			}
 
 			if (isObject( args.entity ) ){
