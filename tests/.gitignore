@@ -1,2 +1,3 @@
 # Test environment secrets
 .env
+tickets/**/datasource
