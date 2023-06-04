@@ -2162,7 +2162,7 @@ public class HBMCreator {
     }
 
     /**
-     * Get the opening of a Hibernate mapping XML file, including <xml> tag and DOCTYPE declaration
+     * Get the opening of a Hibernate mapping XML file, including xml tag and DOCTYPE declaration
      */
     public static String getXMLOpen() {
         StringBuilder xml = new StringBuilder();

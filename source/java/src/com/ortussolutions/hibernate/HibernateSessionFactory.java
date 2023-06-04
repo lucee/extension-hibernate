@@ -173,6 +173,12 @@ public class HibernateSessionFactory {
         }
     }
 
+    /**
+     * Generate and return the hibernate XML mapping files for each configured datasource. Most applications will only use a single datasource, but additional ones can be set at the entity (component) level.
+     * 
+     * @param data
+     * @return a Map of XML mappings per datasource key.
+     */
     public static Map<Key, String> assembleMappingsByDatasource(SessionFactoryData data) {
         Map<Key, String> mappings = new HashMap<Key, String>();
         Iterator<Entry<Key, Map<String, CFCInfo>>> it = data.getCFCs().entrySet().iterator();
@@ -193,6 +199,15 @@ public class HibernateSessionFactory {
         return mappings;
     }
 
+    /**
+     * Retrieve an XML mapping string which defines the Hibernate entity mapping for this entity (component) and all subcomponents. (Sub entities, if you will.)
+     * 
+     * @param key The entity name
+     * @param value The CFCInfo object containing the component and XML mapping
+     * @param done Collection of pre-generated items - helps avoid duplicate mapping generation
+     * @param data Session factory data object of state for the current session factory
+     * @return A string of XML for the hibernate mapping. Does NOT include the opening xml tag or doctype, since this must only repeat once per file, whereas this function iterates recursively over the component and its children.
+     */
     private static String assembleMappingForCFC(String key, CFCInfo value, Set<String> done, SessionFactoryData data) {
         if (done.contains(key))
             return "";
@@ -208,7 +223,7 @@ public class HibernateSessionFactory {
                     throw (ThreadDeath) t;
             }
 
-            ext = HibernateUtil.id(CommonUtil.last(ext, ".").trim());
+            ext = HibernateUtil.sanitizeEntityName(CommonUtil.last(ext, ".").trim());
             if (!done.contains(ext)) {
                 v = data.getCFC(ext, null);
                 if (v != null) {

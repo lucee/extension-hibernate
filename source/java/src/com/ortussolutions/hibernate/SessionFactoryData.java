@@ -302,14 +302,14 @@ public class SessionFactoryData {
         Map<String, CFCInfo> map = cfcs.get(dsn);
         if (map == null)
             cfcs.put(dsn, map = new HashMap<String, CFCInfo>());
-        map.put(HibernateUtil.id(entityName), info);
+        map.put(HibernateUtil.sanitizeEntityName(entityName), info);
         sources.put(dsn, ds);
     }
 
     CFCInfo getCFC(String entityName, CFCInfo defaultValue) {
         Iterator<Map<String, CFCInfo>> it = cfcs.values().iterator();
         while (it.hasNext()) {
-            CFCInfo info = it.next().get(HibernateUtil.id(entityName));
+            CFCInfo info = it.next().get(HibernateUtil.sanitizeEntityName(entityName));
             if (info != null)
                 return info;
         }
