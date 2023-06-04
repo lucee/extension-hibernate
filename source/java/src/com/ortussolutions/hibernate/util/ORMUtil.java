@@ -48,25 +48,6 @@ public class ORMUtil {
         return pc.getORMSession(create);
     }
 
-    // /**
-    // * Override's Lucee's {@link lucee.runtime.PageContext#getORMSession(boolean)} method to avoid stupidly creating a
-    // new session if one already exists.
-    // *
-    // * @param create Create a new session if none found.
-    // * @return A new or previously existing {@link lucee.runtime.orm.ORMSession}
-    // * @throws PageException
-    // */
-    // public ORMSession getORMSession(boolean create) throws PageException {
-    // if (ormSession == null || !ormSession.isValid()) {
-    // if (!create) return null;
-    // ormSession = config.getORMEngine(this).createSession(this);
-    // }
-    // DatasourceManagerImpl manager = (DatasourceManagerImpl) getDataSourceManager();
-    // manager.add(this, ormSession);
-
-    // return ormSession;
-    // }
-
     public static ORMEngine getEngine(PageContext pc) throws PageException {
         return pc.getConfig().getORMEngine(pc);
     }
@@ -84,76 +65,6 @@ public class ORMUtil {
         e.reload(pc, force);
         return e;
     }
-
-    // public static boolean equals(Object left, Object right) {
-    // HashSet<Object> done = new HashSet<Object>();
-    // return _equals(done, left, right);
-    // }
-
-    // private static boolean _equals(HashSet<Object> done, Object left, Object right) {
-
-    // if (left == right) return true;
-    // if (left == null || right == null) return false;
-
-    // // components
-    // if (left instanceof Component && right instanceof Component) {
-    // return _equals(done, (Component) left, (Component) right);
-    // }
-
-    // // arrays
-    // if (CommonUtil.isArray(left) && CommonUtil.isArray(right)) {
-    // return _equals(done, CommonUtil.toArray(left, null), CommonUtil.toArray(right, null));
-    // }
-
-    // // struct
-    // if (CommonUtil.isStruct(left) && CommonUtil.isStruct(right)) {
-    // return _equals(done, CommonUtil.toStruct(left, null), CommonUtil.toStruct(right, null));
-    // }
-
-    // try {
-    // return OpUtil.equals(ThreadLocalPageContext.get(), left, right, false);
-    // }
-    // catch (PageException e) {
-    // return false;
-    // }
-    // }
-
-    // private static boolean _equals(HashSet<Object> done, Collection left, Collection right) {
-    // if (done.contains(left)) return done.contains(right);
-    // done.add(left);
-    // done.add(right);
-
-    // if (left.size() != right.size()) return false;
-    // // Key[] keys = left.keys();
-    // Iterator<Entry<Key, Object>> it = left.entryIterator();
-    // Entry<Key, Object> e;
-    // Object l, r;
-    // while (it.hasNext()) {
-    // e = it.next();
-    // l = e.getValue();
-    // r = right.get(e.getKey(), null);
-    // if (r == null || !_equals(done, l, r)) return false;
-    // }
-    // return true;
-    // }
-
-    // private static boolean _equals(HashSet<Object> done, Component left, Component right) {
-    // if (done.contains(left)) return done.contains(right);
-    // done.add(left);
-    // done.add(right);
-
-    // if (left == null || right == null) return false;
-    // if (!left.getPageSource().equals(right.getPageSource())) return false;
-    // Property[] props = getProperties(left);
-    // Object l, r;
-    // props = getIds(props);
-    // for (int i = 0; i < props.length; i++) {
-    // l = left.getComponentScope().get(CommonUtil.createKey(props[i].getName()), null);
-    // r = right.getComponentScope().get(CommonUtil.createKey(props[i].getName()), null);
-    // if (!_equals(done, l, r)) return false;
-    // }
-    // return true;
-    // }
 
     public static Property[] getIds(Property[] props) {
         ArrayList<Property> ids = new ArrayList<Property>();
@@ -208,19 +119,6 @@ public class ORMUtil {
         }
         return defaultValue;
     }
-    /*
-     * jira2049 public static Object getPropertyValue(ORMSession session,Component cfc, String name, Object
-     * defaultValue) { Property[] props=getProperties(cfc); Object raw=null; SessionImpl sess=null; if(session!=null){
-     * raw=session.getRawSession(); if(raw instanceof SessionImpl) sess=(SessionImpl) raw; } Object val; for(int
-     * i=0;i<props.length;i++){ if(!props[i].getName().equalsIgnoreCase(name)) continue; val =
-     * cfc.getComponentScope().get(KeyImpl.getInstance(name),null); if(sess!=null && !(val instanceof
-     * PersistentCollection)){ if(val instanceof List) return new PersistentList(sess,(List)val); if(val instanceof Map
-     * && !(val instanceof Component)) return new PersistentMap(sess,(Map)val); if(val instanceof Set) return new
-     * PersistentSet(sess,(Set)val); if(val instanceof Array) return new
-     * PersistentList(sess,CommonUtil.toList(val,null));
-     *
-     * } return val; } return defaultValue; }
-     */
 
     private static Property[] getProperties(Component cfc) {
         return cfc.getProperties(true, true, false, false);

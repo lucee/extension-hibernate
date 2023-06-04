@@ -37,8 +37,6 @@ import lucee.runtime.type.Struct;
  */
 public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 
-    // private static CFCAccessor accessor = new CFCAccessor();
-
     public AbstractEntityTuplizerImpl(EntityMetamodel entityMetamodel, PersistentClass persistentClass) {
         super(entityMetamodel, persistentClass);
     }

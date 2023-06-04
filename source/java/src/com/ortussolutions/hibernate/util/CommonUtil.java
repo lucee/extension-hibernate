@@ -67,21 +67,13 @@ public class CommonUtil {
     public static final Key FIELDTYPE = CommonUtil.createKey("fieldtype");
     public static final Key INIT = CommonUtil.createKey("init");
     private static final short INSPECT_UNDEFINED = (short) 4; /* ConfigImpl.INSPECT_UNDEFINED */
-    private static final Class<?>[] ZEROC = new Class<?>[] {};
-    private static final Object[] ZEROO = new Object[] {};
     private static final Class<?>[] GET_DSCONN = new Class[] { PageContext.class, DataSource.class, String.class,
             String.class, boolean.class };
     private static final Class<?>[] REL_DSCONN = new Class[] { PageContext.class, DatasourceConnection.class,
             boolean.class };
-    // private static final Class<?>[] GET_CONN = new Class[] { PageContext.class, DataSource.class,
-    // String.class, String.class };
-    // private static final Class<?>[] REL_CONN = new Class[] { PageContext.class,
-    // DatasourceConnection.class };
-    // releaseConnection(pageContext, dc);
     private static Charset _charset;
 
     public static Charset _UTF8;
-    // public static Charset ISO88591;
     public static Charset _UTF16BE;
     public static Charset _UTF16LE;
 
@@ -462,10 +454,6 @@ public class CommonUtil {
     public static Struct toStruct(Object obj, Struct defaultValue) {
         return caster().toStruct(obj, defaultValue);
     }
-
-    // public static Struct toStruct(Object o, boolean caseSensitive) throws PageException {
-    // return caster().toStruct(o, caseSensitive);
-    // }
 
     public static SQLItem toSQLItem(Object value, int type) {
         return db().toSQLItem(value, type);

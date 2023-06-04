@@ -17,7 +17,6 @@ public class ConnectionProviderImpl implements ConnectionProvider {
 
     private static final long serialVersionUID = -4513189055112912809L;
 
-    // private final DBUtil dbu;
     private CFMLEngine engine;
     private final DataSource ds;
     private final String user;
