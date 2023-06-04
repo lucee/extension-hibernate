@@ -31,7 +31,8 @@ public class EntityLoadByPK extends BIF {
         CFMLEngine engine = CFMLEngineFactory.getInstance();
         Cast cast = engine.getCastUtil();
 
-        if (args.length == 2) return call(pc, cast.toString(args[0]), args[1]);
+        if (args.length == 2)
+            return call(pc, cast.toString(args[0]), args[1]);
 
         throw engine.getExceptionUtil().createFunctionException(pc, "EntityLoadByPK", 2, 2, args.length);
     }

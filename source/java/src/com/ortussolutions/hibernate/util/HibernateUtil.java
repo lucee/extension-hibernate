@@ -428,8 +428,10 @@ public class HibernateUtil {
 
     /**
      * Check filename string against known application.cfc name.
-     * 
-     * @param name Filename to check
+     *
+     * @param name
+     *            Filename to check
+     *
      * @return True if string matches 'application.cfc'.
      */
     public static boolean isApplicationName(String name) {

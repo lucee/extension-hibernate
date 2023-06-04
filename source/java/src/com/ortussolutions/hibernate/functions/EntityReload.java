@@ -43,7 +43,8 @@ public class EntityReload extends BIF {
     public Object invoke(PageContext pc, Object[] args) throws PageException {
         CFMLEngine engine = CFMLEngineFactory.getInstance();
 
-        if (args.length == 1) return call(pc, args[0]);
+        if (args.length == 1)
+            return call(pc, args[0]);
 
         throw engine.getExceptionUtil().createFunctionException(pc, "EntityReload", 1, 1, args.length);
     }

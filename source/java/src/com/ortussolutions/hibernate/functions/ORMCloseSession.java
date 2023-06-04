@@ -50,8 +50,10 @@ public class ORMCloseSession extends BIF {
         CFMLEngine engine = CFMLEngineFactory.getInstance();
         Cast cast = engine.getCastUtil();
 
-        if (args.length == 0) return call(pc);
-        if (args.length == 1) return call(pc, cast.toString(args[0]));
+        if (args.length == 0)
+            return call(pc);
+        if (args.length == 1)
+            return call(pc, cast.toString(args[0]));
 
         throw engine.getExceptionUtil().createFunctionException(pc, "ORMCloseSession", 0, 1, args.length);
     }

@@ -76,19 +76,19 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
      */
     private Component GlobalEventListener;
 
-	public static final Key ON_EVICT = CommonUtil.createKey("onEvict");
-	public static final Key ON_DIRTY_CHECK = CommonUtil.createKey("onDirtyCheck");
-	public static final Key ON_DELETE = CommonUtil.createKey("onDelete");
-	public static final Key ON_CLEAR = CommonUtil.createKey("onClear");
-	public static final Key ON_AUTO_FLUSH = CommonUtil.createKey("onAutoFlush");
-	public static final Key ON_FLUSH = CommonUtil.createKey("onFlush");
-	public static final Key PRE_INSERT = CommonUtil.createKey("preInsert");
-	public static final Key PRE_UPDATE = CommonUtil.createKey("preUpdate");
-	public static final Key POST_LOAD = CommonUtil.createKey("postLoad");
-	public static final Key PRE_LOAD = CommonUtil.createKey("preLoad");
-	public static final Key POST_DELETE = CommonUtil.createKey("postDelete");
-	public static final Key PRE_DELETE = CommonUtil.createKey("preDelete");
-	public static final Key POST_UPDATE = CommonUtil.createKey("postUpdate");
+    public static final Key ON_EVICT = CommonUtil.createKey("onEvict");
+    public static final Key ON_DIRTY_CHECK = CommonUtil.createKey("onDirtyCheck");
+    public static final Key ON_DELETE = CommonUtil.createKey("onDelete");
+    public static final Key ON_CLEAR = CommonUtil.createKey("onClear");
+    public static final Key ON_AUTO_FLUSH = CommonUtil.createKey("onAutoFlush");
+    public static final Key ON_FLUSH = CommonUtil.createKey("onFlush");
+    public static final Key PRE_INSERT = CommonUtil.createKey("preInsert");
+    public static final Key PRE_UPDATE = CommonUtil.createKey("preUpdate");
+    public static final Key POST_LOAD = CommonUtil.createKey("postLoad");
+    public static final Key PRE_LOAD = CommonUtil.createKey("preLoad");
+    public static final Key POST_DELETE = CommonUtil.createKey("postDelete");
+    public static final Key PRE_DELETE = CommonUtil.createKey("preDelete");
+    public static final Key POST_UPDATE = CommonUtil.createKey("postUpdate");
     public static final Key POST_INSERT = CommonUtil.createKey("postInsert");
 
     @Override
@@ -148,7 +148,8 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
         fireOnEntity(event.getEntity(), EventListenerIntegrator.PRE_INSERT, event, null);
 
         Component entity = CommonUtil.toComponent(event.getEntity(), null);
-        if (entity != null) persistEntityChangesToState(event.getState(), propertyNames, entity);
+        if (entity != null)
+            persistEntityChangesToState(event.getState(), propertyNames, entity);
         return false;
     }
 
@@ -185,7 +186,8 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 
         fireOnEntity(event.getEntity(), EventListenerIntegrator.PRE_UPDATE, event, oldState);
         Component entity = CommonUtil.toComponent(event.getEntity(), null);
-        if (entity != null) persistEntityChangesToState(event.getState(), propertyNames, entity);
+        if (entity != null)
+            persistEntityChangesToState(event.getState(), propertyNames, entity);
         return false;
     }
 
@@ -365,34 +367,39 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
     /**
      * Loop over the provided state properties and persist any entity changes to the state object.
      * <p>
-     * Useful in the case of a "Pre database operation event", where the state to be committed has already been recorded, and any changes made during a `onPreInsert()` or `onPreUpdate()` event will need to be made in the `state` object in order to affect a change in what will be persisted.
+     * Useful in the case of a "Pre database operation event", where the state to be committed has already been
+     * recorded, and any changes made during a `onPreInsert()` or `onPreUpdate()` event will need to be made in the
+     * `state` object in order to affect a change in what will be persisted.
      * <p>
      * Currently used in onPreInsert and onPreUpdate.
-     * 
+     *
      * See http://anshuiitk.blogspot.com/2010/11/hibernate-pre-database-opertaion-event.html
-     * 
-     * @param state The entity state to persist, from event.getState(). {@link org.hibernate.event.spi.PreInsertEvent}
-     * @param stateProperties Array of properties to update, matching the order of the `state[]` fields.
-     * @param entity The entity to pull a potentially altered value from.
+     *
+     * @param state
+     *            The entity state to persist, from event.getState(). {@link org.hibernate.event.spi.PreInsertEvent}
+     * @param stateProperties
+     *            Array of properties to update, matching the order of the `state[]` fields.
+     * @param entity
+     *            The entity to pull a potentially altered value from.
      */
     private void persistEntityChangesToState(Object[] state, String[] stateProperties, Component entity) {
-        try{
+        try {
             Property[] properties = entity.getProperties(true, false, false, false);
             for (int n = 0; n < stateProperties.length; ++n) {
                 final String currentProperty = stateProperties[n];
-                Optional<Property> property = Arrays.stream( properties )
-                .filter( prop -> prop.getName() == currentProperty )
-                .findFirst();
-                if ( property.isPresent() ) {
+                Optional<Property> property = Arrays.stream(properties)
+                        .filter(prop -> prop.getName() == currentProperty).findFirst();
+                if (property.isPresent()) {
                     Property theprop = property.get();
-                    if ( theprop.getValue() != null){
+                    if (theprop.getValue() != null) {
                         Object value = HibernateCaster.toHibernateValue(entity, theprop);
                         state[n] = value;
                     }
                 }
             }
-        } catch( Exception e ){
-            throw new RuntimeException( "Error populating event state for persistance in pre-event listener method: " + e.getMessage(),e);
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Error populating event state for persistance in pre-event listener method: " + e.getMessage(), e);
         }
     }
 }

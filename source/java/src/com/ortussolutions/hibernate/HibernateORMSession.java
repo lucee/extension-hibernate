@@ -766,10 +766,7 @@ public class HibernateORMSession implements ORMSession {
         String name = HibernateCaster.getEntityName(cfc);
 
         return CommonUtil
-                .toComponent(
-                    getSession(pc, CommonUtil.toKey(info.getDataSource().getName()))
-                        .merge(name, cfc)
-                );
+                .toComponent(getSession(pc, CommonUtil.toKey(info.getDataSource().getName())).merge(name, cfc));
     }
 
     @Override

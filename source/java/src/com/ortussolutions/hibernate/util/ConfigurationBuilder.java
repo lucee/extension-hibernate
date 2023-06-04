@@ -87,6 +87,7 @@ public class ConfigurationBuilder {
      * Build out Hibernate configuration using the application's `this.ormSettings`, datasource, and generated mappings.
      *
      * @return Hibernate Configuration object
+     *
      * @throws SQLException
      * @throws IOException
      * @throws PageException

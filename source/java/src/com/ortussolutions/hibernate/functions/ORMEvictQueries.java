@@ -49,9 +49,12 @@ public class ORMEvictQueries extends BIF {
         CFMLEngine engine = CFMLEngineFactory.getInstance();
         Cast cast = engine.getCastUtil();
 
-        if (args.length == 0) return call(pc);
-        if (args.length == 1) return call(pc, cast.toString(args[0]));
-        if (args.length == 2) return call(pc, cast.toString(args[0]), cast.toString(args[1]));
+        if (args.length == 0)
+            return call(pc);
+        if (args.length == 1)
+            return call(pc, cast.toString(args[0]));
+        if (args.length == 2)
+            return call(pc, cast.toString(args[0]), cast.toString(args[1]));
 
         throw engine.getExceptionUtil().createFunctionException(pc, "ORMEvictQueries", 0, 2, args.length);
     }

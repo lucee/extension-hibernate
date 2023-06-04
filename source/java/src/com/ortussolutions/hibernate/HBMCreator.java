@@ -34,14 +34,18 @@ public class HBMCreator {
     /**
      * Hibernate DOCTYPE mapping ID
      *
-     * @see <a href="https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects">Hibernate documentation schema-generation-database-objects</a>
+     * @see <a href=
+     *      "https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects">Hibernate
+     *      documentation schema-generation-database-objects</a>
      */
     public static final String HIBERNATE_3_PUBLIC_ID = "-//Hibernate/Hibernate Mapping DTD 3.0//EN";
 
     /**
      * Hibernate doctype reference
      *
-     * @see <a href="https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects">Hibernate documentation schema-generation-database-objects</a>
+     * @see <a href=
+     *      "https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects">Hibernate
+     *      documentation schema-generation-database-objects</a>
      */
     // public static final String HIBERNATE_3_SYSTEM_ID = "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd";
     public static final String HIBERNATE_3_SYSTEM_ID = "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd";
@@ -49,22 +53,24 @@ public class HBMCreator {
     /**
      * Full XML doctype for Hibernate mappings
      *
-     * @see <a href="https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects">Hibernate documentation schema-generation-database-objects</a>
+     * @see <a href=
+     *      "https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects">Hibernate
+     *      documentation schema-generation-database-objects</a>
      */
     public static final String HIBERNATE_3_DOCTYPE_DEFINITION = "<!DOCTYPE hibernate-mapping PUBLIC \""
             + HIBERNATE_3_PUBLIC_ID + "\" \"" + HIBERNATE_3_SYSTEM_ID + "\">";
 
-    private static final Collection.Key PROPERTY        = CommonUtil.createKey("property");
-    private static final Collection.Key LINK_TABLE      = CommonUtil.createKey("linktable");
-    private static final Collection.Key CFC             = CommonUtil.createKey("cfc");
-    private static final Collection.Key GENERATOR       = CommonUtil.createKey("generator");
-    private static final Collection.Key PARAMS          = CommonUtil.createKey("params");
-    private static final Collection.Key SEQUENCE        = CommonUtil.createKey("sequence");
+    private static final Collection.Key PROPERTY = CommonUtil.createKey("property");
+    private static final Collection.Key LINK_TABLE = CommonUtil.createKey("linktable");
+    private static final Collection.Key CFC = CommonUtil.createKey("cfc");
+    private static final Collection.Key GENERATOR = CommonUtil.createKey("generator");
+    private static final Collection.Key PARAMS = CommonUtil.createKey("params");
+    private static final Collection.Key SEQUENCE = CommonUtil.createKey("sequence");
     private static final Collection.Key UNIQUE_KEY_NAME = CommonUtil.createKey("uniqueKeyName");
-    private static final Collection.Key GENERATED       = CommonUtil.createKey("generated");
-    private static final Collection.Key FIELDTYPE       = CommonUtil.createKey("fieldtype");
-    private static final Collection.Key KEY             = CommonUtil.createKey("key");
-    private static final Collection.Key TYPE            = CommonUtil.createKey("type");
+    private static final Collection.Key GENERATED = CommonUtil.createKey("generated");
+    private static final Collection.Key FIELDTYPE = CommonUtil.createKey("fieldtype");
+    private static final Collection.Key KEY = CommonUtil.createKey("key");
+    private static final Collection.Key TYPE = CommonUtil.createKey("type");
 
     /**
      * Generate an XML node tree defining a Hibernate mapping for the given Component

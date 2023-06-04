@@ -39,7 +39,8 @@ public class ORMCloseAllSessions extends BIF {
     public Object invoke(PageContext pc, Object[] args) throws PageException {
         CFMLEngine engine = CFMLEngineFactory.getInstance();
 
-        if (args.length == 0) return call(pc);
+        if (args.length == 0)
+            return call(pc);
 
         throw engine.getExceptionUtil().createFunctionException(pc, "ORMCloseAllSessions", 0, 0, args.length);
     }

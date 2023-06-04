@@ -49,8 +49,10 @@ public class EntityToQuery extends BIF {
         CFMLEngine engine = CFMLEngineFactory.getInstance();
         Cast cast = engine.getCastUtil();
 
-        if (args.length == 1) return call(pc, args[0]);
-        if (args.length == 2) return call(pc, args[0], cast.toString(args[1]));
+        if (args.length == 1)
+            return call(pc, args[0]);
+        if (args.length == 2)
+            return call(pc, args[0], cast.toString(args[1]));
 
         throw engine.getExceptionUtil().createFunctionException(pc, "EntityToQuery", 1, 2, args.length);
     }

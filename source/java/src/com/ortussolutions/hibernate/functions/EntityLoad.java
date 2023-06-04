@@ -96,10 +96,14 @@ public class EntityLoad extends BIF {
         CFMLEngine engine = CFMLEngineFactory.getInstance();
         Cast cast = engine.getCastUtil();
 
-        if (args.length == 1) return call(pc, cast.toString(args[0]));
-        if (args.length == 2) return call(pc, cast.toString(args[0]), args[1]);
-        if (args.length == 3) return call(pc, cast.toString(args[0]), args[1], args[2]);
-        if (args.length == 4) return call(pc, cast.toString(args[0]), args[1], args[2], args[3]);
+        if (args.length == 1)
+            return call(pc, cast.toString(args[0]));
+        if (args.length == 2)
+            return call(pc, cast.toString(args[0]), args[1]);
+        if (args.length == 3)
+            return call(pc, cast.toString(args[0]), args[1], args[2]);
+        if (args.length == 4)
+            return call(pc, cast.toString(args[0]), args[1], args[2], args[3]);
 
         throw engine.getExceptionUtil().createFunctionException(pc, "EntityLoad", 1, 4, args.length);
     }
