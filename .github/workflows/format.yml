@@ -5,12 +5,10 @@ on:
     branches-ignore:
       - 'releases/**'
       - 'master'
-      - 'development'
   push:
     branches-ignore:
       - 'releases/**'
       - 'master'
-      - 'development'
 
 
 jobs:
