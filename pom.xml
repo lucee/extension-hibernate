@@ -22,7 +22,6 @@
       <!-- Dependency versions -->
       <minLuceeVersion>5.3.9.73</minLuceeVersion>
       <lucee.version>5.3.10.97</lucee.version>
-      <hibernate.version>5.4.29.Final</hibernate.version>
 
       <!-- What version of the JDK should we compile against? -->
       <jdk.version>1.8</jdk.version>
@@ -334,14 +333,14 @@ lucee-core-version: ${minLuceeVersion}
       <dependency>
          <groupId>org.hibernate</groupId>
          <artifactId>hibernate-core</artifactId>
-         <version>${hibernate.version}</version>
+         <version>5.4.29.Final</version>
       </dependency>
 
       <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-ehcache -->
       <dependency>
          <groupId>org.hibernate</groupId>
          <artifactId>hibernate-ehcache</artifactId>
-         <version>${hibernate.version}</version>
+         <version>5.4.29.Final</version>
 
          <!--
          https://maven.apache.org/guides/introduction/introduction-to-optional-and-excludes-dependencies.html#how-to-use-dependency-exclusions -->
