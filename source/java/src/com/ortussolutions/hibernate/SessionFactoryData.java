@@ -44,6 +44,9 @@ public class SessionFactoryData {
      */
     public List<Component> tmpList;
 
+    /**
+     * HashMap of datasources by datasource name
+     */
     private final Map<Key, DataSource> sources = new HashMap<Key, DataSource>();
     private final Map<Key, Map<String, CFCInfo>> cfcs = new HashMap<Key, Map<String, CFCInfo>>();
     private final Map<Key, DataSourceConfig> configurations = new HashMap<Key, DataSourceConfig>();
@@ -84,6 +87,15 @@ public class SessionFactoryData {
         return qpc;
     }
 
+    /**
+     * Retrieve the configured naming strategy.
+     * Will introspect and check this.ormConf property to determine the naming strategy.
+     * 
+     * TODO: Convert this to set at constructor time! There's no point in checking and initializing the naming strategy upon calling the getter.
+     * 
+     * @return one of CFCNamingStrategy|SmartNamingStrategy|DefaultNamingStrategy
+     * @throws PageException
+     */
     public NamingStrategy getNamingStrategy() throws PageException {
         if (namingStrategy == null) {
             String strNamingStrategy = ormConf.namingStrategy();
@@ -226,6 +238,20 @@ public class SessionFactoryData {
         return configurations.get(key);
     }
 
+    /**
+     * Use the ConfigurationBuilder to build a configuration object using the provided arguments.
+     * 
+     * @param log Lucee logger to use for logging
+     * @param mappings A string of generated or loaded Hibernate mapping XML.
+     * @param ds The datasource to use
+     * @param user The username credential to use for the given datasource
+     * @param pass The password credential to use for the given datasource
+     * @param applicationContextName Name of the CFML application, used to ensure ORM configuration is only built once per application, and only cleared on ORMReload.
+     * 
+     * @throws PageException
+     * @throws SQLException
+     * @throws IOException
+     */
     public void setConfiguration(Log log, String mappings, DataSource ds, String user, String pass,
             String applicationContextName) throws PageException, SQLException, IOException {
 
@@ -236,6 +262,13 @@ public class SessionFactoryData {
         HibernateSessionFactory.schemaExport(log, configuration, ds, user, pass, this);
     }
 
+    /**
+     * Build a Hibernate SessionFactory for this datasource name.
+     * 
+     * Uses the Thread Context ClassLoader, presumably to allow Hibernate classes running into the Hibernate OSGI bundle to talk to the lucee components outside that lucee bundle.
+     * 
+     * @param datasSourceName Name of the datasource for which to build and configure a session factory.
+     */
     public SessionFactory buildSessionFactory(Key datasSourceName) {
         // Key key=eng.getCreationUtil().createKey(ds.getName());
         DataSourceConfig dsc = getConfiguration(datasSourceName);
@@ -259,6 +292,11 @@ public class SessionFactoryData {
         return sf;
     }
 
+    /**
+     * Get the Hibernate SessionFactory for this datasource name. If not found, a new SessionFactory will be configured and built.
+     * 
+     * @param datasSourceName Name of the datasource for which to retrieve the SessionFactory.
+     */
     public SessionFactory getFactory(Key datasSourceName) {
         SessionFactory factory = factories.get(datasSourceName);
         if (factory != null && factory.isClosed())
@@ -283,6 +321,15 @@ public class SessionFactoryData {
         tableInfo = CommonUtil.createStruct();
     }
 
+    /**
+     * Retrieve metadata from database table for use in generating a hibernate mapping to match the existing database structure.
+     * Typically only used if `useDBForMapping` is enabled in the ORM configuration.
+     * 
+     * @param dc Datasource connection object
+     * @param tableName Table name to retrieve / build entity mapping from.
+     * @return Struct of table information.
+     * @throws PageException
+     */
     public Struct getTableInfo(DatasourceConnection dc, String tableName) throws PageException {
         Collection.Key keyTableName = CommonUtil.createKey(tableName);
         Struct columnsInfo = (Struct) tableInfo.get(keyTableName, null);
@@ -294,7 +341,13 @@ public class SessionFactoryData {
         return columnsInfo;
     }
 
-    // CFC methods
+    /**
+     * Store a CFCInfo object as a known entity/entity mapping combination.
+     * The CFCs are stored in a map where the key is the datasource, so if this datasource is not found in the map it will be populated as a new inner map of entity mappings by datasource.
+     * 
+     * @param entityName Name of the entity to store. This will be the key for the inner hashmap.
+     * @param info CFCInfo object, containing datasource, component data, and XML mapping string.
+     */
     public void addCFC(String entityName, CFCInfo info) {
         DataSource ds = info.getDataSource();
         Key dsn = CommonUtil.toKey(ds.getName());
@@ -306,6 +359,13 @@ public class SessionFactoryData {
         sources.put(dsn, ds);
     }
 
+    /**
+     * Retrieve the CFCInfo object for this entity name from the known entities across all datasources.
+     * 
+     * @param entityName Name of entity to retrieve.
+     * @param defaultValue Default CFCInfo object to return. (Unused, consider deleting.)
+     * @return
+     */
     CFCInfo getCFC(String entityName, CFCInfo defaultValue) {
         Iterator<Map<String, CFCInfo>> it = cfcs.values().iterator();
         while (it.hasNext()) {
@@ -316,15 +376,20 @@ public class SessionFactoryData {
         return defaultValue;
     }
 
+    /**
+     * Getter for map of entity types by datasource name.
+     * @return Map where key=dsn, value = Map (where key=entity name, value=CFCInfo object containing the component and the XML mapping.)
+     */
     public Map<Key, Map<String, CFCInfo>> getCFCs() {
         return cfcs;
     }
 
-    /*
-     * public Map<String, CFCInfo> getCFCs(DataSource ds) { Key key=eng.getCreationUtil().createKey(ds.getName());
-     * Map<String, CFCInfo> rtn = cfcs.get(key); if(rtn==null) return new HashMap<String, CFCInfo>(); return rtn; }
+    /**
+     * Retrieve all known entity types for the provided datasource name.
+     * 
+     * @param datasSourceName Datasource Key name to filter on.
+     * @return HashMap of entities by entity name.
      */
-
     public Map<String, CFCInfo> getCFCs(Key datasSourceName) {
         Map<String, CFCInfo> rtn = cfcs.get(datasSourceName);
         if (rtn == null)
@@ -332,10 +397,18 @@ public class SessionFactoryData {
         return rtn;
     }
 
+    /**
+     * Reset the map of known entity types and datasource names for this ORM application.
+     * 
+     * This should ONLY be called at startup! 
+     */
     public void clearCFCs() {
         cfcs.clear();
     }
 
+    /**
+     * Get a count of all known entity types, including entity children.
+     */
     public int sizeCFCs() {
         Iterator<Map<String, CFCInfo>> it = cfcs.values().iterator();
         int size = 0;
@@ -345,6 +418,10 @@ public class SessionFactoryData {
         return size;
     }
 
+    /**
+     * Retrieve an array of known datasources configured in persistent entities.
+     * @return An array populated with all known datasources.
+     */
     public DataSource[] getDataSources() {
         return sources.values().toArray(new DataSource[sources.size()]);
     }
@@ -370,10 +447,19 @@ public class SessionFactoryData {
         return map;
     }
 
+    /**
+     * Get datasource configuration by datasource name.
+     * 
+     * @param datasSourceName Key matching name of datasource to retrieve.
+     * @return Fully configured datasource object.
+     */
     public DataSource getDataSource(Key datasSourceName) {
         return sources.get(datasSourceName);
     }
 
+    /**
+     * Retrieve the event integrator configured for this ORM application.
+     */
     public EventListenerIntegrator getEventListenerIntegrator() {
         return eventListenerIntegrator;
     }

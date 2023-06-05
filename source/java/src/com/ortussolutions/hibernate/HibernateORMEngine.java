@@ -242,6 +242,13 @@ public class HibernateORMEngine implements ORMEngine {
         return data;
     }
 
+    /**
+     * Attach our event integrator object to the Hibernate configuration.
+     * 
+     * @param pc Lucee PageContext object for retrieving the event handler
+     * @param data SessionFactoryData object - houses the ORM configuration and the event integrator.
+     * @throws PageException
+     */
     private static void configureEventHandler(PageContext pc, SessionFactoryData data) throws PageException {
         if (!data.getORMConfiguration().eventHandling())
             return;
@@ -256,6 +263,15 @@ public class HibernateORMEngine implements ORMEngine {
         }
     }
 
+    /**
+     * Build or load the XML mapping string for the provided entity type.  If `autogenmap` is enabled, will generate the XML mapping. If autogenmap is false, will attempt to load the XML mapping from disk.
+     * 
+     * @param pc Lucee PageContext object
+     * @param cfc A persistent Component for which we wish to generate an XML mapping.
+     * @param ormConf ORM configuration for this CFML application.
+     * @param data the SessionFactoryData object housing the ORM application data.
+     * @throws PageException
+     */
     public void createMapping(PageContext pc, Component cfc, ORMConfiguration ormConf, SessionFactoryData data)
             throws PageException {
         String entityName = HibernateCaster.getEntityName(cfc);
@@ -267,7 +283,7 @@ public class HibernateORMEngine implements ORMEngine {
             if (ormConf.autogenmap()) {
                 data.reset();
                 pc.addPageSource(cfc.getPageSource(), true);
-                //
+
                 /**
                  * TODO: Create a map of connections per datasource. Then we can grab and reuse existing connections
                  * based on the component's datasource annotation. This should save a good bit of time from opening and
