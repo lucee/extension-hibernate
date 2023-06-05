@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.hibernate.cfg.Configuration;
 import org.hibernate.SessionFactory;
@@ -131,13 +132,10 @@ public class SessionFactoryData {
     }
 
     public List<String> getEntityNames() {
-        Iterator<Map<String, CFCInfo>> it = cfcs.values().iterator();
         List<String> names = new ArrayList<String>();
-        Iterator<CFCInfo> _it;
-        while (it.hasNext()) {
-            _it = it.next().values().iterator();
-            while (_it.hasNext()) {
-                names.add(HibernateCaster.getEntityName(_it.next().getCFC()));
+        for(Map<String, CFCInfo> entityTypes : cfcs.values()) {
+            for(CFCInfo entityType : entityTypes.values()) {
+                names.add(HibernateCaster.getEntityName(entityType.getCFC()));
             }
         }
         return names;
@@ -155,11 +153,9 @@ public class SessionFactoryData {
 
         // if parsing is in progress, the cfc can be found here
         if (hasTempCFCs()) {
-            Iterator<Component> it = tmpList.iterator();
-            while (it.hasNext()) {
-                cfc = it.next();
-                if (HibernateCaster.getEntityName(cfc).equalsIgnoreCase(entityName))
-                    return unique ? (Component) cfc.duplicate(false) : cfc;
+            for(Component entityType : tmpList) {
+                if (HibernateCaster.getEntityName(entityType).equalsIgnoreCase(entityName))
+                    return unique ? (Component) entityType.duplicate(false) : entityType;
             }
         }
         throw ExceptionUtil.createException((ORMSession) null, null, "entity [" + entityName + "] does not exist", "");
@@ -177,12 +173,10 @@ public class SessionFactoryData {
         List<String> names = new ArrayList<String>();
 
         if (hasTempCFCs()) {
-            Iterator<Component> it2 = tmpList.iterator();
-            while (it2.hasNext()) {
-                cfc = it2.next();
-                names.add(cfc.getName());
-                if (HibernateUtil.isEntity(ormConf, cfc, cfcName, name)) // if(cfc.equalTo(name))
-                    return unique ? (Component) cfc.duplicate(false) : cfc;
+            for(Component entity : tmpList) {
+                names.add(entity.getName());
+                if (HibernateUtil.isEntity(ormConf, entity, cfcName, name)) // if(cfc.equalTo(name))
+                    return unique ? (Component) entity.duplicate(false) : entity;
             }
         } else {
             // search cfcs
@@ -311,9 +305,8 @@ public class SessionFactoryData {
      */
     public void reset() {
         configurations.clear();
-        Iterator<SessionFactory> it = factories.values().iterator();
-        while (it.hasNext()) {
-            it.next().close();
+        for( SessionFactory factory : factories.values()){
+            factory.close();
         }
         factories.clear();
         // namingStrategy=null; because the ormconf not change, this has not to change
@@ -324,6 +317,8 @@ public class SessionFactoryData {
     /**
      * Retrieve metadata from database table for use in generating a hibernate mapping to match the existing database structure.
      * Typically only used if `useDBForMapping` is enabled in the ORM configuration.
+     * 
+     * Once queried and built, will store table metadata in <code>this.tableInfo</code> for faster retrieval.
      * 
      * @param dc Datasource connection object
      * @param tableName Table name to retrieve / build entity mapping from.
@@ -434,17 +429,6 @@ public class SessionFactoryData {
         while (it.hasNext()) {
             getFactory(it.next());
         }
-    }
-
-    public Map<Key, SessionFactory> getFactories() {
-        Iterator<Key> it = cfcs.keySet().iterator();
-        Map<Key, SessionFactory> map = new HashMap<Key, SessionFactory>();
-        Key key;
-        while (it.hasNext()) {
-            key = it.next();
-            map.put(key, getFactory(key));
-        }
-        return map;
     }
 
     /**

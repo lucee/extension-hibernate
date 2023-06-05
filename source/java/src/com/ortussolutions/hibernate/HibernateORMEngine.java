@@ -163,7 +163,12 @@ public class HibernateORMEngine implements ORMEngine {
 
         // config
         try {
-            // arr=null;
+            /**
+             * 1. Find persistent components
+             * 2. create an XML mapping for each component
+             * 3. store component info and XML mapping in CFCInfo object
+             * 
+             */
             synchronized (data) {
 
                 data.tmpList = HibernateSessionFactory.loadComponents(pc, this, ormConf);
@@ -171,31 +176,29 @@ public class HibernateORMEngine implements ORMEngine {
 
                 // load entities
                 if (data.hasTempCFCs()) {
+                    // TODO: Set naming strategy in constructor based on ORM config
                     data.getNamingStrategy();// called here to make sure, it is called in the right context the
                                              // first one
 
                     // creates CFCInfo objects
-                    {
-                        Iterator<Component> it = data.tmpList.iterator();
-                        while (it.hasNext()) {
-                            createMapping(pc, it.next(), ormConf, data);
-                        }
+                    for(Component persistentComponent : data.tmpList){
+                        createMapping(pc, persistentComponent, ormConf, data);
                     }
+
+                    /**
+                     * check for duplicate entity names and throw if any are dupes.
+                     * This may not needs to be performed after the entity mappings have been generated, and can (possibly) be moved into the above loop.
+                     */
                     if (data.tmpList.size() != data.sizeCFCs()) {
-                        Component cfc;
-                        String name, lcName;
                         Map<String, String> names = new HashMap<String, String>();
-                        Iterator<Component> it = data.tmpList.iterator();
-                        while (it.hasNext()) {
-                            cfc = it.next();
-                            name = HibernateCaster.getEntityName(cfc);
-                            lcName = name.toLowerCase();
-                            if (names.containsKey(lcName))
+                        for(Component cfc : data.tmpList){
+                            String name = HibernateCaster.getEntityName(cfc);
+                            if (names.containsKey(name.toLowerCase()))
                                 throw ExceptionUtil.createException(data, null,
-                                        "Entity Name [" + name + "] is ambigous, [" + names.get(lcName) + "] and ["
+                                        "Entity Name [" + name + "] is ambigous, [" + names.get(name.toLowerCase()) + "] and ["
                                                 + cfc.getPageSource().getDisplayPath() + "] use the same entity name.",
                                         "");
-                            names.put(lcName, cfc.getPageSource().getDisplayPath());
+                            names.put(name.toLowerCase(), cfc.getPageSource().getDisplayPath());
                         }
                     }
                 }
@@ -213,6 +216,9 @@ public class HibernateORMEngine implements ORMEngine {
 
         Log log = pc.getConfig().getLog("orm");
 
+        /**
+         * SET CONFIGURATION PER DATASOURCE
+         */
         Iterator<Entry<Key, String>> it = HibernateSessionFactory.assembleMappingsByDatasource(data).entrySet()
                 .iterator();
         Entry<Key, String> e;

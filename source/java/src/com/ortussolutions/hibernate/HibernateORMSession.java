@@ -229,16 +229,13 @@ public class HibernateORMSession implements ORMSession {
 
     @Override
     public void flushAll(PageContext pc) {
-        SessionAndConn sac;
-        Session s;
         Iterator<SessionAndConn> it = sessions.values().iterator();
-        while (it.hasNext()) {
-            sac = it.next();
-            if (sac.isOpen()) {
+        for(SessionAndConn sessionConn : sessions.values()){
+            if (sessionConn.isOpen()) {
                 try {
-                    s = sac.getSession(pc);
-                    s.flush();
+                    sessionConn.getSession(pc).flush();
                 } catch (Exception e) {
+                    // TODO: Add logging
                 } // we do this because of a Bug in Lucee that keeps session object in case of an exception for future
                   // request, this session then fail to flush, because the underlaying datasource is not defined in
                   // the current application.cfc.
