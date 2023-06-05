@@ -66,16 +66,6 @@ public class CFCGetter implements Getter {
         }
     }
 
-    public HibernateORMEngine getHibernateORMEngine() {
-        try {
-            // TODO better impl
-            return HibernateUtil.getORMEngine(CommonUtil.pc());
-        } catch (PageException e) {
-        }
-
-        return null;
-    }
-
     // was used in previous versions, we keep it just in case
     public Object getForInsert(Object trg, Map map, SessionImplementor si) throws HibernateException {
         return get(trg);// MUST better solution? this is from MapGetter

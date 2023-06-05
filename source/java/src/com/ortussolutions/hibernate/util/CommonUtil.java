@@ -121,7 +121,6 @@ public class CommonUtil {
     private static Decision decision;
     private static Creation creator;
     private static Operation op;
-    private static lucee.runtime.util.XMLUtil xml;
     private static lucee.runtime.util.ListUtil list;
     private static DBUtil db;
     private static ORMUtil orm;

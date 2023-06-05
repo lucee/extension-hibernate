@@ -58,13 +58,6 @@ public class HibernateORMSession implements ORMSession {
         private final DataSource d;
         private SessionFactory factory;
 
-        /*
-         * public SessionAndConn(Session session, DatasourceConnection dc) { this.session = session; this.dc = dc;
-         * this.d = dc.getDatasource(); }
-         *
-         * public SessionAndConn(Session session, DataSource d) { this.session = session; this.d = d; }
-         */
-
         public SessionAndConn(PageContext pc, SessionFactory factory, DataSource ds) throws PageException {
             this.d = ds;
             this.factory = factory;
@@ -137,10 +130,6 @@ public class HibernateORMSession implements ORMSession {
             createSession(pc, data.getFactory(CommonUtil.toKey(sources[i].getName())), sources[i]);
         }
     }
-
-    /*
-     * private Session session(){ return _session; }
-     */
 
     private Session getSession(PageContext pc, Key datasSourceName) throws PageException {
         return getSessionAndConn(pc, datasSourceName).getSession(pc);
@@ -450,15 +439,6 @@ public class HibernateORMSession implements ORMSession {
             factory.getCache().evictDefaultQueryRegion();
         else
             factory.getCache().evictQueryRegion(cacheName);
-
-        // String entityName = getEntityName(componentName);
-        // String datasource = this.config.getDataSource(entityName);
-        // this.config.getSessionFactory(datasource).getCache().evictEntityRegion(entityName);
-
-        /*
-         * Iterator<Session> it = _sessions.values().iterator(); while(it.hasNext()){ SessionFactory f =
-         * it.next().getSessionFactory(); if(Util.isEmpty(cacheName))f.evictQueries(); else f.evictQueries(cacheName); }
-         */
     }
 
     @Override
