@@ -42,7 +42,7 @@ To run CFML tests against the extension:
 Next, start the test databases using the Docker-compose setup:
 
 ```bash
-docker-compose up -f tests/docker-compose.yml
+docker-compose -f tests/docker-compose.yml up -d
 ```
 
 This will start Postgres, MySQL, and MSSQL containers using the credentials specified in `tests/.env`.
