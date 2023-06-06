@@ -175,9 +175,10 @@ public class HibernateORMEngine implements ORMEngine {
              * mapping in CFCInfo object
              *
              */
+            EntityFinder finder = new EntityFinder(ormConf.getCfcLocations(), !ormConf.skipCFCWithError());
             synchronized (data) {
 
-                data.tmpList = HibernateSessionFactory.loadComponents(pc, this, ormConf);
+                data.tmpList = finder.loadComponents(pc);
                 data.clearCFCs();
 
                 // load entities
