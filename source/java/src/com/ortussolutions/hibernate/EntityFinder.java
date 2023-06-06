@@ -11,6 +11,7 @@ import lucee.commons.io.res.filter.ResourceFilter;
 import lucee.loader.engine.CFMLEngine;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.loader.util.Util;
+import lucee.runtime.util.ResourceUtil;
 import lucee.runtime.Component;
 import lucee.runtime.InterfacePage;
 import lucee.runtime.Mapping;
@@ -40,9 +41,31 @@ public class EntityFinder {
      */
     private Boolean failOnError;
 
+	/**
+	 * Lucee's TemplateUtil used for loading the component from source.
+	 * 
+	 * Acquired from the CFML engine == not testable. 😢
+	 */
+	private TemplateUtil templateUtil;
+
+	/**
+	 * Lucee's ResourceUtil used for various file path util methods.
+	 * 
+	 * Acquired from the CFML engine == not testable. 😢
+	 */
+	private ResourceUtil resourceUtil;
+
+	/**
+	 * A Lucee resource filter used to filter the scanned files on disk to just .cfc files.
+	 */
+	private ResourceFilter filter;
+
 	public EntityFinder(Resource[] locations, Boolean failOnError) {
         this.locations = locations;
         this.failOnError = failOnError;
+		this.templateUtil = CFMLEngineFactory.getInstance().getTemplateUtil();
+		this.resourceUtil = CFMLEngineFactory.getInstance().getResourceUtil();
+	    this.filter = this.resourceUtil.getExtensionResourceFilter("cfc", true);
     }
 
     /**
@@ -55,11 +78,9 @@ public class EntityFinder {
 	 */
 	public List<Component> loadComponents(PageContext pc)
 	        throws PageException {
-	    CFMLEngine en = CFMLEngineFactory.getInstance();
-	
-	    ResourceFilter filter = en.getResourceUtil().getExtensionResourceFilter("cfc", true);
+
 	    List<Component> components = new ArrayList<Component>();
-	    loadComponents(pc, components, filter);
+	    loadComponents(pc, components);
 	    return components;
 	}
 
@@ -70,12 +91,10 @@ public class EntityFinder {
 	 *            Lucee PageContext object
 	 * @param components
 	 *            The current list of components. Any discovered components will be appended to this list.
-	 * @param filter
-	 *            The file filter - probably just a Lucee-fied ".cfc" filter
 	 *
 	 * @throws PageException
 	 */
-	private void loadComponents(PageContext pc, List<Component> components, ResourceFilter filter) throws PageException {
+	private void loadComponents(PageContext pc, List<Component> components) throws PageException {
 	    Mapping[] mappings = createFileMappings(pc, this.locations);
 	    ApplicationContext ac = pc.getApplicationContext();
 	    Mapping[] existing = ac.getComponentMappings();
@@ -91,7 +110,7 @@ public class EntityFinder {
 	            if (this.locations[i] != null && this.locations[i].isDirectory()) {
 	                tmp[0] = mappings[i];
 	                ac.setComponentMappings(tmp);
-	                loadComponents(pc, mappings[i], components, this.locations[i], filter);
+	                loadComponents(pc, mappings[i], components, this.locations[i]);
 	            }
 	        }
 	    } finally {
@@ -111,57 +130,39 @@ public class EntityFinder {
 	 * @param res
 	 *            The directory to search for Components, OR the file to (potentially) import into the Hibernate
 	 *            configuration.
-	 * @param filter
-	 *            The file filter - probably just a Lucee-fied ".cfc" filter
 	 *
 	 * @throws PageException
 	 */
 	private void loadComponents(PageContext pc, Mapping cfclocation,
-	        List<Component> components, Resource res, ResourceFilter filter)
+	        List<Component> components, Resource res)
 	        throws PageException {
 	    if (res == null)
 	        return;
 	
 	    if (res.isDirectory()) {
-	        Resource[] children = res.listResources(filter);
+	        Resource[] children = res.listResources(this.filter);
 	
 	        // first load all files
 	        for (int i = 0; i < children.length; i++) {
 	            if (children[i].isFile())
-	                loadComponents(pc, cfclocation, components, children[i], filter);
+	                loadComponents(pc, cfclocation, components, children[i]);
 	        }
 	
 	        // and then invoke subfiles
 	        for (int i = 0; i < children.length; i++) {
 	            if (children[i].isDirectory())
-	                loadComponents(pc, cfclocation, components, children[i], filter);
+	                loadComponents(pc, cfclocation, components, children[i]);
 	        }
 	    } else if (res.isFile()) {
 	        if (!HibernateUtil.isApplicationName(res.getName())) {
 	            try {
+	                PageSource ps = getPageSource(pc, cfclocation, res);
 	
-	                // MUST still a bad solution
-	                PageSource ps = pc.toPageSource(res, null);
-	                if (ps == null || ps.getComponentName().indexOf("..") != -1) {
-	                    PageSource ps2 = null;
-	                    Resource root = cfclocation.getPhysical();
-	                    String path = CFMLEngineFactory.getInstance().getResourceUtil().getPathToChild(res, root);
-	                    if (!Util.isEmpty(path, true)) {
-	                        ps2 = cfclocation.getPageSource(path);
-	                    }
-	                    if (ps2 != null)
-	                        ps = ps2;
-	                }
-	
-	                // Page p = ps.loadPage(pc.getConfig());
-	                String name = res.getName();
-	                name = HibernateUtil.removeExtension(name, name);
-	
-	                TemplateUtil tu = CFMLEngineFactory.getInstance().getTemplateUtil();
-	
-	                Page p = tu.loadPage(pc, ps, true);
+	                Page p = this.templateUtil.loadPage(pc, ps, true);
 	                if (!(p instanceof InterfacePage)) {
-	                    Component cfc = tu.loadComponent(pc, p, name, true, true, false, true);
+						String name = res.getName();
+						name = getFilenameNoExtension(name, name);
+	                    Component cfc = this.templateUtil.loadComponent(pc, p, name, true, true, false, true);
 	                    if (cfc.isPersistent()) {
 	                        components.add(cfc);
 	                    }
@@ -175,6 +176,27 @@ public class EntityFinder {
 	    }
 	}
 
+	/**
+	 * Find and get the PageSource object represented by the Resource object at location X.
+	 * 
+	 * @cfclocation Lucee Mapping to the directory containing this file resource
+	 * @res Lucee Resource (file object) for a possible CFML component.
+	 */
+	private PageSource getPageSource(PageContext pc, Mapping cfclocation, Resource res) {
+		// MUST still a bad solution
+		PageSource ps = pc.toPageSource(res, null);
+		if (ps == null || ps.getComponentName().indexOf("..") != -1) {
+		    PageSource ps2 = null;
+		    Resource root = cfclocation.getPhysical();
+		    String path = this.resourceUtil.getPathToChild(res, root);
+		    if (!Util.isEmpty(path, true)) {
+		        ps2 = cfclocation.getPageSource(path);
+		    }
+		    if (ps2 != null)
+		        ps = ps2;
+		}
+		return ps;
+	}
     /**
      * Create CF mappings for locating persistent entities.
      * <p>
@@ -195,5 +217,12 @@ public class EntityFinder {
         }
         return mappings;
     }
+
+	private String getFilenameNoExtension(String filename, String defaultValue) {
+	    int index = filename.lastIndexOf('.');
+	    if (index == -1)
+	        return defaultValue;
+	    return filename.substring(0, index);
+	}
     
 }

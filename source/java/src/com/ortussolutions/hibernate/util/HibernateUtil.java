@@ -414,13 +414,6 @@ public class HibernateUtil {
         return CFMLEngineFactory.getInstance().getTemplateUtil().getCompileTime(pc, ps);
     }
 
-    public static String removeExtension(String filename, String defaultValue) {
-        int index = filename.lastIndexOf('.');
-        if (index == -1)
-            return defaultValue;
-        return filename.substring(0, index);
-    }
-
     public static String[] merge(String[] arr1, String[] arr2) {
         String[] ret = new String[arr1.length + arr2.length];
         for (int i = 0; i < arr1.length; i++) {
