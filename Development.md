@@ -81,3 +81,12 @@ Once this script pushes to `master`, the `release` GitHub workflow will kick in 
 5. publish the extension to Forgebox
 6. create a git tag
 7. create a GitHub release with changelog release notes
+
+## Java IDE
+
+I highly recommend [VS Code](https://code.visualstudio.com/) for java development. More experienced Java developers may appreciate a java-specific IDE like [Intellij](https://www.jetbrains.com/idea/). For VS Code Java support, check out:
+
+* [Extension Pack for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack) - a must for java language support, easy refactoring tools, etc.
+* [Refactoring Java](https://code.visualstudio.com/docs/java/java-refactoring) documentation - Keyboard shortcuts for moving methods, renaming variables, the works.
+
+Currently, some dependencies are not recognized, probably due to an out-of-date `source/java/.classpath` file. We will be looking to remove this `.classpath` config file in the future, as a good IDE with a solid build system can manage this for us.

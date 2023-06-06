@@ -40,11 +40,11 @@
 
    <developers>
       <developer>
-         <id>micstriit</id>
-         <name>Michael Offner</name>
-         <email>michael@lucee.org</email>
-         <organization>Lucee Association Switzerland</organization>
-         <organizationUrl>http://lucee.org</organizationUrl>
+         <id>lmajano</id>
+         <name>Luis Majano</name>
+         <email>lmajano@ortussolutions.com</email>
+         <organization>Ortus Solutions, Corp.</organization>
+         <organizationUrl>https://www.ortussolutions.com/</organizationUrl>
          <roles>
             <role>Project-Administrator</role>
             <role>Developer</role>
@@ -62,6 +62,18 @@
             <role>Developer</role>
          </roles>
          <timezone>-4</timezone>
+      </developer>
+      <developer>
+         <id>micstriit</id>
+         <name>Michael Offner</name>
+         <email>michael@lucee.org</email>
+         <organization>Lucee Association Switzerland</organization>
+         <organizationUrl>http://lucee.org</organizationUrl>
+         <roles>
+            <role>Project-Administrator</role>
+            <role>Developer</role>
+         </roles>
+         <timezone>+1</timezone>
       </developer>
    </developers>
 
