@@ -140,9 +140,14 @@ public class HibernateORMSession implements ORMSession {
 
     /**
      * Retrieve the Hibernate session object from our stored SessionAndConn session/connection pair.
-     * @param pc Lucee PageContext object
-     * @param datasSourceName String name of which datasource to return the session from
+     *
+     * @param pc
+     *            Lucee PageContext object
+     * @param datasSourceName
+     *            String name of which datasource to return the session from
+     *
      * @return org.hibernate.Session
+     *
      * @throws PageException
      */
     private Session getSession(PageContext pc, Key datasSourceName) throws PageException {
@@ -152,9 +157,8 @@ public class HibernateORMSession implements ORMSession {
     private SessionAndConn getSessionAndConn(PageContext pc, Key datasSourceName) throws PageException {
         SessionAndConn sac = sessions.get(datasSourceName);
         if (sac == null) {
-            ExceptionUtil.similarKeyMessage(
-                    sessions.keySet().toArray(new Key[sessions.size()]), datasSourceName.getString(), "datasource",
-                    "datasources", null, true);
+            ExceptionUtil.similarKeyMessage(sessions.keySet().toArray(new Key[sessions.size()]),
+                    datasSourceName.getString(), "datasource", "datasources", null, true);
             throw ExceptionUtil.createException(data, null,
                     "there is no Session for the datasource [" + datasSourceName + "]", null);
         }
@@ -312,7 +316,7 @@ public class HibernateORMSession implements ORMSession {
                 }
             }
 
-            for( Entry<Key, List<Component>> e : cfcs.entrySet()){
+            for (Entry<Key, List<Component>> e : cfcs.entrySet()) {
                 Key datasourceName = e.getKey();
                 List<Component> components = e.getValue();
                 Transaction trans = getSession(pc, datasourceName).getTransaction();
@@ -322,7 +326,7 @@ public class HibernateORMSession implements ORMSession {
                     trans = null;
 
                 try {
-                    for(Component entity : components) {
+                    for (Component entity : components) {
                         _delete(pc, entity, datasourceName);
                     }
                 } catch (Throwable t) {
@@ -488,7 +492,7 @@ public class HibernateORMSession implements ORMSession {
             throws PageException {
         String role = entityName + "." + collectionName;
 
-        for(SessionAndConn sac : sessions.values()){
+        for (SessionAndConn sac : sessions.values()) {
             SessionFactory f = sac.getSession(pc).getSessionFactory();
             if (id == null)
                 f.getCache().evictCollectionRegion(role);
@@ -633,8 +637,7 @@ public class HibernateORMSession implements ORMSession {
                             else if (obj instanceof List)
                                 query.setParameterList(name, (List) obj, type);
                             else
-                                query.setParameterList(name, castUtil.toList(obj),
-                                        type);
+                                query.setParameterList(name, castUtil.toList(obj), type);
                         } else
                             query.setParameter(name, obj, type);
 
@@ -727,13 +730,13 @@ public class HibernateORMSession implements ORMSession {
 
     /**
      * Close all open sessions and release all open datasource connections.
-     * 
+     *
      * @param pc
-     *          Lucee PageContext object.
+     *            Lucee PageContext object.
      */
     @Override
     public void closeAll(PageContext pc) throws PageException {
-        for( SessionAndConn sac : sessions.values()){
+        for (SessionAndConn sac : sessions.values()) {
             if (sac.isOpen())
                 sac.close(pc);
         }

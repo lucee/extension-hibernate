@@ -35,10 +35,10 @@ public class HibernateORMEngine implements ORMEngine {
 
     static {
         /**
-         * Workaround for certain jaxb-api jars not setting the context factory location.
-         * See LDEV-4276.
-         * 
-         * The system property we need to set is different based on which java / JRE version we are running, hence the call to getJVMVersion. 
+         * Workaround for certain jaxb-api jars not setting the context factory location. See LDEV-4276.
+         *
+         * The system property we need to set is different based on which java / JRE version we are running, hence the
+         * call to getJVMVersion.
          */
         String jaxbContextProperty = ExtensionUtil.getJVMVersion() < 11 ? "javax.xml.bind.context.factory"
                 : "javax.xml.bind.JAXBContextFactory";
@@ -193,7 +193,8 @@ public class HibernateORMEngine implements ORMEngine {
                     }
 
                     /**
-                     * check for duplicate entity names and throw if any are dupes. Could this be moved into the above loop?
+                     * check for duplicate entity names and throw if any are dupes. Could this be moved into the above
+                     * loop?
                      */
                     if (data.tmpList.size() != data.sizeCFCs()) {
                         Map<String, String> names = new HashMap<String, String>();
@@ -219,7 +220,8 @@ public class HibernateORMEngine implements ORMEngine {
         /**
          * SET CONFIGURATION PER DATASOURCE
          */
-        for(Entry<Key, String> datasourceMappings : HibernateSessionFactory.assembleMappingsByDatasource(data).entrySet()) {
+        for (Entry<Key, String> datasourceMappings : HibernateSessionFactory.assembleMappingsByDatasource(data)
+                .entrySet()) {
             Key datasourceName = datasourceMappings.getKey();
             String mappingXML = datasourceMappings.getValue();
             if (data.getConfiguration(datasourceName) != null)
@@ -232,7 +234,8 @@ public class HibernateORMEngine implements ORMEngine {
                 throw CommonUtil.toPageException(ex);
             }
 
-            EntityTuplizerFactory tuplizerFactory = data.getConfiguration(datasourceName).config.getEntityTuplizerFactory();
+            EntityTuplizerFactory tuplizerFactory = data.getConfiguration(datasourceName).config
+                    .getEntityTuplizerFactory();
             tuplizerFactory.registerDefaultTuplizerClass(EntityMode.MAP, AbstractEntityTuplizerImpl.class);
             tuplizerFactory.registerDefaultTuplizerClass(EntityMode.POJO, AbstractEntityTuplizerImpl.class);
 

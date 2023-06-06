@@ -4,11 +4,12 @@ package com.ortussolutions.hibernate.util;
  * Generic utils that DO NOT need a running Lucee engine instance to function.
  */
 public class ExtensionUtil {
-    
+
     /**
      * Get the extension version as compiled into the Manifest.MF's `Implementation-Version` entry.
-     * 
-     * Will not work in compiled class files (think junit tests) because these are run outside of the packaged .jar file.
+     *
+     * Will not work in compiled class files (think junit tests) because these are run outside of the packaged .jar
+     * file.
      */
     public static String getExtensionVersion() {
         return ExtensionUtil.class.getPackage().getImplementationVersion();

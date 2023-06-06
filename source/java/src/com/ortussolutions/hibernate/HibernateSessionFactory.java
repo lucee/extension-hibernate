@@ -109,7 +109,7 @@ public class HibernateSessionFactory {
             throws PageException {
         if (exceptions == null || exceptions.size() == 0 || !throwException)
             return;
-        for(Exception e : exceptions) {
+        for (Exception e : exceptions) {
             log.log(Log.LEVEL_ERROR, "hibernate", e);
             throw ExceptionUtil.createException(data, null, e);
         }

@@ -313,8 +313,9 @@ public class HibernateUtil {
 
     /**
      * Sanitize an entity name for use as a collection key
-     * 
+     *
      * @param entityName
+     *
      * @return The lowercased entity name with whitespace trimmed.
      */
     public static String sanitizeEntityName(String entityName) {
