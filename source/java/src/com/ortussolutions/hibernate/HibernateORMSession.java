@@ -131,6 +131,13 @@ public class HibernateORMSession implements ORMSession {
         }
     }
 
+    /**
+     * Retrieve the Hibernate session object from our stored SessionAndConn session/connection pair.
+     * @param pc Lucee PageContext object
+     * @param datasSourceName String name of which datasource to return the session from
+     * @return org.hibernate.Session
+     * @throws PageException
+     */
     private Session getSession(PageContext pc, Key datasSourceName) throws PageException {
         return getSessionAndConn(pc, datasSourceName).getSession(pc);
     }
@@ -298,19 +305,18 @@ public class HibernateORMSession implements ORMSession {
                 }
             }
 
-            Iterator<Entry<Key, List<Component>>> it = cfcs.entrySet().iterator();
-            while (it.hasNext()) {
-                Entry<Key, List<Component>> e = it.next();
-                Transaction trans = getSession(pc, e.getKey()).getTransaction();
+            for( Entry<Key, List<Component>> e : cfcs.entrySet()){
+                Key datasourceName = e.getKey();
+                List<Component> components = e.getValue();
+                Transaction trans = getSession(pc, datasourceName).getTransaction();
                 if (trans.isActive())
                     trans.begin();
                 else
                     trans = null;
 
                 try {
-                    Iterator<Component> _it = e.getValue().iterator();
-                    while (_it.hasNext()) {
-                        _delete(pc, _it.next(), e.getKey());
+                    for(Component entity : components) {
+                        _delete(pc, entity, datasourceName);
                     }
                 } catch (Throwable t) {
                     if (trans != null)
@@ -350,16 +356,7 @@ public class HibernateORMSession implements ORMSession {
         Component cfc = HibernateCaster.toComponent(obj);
         String name = HibernateCaster.getEntityName(cfc);
         Key dsn = CommonUtil.toKey(CommonUtil.getDataSourceName(pc, cfc));
-        /*
-         * just a test Property[] props = cfc.getProperties(true,true, false,true); Cast caster =
-         * CFMLEngineFactory.getInstance().getCastUtil(); ComponentScope cs = cfc.getComponentScope(); String type;
-         * Object val; for(Property p:props) { val=cs.get(p.getName(),null); if(val==null) continue; Object o =
-         * p.getMetaData(); if(!(o instanceof Struct)) continue; Struct meta = (Struct) o;
-         *
-         * type=caster.toString(meta.get("ormtype",null),null); if(Util.isEmpty(type))
-         * type=caster.toString(meta.get("type",null)); if(!Util.isEmpty(type)) {
-         * val=HibernateCaster.toHibernateValue(pc,val,type); cs.setEL(p.getName(), val); } }
-         */
+
         try {
             Session session = getSession(pc, dsn);
             if (forceInsert)
@@ -484,10 +481,7 @@ public class HibernateORMSession implements ORMSession {
             throws PageException {
         String role = entityName + "." + collectionName;
 
-        Iterator<SessionAndConn> it = sessions.values().iterator();
-        SessionAndConn sac;
-        while (it.hasNext()) {
-            sac = it.next();
+        for(SessionAndConn sac : sessions.values()){
             SessionFactory f = sac.getSession(pc).getSessionFactory();
             if (id == null)
                 f.getCache().evictCollectionRegion(role);
@@ -724,12 +718,15 @@ public class HibernateORMSession implements ORMSession {
 
     }
 
+    /**
+     * Close all open sessions and release all open datasource connections.
+     * 
+     * @param pc
+     *          Lucee PageContext object.
+     */
     @Override
     public void closeAll(PageContext pc) throws PageException {
-        Iterator<SessionAndConn> it = sessions.values().iterator();
-        SessionAndConn sac;
-        while (it.hasNext()) {
-            sac = it.next();
+        for( SessionAndConn sac : sessions.values()){
             if (sac.isOpen())
                 sac.close(pc);
         }

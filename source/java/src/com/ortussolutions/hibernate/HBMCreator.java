@@ -29,6 +29,11 @@ import com.ortussolutions.hibernate.util.XMLUtil;
 import lucee.runtime.type.Struct;
 import lucee.commons.io.res.Resource;
 
+/**
+ * Hibernate XML mapping string generator.
+ * 
+ * This will be deprecated in the future due to Hibernate itself deprecating the use of hbm.xml mappings in v6.x. See https://docs.jboss.org/hibernate/orm/6.0/migration-guide/migration-guide.html#_deprecation_of_hbm_xml_mappings
+ */
 public class HBMCreator {
 
     /**
@@ -1601,7 +1606,7 @@ public class HBMCreator {
 
         }
         throw ExceptionUtil.createException(data, null,
-                "cannot terminate foreign key column name for component " + cfc.getName(), null);
+                "Persistent property " + prop.getName() + " on component " + cfc.getName() + " is missing `fkcolumn` definition for relationship identification", null);
     }
 
     private static String createM2MFKColumnName(Component cfc, Property prop, PropertyCollection propColl,
@@ -1618,7 +1623,7 @@ public class HBMCreator {
                 str = toString(cfc, prop, prop.getDynamicAttributes(), "fkcolumn", true, data);
             else
                 throw ExceptionUtil.createException(data, null,
-                        "cannot terminate foreign key column name for component " + cfc.getName(), null);
+                        "Persistent property " + prop.getName() + " on component " + cfc.getName() + " is missing `fkcolumn` definition for relationship identification", null);
 
             str = HibernateCaster.getEntityName(cfc) + "_" + str;
         }

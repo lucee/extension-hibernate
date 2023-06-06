@@ -30,7 +30,7 @@ import lucee.loader.engine.CFMLEngineFactory;
 import lucee.loader.engine.CFMLEngine;
 
 /**
- * CFML built-in function to evict a collection for the given entity/collection name.
+ * CFML built-in function to evict a collection from the first-level cache (the persistence context).
  */
 public class ORMEvictCollection extends BIF {
     public static String call(PageContext pc, String entityName, String collectionName) throws PageException {

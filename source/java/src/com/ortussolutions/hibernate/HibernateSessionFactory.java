@@ -107,20 +107,11 @@ public class HibernateSessionFactory {
 
     private static void printError(Log log, SessionFactoryData data, List<Exception> exceptions, boolean throwException)
             throws PageException {
-        if (exceptions == null || exceptions.size() == 0)
+        if (exceptions == null || exceptions.size() == 0 || !throwException)
             return;
-        Iterator<Exception> it = exceptions.iterator();
-        if (!throwException || exceptions.size() > 1) {
-            while (it.hasNext()) {
-                log.log(Log.LEVEL_ERROR, "hibernate", it.next());
-            }
-        }
-        if (!throwException)
-            return;
-
-        it = exceptions.iterator();
-        while (it.hasNext()) {
-            throw ExceptionUtil.createException(data, null, it.next());
+        for(Exception e : exceptions) {
+            log.log(Log.LEVEL_ERROR, "hibernate", e);
+            throw ExceptionUtil.createException(data, null, e);
         }
     }
 
