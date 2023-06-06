@@ -10,11 +10,29 @@ import lucee.runtime.db.DataSource;
 // import lucee.runtime.exp.NativeException;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMSession;
+import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
 
+/**
+ * Contains many exception helper methods.
+ * Mostly wraps Lucee's own ExceptionUtil.
+ * 
+ * In the future, these static methods will likely change to instance methods acting upon a constructed ExceptionUtil.
+ */
 public class ExceptionUtil {
 
     private static Method setAdditional;
+
+	/**
+	 * creates a message for key not found with soundex check for similar key
+	 * 
+	 * @param _keys
+	 * @param keyLabel
+	 * @return
+	 */
+	public static String similarKeyMessage(Collection.Key[] _keys, String keySearched, String keyLabel, String keyLabels, String in, boolean listAll) {
+        return CFMLEngineFactory.getInstance().getExceptionUtil().similarKeyMessage(_keys, keySearched, keyLabel, keyLabels, in, listAll);
+    }
 
     /**
      * Create a generic PageException with the given message. Utilizes Lucee's

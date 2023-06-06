@@ -796,7 +796,7 @@ public class CommonUtil {
             return (DatasourceConnection) mGetDatasourceConnection.invoke(dbutil,
                     new Object[] { pc, ds, user, pass, false });
         } catch (Exception e) {
-            throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
+            throw CommonUtil.toPageException(e);
         }
     }
 
@@ -816,7 +816,7 @@ public class CommonUtil {
             }
             mReleaseDatasourceConnection.invoke(dbutil, new Object[] { pc, dc, false });
         } catch (Exception e) {
-            throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
+            throw CommonUtil.toPageException(e);
         }
     }
 

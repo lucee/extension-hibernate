@@ -92,6 +92,7 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
                     value = HibernateCaster.toHibernateValue(CFMLEngineFactory.getInstance().getThreadPageContext(),
                             value, type);
                 } catch (PageException pe) {
+                    // TODO: log this!
                 }
 
                 map.put(name, value);

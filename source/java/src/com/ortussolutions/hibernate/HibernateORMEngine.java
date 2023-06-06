@@ -306,7 +306,7 @@ public class HibernateORMEngine implements ORMEngine {
                         HBMCreator.saveMapping(cfc, xml);
                     }
                 } catch (Exception e) {
-                    throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
+                    throw CommonUtil.toPageException(e);
                 } finally {
                     pc.removeLastPageSource(true);
                     CommonUtil.releaseDatasourceConnection(pc, dc, false);
@@ -317,7 +317,7 @@ public class HibernateORMEngine implements ORMEngine {
                 try {
                     xml = HBMCreator.loadMapping(cfc);
                 } catch (Exception e) {
-                    throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
+                    throw CommonUtil.toPageException(e);
                 }
 
             }

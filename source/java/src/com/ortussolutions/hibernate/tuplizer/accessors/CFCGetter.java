@@ -16,6 +16,7 @@ import com.ortussolutions.hibernate.HibernateORMEngine;
 import com.ortussolutions.hibernate.HibernatePageException;
 import com.ortussolutions.hibernate.util.CommonUtil;
 import com.ortussolutions.hibernate.util.HibernateUtil;
+import com.ortussolutions.hibernate.util.ORMUtil;
 
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.runtime.Component;
@@ -53,7 +54,7 @@ public class CFCGetter implements Getter {
             PageContext pc = CommonUtil.pc();
             ORMSession session = pc.getORMSession(true);
             Component cfc = CommonUtil.toComponent(trg);
-            String dsn = CFMLEngineFactory.getInstance().getORMUtil().getDataSourceName(pc, cfc);
+            String dsn = ORMUtil.getDataSourceName(pc, cfc);
             String name = HibernateCaster.getEntityName(cfc);
             SessionFactory sf = (SessionFactory) session.getRawSessionFactory(dsn);
             ClassMetadata metaData = sf.getClassMetadata(name);

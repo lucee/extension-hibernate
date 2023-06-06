@@ -48,6 +48,7 @@ import lucee.runtime.type.Collection.Key;
 import lucee.runtime.type.Struct;
 import lucee.runtime.type.dt.TimeSpan;
 import lucee.runtime.type.scope.Argument;
+import lucee.runtime.util.Cast;
 
 public class HibernateORMSession implements ORMSession {
 
@@ -86,7 +87,7 @@ public class HibernateORMSession implements ORMSession {
                     connect(pc);
                 }
             } catch (SQLException e) {
-                throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
+                throw CommonUtil.toPageException(e);
             }
             return dc.getConnection();
         }
@@ -121,8 +122,14 @@ public class HibernateORMSession implements ORMSession {
     private SessionFactoryData data;
     private Map<Key, SessionAndConn> sessions = new HashMap<Key, SessionAndConn>();
 
+    /**
+     * Lucee Cast instance for assistance with casting values between types.
+     */
+    private Cast castUtil;
+
     public HibernateORMSession(PageContext pc, SessionFactoryData data) throws PageException {
         this.data = data;
+        this.castUtil = CFMLEngineFactory.getInstance().getCastUtil();
         // this.dc=dc;
         DataSource[] sources = data.getDataSources();
 
@@ -145,7 +152,7 @@ public class HibernateORMSession implements ORMSession {
     private SessionAndConn getSessionAndConn(PageContext pc, Key datasSourceName) throws PageException {
         SessionAndConn sac = sessions.get(datasSourceName);
         if (sac == null) {
-            CFMLEngineFactory.getInstance().getExceptionUtil().similarKeyMessage(
+            ExceptionUtil.similarKeyMessage(
                     sessions.keySet().toArray(new Key[sessions.size()]), datasSourceName.getString(), "datasource",
                     "datasources", null, true);
             throw ExceptionUtil.createException(data, null,
@@ -626,7 +633,7 @@ public class HibernateORMSession implements ORMSession {
                             else if (obj instanceof List)
                                 query.setParameterList(name, (List) obj, type);
                             else
-                                query.setParameterList(name, CFMLEngineFactory.getInstance().getCastUtil().toList(obj),
+                                query.setParameterList(name, castUtil.toList(obj),
                                         type);
                         } else
                             query.setParameter(name, obj, type);
@@ -1021,7 +1028,7 @@ public class HibernateORMSession implements ORMSession {
         return data.getDataSources();
     }
 
-    private static String addIndexIfNecessary(String sql) {
+    private String addIndexIfNecessary(String sql) {
         // if(namedParams.size()==0) return new Pair<String, List<Param>>(sql,params);
         StringBuilder sb = new StringBuilder();
         int sqlLen = sql.length();
@@ -1058,7 +1065,7 @@ public class HibernateORMSession implements ORMSession {
         return sb.toString();
     }
 
-    private static final boolean isInteger(char c) {
+    private final boolean isInteger(char c) {
         return c >= '0' && c <= '9';
     }
 }

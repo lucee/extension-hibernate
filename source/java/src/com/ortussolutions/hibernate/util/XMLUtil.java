@@ -27,7 +27,7 @@ public class XMLUtil {
             Method method = clazz.getMethod("toInputSource", new Class[] { Object.class });
             return (InputSource) method.invoke(null, new Object[] { obj });
         } catch (Exception e) {
-            throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
+            throw CommonUtil.toPageException(e);
         }
     }
 
@@ -38,7 +38,7 @@ public class XMLUtil {
             Method method = clazz.getMethod("toInputSource", new Class[] { Resource.class, Charset.class });
             return (InputSource) method.invoke(null, new Object[] { res, cs });
         } catch (Exception e) {
-            throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
+            throw CommonUtil.toPageException(e);
         }
     }
 
@@ -50,7 +50,7 @@ public class XMLUtil {
                     new Class[] { InputSource.class, InputSource.class, boolean.class });
             return (Document) method.invoke(null, new Object[] { xml, validator, isHtml });
         } catch (Exception e) {
-            throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
+            throw CommonUtil.toPageException(e);
         }
     }
 
@@ -61,7 +61,7 @@ public class XMLUtil {
             Method method = clazz.getMethod("newDocument", new Class[] {});
             return (Document) method.invoke(null, new Object[] {});
         } catch (Exception e) {
-            throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
+            throw CommonUtil.toPageException(e);
         }
     }
 
