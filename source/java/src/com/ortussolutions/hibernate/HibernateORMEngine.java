@@ -218,26 +218,24 @@ public class HibernateORMEngine implements ORMEngine {
         /**
          * SET CONFIGURATION PER DATASOURCE
          */
-        Iterator<Entry<Key, String>> it = HibernateSessionFactory.assembleMappingsByDatasource(data).entrySet()
-                .iterator();
-        Entry<Key, String> e;
-        while (it.hasNext()) {
-            e = it.next();
-            if (data.getConfiguration(e.getKey()) != null)
+        for(Entry<Key, String> datasourceMappings : HibernateSessionFactory.assembleMappingsByDatasource(data).entrySet()) {
+            Key datasourceName = datasourceMappings.getKey();
+            String datasourceMappings = datasourceMappings.getValue();
+            if (data.getConfiguration(datasourceName) != null)
                 continue;
 
             try {
-                data.setConfiguration(log, e.getValue(), data.getDataSource(e.getKey()), null, null,
+                data.setConfiguration(log, datasourceMappings, data.getDataSource(datasourceName), null, null,
                         appContext == null ? "" : appContext.getName());
             } catch (Exception ex) {
                 throw CommonUtil.toPageException(ex);
             }
 
-            EntityTuplizerFactory tuplizerFactory = data.getConfiguration(e.getKey()).config.getEntityTuplizerFactory();
+            EntityTuplizerFactory tuplizerFactory = data.getConfiguration(datasourceName).config.getEntityTuplizerFactory();
             tuplizerFactory.registerDefaultTuplizerClass(EntityMode.MAP, AbstractEntityTuplizerImpl.class);
             tuplizerFactory.registerDefaultTuplizerClass(EntityMode.POJO, AbstractEntityTuplizerImpl.class);
 
-            data.buildSessionFactory(e.getKey());
+            data.buildSessionFactory(datasourceName);
         }
         configureEventHandler(pc, data);
 
