@@ -219,7 +219,7 @@ public class HibernateORMSession implements ORMSession {
     @Override
     public void flushAll(PageContext pc) {
         Iterator<SessionAndConn> it = sessions.values().iterator();
-        for(SessionAndConn sessionConn : sessions.values()){
+        for (SessionAndConn sessionConn : sessions.values()) {
             if (sessionConn.isOpen()) {
                 try {
                     sessionConn.getSession(pc).flush();

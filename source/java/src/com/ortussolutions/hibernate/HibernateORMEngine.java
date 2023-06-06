@@ -164,10 +164,9 @@ public class HibernateORMEngine implements ORMEngine {
         // config
         try {
             /**
-             * 1. Find persistent components
-             * 2. create an XML mapping for each component
-             * 3. store component info and XML mapping in CFCInfo object
-             * 
+             * 1. Find persistent components 2. create an XML mapping for each component 3. store component info and XML
+             * mapping in CFCInfo object
+             *
              */
             synchronized (data) {
 
@@ -181,22 +180,22 @@ public class HibernateORMEngine implements ORMEngine {
                                              // first one
 
                     // creates CFCInfo objects
-                    for(Component persistentComponent : data.tmpList){
+                    for (Component persistentComponent : data.tmpList) {
                         createMapping(pc, persistentComponent, ormConf, data);
                     }
 
                     /**
-                     * check for duplicate entity names and throw if any are dupes.
-                     * This may not needs to be performed after the entity mappings have been generated, and can (possibly) be moved into the above loop.
+                     * check for duplicate entity names and throw if any are dupes. Could this be moved into the above loop?
                      */
                     if (data.tmpList.size() != data.sizeCFCs()) {
                         Map<String, String> names = new HashMap<String, String>();
-                        for(Component cfc : data.tmpList){
+                        for (Component cfc : data.tmpList) {
                             String name = HibernateCaster.getEntityName(cfc);
                             if (names.containsKey(name.toLowerCase()))
                                 throw ExceptionUtil.createException(data, null,
-                                        "Entity Name [" + name + "] is ambigous, [" + names.get(name.toLowerCase()) + "] and ["
-                                                + cfc.getPageSource().getDisplayPath() + "] use the same entity name.",
+                                        "Entity Name [" + name + "] is ambigous, [" + names.get(name.toLowerCase())
+                                                + "] and [" + cfc.getPageSource().getDisplayPath()
+                                                + "] use the same entity name.",
                                         "");
                             names.put(name.toLowerCase(), cfc.getPageSource().getDisplayPath());
                         }
@@ -206,13 +205,6 @@ public class HibernateORMEngine implements ORMEngine {
         } finally {
             data.tmpList = null;
         }
-
-        // already initialized for this application context
-
-        // MUST
-        // cacheconfig
-        // cacheprovider
-        // ...
 
         Log log = pc.getConfig().getLog("orm");
 
@@ -233,9 +225,6 @@ public class HibernateORMEngine implements ORMEngine {
             } catch (Exception ex) {
                 throw CommonUtil.toPageException(ex);
             }
-            /*
-             * finally { CommonUtil.releaseDatasourceConnection(pc, dc); }
-             */
 
             EntityTuplizerFactory tuplizerFactory = data.getConfiguration(e.getKey()).config.getEntityTuplizerFactory();
             tuplizerFactory.registerDefaultTuplizerClass(EntityMode.MAP, AbstractEntityTuplizerImpl.class);
@@ -250,9 +239,12 @@ public class HibernateORMEngine implements ORMEngine {
 
     /**
      * Attach our event integrator object to the Hibernate configuration.
-     * 
-     * @param pc Lucee PageContext object for retrieving the event handler
-     * @param data SessionFactoryData object - houses the ORM configuration and the event integrator.
+     *
+     * @param pc
+     *            Lucee PageContext object for retrieving the event handler
+     * @param data
+     *            SessionFactoryData object - houses the ORM configuration and the event integrator.
+     *
      * @throws PageException
      */
     private static void configureEventHandler(PageContext pc, SessionFactoryData data) throws PageException {
@@ -270,12 +262,18 @@ public class HibernateORMEngine implements ORMEngine {
     }
 
     /**
-     * Build or load the XML mapping string for the provided entity type.  If `autogenmap` is enabled, will generate the XML mapping. If autogenmap is false, will attempt to load the XML mapping from disk.
-     * 
-     * @param pc Lucee PageContext object
-     * @param cfc A persistent Component for which we wish to generate an XML mapping.
-     * @param ormConf ORM configuration for this CFML application.
-     * @param data the SessionFactoryData object housing the ORM application data.
+     * Build or load the XML mapping string for the provided entity type. If `autogenmap` is enabled, will generate the
+     * XML mapping. If autogenmap is false, will attempt to load the XML mapping from disk.
+     *
+     * @param pc
+     *            Lucee PageContext object
+     * @param cfc
+     *            A persistent Component for which we wish to generate an XML mapping.
+     * @param ormConf
+     *            ORM configuration for this CFML application.
+     * @param data
+     *            the SessionFactoryData object housing the ORM application data.
+     *
      * @throws PageException
      */
     public void createMapping(PageContext pc, Component cfc, ORMConfiguration ormConf, SessionFactoryData data)
