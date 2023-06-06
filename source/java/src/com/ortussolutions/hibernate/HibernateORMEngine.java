@@ -220,12 +220,12 @@ public class HibernateORMEngine implements ORMEngine {
          */
         for(Entry<Key, String> datasourceMappings : HibernateSessionFactory.assembleMappingsByDatasource(data).entrySet()) {
             Key datasourceName = datasourceMappings.getKey();
-            String datasourceMappings = datasourceMappings.getValue();
+            String mappingXML = datasourceMappings.getValue();
             if (data.getConfiguration(datasourceName) != null)
                 continue;
 
             try {
-                data.setConfiguration(log, datasourceMappings, data.getDataSource(datasourceName), null, null,
+                data.setConfiguration(log, mappingXML, data.getDataSource(datasourceName), null, null,
                         appContext == null ? "" : appContext.getName());
             } catch (Exception ex) {
                 throw CommonUtil.toPageException(ex);
