@@ -16,7 +16,6 @@ va specific
 *.lock
 *.DS_Store
 /cache
-/docs
 
 # Test artifacts
 WEB-INF/

@@ -78,29 +78,9 @@
    </developers>
 
    <build>
+      <directory>${project.basedir}/target</directory>
+      <sourceDirectory>${project.basedir}/source/java/src/</sourceDirectory>
       <plugins>
-
-         <!--
-         https://www.baeldung.com/maven-add-src-directories#add-source-directory-with-build-helper-maven-plugin -->
-         <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>build-helper-maven-plugin</artifactId>
-            <version>3.2.0</version>
-            <executions>
-               <execution>
-                  <id>add-source</id>
-                  <phase>generate-sources</phase>
-                  <goals>
-                     <goal>add-source</goal>
-                  </goals>
-                  <configuration>
-                     <sources>
-                        <source>${project.basedir}/source/java/src/</source>
-                     </sources>
-                  </configuration>
-               </execution>
-            </executions>
-         </plugin>
 
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -115,8 +95,7 @@
                </execution>
             </executions>
             <configuration>
-               <reportOutputDirectory>${project.basedir}</reportOutputDirectory>
-               <destDir>docs</destDir>
+               <reportOutputDirectory>${project.build.directory}/apidocs</reportOutputDirectory>
                <additionalparam>-Xdoclint:none</additionalparam>
                <failOnError>false</failOnError>
             </configuration>
@@ -242,7 +221,7 @@ lucee-core-version: ${minLuceeVersion}
 
          <!-- https://stackoverflow.com/a/26638952 -->
          <!--
-            Rename the .zip archive tp a Lucee-friendly .lex file extension
+            Rename the .zip archive to a Lucee-friendly .lex file extension
          -->
          <plugin>
             <groupId>com.coderplus.maven.plugins</groupId>
@@ -402,16 +381,5 @@ lucee-core-version: ${minLuceeVersion}
       <developerConnection>scm:git:git@github.com:Ortus-Solutions/extension-hibernate.git</developerConnection>
       <tag>${project.version}</tag>
    </scm>
-
-   <distributionManagement>
-      <repository>
-         <id>ossrh</id>
-         <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-      </repository>
-      <snapshotRepository>
-         <id>ossrh</id>
-         <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      </snapshotRepository>
-   </distributionManagement>
 
 </project>

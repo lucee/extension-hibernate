@@ -32,5 +32,5 @@ jobs:
       - name: Commit formatting changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          file_pattern: "docs"
+          file_pattern: "source/java/src"
           commit_message: "🤖 CI: Auto-format Java source __CI__"
