@@ -13,6 +13,7 @@ import com.ortussolutions.hibernate.tuplizer.AbstractEntityTuplizerImpl;
 import com.ortussolutions.hibernate.util.CommonUtil;
 import com.ortussolutions.hibernate.util.ExceptionUtil;
 import com.ortussolutions.hibernate.util.HibernateUtil;
+import com.ortussolutions.hibernate.util.ExtensionUtil;
 
 import lucee.commons.io.log.Log;
 import lucee.commons.io.res.Resource;
@@ -33,9 +34,15 @@ public class HibernateORMEngine implements ORMEngine {
     private Map<String, SessionFactoryData> factories = new ConcurrentHashMap<String, SessionFactoryData>();
 
     static {
-        // Workaround for certain jaxb-api jars not setting the context factory location.
-        // See LDEV-4276
-        System.setProperty("javax.xml.bind.context.factory", "com.sun.xml.bind.v2.ContextFactory");
+        /**
+         * Workaround for certain jaxb-api jars not setting the context factory location.
+         * See LDEV-4276.
+         * 
+         * The system property we need to set is different based on which java / JRE version we are running, hence the call to getJVMVersion. 
+         */
+        String jaxbContextProperty = ExtensionUtil.getJVMVersion() < 11 ? "javax.xml.bind.context.factory"
+                : "javax.xml.bind.JAXBContextFactory";
+        System.setProperty(jaxbContextProperty, "com.sun.xml.bind.v2.ContextFactory");
     }
 
     public HibernateORMEngine() {

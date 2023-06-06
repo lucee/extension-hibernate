@@ -123,6 +123,8 @@
             <extensions>true</extensions>
             <configuration>
                <instructions>
+                  <Specification-Version>${project.version}</Specification-Version>
+                  <Implementation-Version>${project.version}</Implementation-Version>
                   <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                   <Bundle-Name>${project.artifactId}</Bundle-Name>
                   <Private-Package>com.ortussolutions.hibernate</Private-Package>
