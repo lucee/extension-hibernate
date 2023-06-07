@@ -7,11 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.4.29.28] - 2023-06-07
+
 ### Fixed
 
 We now set the JAXB `ContextFactory` system property based on the JRE version. If less than JRE 11, we set `javax.xml.bind.context.factory=com.sun.xml.bind.v2.ContextFactory`. If JRE 11 or greater, we set `javax.xml.bind.JAXBContextFactory=com.sun.xml.bind.v2.ContextFactory`.
 
-This prevents the following warning from being logged on request:
+This prevents the following warning from being logged on each ORM method call:
 
 ```
 WARNING: Using non-standard property: javax.xml.bind.context.factory. Property javax.xml.bind.JAXBContextFactory should be used instead.
