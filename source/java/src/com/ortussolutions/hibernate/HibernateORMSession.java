@@ -454,7 +454,7 @@ public class HibernateORMSession implements ORMSession {
     public void evictEntity(PageContext pc, String entityName, String id) throws PageException {
         entityName = correctCaseEntityName(entityName);
 
-        for( SessionAndConn sac : sessions.values()){
+        for (SessionAndConn sac : sessions.values()) {
             SessionFactory f = sac.getSession(pc).getSessionFactory();
             if (id == null)
                 f.getCache().evictEntityRegion(entityName);
@@ -997,9 +997,7 @@ public class HibernateORMSession implements ORMSession {
 
     @Override
     public boolean isValid() {
-        return sessions.isEmpty()
-            ? false
-            : sessions.values().stream().allMatch(sac -> sac.isOpen());
+        return sessions.isEmpty() ? false : sessions.values().stream().allMatch(sac -> sac.isOpen());
     }
 
     @Override

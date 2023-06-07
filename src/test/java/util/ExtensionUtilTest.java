@@ -9,13 +9,13 @@ public class ExtensionUtilTest {
 
     @Test
     public void canGetHibernateVersion() {
-        assertEquals("5.4.29.Final", ExtensionUtil.getHibernateVersion() );
+        assertEquals("5.4.29.Final", ExtensionUtil.getHibernateVersion());
     }
 
-    @Disabled( "Wont pass outside of a .jar with manifest containing Implementation-Version.")
+    @Disabled("Wont pass outside of a .jar with manifest containing Implementation-Version.")
     @Test
     public void canGetExtensionVersion() {
-        assertEquals("5.4.29.27", ExtensionUtil.getExtensionVersion() );
+        assertEquals("5.4.29.27", ExtensionUtil.getExtensionVersion());
     }
 
     @Test
