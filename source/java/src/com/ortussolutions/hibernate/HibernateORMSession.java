@@ -236,7 +236,6 @@ public class HibernateORMSession implements ORMSession {
 
     @Override
     public void flushAll(PageContext pc) {
-        Iterator<SessionAndConn> it = sessions.values().iterator();
         for (SessionAndConn sessionConn : sessions.values()) {
             if (sessionConn.isOpen()) {
                 try {
@@ -423,9 +422,6 @@ public class HibernateORMSession implements ORMSession {
         Key dsn = CommonUtil.toKey(CommonUtil.getDataSource(pc, datasource).getName());
 
         getSession(pc, dsn).clear();
-        /*
-         * Iterator<Session> it = _sessions.values().iterator(); while(it.hasNext()){ it.next().clear(); }
-         */
     }
 
     @Override
@@ -458,10 +454,7 @@ public class HibernateORMSession implements ORMSession {
     public void evictEntity(PageContext pc, String entityName, String id) throws PageException {
         entityName = correctCaseEntityName(entityName);
 
-        Iterator<SessionAndConn> it = sessions.values().iterator();
-        SessionAndConn sac;
-        while (it.hasNext()) {
-            sac = it.next();
+        for( SessionAndConn sac : sessions.values()){
             SessionFactory f = sac.getSession(pc).getSessionFactory();
             if (id == null)
                 f.getCache().evictEntityRegion(entityName);
@@ -1004,15 +997,9 @@ public class HibernateORMSession implements ORMSession {
 
     @Override
     public boolean isValid() {
-        if (sessions.size() == 0)
-            return false;
-        Iterator<SessionAndConn> it = sessions.values().iterator();
-
-        while (it.hasNext()) {
-            if (!it.next().isOpen())
-                return false;
-        }
-        return true;
+        return sessions.isEmpty()
+            ? false
+            : sessions.values().stream().allMatch(sac -> sac.isOpen());
     }
 
     @Override
