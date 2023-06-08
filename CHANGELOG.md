@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+* Re-architected the repository layout:
+  * Java source moved to `extension/src/main/java`
+  * All java classes are now under the `ortus.extension.orm` package
+  * Dropped the java source format-on-push in favor of format-on-save IDE tooling
+
+### Fixed
+
+* The `.fld` definition file for all built-ins was missed during the conversion to a Maven build. (Since [45.4.29.25](https://github.com/Ortus-Solutions/extension-hibernate/releases/tag/v5.4.29.25)). This caused the `orm*()` and `entity*()` built-in method calls to be picked up by Lucee core before being routed to this extension. No known errors resulted from this mistake, but we feel embarrassed anyway. 😅
+
 ## [5.4.29.28] - 2023-06-07
 
 ### Fixed
@@ -18,6 +29,8 @@ This prevents the following warning from being logged on each ORM method call:
 ```
 WARNING: Using non-standard property: javax.xml.bind.context.factory. Property javax.xml.bind.JAXBContextFactory should be used instead.
 ```
+
+See [OOE-3](https://ortussolutions.atlassian.net/browse/OOE-3).
 
 ## [5.4.29.27] - 2023-05-29
 

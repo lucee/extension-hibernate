@@ -1,0 +1,54 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+    <id>lex</id>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <formats>
+        <format>zip</format>
+    </formats>
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.directory}/META-INF/</directory>
+            <outputDirectory>/META-INF/</outputDirectory>
+        </fileSet>
+        <!--
+            Include committed .jar OSGI bundles which are guaranteed to install on Lucee.
+            (As opposed to the pom dependencies, some of which are normal jars and will not install on Lucee.)
+        -->
+        <fileSet>
+            <directory>${project.basedir}/extension/lib</directory>
+            <outputDirectory>/jars/</outputDirectory>
+        </fileSet>
+    </fileSets>
+    <files>
+        <file>
+            <source>${project.basedir}/extension/src/main/cfml/logo.png</source>
+            <outputDirectory>/META-INF/</outputDirectory>
+        </file>
+        <file>
+            <source>${project.basedir}/extension/src/main/cfml/ormFunctions.fld</source>
+            <outputDirectory>/flds</outputDirectory>
+        </file>
+        <file>
+            <source>${project.build.directory}/${project.artifactId}-${project.version}.jar</source>
+            <outputDirectory>/jars</outputDirectory>
+        </file>
+    </files>
+    <!-- 
+        Uncomment to attempt a build using project dependencies...
+        Note we have to manually exclude test dependencies, and some non-OSGI jars that Lucee throws exceptions on.
+        <dependencySets>
+        <dependencySet>
+            <outputDirectory>/jars</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
+            <excludes>
+                <exclude>org.glassfish.jaxb:txw2</exclude>
+                <exclude>org.junit.jupiter:*</exclude>
+                <exclude>org.mockito:*</exclude>
+                <exclude>org.dom4j:*</exclude>
+                <exclude>org.glassfish.jaxb:jaxb-runtime</exclude>
+            </excludes>
+        </dependencySet>
+    </dependencySets> -->
+</assembly>

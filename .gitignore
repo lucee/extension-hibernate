@@ -6,13 +6,8 @@
 va specific
 .notes/
 
-# build files/dist
-/bin
-/build
-/dist
-/temp
-*.class
-/target
+# build files
+target/
 *.lock
 *.DS_Store
 /cache
@@ -20,6 +15,3 @@ va specific
 # Test artifacts
 WEB-INF/
 tests/datasource
-
-# Lucee source for CFML tests
-/lucee

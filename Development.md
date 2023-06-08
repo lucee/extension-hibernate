@@ -15,9 +15,9 @@ You will need to install the following for extension development:
 
 **Before you send a PR:**
 
-1. Don't forget to run tests!
+1. [Run the test suite](#testing)
    1. (if you can't get tests to pass, ask for help!)
-2. Format java source code: `mvn formatter:format`
+2. Add a note to `CHANGELOG.md` under `## Unreleased` with a summary of the change
 
 ## Building
 
@@ -25,7 +25,6 @@ You will need to install the following for extension development:
 * `mvn package` Package the extension into a Lucee-installable `.lex` extension file
 * `mvn test` run java-based (junit) tests
 * `mvn javadoc:javadoc` generate java docs
-* `mvn formatter:format` [format java source](https://code.revelc.net/formatter-maven-plugin/usage.html)
 * `mvn verify` Run OWASP dependency checker to look for vulnerabilities
 
 ## Testing
@@ -62,24 +61,17 @@ mvn clean package && ./test.sh
 
 Releasing is *mostly* automated. You will need to, at a minimum:
 
-1. Update `CHANGELOG.md` with release notes in the `## [Unreleased]` section.
-2. Enter a version number and manually run `bump.sh`.
+1. Update `CHANGELOG.md` to move release notes from the `## [Unreleased]` section to a new `### [1.2.3.4] - YYYY-MM-DD` section
+2. Run `bump.sh` with a version number to merge to master and push a release commit: `./bump.sh 5.4.29.25`
 
-To push a new version, run `bump.sh 1.2.3.4` where `1.2.3.4` is the version you wish to release:
-
-```sh
-./bump.sh 5.4.29.25
-```
-
-Once this script pushes to `master`, the `release` GitHub workflow will kick in and:
+Once `bump.sh` pushes to `master`, the `release` GitHub workflow will kick in and:
 
 1. compile and test the extension
-2. format all java source code
-3. create javadocs
-4. push up the built artifact, javadocs, and the logo to S3
-5. publish the extension to Forgebox
-6. create a git tag
-7. create a GitHub release with changelog release notes
+2. create javadocs
+3. push up the built artifact, javadocs, and the logo to S3
+4. publish the extension to Forgebox
+5. create a git tag
+6. create a GitHub release with changelog release notes
 
 ## Java IDE
 
@@ -87,5 +79,3 @@ I highly recommend [VS Code](https://code.visualstudio.com/) for java developmen
 
 * [Extension Pack for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack) - a must for java language support, easy refactoring tools, etc.
 * [Refactoring Java](https://code.visualstudio.com/docs/java/java-refactoring) documentation - Keyboard shortcuts for moving methods, renaming variables, the works.
-
-Currently, some dependencies are not recognized, probably due to an out-of-date `source/java/.classpath` file. We will be looking to remove this `.classpath` config file in the future, as a good IDE with a solid build system can manage this for us.

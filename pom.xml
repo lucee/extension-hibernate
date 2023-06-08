@@ -3,8 +3,8 @@
    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
 
-   <groupId>com.ortussolutions</groupId>
-   <artifactId>hibernate.extension</artifactId>
+   <groupId>ortus.extension</groupId>
+   <artifactId>orm-extension</artifactId>
    <version>5.4.29.28</version>
    <packaging>bundle</packaging>
 
@@ -14,10 +14,10 @@
 
    <properties>
       <name>Ortus ORM Extension</name>
-      <bundlename>hibernate-extension</bundlename>
+      <bundlename>orm-extension</bundlename>
       <id>D062D72F-F8A2-46F0-8CBC91325B2F067B</id>
       <description>Hibernate ORM (Hibernate in short) is an object-relational mapping library for the Java language, providing a framework for mapping an object-oriented domain model to a traditional relational database. Hibernate solves object-relational impedance mismatch problems by replacing direct persistence-related database accesses with high-level object handling functions.</description>
-      <class>com.ortussolutions.hibernate.HibernateORMEngine</class>
+      <class>ortus.extension.orm.HibernateORMEngine</class>
 
       <!-- Dependency versions -->
       <minLuceeVersion>5.3.9.73</minLuceeVersion>
@@ -79,7 +79,8 @@
 
    <build>
       <directory>${project.basedir}/target</directory>
-      <sourceDirectory>${project.basedir}/source/java/src/</sourceDirectory>
+      <sourceDirectory>${project.basedir}/extension/src/main/java/</sourceDirectory>
+      <testSourceDirectory>${project.basedir}/extension/src/test/java/</testSourceDirectory>
       <plugins>
 
          <plugin>
@@ -118,9 +119,9 @@
                   <Implementation-Version>${project.version}</Implementation-Version>
                   <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                   <Bundle-Name>${project.artifactId}</Bundle-Name>
-                  <Private-Package>com.ortussolutions.hibernate</Private-Package>
+                  <Private-Package>ortus.extension.orm</Private-Package>
                   <!-- <Export-Package>
-                        com.ortussolutions.hibernate,com.ortussolutions.hibernate.jdbc,com.ortussolutions.hibernate.util
+                        ortus.extension.orm,ortus.extension.orm.jdbc,ortus.extension.orm.util
                      </Export-Package> -->
                   <Import-Package>net.sf.ehcache.hibernate;,!lucee.*;,!org.osgi.framework;,*</Import-Package>
                   <Require-Bundle>
@@ -153,22 +154,6 @@
             <inherited>false</inherited>
             <executions>
                <execution>
-                  <id>copy-starter-manifest</id>
-                  <phase>package</phase>
-                  <goals>
-                     <goal>echo</goal>
-                  </goals>
-                  <configuration>
-                     <fromFile>/${project.basedir}/source/java/src/META-INF/EXTENSION.MF</fromFile>
-                     <!-- warning: this plugin appears to wrongly interpolate properties,
-                     so ${project.build.directory} ends up creating the full /home/user/path INSIDE this current
-                     directory.
-                     The best workaround appears to be not using those properties, and hardcoding a RELATIVE path
-                     instead.-->
-                     <toFile>target/META-INF/MANIFEST.MF</toFile>
-                  </configuration>
-               </execution>
-               <execution>
                   <id>append-manifest-entries</id>
                   <phase>package</phase>
                   <goals>
@@ -176,6 +161,7 @@
                   </goals>
                   <configuration>
                      <message>
+Manifest-Version: 1.0
 name: ${name}
 id: ${id}
 description: ${description}
@@ -189,7 +175,6 @@ lucee-core-version: ${minLuceeVersion}
                      The best workaround appears to be not using those properties, and hardcoding a RELATIVE path
                      instead.-->
                      <toFile>target/META-INF/MANIFEST.MF</toFile>
-                     <!-- <toFile>test.txt</toFile> -->
                      <append>true</append>
                   </configuration>
                </execution>
@@ -214,7 +199,7 @@ lucee-core-version: ${minLuceeVersion}
                   <manifestFile>${project.basedir}/src/main/extension/META-INF/MANIFEST.MF</manifestFile>
                </archive> -->
                <descriptors>
-                  <descriptor>source/lex.xml</descriptor>
+                  <descriptor>build/assemble.xml</descriptor>
                </descriptors>
             </configuration>
          </plugin>
@@ -255,18 +240,6 @@ lucee-core-version: ${minLuceeVersion}
                   </goals>
                </execution>
             </executions>
-         </plugin>
-
-         <plugin>
-            <groupId>net.revelc.code.formatter</groupId>
-            <artifactId>formatter-maven-plugin</artifactId>
-            <version>2.21.0</version>
-            <configuration>
-               <directories>
-                  <directory>${project.basedir}/source/java/src/</directory>
-                  <directory>${project.basedir}/src/test/java</directory>
-               </directories>
-            </configuration>
          </plugin>
 
       </plugins>
