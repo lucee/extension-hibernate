@@ -15,26 +15,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.Set;
 
-import org.hibernate.MappingException;
 import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.BootstrapServiceRegistry;
-import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cache.ehcache.internal.EhcacheRegionFactory;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Environment;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaExport.Action;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.hibernate.tool.schema.TargetType;
-import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import lucee.commons.io.log.Log;
 import lucee.commons.io.res.Resource;
@@ -59,172 +50,27 @@ import lucee.runtime.util.TemplateUtil;
 
 public class HibernateSessionFactory {
 
-	public static final String HIBERNATE_3_PUBLIC_ID = "-//Hibernate/Hibernate Mapping DTD 3.0//EN";
-	public static final String HIBERNATE_3_SYSTEM_ID = "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd";
-	public static final String HIBERNATE_3_DOCTYPE_DEFINITION = "<!DOCTYPE hibernate-mapping PUBLIC \"" + HIBERNATE_3_PUBLIC_ID + "\" \"" + HIBERNATE_3_SYSTEM_ID + "\">";
-
-	public static Configuration createConfiguration(Log log, String mappings, DataSource ds, String user, String pass, SessionFactoryData data, String applicationContextName)
-			throws SQLException, IOException, PageException {
-		ORMConfiguration ormConf = data.getORMConfiguration();
-
-		// dialect
-		String dialect = null;
-		String tmpDialect = ORMConfigurationUtil.getDialect(ormConf, ds.getName());
-		if (!Util.isEmpty(tmpDialect)) dialect = Dialect.getDialect(tmpDialect);
-		if (dialect != null && Util.isEmpty(dialect)) dialect = null;
-
-		// Cache Provider
-		String cacheProvider = ormConf.getCacheProvider();
-		Class<?> cacheProviderFactory = null;
-
-		if (Util.isEmpty(cacheProvider) || "EHCache".equalsIgnoreCase(cacheProvider)) {
-			cacheProviderFactory = EhcacheRegionFactory.class;
-		}
-		// else if ("JBossCache".equalsIgnoreCase(cacheProvider)) cacheProvider =
-		// "org.hibernate.cache.TreeCacheProvider";
-		// else if ("HashTable".equalsIgnoreCase(cacheProvider)) cacheProvider =
-		// "org.hibernate.cache.HashtableCacheProvider";
-		// else if ("SwarmCache".equalsIgnoreCase(cacheProvider)) cacheProvider =
-		// "org.hibernate.cache.SwarmCacheProvider";
-		// else if ("OSCache".equalsIgnoreCase(cacheProvider)) cacheProvider =
-		// "org.hibernate.cache.OSCacheProvider";
-
-		/// JBossCache -> https://mvnrepository.com/artifact/org.hibernate/hibernate-jbosscache
-		// OSCache -> https://mvnrepository.com/artifact/org.hibernate/hibernate-oscache
-		// SwarmCache -> https://mvnrepository.com/artifact/org.hibernate/hibernate-swarmcache
-
-		Resource cc = ormConf.getCacheConfig();
-
-		BootstrapServiceRegistry bootstrapRegistry = new BootstrapServiceRegistryBuilder().applyIntegrator(data.getEventListenerIntegrator()).build();
-
-		Configuration configuration = new Configuration(bootstrapRegistry);
-
-		// is ehcache
-		Resource cacheConfig = null;
-		if (cacheProvider != null && cacheProvider.toLowerCase().indexOf("ehcache") != -1) {
-			CFMLEngine eng = CFMLEngineFactory.getInstance();
-			String varName = eng.getCastUtil().toVariableName(applicationContextName, applicationContextName);
-			String xml;
-			if (cc == null || !cc.isFile()) {
-				cacheConfig = eng.getResourceUtil().getTempDirectory().getRealResource("ehcache/" + varName + ".xml");
-				xml = createEHConfigXML(varName);
-			}
-			// we need to change or set the name
-			else {
-				String b64 = varName + eng.getSystemUtil().hash64b(CommonUtil.toString(cc, (Charset) null));
-				cacheConfig = eng.getResourceUtil().getTempDirectory().getRealResource("ehcache/" + b64 + ".xml");
-				Document doc = CommonUtil.toDocument(cc, null);
-				Element root = doc.getDocumentElement();
-				root.setAttribute("name", b64);
-
-				xml = CommonUtil.toString(root, false, true, null, null, CommonUtil.UTF8().name());
-			}
-
-			if (!cacheConfig.isFile()) {
-				cacheConfig.getParentResource().mkdirs();
-				eng.getIOUtil().write(cacheConfig, xml, false, null);
-			}
-		}
-
-		// ormConfig
-		Resource conf = ormConf.getOrmConfig();
-		if (conf != null) {
-			try {
-				Document doc = CommonUtil.toDocument(conf, null);
-				configuration.configure(doc);
-			}
-			catch (Exception e) {
-				log.log(Log.LEVEL_ERROR, "hibernate", e);
-
-			}
-		}
-
-		try {
-			configuration.addInputStream(new ByteArrayInputStream(mappings.getBytes("UTF-8")));
-		}
-		catch (MappingException me) {
-			throw ExceptionUtil.createException(data, null, me);
-		}
-
-		configuration.setProperty(AvailableSettings.FLUSH_BEFORE_COMPLETION, "false")
-
-				.setProperty(AvailableSettings.ALLOW_UPDATE_OUTSIDE_TRANSACTION, "true")
-
-				.setProperty(AvailableSettings.AUTO_CLOSE_SESSION, "false");
-
-		setProperty(configuration, Environment.CONNECTION_PROVIDER, new ConnectionProviderImpl(ds, user, pass));
-
-		// SQL dialect
-		if (dialect != null) configuration.setProperty(AvailableSettings.DIALECT, dialect);
-		// Enable Hibernate's current session context
-		configuration.setProperty(AvailableSettings.CURRENT_SESSION_CONTEXT_CLASS, "thread")
-
-				// Echo all executed SQL to stdout
-				.setProperty(AvailableSettings.SHOW_SQL, CommonUtil.toString(ormConf.logSQL())).setProperty("hibernate.format_sql", CommonUtil.toString(ormConf.logSQL()))
-				// formatting of SQL logged to the console
-				.setProperty(AvailableSettings.FORMAT_SQL, CommonUtil.toString(ormConf.logSQL())).setProperty("hibernate.format_sql", CommonUtil.toString(ormConf.logSQL()))
-				// Specifies whether secondary caching should be enabled
-				.setProperty(AvailableSettings.USE_SECOND_LEVEL_CACHE, CommonUtil.toString(ormConf.secondaryCacheEnabled()))
-				// Drop and re-create the database schema on startup
-				.setProperty("hibernate.exposeTransactionAwareSessionFactory", "false")
-				// .setProperty("hibernate.hbm2ddl.auto", "create")
-				.setProperty(AvailableSettings.DEFAULT_ENTITY_MODE, "dynamic-map");
-
-		String catalog = ORMConfigurationUtil.getCatalog(ormConf, ds.getName());
-		String schema = ORMConfigurationUtil.getSchema(ormConf, ds.getName());
-
-		if (!Util.isEmpty(catalog)) configuration.setProperty("hibernate.default_catalog", catalog);
-		if (!Util.isEmpty(schema)) configuration.setProperty("hibernate.default_schema", schema);
-
-		if (ormConf.secondaryCacheEnabled()) {
-			if (cacheConfig != null && cacheConfig.isFile()) {
-				configuration.setProperty("hibernate.cache.provider_configuration_file_resource_path", cacheConfig.getAbsolutePath());
-				configuration.setProperty("cache.provider_configuration_file_resource_path", cacheConfig.getAbsolutePath());
-				if (cacheConfig instanceof File) configuration.setProperty("net.sf.ehcache.configurationResourceName", ((File) cacheConfig).toURI().toURL().toExternalForm());
-				else throw new IOException("only local configuration files are supported");
-
-			}
-
-			if (cacheProviderFactory != null) {
-				setProperty(configuration, AvailableSettings.CACHE_REGION_FACTORY, cacheProviderFactory);
-			}
-			// AvailableSettings.CACHE_REGION_FACTORY
-			// hibernate.cache.region.factory_class
-			// hibernate.cache.use_second_level_cache
-
-			// <property
-			// name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
-			// <property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
-
-			configuration.setProperty("hibernate.cache.use_query_cache", "true");
-			// <prop
-			// key="hibernate.cache.provider_configuration_file_resource_path">hibernate-ehcache.xml</prop>
-
-			// hibernate.cache.provider_class=org.hibernate.cache.EhCacheProvider
-		}
-
-		schemaExport(log, configuration, ds, user, pass, data);
-
-		return configuration;
-	}
-
-	private static void setProperty(Configuration configuration, String name, Object value) {
-		Properties props = new Properties();
-		props.put(name, value);
-		configuration.addProperties(props);
-	}
-
-	private static String createEHConfigXML(String cacheName) {
-		return new StringBuilder().append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>").append("<ehcache").append("    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"")
-				.append("    xsi:noNamespaceSchemaLocation=\"ehcache.xsd\"").append("    updateCheck=\"true\" name=\"" + cacheName + "\">")
-				.append("    <diskStore path=\"java.io.tmpdir\"/>").append("    <defaultCache").append("            maxElementsInMemory=\"10000\"")
-				.append("            eternal=\"false\"").append("            timeToIdleSeconds=\"120\"").append("            timeToLiveSeconds=\"120\"")
-				.append("            maxElementsOnDisk=\"10000000\"").append("            diskExpiryThreadIntervalSeconds=\"120\"")
-				.append("            memoryStoreEvictionPolicy=\"LRU\">").append("        <persistence strategy=\"localTempSwap\"/>").append("    </defaultCache>")
-				.append("</ehcache>").toString();
-	}
-
-	private static void schemaExport(Log log, Configuration configuration, DataSource ds, String user, String pass, SessionFactoryData data)
+	/**
+	 * Generate the database schema based on the configured settings (dropcreate, update, etc.)
+	 *
+	 * @param log
+	 *            Lucee logger object
+	 * @param configuration
+	 *            Hibernate configuration
+	 * @param ds
+	 *            Datasource
+	 * @param user
+	 *            Datasource username
+	 * @param pass
+	 *            Datasource password
+	 * @param data
+	 *            Session factory data container
+	 *
+	 * @throws PageException
+	 * @throws SQLException
+	 * @throws IOException
+	 */
+	public static void schemaExport(Log log, Configuration configuration, DataSource ds, String user, String pass, SessionFactoryData data)
 			throws PageException, SQLException, IOException {
 		ORMConfiguration ormConf = data.getORMConfiguration();
 
@@ -324,7 +170,7 @@ public class HibernateSessionFactory {
 		}
 	}
 
-	public static Map<Key, String> createMappings(ORMConfiguration ormConf, SessionFactoryData data) {
+	public static Map<Key, String> assembleMappingsByDatasource(SessionFactoryData data) {
 		Map<Key, String> mappings = new HashMap<Key, String>();
 		Iterator<Entry<Key, Map<String, CFCInfo>>> it = data.getCFCs().entrySet().iterator();
 		while (it.hasNext()) {
@@ -332,30 +178,28 @@ public class HibernateSessionFactory {
 
 			Set<String> done = new HashSet<String>();
 			StringBuilder mapping = new StringBuilder();
-			mapping.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-			mapping.append(HIBERNATE_3_DOCTYPE_DEFINITION + "\n");
-			mapping.append("<hibernate-mapping>\n");
+			mapping.append(HBMCreator.getXMLOpen());
+			mapping.append("<hibernate-mapping>");
 			Iterator<Entry<String, CFCInfo>> _it = e.getValue().entrySet().iterator();
-			Entry<String, CFCInfo> entry;
-			while (_it.hasNext()) {
-				entry = _it.next();
-				createMappings(ormConf, entry.getKey(), entry.getValue(), done, mapping, data);
-
-			}
+			_it.forEachRemaining(entry -> {
+				mapping.append(assembleMappingForCFC(entry.getKey(), entry.getValue(), done, data));
+			});
 			mapping.append("</hibernate-mapping>");
 			mappings.put(e.getKey(), mapping.toString());
 		}
 		return mappings;
 	}
 
-	private static void createMappings(ORMConfiguration ormConf, String key, CFCInfo value, Set<String> done, StringBuilder mappings, SessionFactoryData data) {
-		if (done.contains(key)) return;
+	private static String assembleMappingForCFC(String key, CFCInfo value, Set<String> done, SessionFactoryData data) {
+		if (done.contains(key))
+			return "";
 		CFCInfo v;
+		StringBuilder mappings = new StringBuilder();
 		String ext = value.getCFC().getExtends();
 		if (!Util.isEmpty(ext)) {
 			try {
-				Component base = data.getEntityByCFCName(ext, false);
-				ext = HibernateCaster.getEntityName(base);
+				Component parent = data.getEntityByCFCName(ext, false);
+				ext = HibernateCaster.getEntityName(parent);
 			}
 			catch (Throwable t) {
 				if (t instanceof ThreadDeath) throw (ThreadDeath) t;
@@ -364,14 +208,29 @@ public class HibernateSessionFactory {
 			ext = HibernateUtil.id(CommonUtil.last(ext, ".").trim());
 			if (!done.contains(ext)) {
 				v = data.getCFC(ext, null);
-				if (v != null) createMappings(ormConf, ext, v, done, mappings, data);
+				if (v != null) {
+					mappings.append(HBMCreator.stripXMLOpenClose(assembleMappingForCFC(ext, v, done, data)));
+				}
 			}
 		}
 
-		mappings.append(value.getXML());
+		mappings.append(HBMCreator.stripXMLOpenClose(value.getXML()));
 		done.add(key);
+		return mappings.toString();
 	}
 
+	/**
+	 * Load and return persistent entities using the ORM configuration
+	 *
+	 * @param pc
+	 *            Lucee PageContext object
+	 * @param engine
+	 *            ORM engine
+	 * @param ormConf
+	 *            ORM configuration object.
+	 *
+	 * @throws PageException
+	 */
 	public static List<Component> loadComponents(PageContext pc, HibernateORMEngine engine, ORMConfiguration ormConf) throws PageException {
 		CFMLEngine en = CFMLEngineFactory.getInstance();
 		String[] ext = HibernateUtil.merge(en.getInfo().getCFMLComponentExtensions(), en.getInfo().getLuceeComponentExtensions());
@@ -382,9 +241,27 @@ public class HibernateSessionFactory {
 		return components;
 	}
 
+	/**
+	 * Load persistent entities from the given directory
+	 *
+	 * @param pc
+	 *            Lucee PageContext object
+	 * @param engine
+	 *            ORM engine
+	 * @param components
+	 *            The current list of components. Any discovered components will be appended to this list.
+	 * @param res
+	 *            The directory to search for Components.
+	 * @param filter
+	 *            The file filter - probably just a Lucee-fied ".cfc" filter
+	 * @param ormConf
+	 *            ORM configuration object.
+	 *
+	 * @throws PageException
+	 */
 	private static void loadComponents(PageContext pc, HibernateORMEngine engine, List<Component> components, Resource[] reses, ResourceFilter filter, ORMConfiguration ormConf)
 			throws PageException {
-		Mapping[] mappings = createMappings(pc, reses);
+		Mapping[] mappings = createFileMappings(pc, reses);
 		ApplicationContext ac = pc.getApplicationContext();
 		Mapping[] existing = ac.getComponentMappings();
 		if (existing == null) existing = new Mapping[0];
@@ -407,6 +284,27 @@ public class HibernateSessionFactory {
 		}
 	}
 
+	/**
+	 * Load persistent entities from the given cfclocation Mapping directory
+	 *
+	 * @param pc
+	 *            Lucee PageContext object
+	 * @param engine
+	 *            ORM engine
+	 * @param cfclocation
+	 *            Lucee {@link lucee.runtime.Mapping} pointing to a directory where .cfc Components are located.
+	 * @param components
+	 *            The current list of components. Any discovered components will be appended to this list.
+	 * @param res
+	 *            The directory to search for Components, OR the file to (potentially) import into the Hibernate
+	 *            configuration.
+	 * @param filter
+	 *            The file filter - probably just a Lucee-fied ".cfc" filter
+	 * @param ormConf
+	 *            ORM configuration object.
+	 *
+	 * @throws PageException
+	 */
 	private static void loadComponents(PageContext pc, HibernateORMEngine engine, Mapping cfclocation, List<Component> components, Resource res, ResourceFilter filter,
 			ORMConfiguration ormConf) throws PageException {
 		if (res == null) return;
@@ -462,7 +360,19 @@ public class HibernateSessionFactory {
 		}
 	}
 
-	public static Mapping[] createMappings(PageContext pc, Resource[] resources) {
+	/**
+	 * Create CF mappings for locating persistent entities.
+	 * <p>
+	 * Used when importing persistent entities from the configured <code>this.ormsettings.cfclocation</code> array.
+	 *
+	 * @param pc
+	 *            Lucee PageContext
+	 * @param resources
+	 *            Array of Resource objects, i.e. a file path
+	 *
+	 * @return a Mapping object used to locate a file resource
+	 */
+	public static Mapping[] createFileMappings(PageContext pc, Resource[] resources) {
 
 		Mapping[] mappings = new Mapping[resources.length];
 		Config config = pc.getConfig();

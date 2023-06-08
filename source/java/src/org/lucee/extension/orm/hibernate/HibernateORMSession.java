@@ -68,6 +68,16 @@ public class HibernateORMSession implements ORMSession {
 			getSession(pc);
 		}
 
+        /**
+         * Retrieve the current session if found, or open a new session if necessary.
+         *
+         * @param pc
+         *            PageContext object. (Unused.)
+         *
+         * @return The open and bound hibernate Session.
+         *
+         * @throws PageException
+         */
 		public Session getSession(PageContext pc) throws PageException {
 			if (s == null || !s.isOpen()) s = factory.openSession();
 			return s;
@@ -154,6 +164,11 @@ public class HibernateORMSession implements ORMSession {
 		return !s.isConnected();
 	}
 
+    /**
+     * Get the configured SessionFactoryData for this HibernateORMSession object
+     *
+     * @return SessionFactoryData used to create this session
+     */
 	public SessionFactoryData getSessionFactoryData() {
 		return data;
 	}
@@ -175,11 +190,27 @@ public class HibernateORMSession implements ORMSession {
 		createSession(pc, factory, ds);
 	}
 
+    /**
+     * Create a new {@link org.hibernate.Session} for the given Datasource
+     * <p>
+     * Will set the Hibernate FlushMode on initialization.
+     *
+     * @param pc
+     *            Lucee PageContext object.
+     * @param factory
+     *            The SessionFactory to open the session with.
+     * @param ds
+     *            A Lucee Datasource object
+     *
+     * @return The Hibernate Session.
+     *
+     * @throws PageException
+     */
 	Session createSession(PageContext pc, SessionFactory factory, DataSource ds) throws PageException {
 		SessionAndConn sac = new SessionAndConn(pc, factory, ds);
 
 		sessions.put(CommonUtil.toKey(ds.getName()), sac);
-		sac.getSession(pc).setFlushMode(FlushMode.MANUAL);
+        sac.getSession(pc).setHibernateFlushMode(FlushMode.MANUAL);
 		return sac.getSession(pc);
 	}
 
@@ -208,11 +239,25 @@ public class HibernateORMSession implements ORMSession {
 		}
 	}
 
+    /**
+     * Flush the session for the default datasource.
+     *
+     * @param pc
+     *            Lucee PageContext object.
+     */
 	@Override
 	public void flush(PageContext pc) throws PageException {
 		flush(pc, null);
 	}
 
+    /**
+     * Flush the session for the given datasource
+     *
+     * @param pc
+     *            Lucee PageContext object.
+     * @param datasource
+     *            Datasource name
+     */
 	@Override
 	public void flush(PageContext pc, String datasource) throws PageException {
 		_flush(pc, CommonUtil.getDataSource(pc, datasource));
@@ -230,6 +275,14 @@ public class HibernateORMSession implements ORMSession {
 
 	}
 
+    /**
+     * Delete an entity OR array of entities from the Hibernate session
+     *
+     * @param pc
+     *            Lucee PageContext
+     * @param obj
+     *            Hibernate Entity object OR an Array of objects
+     */
 	@Override
 	public void delete(PageContext pc, Object obj) throws PageException {
 		if (CommonUtil.isArray(obj)) {
@@ -286,6 +339,16 @@ public class HibernateORMSession implements ORMSession {
 		}
 	}
 
+    /**
+     * Persist this entity to the datasource.
+     *
+     * @param pc
+     *            Lucee PageContext object
+     * @param obj
+     *            Java entity object which maps to a persistent Component
+     * @param forceInsert
+     *            force an INSERT. If false, will try a {@link org.hibernate.Session#saveOrUpdate(String, Object)}
+     */
 	@Override
 	public void save(PageContext pc, Object obj, boolean forceInsert) throws PageException {
 		Component cfc = HibernateCaster.toComponent(obj);
@@ -312,6 +375,11 @@ public class HibernateORMSession implements ORMSession {
 		}
 	}
 
+    /**
+     * Refresh (not reload) this entity in the (native) Hibernate session object.
+     *
+     * {@link org.hibernate.Session#refresh(Object) }
+     */
 	@Override
 	public void reload(PageContext pc, Object obj) throws PageException {
 		Component cfc = HibernateCaster.toComponent(obj);
@@ -325,11 +393,27 @@ public class HibernateORMSession implements ORMSession {
 		return data.getEngine().create(pc, this, entityName, true);
 	}
 
+    /**
+     * Clear the Hibernate session for the default datasource.
+     *
+     * @param pc
+     *            Lucee PageContext object
+     */
 	@Override
 	public void clear(PageContext pc) throws PageException {
 		clear(pc, null);
 	}
 
+    /**
+     * Clear the Hibernate session for this datasource.
+     *
+     * @param pc
+     *            Lucee PageContext object
+     * @param datasource
+     *            Lucee Datasource by which to find the session to clear.
+     *
+     * @see org.hibernate.Session#clear()
+     */
 	@Override
 	public void clear(PageContext pc, String datasource) throws PageException {
 		Key dsn = CommonUtil.toKey(CommonUtil.getDataSource(pc, datasource).getName());
