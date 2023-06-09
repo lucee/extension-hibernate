@@ -4,6 +4,6 @@ component {
 	this.datasource = server.getDatasource("mssql");
 	this.ormSettings = {
 		dbcreate = "dropcreate",
-		dialect = "MicrosoftSQLServer"
+		dialect = "MySql"
 	};
 }
