@@ -32,14 +32,8 @@ jobs:
         java-version: '${{matrix.java_version}}'
         distribution: 'temurin'
 
-    # - name: Cache Maven packages
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: ~/.m2
-    #     key: lucee-script-runner-maven-cache
-
-    # - name: Build with Maven
-    #   run: mvn --batch-mode -f pom.xml -Dlucee.version=${{matrix.lucee_version}} -Djdk.version=${{matrix.java_version}} package
+    - name: Build with Maven
+      run: mvn --batch-mode -f pom.xml -Dlucee.version=${{matrix.lucee_version}} -Djdk.version=${{matrix.java_version}} package
 
     - name: Setup Java
       uses: actions/setup-java@v3.9.0
@@ -57,11 +51,11 @@ jobs:
 
     - name: Start Application Server
       run: |
-        box server start cfengine=lucee@${{matrix.lucee_version}} --noSaveSettings --debug
+        box server start cfengine=lucee@${{matrix.lucee_version}} --dryRun --noSaveSettings --debug
 
-    - name: Build Deploy Package
+    - name: Deploy Package
       run: |
-        box run-script deploy.local
+        box cp target/*.lex .engine/lucee5/WEB-INF/lucee-server/deploy
         box server restart
         sleep 10s
         box server restart
