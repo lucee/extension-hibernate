@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <!--
+source:/home/michael/server/lucee/extension-hibernate/tests/specs/luceeTests/tickets/Jira1829/E.cfc
+compilation-time:{ts '2023-06-09 13:49:29'}
+datasource:__default__
+-->
+    <class entity-name="E" lazy="true" node="luceeTestRoot.tickets.Jira1829.E" table="E1829">
+        <id name="id" type="string">
+            <column name="id"/>
+        </id>
+        <property name="foo" type="string">
+            <column name="foo"/>
+        </property>
+        <property name="susi" type="string">
+            <column name="susi"/>
+        </property>
+    </class>
+</hibernate-mapping>

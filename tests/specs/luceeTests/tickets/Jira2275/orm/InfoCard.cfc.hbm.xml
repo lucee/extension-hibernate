@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <!--
+source:/home/michael/server/lucee/extension-hibernate/tests/specs/luceeTests/tickets/Jira2275/orm/InfoCard.cfc
+compilation-time:{ts '2023-06-09 13:49:27'}
+datasource:__default__
+-->
+    <class entity-name="InfoCard" lazy="true" node="luceeTestRoot.tickets.Jira2275.orm.InfoCard" table="infocard2275">
+        <id name="ID" type="string">
+            <column length="18" name="id"/>
+        </id>
+        <property name="InfoCardNumber" type="string">
+            <column name="`number`" sql-type="nvarchar(30)"/>
+        </property>
+        <property name="Revision" type="string">
+            <column name="revision" sql-type="nvarchar(30)"/>
+        </property>
+        <property name="Title" type="string">
+            <column name="title" sql-type="nvarchar(300)"/>
+        </property>
+    </class>
+</hibernate-mapping>

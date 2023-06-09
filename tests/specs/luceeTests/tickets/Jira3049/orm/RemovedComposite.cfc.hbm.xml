@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <!--
+source:/home/michael/server/lucee/extension-hibernate/tests/specs/luceeTests/tickets/Jira3049/orm/RemovedComposite.cfc
+compilation-time:{ts '2023-06-09 13:49:43'}
+datasource:__default__
+-->
+    <class entity-name="RemovedComposite" lazy="true" node="luceeTestRoot.tickets.Jira3049.orm.RemovedComposite" table="removed_composite">
+        <composite-id>
+            <key-property name="UnitId" type="string">
+                <column name="unit_id"/>
+            </key-property>
+            <key-property name="EntityId" type="string">
+                <column name="entity_id"/>
+            </key-property>
+        </composite-id>
+        <property name="EntityTypeId" type="double">
+            <column name="entity_type_id"/>
+        </property>
+    </class>
+</hibernate-mapping>

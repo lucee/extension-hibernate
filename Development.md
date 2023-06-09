@@ -40,7 +40,7 @@ To run CFML tests against the extension:
 Next, start the test databases using the Docker-compose setup:
 
 ```bash
-docker-compose -f tests/docker-compose.yml up -d
+docker-compose -f build/docker-compose.yml up -d
 ```
 
 This will start Postgres, MySQL, and MSSQL containers using the credentials specified in `tests/.env`.
@@ -48,13 +48,13 @@ This will start Postgres, MySQL, and MSSQL containers using the credentials spec
 Finally, you can run tests from the extension root:
 
 ```bash
-./test.sh
+box testbox run
 ```
 
 To build a .lex and test it immediately, chain `mvn clean package` and `./test.sh`:
 
 ```bash
-mvn clean package && ./test.sh
+mvn clean package && box testbox run
 ```
 
 ## Publishing a Release

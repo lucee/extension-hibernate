@@ -1,0 +1,81 @@
+# ************************************************************
+# Sequel Ace SQL dump
+# Version 20033
+#
+# https://sequel-ace.com/
+# https://github.com/Sequel-Ace/Sequel-Ace
+#
+# Host: 127.0.0.1 (MySQL 5.7.22)
+# Database: redistest
+# Generation Time: 2022-08-05 16:09:31 +0000
+# ************************************************************
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+SET NAMES utf8mb4;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE='NO_AUTO_VALUE_ON_ZERO', SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+# Dump of table types
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `types`;
+
+CREATE TABLE `types` (
+  `typeID` varchar(36) CHARACTER SET utf8 NOT NULL DEFAULT '',
+  `typeName` varchar(100) CHARACTER SET utf8 NOT NULL,
+  `typeSlug` varchar(100) CHARACTER SET utf8 NOT NULL,
+  `createdDate` datetime NOT NULL,
+  `updatedDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `isActive` bit(1) NOT NULL,
+  PRIMARY KEY (`typeID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+LOCK TABLES `types` WRITE;
+/*!40000 ALTER TABLE `types` DISABLE KEYS */;
+
+INSERT INTO `types` (`typeID`, `typeName`, `typeSlug`, `createdDate`, `updatedDate`, `isActive`)
+VALUES
+	('0E0FBFF2-2527-4698-806BA32A5CEFC0B9','Lucee Extensions','lucee-extensions','2018-03-09 11:11:55','2018-03-09 11:12:13',b'1'),
+	('2A9DECF6-FF6E-E829-9A70AB3F8F86D102','Plugins','plugins','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('2A9E0B7B-FF6E-E829-9A1E27A5EFF6F0E6','Interceptors','interceptors','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('2A9E8BE6-FF6E-E829-9A99504C907B7F08','Projects','projects','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('2AA16266-FF6E-E829-9A90C06C565CD53A','CFBuilder Extensions','cfbuilder-extensions','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('3EFD7BF8-0EAD-3578-A0E02E182B5FFAB6','ContentBox Themes','contentbox-themes','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('3F007924-B658-4822-EF500A9C332F882A','ContentBox Widgets','contentbox-widgets','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('3F01E9D9-E8AB-208A-0789E1B8399DBC8D','ContentBox Modules','contentbox-modules','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('44DF22AB-FF6E-E829-9A0DDCA4D2296CD8','Modules','modules','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('4836f0d8-10b4-11e6-b941-001c42927a4c','CF Engines','cf-engines','2016-06-10 11:52:41','2016-06-10 11:52:41',b'1'),
+	('4AE4DD07-4B41-4F38-B04E31934DB96163','Preside Extensions','preside-extensions','2016-09-29 09:10:21','2016-09-29 09:09:58',b'1'),
+	('53D95DBC-68EE-4BB0-B202C75AFB53CD13','Dependency Injection','di','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('5C8D0487-1CD0-4DFA-A7226C19F905C08C','CMS','cms','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('67F044E6-A701-55AE-FAD9CB7FB1046AB9','WireBox Aspects','wirebox-aspects','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('67F2A27F-FBA4-DE6F-00EF870CBE468B1A','WireBox Listeners','wirebox-listeners','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('6F5E5122-B5EE-F106-C231458D223B8581','Caching','caching','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('6F601C4A-AD96-CB12-0670F7C32823ED1F','Logging','logging','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('7DBD85B2-BAA1-4063-89983E4B4C02066E','CommandBox Recipes','commandbox-recipes','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('9AF4D2F3-E95C-49E3-933D324A059B82F9','CFWheels Plugins','cfwheels-plugins','2016-08-04 14:44:28','2018-03-09 11:12:13',b'1'),
+	('9DAE6FDD-A165-48C0-BF64DA08B14A2F22','MVC','mvc','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('A06835B8-66FA-40D6-8D71A09EC61D2F95','Preside Skeletons','preside-skeletons','2016-09-29 09:29:14','2016-09-29 09:29:14',b'1'),
+	('A4719974-1452-4B24-B1806E106EDB77CD','Messaging Queues','messaging-queues','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('A4FD0231-D95A-4DD3-ACC39E59EAF2423C','Testing','testing','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('B587B9A7-17B7-489F-B5CB507EA5CCC52B','Demos','demos','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('DDD9FF1A-967A-4009-AFE535A607C2E5BC','NoSQL','nosql','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('E0616D7A-DAFE-48E3-AC8B33CF142ABD45','CommandBox Commands','commandbox-commands','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1'),
+	('E1139E41-FA09-4663-BE9F0A92331C5635','CommandBox Modules','commandbox-modules','2016-06-10 11:51:47','2018-03-09 11:12:13',b'1');
+
+/*!40000 ALTER TABLE `types` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

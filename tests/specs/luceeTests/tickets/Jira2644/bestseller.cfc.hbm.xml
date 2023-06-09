@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <!--
+source:/home/michael/server/lucee/extension-hibernate/tests/specs/luceeTests/tickets/Jira2644/bestseller.cfc
+compilation-time:{ts '2023-06-09 13:49:47'}
+datasource:__default__
+-->
+    <class entity-name="bestseller" lazy="true" node="luceeTestRoot.tickets.Jira2644.bestseller" table="bestsellers2644">
+        <composite-id>
+            <key-property name="gender" type="string">
+                <column name="gender"/>
+            </key-property>
+            <key-property name="sortorder" type="string">
+                <column name="sortorder"/>
+            </key-property>
+        </composite-id>
+        <property name="magid" type="string">
+            <column name="magid"/>
+        </property>
+    </class>
+</hibernate-mapping>

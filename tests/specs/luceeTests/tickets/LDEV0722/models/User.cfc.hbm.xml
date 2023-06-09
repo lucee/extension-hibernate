@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <!--
+source:/home/michael/server/lucee/extension-hibernate/tests/specs/luceeTests/tickets/LDEV0722/models/User.cfc
+compilation-time:{ts '2023-06-09 13:49:35'}
+datasource:__default__
+-->
+    <class entity-name="User" lazy="true" node="luceeTestRoot.tickets.LDEV0722.models.User" table="`User`">
+        <id name="id" type="integer">
+            <column name="id"/>
+            <generator class="native"/>
+        </id>
+    </class>
+</hibernate-mapping>

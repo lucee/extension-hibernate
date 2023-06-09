@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <!--
+source:/home/michael/server/lucee/lucee/tests/specs/luceeTests/tickets/LDEV0423/BasketEntity.cfc
+compilation-time:{ts '2023-02-01 12:19:59'}
+datasource:TEST
+-->
+    <class entity-name="BasketEntity" lazy="true" node="tests.specs.luceeTests.tickets.LDEV0423.BasketEntity" table="BasketEntity">
+        <id name="id" type="integer">
+            <column name="id"/>
+            <generator class="increment"/>
+        </id>
+        <property name="name" type="string">
+            <column name="name"/>
+        </property>
+        <bag cascade="all" fetch="join" lazy="false" name="fruits">
+            <key column="basketId"/>
+            <one-to-many entity-name="FruitEntity"/>
+        </bag>
+    </class>
+</hibernate-mapping>

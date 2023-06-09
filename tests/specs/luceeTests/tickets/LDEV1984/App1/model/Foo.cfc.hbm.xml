@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <!--
+source:/home/michael/server/lucee/lucee/tests/specs/luceeTests/tickets/LDEV1984/App1/model/Foo.cfc
+compilation-time:{ts '2023-02-01 12:20:08'}
+datasource:testdb8
+-->
+    <class entity-name="Foo" lazy="true" node="model.Foo" table="foo">
+        <cache usage="transactional"/>
+        <id name="id" type="string">
+            <column length="32" name="foo_id"/>
+            <generator class="assigned"/>
+        </id>
+        <property name="label" type="string">
+            <column length="32" name="foo_label"/>
+        </property>
+    </class>
+</hibernate-mapping>

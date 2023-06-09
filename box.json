@@ -21,5 +21,22 @@
         "hibernate",
         "orm",
         "extension"
-    ]
+    ],
+    "devDependencies":{
+        "testbox":"*"
+    },
+    "installPaths":{
+        "testbox":"testbox/"
+    },
+    "scripts":{
+        "build" : "!mvn clean package",
+        "deploy.local" : "!mvn clean package && cp target/*.lex .engine/lucee5/WEB-INF/lucee-server/deploy"
+    },
+    "testbox":{
+        "runner":[
+            {
+                "default":"http://localhost:49339/tests/runner.cfm"
+            }
+        ]
+    }
 }

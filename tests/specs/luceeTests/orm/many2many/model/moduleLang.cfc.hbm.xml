@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <!--
+source:/home/michael/server/lucee/extension-hibernate/tests/specs/luceeTests/orm/many2many/model/moduleLang.cfc
+compilation-time:{ts '2023-06-09 14:09:03'}
+datasource:TEST
+-->
+    <class entity-name="moduleLang" lazy="true" node="luceeTestRoot.orm.many2many.model.moduleLang" table="modulelang">
+        <id name="id" type="integer">
+            <column name="id"/>
+            <generator class="increment"/>
+        </id>
+        <property name="pModuleLang" type="string">
+            <column name="pModuleLang"/>
+        </property>
+        <many-to-one column="moduleFK" entity-name="module" name="module"/>
+    </class>
+</hibernate-mapping>
