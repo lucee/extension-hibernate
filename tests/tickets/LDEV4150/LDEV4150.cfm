@@ -10,6 +10,6 @@
 		writeOutput( "success" );
 	}
 	catch(any e) {
-		writeoutput(e.message);
+		writeoutput(e.stacktrace);
 	}
 </cfscript>
