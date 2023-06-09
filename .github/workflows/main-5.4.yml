@@ -60,6 +60,11 @@ jobs:
       env:
         testLabels: orm
         testAdditional: ${{ github.workspace }}/tests
+        MYSQL_SERVER: localhost
+        MYSQL_USERNAME: lucee
+        MYSQL_PASSWORD: lucee
+        MYSQL_PORT: 3306
+        MYSQL_DATABASE: lucee
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: always()
