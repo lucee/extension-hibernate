@@ -5,8 +5,8 @@
     "applicationTimeout": "1,0,0,0",
     "datasources": {
         "h2":{
-            "bundleName": "org.lucee.h2",
-            "bundleVersion": "2.1.214.0001L",
+            "bundleName": "${H2_BUNDLENAME}",
+            "bundleVersion": "${H2_BUNDLEVERSION}",
             "allowAlter":true,
             "allowCreate":true,
             "allowDelete":true,
