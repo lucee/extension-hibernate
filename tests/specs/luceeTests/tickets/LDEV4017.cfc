@@ -4,22 +4,6 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="ORM" skip=true{
 		variables.uri = server.helpers.getTestPath("tickets/LDEV4017");
 	}
 
-	function afterAll() {
-		cleanup();
-	}
-
-	private function cleanUp() {
-		if (!notHasH2()) {
-			queryExecute( sql="DROP TABLE IF EXISTS persons", options: {
-				datasource: server.helpers.getDatasource("h2", variables.dbfile)
-			}); 
-
-			queryExecute( sql="DROP TABLE IF EXISTS thoughts", options: {
-				datasource: server.helpers.getDatasource("h2", variables.dbfile)
-			}); 
-		}
-	}
-
 	function run( testResults, testBox ) {
 		describe("Testcase for LDEV4017", function() {
 			it( title="Access the lazy-loaded ORM entity after the transaction ends", skip="#notHasH2()#", body=function( currentSpec ) {

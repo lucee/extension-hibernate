@@ -30,7 +30,7 @@ component {
 	// tmpStrt.allowedGrant = false;
 	// tmpStrt.verify = false;
 	// adminWeb.updateDatasource(argumentCollection = tmpStrt);
-	this.datasource = "TestDSN1";
+	this.datasource = "mysql";
 	
 	// ORM settings
 	this.ormEnabled = true;
