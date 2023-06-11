@@ -1,7 +1,28 @@
 component{
 
     public component function init(){
+        // Cache for all server time, cuz these validations are SLOOOOOW!
+        // TODO: Move away from this super-ugly application scope (global data) in favor of... something better. 
+        if ( !application.keyExists( "validDatasources" ) ){
+            application.validDatasources = [];
+            if ( isValidDatasource( "h2" ) ){
+                application.validDatasources.append( "h2" );
+            }
+            if ( isValidDatasource( "mysql" ) ){
+                application.validDatasources.append( "mysql" );
+            }
+            if ( isValidDatasource( "mssql" ) ){
+                application.validDatasources.append( "mssql" );
+            }
+            if ( isValidDatasource( "postgres" ) ){
+                application.validDatasources.append( "postgres" );
+            }
+        }
         return this;
+    }
+
+    public boolean function isValidDatasource( required string name ){
+        return application.validDatasources.some( ( dsn ) => dsn == name );
     }
 
 	public struct function getDatasource( required string datasource, 

@@ -6,7 +6,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="ORM" skip=true{
 
 	function run( testResults, testBox ) {
 		describe("Testcase for LDEV4017", function() {
-			it( title="Access the lazy-loaded ORM entity after the transaction ends", skip="#notHasH2()#", body=function( currentSpec ) {
+			it( title="Access the lazy-loaded ORM entity after the transaction ends", skip=!!server.helpers.isValidDatasource( "h2" ), body=function( currentSpec ) {
 				var result = _InternalRequest(
 					template : "#variables.uri#/LDEV4017.cfm",
 					forms : { uuid : createUUID(), dbfile : variables.dbfile }
@@ -14,15 +14,5 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="ORM" skip=true{
 				expect(trim(result.filecontent)).toBe("person.hasthoughts: true & lazy-loaded works outside of transcation");
 			});
 		});
-	}
-
-	private boolean function notHasH2() {
-		variables.dbfile = "#getDirectoryFromPath( getCurrentTemplatePath() )#/datasource/db";
-		return !structCount(server.helpers.getDatasource("h2", variables.dbfile));
-	}
-
-	private string function createURI(string calledName) {
-		var baseURI = "/test/#listLast(getDirectoryFromPath(getCurrenttemplatepath()),"\/")#/";
-		return baseURI&""&calledName;
 	}
 }
