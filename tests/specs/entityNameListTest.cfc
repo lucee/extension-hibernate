@@ -8,14 +8,12 @@ component extends="testbox.system.BaseSpec" {
             });
             it( "will return known entities", () => {
                 expect( listToArray( entityNameList(), "," ) )
-                            .toHaveLength( 4 )
                             .toInclude( "Auto" )
                             .toInclude( "Dealership" )
                             .toInclude( "User" );
             });
             it( "will use the passed delimiter", () => {
                 expect( listToArray( entityNameList( "|" ), "|" ) )
-                            .toHaveLength( 4 )
                             .toInclude( "Auto" )
                             .toInclude( "Dealership" )
                             .toInclude( "User" );

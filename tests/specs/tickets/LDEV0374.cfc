@@ -5,7 +5,7 @@
 component extends="testbox.system.BaseSpec"{
 
         function run( testResults, testBox ){
-            // all your suites go here.
+
             describe( "LDEV-0374, usage of date member functions on ORM properties", function(){
                 beforeEach( () => {
                     var entityID = createUUID();

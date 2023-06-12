@@ -5,7 +5,7 @@ component {
 	this.mappings[ "testsRoot" ] = "/tests";
 	this.mappings[ "luceeTestRoot" ] = this.mappings[ "testsRoot" ] & "/specs/luceeTests";
 	server.helpers = new tests.specs.luceeTests.TestHelper();
-	this.datasource = server.helpers.getDatasource( "h2", expandPath( "db" ) );
+	this.datasource = server.helpers.getDatasource( "h2", "./tests/db/ldev0881" );
 
 	this.ormEnabled = true;
 	this.ormSettings = {

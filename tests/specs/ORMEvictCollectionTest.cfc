@@ -1,18 +1,19 @@
 component extends="testbox.system.BaseSpec" {
 
     public void function run(){
-        describe( "ormExecuteQuery()", () => {
-            it( "will return entity names", () => {
+        describe( "ormEvictCollection()", () => {
+            it( "Can evict collection (relation) on an entity type", () => {
 
                 // these are pretty bad/useless tests. :/ 
                 transaction{
-                    expect( () => {
-                        ormEvictCollection( "Auto", "inventory" );
-                    }).notToThrow();
+                    ormEvictCollection( "Dealership", "inventory" );
+                }
+            });
+            it( "Can evict collection item by ID", () => {
 
-                    expect( () => {
-                        ormEvictCollection( "Auto", "inventory", "12345" );
-                    }).notToThrow();
+                // these are pretty bad/useless tests. :/ 
+                transaction{
+                    ormEvictCollection( "Dealership", "inventory", "12345" );
                 }
             });
         });
