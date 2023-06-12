@@ -43,9 +43,7 @@ jobs:
       uses: Ortus-Solutions/setup-commandbox@main
 
     - name: Install Dependencies
-      run: |
-        box install
-        box uninstall --system commandbox-dotenv
+      run: box install
 
     - name: Start Application Server
       run: |
