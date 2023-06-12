@@ -19,18 +19,15 @@
 component {
 
 	this.name = hash( getCurrentTemplatePath() );
-    request.baseURL="http://#cgi.HTTP_HOST##GetDirectoryFromPath(cgi.SCRIPT_NAME)#";
-	
-	
 	
 	this.mappings[ "testsRoot" ] = "/tests";
 	this.mappings[ "luceeTestRoot" ] = this.mappings[ "testsRoot" ] & "/specs/luceeTests";
 	server.helpers = new tests.specs.luceeTests.TestHelper();
  	this.datasources ={ 
- 		"ds1":  server.helpers.getDatasource( "h2", "./tests/db/db1" )
-	  	,"ds2": server.helpers.getDatasource( "h2", "./tests/db/db2" )
-	  	,"ds3": server.helpers.getDatasource( "h2", "./tests/db/db3" )
-	  	,"ds4": server.helpers.getDatasource( "h2", "./tests/db/db4" )
+ 		"ds1":  server.helpers.getDatasource( "h2", "./tests/db/LDEV-0405-1" )
+	  	,"ds2": server.helpers.getDatasource( "h2", "./tests/db/LDEV-0405-2" )
+	  	,"ds3": server.helpers.getDatasource( "h2", "./tests/db/LDEV-0405-3" )
+	  	,"ds4": server.helpers.getDatasource( "h2", "./tests/db/LDEV-0405-4" )
 	};
 
 	this.ormEnabled = true; 
