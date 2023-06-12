@@ -9,9 +9,9 @@ You will need to install the following for extension development:
 ## Getting Started
 
 1. Install the repo - `git clone git@github.com:ortus-solutions/extension-hibernate.git`
-2. Make changes..
+1. Set up an environment/secrets file - `cp .env.template .env`
 3. [Build extension via `mvn package`](#building)
-4. Test via `./test.sh` (See [#Testing](#testing) for more info)
+4. Test via `box run-script deploy.local && server restart && testbox run` (See [#Testing](#testing) for more info)
 
 **Before you send a PR:**
 
@@ -33,30 +33,12 @@ See Lucee documentation on [testing-a-lucee-extension-locally](https://docs.luce
 
 To run CFML tests against the extension:
 
-1. Check out [lucee/Lucee](https://github.com/lucee/lucee) to the parent directory - `git clone git@github.com:lucee/Lucee.git ../lucee`
-   1. Make sure to checkout the `6.0` branch - `git checkout 6.0`
-2. Check out [lucee/script-runner](https://github.com/lucee/script-runner) to the parent directory - `git clone git@github.com:lucee/Lucee.git ../script-runner`.
+1. Start the test server using `box server start`
+2. Build and deploy the extension source via `box run-script deploy.local`
+3. Restart the server to pick up the new extension - `box server restart`
+4. Run tests from the extension root with `box testbox run`
 
-Next, start the test databases using the Docker-compose setup:
-
-```bash
-docker-compose -f build/docker-compose.yml up -d
-```
-
-This will start Postgres, MySQL, and MSSQL containers using the credentials specified in `tests/.env`.
-
-Finally, you can run tests from the extension root:
-
-```bash
-box testbox run
-```
-
-To build a .lex and test it immediately, chain `mvn clean package` and `./test.sh`:
-
-```bash
-mvn clean package && box testbox run
-```
-
+For "full" database suite tests, you'll want to start the test databases using Docker-compose `docker-compose up -d`. This will start up MSSQL, MySQL, and Postgres database instances for database-specific tests.
 ## Publishing a Release
 
 Releasing is *mostly* automated. You will need to, at a minimum:

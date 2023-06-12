@@ -28,7 +28,7 @@ services:
       MSSQL_PID: "Developer"
     volumes:
       # Mounted entrypoint for initdb scripts
-      - ./docker/mssql:/docker-entrypoint-initdb.d
+      - ./build/docker/mssql:/docker-entrypoint-initdb.d
     ports:
       - "${MSSQL_PORT}:1433"
     entrypoint: /docker-entrypoint-initdb.d/entrypoint.sh /opt/mssql/bin/sqlservr

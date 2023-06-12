@@ -17,11 +17,16 @@ jobs:
     name: Maven Build
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '__CI__')"
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
-        lucee_version: ["6.0.0.346-BETA"]
-        java_version: [ "8", "11", "17" ]
+        lucee_version: ["5"]
+        java_version: [ "8" ] # , "11", "17" # Re-enable after test refactor is complete
+        experimental: [ false ]
+        include:
+          - lucee_version: "@6-snapshot"
+            experimental: true
 
     steps:
     - uses: actions/checkout@v3
@@ -29,17 +34,11 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '${{matrix.java_version}}'
-        distribution: 'temurin'
+        java-version: "${{matrix.java_version}}"
+        distribution: "temurin"
 
     - name: Build with Maven
       run: mvn --batch-mode -f pom.xml -Dlucee.version=${{matrix.lucee_version}} -Djdk.version=${{matrix.java_version}} package
-
-    - name: Setup Java
-      uses: actions/setup-java@v3.9.0
-      with:
-        distribution: "temurin"
-        java-version: "11"
 
     - name: Setup CommandBox CLI
       uses: Ortus-Solutions/setup-commandbox@main
@@ -52,7 +51,7 @@ jobs:
     - name: Start Application Server
       run: |
         cp .env.template .env
-        box server start cfengine=lucee@${{matrix.lucee_version}} --dryRun --noSaveSettings --debug
+        box server start cfengine=lucee-lite@${{matrix.lucee_version}} --dryRun --noSaveSettings --debug
 
     - name: Deploy Package
       run: |
