@@ -19,21 +19,23 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm"	{
 
 	public void function testORMSettingsDataSource(){
-		uri= server.helpers.getTestPath("tickets/LDEV0405/index.cfm");
-		local.result=_InternalRequest(uri);
-		local.first=trim(result.filecontent);
+		transaction{
+			var uri= server.helpers.getTestPath("tickets/LDEV0405/index.cfm");
+			local.result=_InternalRequest(uri);
+			local.first=trim(result.filecontent);
 
-		uri= server.helpers.getTestPath("tickets/LDEV0405/index.cfm");
-		local.result=_InternalRequest(uri);
-		local.second=trim(result.filecontent);
+			uri= server.helpers.getTestPath("tickets/LDEV0405/index.cfm");
+			local.result=_InternalRequest(uri);
+			local.second=trim(result.filecontent);
 
-		uri= server.helpers.getTestPath("tickets/LDEV0405/index.cfm");
-		local.result=_InternalRequest(uri);
-		local.third=trim(result.filecontent);
-		
-		// the number of connections should not increase
-		assertEquals(first,second);
-		assertEquals(first,third);
+			uri= server.helpers.getTestPath("tickets/LDEV0405/index.cfm");
+			local.result=_InternalRequest(uri);
+			local.third=trim(result.filecontent);
+			
+			// the number of connections should not increase
+			assertEquals(first,second);
+			assertEquals(first,third);
+		}
 	}
 } 
 </cfscript>

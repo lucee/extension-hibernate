@@ -14,7 +14,7 @@ component extends="testbox.system.BaseSpec"{
 
         function run( testResults, testBox ){
 
-            describe( "LDEV-0903, usage of date member functions on ORM properties", function(){
+            describe( "LDEV-0903 - working with composite keys", function(){
                 
                 it( "Can save an entity with a composite key", function() {
                     transaction isolation='read_uncommitted' {
