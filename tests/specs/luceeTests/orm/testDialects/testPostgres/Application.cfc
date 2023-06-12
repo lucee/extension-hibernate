@@ -1,13 +1,15 @@
 component {
-    this.name = "orm" & hash( getCurrentTemplatePath() );
-    this.ORMenabled = true;
 
-    this.ormSettings.dbcreate = "dropcreate"; 
-    this.ormSettings.dialect = "PostgreSQL";
+	this.name       = "orm" & hash( getCurrentTemplatePath() );
+	this.ORMenabled = true;
 
-    this.datasource = server.helpers.getDatasource("postgres");
+	this.ormSettings.dbcreate = "dropcreate";
+	this.ormSettings.dialect  = "PostgreSQL";
 
-	public function onRequestStart() {
+	this.datasource = server.helpers.getDatasource( "postgres" );
+
+	public function onRequestStart(){
 		setting requesttimeout=10;
 	}
+
 }

@@ -1,11 +1,12 @@
-component hint="logs out any orm events"  persistent="false" {
+component hint="logs out any orm events" persistent="false" {
+
 	this.name = "EventHandler"; // used for logging out events
 
 	function init(){
 		return this;
 	}
 
-	function onFlush( entity ) {
+	function onFlush( entity ){
 		eventLog( "onFlush", arguments );
 	}
 
@@ -27,7 +28,7 @@ component hint="logs out any orm events"  persistent="false" {
 		eventLog( "postInsert", arguments );
 	}
 
-	function preUpdate( entity, Struct oldData  ){
+	function preUpdate( entity, Struct oldData ){
 		eventLog( "preUpdate", arguments );
 	}
 	function postUpdate( entity ){
@@ -36,28 +37,28 @@ component hint="logs out any orm events"  persistent="false" {
 
 	function preDelete( entity ){
 		eventLog( "preDelete", arguments );
-	}	
-	function onDelete( entity ) {
+	}
+	function onDelete( entity ){
 		eventLog( "onDelete", arguments );
 	}
-	function postDelete( entity ) {
+	function postDelete( entity ){
 		eventLog( "postDelete", arguments );
 	}
 
-	function onEvict() {
+	function onEvict(){
 		eventLog( "onEvict", arguments );
 	}
-	function onClear( entity ) {
+	function onClear( entity ){
 		eventLog( "onClear", arguments );
 	}
-	function onDirtyCheck( entity ) {
+	function onDirtyCheck( entity ){
 		eventLog( "onDirtyCheck", arguments );
 	}
-	function onAutoFlush( entity ) {
+	function onAutoFlush( entity ){
 		eventLog( "onAutoFlush", arguments );
 	}
 
-	function onMissingMethod(missingMethodName){
+	function onMissingMethod( missingMethodName ){
 		systemOutput( "on missing method [#missingMethodName#]", true );
 	}
 
@@ -67,9 +68,10 @@ component hint="logs out any orm events"  persistent="false" {
 		// systemOutput( "------- EventHandler.#arguments.eventName#  #listLast(s.template,"/\")#: #s.lineNumber#", true );
 
 		application.ormEventLog.append( {
-			"src": this.name,
-			"eventName": arguments.eventName,
-			"args": args
+			"src"       : this.name,
+			"eventName" : arguments.eventName,
+			"args"      : args
 		} );
 	}
+
 }

@@ -1,13 +1,15 @@
 component {
-    this.name = "orm" & hash( getCurrentTemplatePath() );
-    this.ORMenabled = true;
 
-    this.ormSettings.dbcreate = "dropcreate"; 
-    this.ormSettings.dialect = "MicrosoftSQLServer";
+	this.name       = "orm" & hash( getCurrentTemplatePath() );
+	this.ORMenabled = true;
 
-    this.datasource = server.helpers.getDatasource("mssql");
+	this.ormSettings.dbcreate = "dropcreate";
+	this.ormSettings.dialect  = "MicrosoftSQLServer";
 
-	public function onRequestStart() {
+	this.datasource = server.helpers.getDatasource( "mssql" );
+
+	public function onRequestStart(){
 		setting requesttimeout=10;
 	}
+
 }

@@ -1,5 +1,6 @@
-component persistent = "true" {
+component persistent="true" {
 
-	property name = "id";
-	property name = "name";
+	property name="id";
+	property name="name";
+
 }
