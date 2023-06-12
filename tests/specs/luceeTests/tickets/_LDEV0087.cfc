@@ -10,8 +10,8 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm"{
 					template:server.helpers.getTestPath("tickets/LDEV0087/index.cfm")
 				);
 				assertEquals("",left(result.filecontent.trim(), 100));
-			}, skip = isResolved );
-		});
+			} );
+		}, skip = !isResolved);
 	}
 
 }

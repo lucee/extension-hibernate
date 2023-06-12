@@ -5,7 +5,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm"{
 		var isResolved = FALSE;
 
 		describe( title="Test suite for LDEV-1659", body=function() {
-			it( title='Initialize ORM Secondary cache',body=function( currentSpec ) {
+			it( 'Initialize ORM Secondary cache', function( currentSpec ) {
 				var result = _InternalRequest(
 					template: server.helpers.getTestPath('tickets/LDEV1659/index.cfm'),
 					urls: { AppName="myAppTwo" }
@@ -16,7 +16,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm"{
 				);
 			});
 
-			it( title='Checking ORM cache connection',body=function( currentSpec ) {
+			it( 'Checking ORM cache connection', function( currentSpec ) {
 				var result3 = _InternalRequest(
 					template: server.helpers.getTestPath('tickets/LDEV1659/index.cfm'),
 					urls: { AppName="myAppTwo" }
@@ -27,6 +27,6 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm"{
 				);
 				assertEquals("1234", result4.filecontent.trim());
 			});
-		}, skip = isResolved );
+		}, skip = !isResolved );
 	}
 }

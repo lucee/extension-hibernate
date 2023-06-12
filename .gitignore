@@ -16,6 +16,7 @@ target/
 .engine
 WEB-INF/
 tests/**/*.db
+tests/**/*.hbm.xml
 testbox
 
 # Secrets

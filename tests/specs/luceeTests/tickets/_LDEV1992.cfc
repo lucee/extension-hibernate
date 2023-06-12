@@ -7,13 +7,13 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm"{
 		// https://luceeserver.atlassian.net/browse/LDEV-1992
 		var isResolved = FALSE;
 
-		describe( "Test suite for LDEV-1992", function() {
-			it( title='Checking ', body=function( currentSpec ) {
+		describe( title = "Test suite for LDEV-1992", body = function() {
+			it( 'Checking ', function( currentSpec ) {
 				local.result = _InternalRequest(
 					template:"#variables.uri#/test.cfm");
 				expect(result.filecontent.trim()).toBe(1);
-			}, isResolved = false );
-		});
+			} );
+		}, skip = !isResolved );
 	}
 	// function afterAll(){
 	// 	variables.adminWeb = new org.lucee.cfml.Administrator("web", request.WebAdminPassword);
