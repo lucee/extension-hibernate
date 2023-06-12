@@ -5,7 +5,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm"{
 	}
 
 	function run( testResults , testBox ) {
-		// 😭😭😭😭
+		// TODO: Fix Me!
 		// https://luceeserver.atlassian.net/browse/LDEV-2859
 		var isResolved = FALSE;
 

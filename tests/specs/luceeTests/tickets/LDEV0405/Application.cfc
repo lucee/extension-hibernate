@@ -27,10 +27,10 @@ component {
 	this.mappings[ "luceeTestRoot" ] = this.mappings[ "testsRoot" ] & "/specs/luceeTests";
 	server.helpers = new tests.specs.luceeTests.TestHelper();
  	this.datasources ={ 
- 		"ds1":  server.helpers.getDatasource( "h2", "./db1" )
-	  	,"ds2": server.helpers.getDatasource( "h2", "./db2" )
-	  	,"ds3": server.helpers.getDatasource( "h2", "./db3" )
-	  	,"ds4": server.helpers.getDatasource( "h2", "./db1" )
+ 		"ds1":  server.helpers.getDatasource( "h2", "./tests/db/db1" )
+	  	,"ds2": server.helpers.getDatasource( "h2", "./tests/db/db2" )
+	  	,"ds3": server.helpers.getDatasource( "h2", "./tests/db/db3" )
+	  	,"ds4": server.helpers.getDatasource( "h2", "./tests/db/db4" )
 	};
 
 	this.ormEnabled = true; 

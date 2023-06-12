@@ -39,11 +39,6 @@ jobs:
         java-version: "${{matrix.java_version}}"
         distribution: "temurin"
 
-    - name: Build with Maven
-      # TODO: Build against Lucee versions in case loader ever changes 
-      # `-Dlucee.version=${{matrix.lucee_version}} `
-      run: mvn --batch-mode -f pom.xml -Djdk.version=${{matrix.java_version}} package
-
     - name: Setup CommandBox CLI
       uses: Ortus-Solutions/setup-commandbox@main
 
@@ -55,11 +50,16 @@ jobs:
     - name: Start Application Server
       run: |
         cp .env.template .env
-        box server start cfengine=lucee-light@${{matrix.lucee_version}} --dryRun --noSaveSettings --debug
+        box server start cfengine=lucee-light@${{matrix.lucee_version}} --noSaveSettings --debug
+
+    - name: Build with Maven
+      # TODO: Build against Lucee versions in case loader ever changes 
+      # `-Dlucee.version=${{matrix.lucee_version}} `
+      run: mvn --batch-mode -f pom.xml -Djdk.version=${{matrix.java_version}} package
 
     - name: Deploy Package
       run: |
-        box cp target/*.lex .engine/lucee5/WEB-INF/lucee-server/deploy
+        cp target/*.lex .engine/lucee5/WEB-INF/lucee-server/deploy
         box server restart
         sleep 10s
         box server restart

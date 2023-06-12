@@ -25,7 +25,7 @@
             "custom":"mode=MySQL&path=${H2_DBFILE}",
             "database":"h2",
             "dbdriver":"H2",
-            "dsn":"jdbc:h2:{path}/{database};MODE={mode}",
+            "dsn":"jdbc:h2:${H2_DBFILE}/{database};MODE={mode}",
             "host":"",
             "liveTimeout":"15",
             "metaCacheTimeout":"60000",

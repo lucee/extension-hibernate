@@ -3,7 +3,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm"{
 		variables.uri = server.helpers.getTestPath("tickets/LDEV1992");
 	}
 	function run( testResults , testBox ) {
-		// 😭😭😭😭
+		// TODO: Fix Me!
 		// https://luceeserver.atlassian.net/browse/LDEV-1992
 		var isResolved = FALSE;
 

@@ -15,6 +15,7 @@ target/
 # Test artifacts
 .engine
 WEB-INF/
+tests/results/
 tests/**/*.db
 tests/**/*.hbm.xml
 testbox
