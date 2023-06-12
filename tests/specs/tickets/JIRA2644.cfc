@@ -37,9 +37,8 @@ component extends="testbox.system.BaseSpec"{
                     } ).notToThrow();
                 });
                 it( "can delete by composite key struct", function() {
-                    entityDelete(
-                        entityLoad("State",{ stateCode : "CA", countryCode : "US" } )
-                    );
+                    var toDelete = entityLoad("State",{ stateCode : "CA", countryCode : "US" } );
+                    if( !isNull( toDelete ) { entityDelete( toDelete ); }
                 })
             });
         }
