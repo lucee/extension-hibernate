@@ -4,9 +4,14 @@
 */
 component extends="testbox.system.BaseSpec"{
 
+    variables.isLucee5 = left( server.lucee.version, 1 ) == 5;
+    variables.isLucee6 = left( server.lucee.version, 1 ) == 6;
+
         function run( testResults, testBox ){
 
-            describe( "LDEV-0374, usage of date member functions on ORM properties", function(){
+            debug( server.lucee.version );
+
+            describe( "LDEV-0374 - usage of date member functions on ORM properties", function(){
                 beforeEach( () => {
                     var entityID = createUUID();
                     entitySave( entityNew( "User", {
@@ -24,10 +29,14 @@ component extends="testbox.system.BaseSpec"{
                     var dateCreated = variables.testModel.getCreatedOn();
                     expect( dateDiff("d", dateCreated, now()) ).toBe( 4 );
                 });
-                it( "Can use date.diff()", function() {
+                it( title = "Can use date.diff() - Lucee 5", body = function() {
                     var dateCreated = variables.testModel.getCreatedOn();
                     expect( dateCreated.diff( "d", now() ) ).toBe( 4 );
-                });
+                }, skip = !variables.isLucee5 );
+                it( title = "Can use date.diff() - Lucee 6", body = function() {
+                    var dateCreated = variables.testModel.getCreatedOn();
+                    expect( now().diff( "d", dateCreated ) ).toBe( 4 );
+                }, skip = !variables.isLucee6 );
                 it( "Can use dateCompare()", function() {
                     var dateCreated = variables.testModel.getCreatedOn();
                     expect( dateCompare(dateCreated, now(), "d") ).toBe( -1 );
