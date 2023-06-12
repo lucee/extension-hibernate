@@ -55,7 +55,7 @@ jobs:
     - name: Start Application Server
       run: |
         cp .env.template .env
-        box server start cfengine=lucee-lite@${{matrix.lucee_version}} --dryRun --noSaveSettings --debug
+        box server start cfengine=lucee-light@${{matrix.lucee_version}} --dryRun --noSaveSettings --debug
 
     - name: Deploy Package
       run: |
