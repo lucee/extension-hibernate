@@ -5,6 +5,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm"{
 	}
 
 	function run( testResults , testBox ) {
+		// 😭😭😭😭
+		// https://luceeserver.atlassian.net/browse/LDEV-2859
+		var isResolved = FALSE;
+
 		describe( "test suite for LDEV2859", function() {
 			it(title = "Orm entitytoquery without name", body = function( currentSpec ) {
 				local.result = _InternalRequest(
@@ -21,6 +25,6 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm"{
 				);
 				expect(trim(result.filecontent)).toBe('Lucee');
 			});
-		});
+		}, skip = isResolved);
 	}
 }

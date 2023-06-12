@@ -1,13 +1,16 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm"{
 	function run( testResults , testBox ) {
-		describe( "ORM persistent false for inherited property", function() {
+		// 😭😭😭😭
+		// https://luceeserver.atlassian.net/browse/LDEV-87
+		var isResolved = FALSE;
+
+		describe( title = "ORM persistent false for inherited property", body = function() {
 			it('Case 1: This should be run without failures',  function( currentSpec ) {
-				uri= server.helpers.getTestPath("tickets/LDEV0087/index.cfm");
 				local.result=_InternalRequest(
-					template:uri
+					template:server.helpers.getTestPath("tickets/LDEV0087/index.cfm")
 				);
 				assertEquals("",left(result.filecontent.trim(), 100));
-			});
+			}, skip = isResolved );
 		});
 	}
 
