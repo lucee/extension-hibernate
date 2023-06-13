@@ -56,8 +56,13 @@ jobs:
             echo "BUILD_VERSION=$PACKAGE_VERSION-snapshot" >> $GITHUB_ENV
           fi
 
+      - name: Update version in pom.xml
+        if: env.SNAPSHOT == 'true'
+        run: sed -i -e "s/${{ PACKAGE_VERSION }}/${{ env.BUILD_VERSION }}/g" pom.xml
+
       - name: Generate Javadocs
-        run: mvn --batch-mode -f pom.xml -Dextension.version=${{ env.EXTENSION_VERSION }} javadoc:javadoc
+        if: env.SNAPSHOT == 'false'
+        run: mvn --batch-mode -f pom.xml javadoc:javadoc
 
       - name: Upload API Docs to S3
         uses: jakejarvis/s3-sync-action@master
@@ -72,7 +77,7 @@ jobs:
           DEST_DIR: "lucee/hibernate-extension/${{ env.BUILD_VERSION }}/"
 
       - name: Build with Maven
-        run: mvn --batch-mode -f pom.xml -Dextension.version=${{ env.EXTENSION_VERSION }} package
+        run: mvn --batch-mode -f pom.xml package
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
