@@ -1,6 +1,6 @@
 {
     "name":"Ortus ORM Extension",
-    "version":"5.4.29.28",
+    "version":"7.0.0+28",
     "location":"https://downloads.ortussolutions.com/ortussolutions/lucee-extensions/ortus-orm/",
     "type":"lucee-extensions",
     "slug":"D062D72F-F8A2-46F0-8CBC91325B2F067B",
@@ -29,11 +29,12 @@
         "testbox":"testbox/"
     },
     "scripts":{
-        "build" : "!mvn clean package",
-        "deploy.local" : "!mvn clean package && cp target/*.lex .engine/lucee5/WEB-INF/lucee-server/deploy",
+        "build":"!mvn clean package",
+        "deploy.local":"!mvn clean package && cp target/*.lex .engine/lucee5/WEB-INF/lucee-server/deploy",
         "format":"cfformat run path=tests/ overwrite=true settingsPath=./.cfformat.json",
         "format:watch":"cfformat watch path=tests/ settingsPath=./.cfformat.json",
-        "format:check":"cfformat check path=tests/ settingsPath=./.cfformat.json"
+        "format:check":"cfformat check path=tests/ settingsPath=./.cfformat.json",
+        "postVersion":"sed commands='s/<extension.version>[0-9.]+</extension.version>/${interceptData.versionArgs.version}/g' inputOrFile=pom.xml file=true"
     },
     "testbox":{
         "runner":[
