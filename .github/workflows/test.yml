@@ -1,4 +1,4 @@
-name: Build and Test
+name: Test
 
 # We are a reusable Workflow only
 on:
@@ -13,8 +13,8 @@ on:
         - master
 
 jobs:
-  build:
-    name: Maven Build
+  test:
+    name: Maven Build and Test
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '__CI__')"
     continue-on-error: ${{ matrix.experimental }}

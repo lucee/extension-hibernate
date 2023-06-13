@@ -19,12 +19,16 @@ on:
 
 env:
   SNAPSHOT: ${{ inputs.snapshot || false }}
+  PROJECT_NAME: Ortus Lucee Extensions - Redis
+  EXTENSION_SLUG: ortus-redis-cache
+  AWS_BUCKETNAME: downloads.ortussolutions.com
+  ARTIFACTS_DIRECTORY: artifacts
 
 jobs:
-  build_and_test:
-    uses: ./.github/workflows/build_and_test.yml
+  test:
+    uses: ./.github/workflows/test.yml
 
-  javadocs:
+  build:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '__CI__')"
     steps:
@@ -36,11 +40,22 @@ jobs:
           java-version: '8'
           distribution: 'temurin'
 
-      - name: Generate Javadocs
-        run: mvn --batch-mode -f pom.xml javadoc:javadoc
-
       - name: Read version
-        run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
+        id: current_version
+        run: |
+          export PACKAGE_VERSION=$( cat box.json | jq '.version' -r )
+          echo "EXTENSION_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+          echo "BRANCH=main" >> $GITHUB_ENV
+          echo "BUILD_VERSION=$PACKAGE_VERSION+${{ github.run_number}}" >> $GITHUB_ENV
+          if [ $GITHUB_REF == 'refs/heads/development' ]
+          then
+            echo "SNAPSHOT=true" >> $GITHUB_ENV
+            echo "BRANCH=development" >> $GITHUB_ENV
+            echo "BUILD_VERSION=$PACKAGE_VERSION-snapshot" >> $GITHUB_ENV
+          fi
+
+      - name: Generate Javadocs
+        run: mvn --batch-mode -f pom.xml -Dextension.version=${{ env.EXTENSION_VERSION }} javadoc:javadoc
 
       - name: Upload API Docs to S3
         uses: jakejarvis/s3-sync-action@master
@@ -52,86 +67,20 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
           SOURCE_DIR: "target/apidocs"
-          DEST_DIR: "lucee/hibernate-extension/${{ env.VERSION }}/"
-
-  gh_release:
-    if: "!contains(github.event.head_commit.message, '__CI__')"
-    runs-on: ubuntu-latest
-    needs: [build_and_test, javadocs]
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          token: ${{secrets.GH_TOKEN}}
-
-      - name: Read version
-        run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
+          DEST_DIR: "lucee/hibernate-extension/${{ env.BUILD_VERSION }}/"
 
       - name: Build with Maven
-        run: mvn --batch-mode -f pom.xml package
+        run: mvn --batch-mode -f pom.xml -Dextension.version=${{ env.EXTENSION_VERSION }} package
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ortus_orm_${{ env.VERSION }}.lex
+          name: ortus_orm_${{ env.BUILD_VERSION }}.lex
           path: target/*.lex
 
       - run: |
             mkdir .tmp/
             mv target/*.lex .tmp/
-
-      # TODO: Re-enable when this bug is fixed: https://github.com/3liz/changelog-release/issues/8
-      # - name: Check for file
-      #   id: changelog_check
-      #   run: |
-      #     if grep -q "${{ env.VERSION }}" CHANGELOG.md ]];then
-      #       echo "HAS_VERSION=true" >> $GITHUB_OUTPUT
-      #     else
-      #       echo "HAS_VERSION=false" >> $GITHUB_OUTPUT
-      #     fi
-
-      # - name: Update changelog [unreleased] with latest version
-      #   uses: thomaseizinger/keep-a-changelog-new-release@1.3.0
-      #   if: env.SNAPSHOT == 'false' && steps.changelog_check.outputs.HAS_VERSION == 'false'
-      #   with:
-      #     changelogPath: ./CHANGELOG.md
-      #     tag: ${{ env.VERSION }}
-
-      # - name: Commit Changelog To Master
-      #   uses: EndBug/add-and-commit@v9.1.1
-      #   if: env.SNAPSHOT == 'false'
-      #   with:
-      #     author_name: Github Actions
-      #     author_email: info@ortussolutions.com
-      #     message: '📖 DOC: Finalized changelog for v${{ env.VERSION }} - __CI__'
-      #     add: CHANGELOG.md
-
-      - name: Tag Version
-        uses: rickstaa/action-create-tag@v1.6.1
-        if: env.SNAPSHOT == 'false'
-        with:
-          tag: "${{ env.VERSION }}"
-          force_push_tag: true
-          tag_exists_error: false
-          message: "Release v${{ env.VERSION }}"
-
-      - name: Read the changelog
-        id: changelog
-        uses: 3liz/changelog-release@0.2.0
-        with:
-          TAG_NAME: ${{ env.VERSION }}
-          CHANGELOG_FILE: CHANGELOG.md
-
-      - name: Create a GitHub release
-        uses: ncipollo/release-action@v1
-        if: env.SNAPSHOT == 'false'
-        with:
-          allowUpdates: true
-          artifactErrorsFailBuild: true
-          artifacts: .tmp/ortus_orm_${{ env.VERSION }}.lex
-          replacesArtifacts: true
-          tag: ${{ env.VERSION }}
-          name: v${{ env.VERSION }}
-          body: ${{ steps.changelog.outputs.markdown }}
 
       - name: Upload Artifact to S3
         uses: jakejarvis/s3-sync-action@master
@@ -142,7 +91,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
           SOURCE_DIR: ".tmp/"
-          DEST_DIR: "ortussolutions/lucee-extensions/ortus-orm/${{ env.VERSION }}/"
+          DEST_DIR: "ortussolutions/lucee-extensions/ortus-orm/${{ env.BUILD_VERSION }}/"
 
       - name: Upload Logo to S3
         uses: jakejarvis/s3-sync-action@master
@@ -155,29 +104,41 @@ jobs:
           SOURCE_DIR: "source/images/"
           DEST_DIR: "ortussolutions/lucee-extensions/ortus-orm/"
 
-  publish:
-    runs-on: ubuntu-latest
-    needs: [gh_release]
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          token: ${{secrets.GH_TOKEN}}
-
-      - name: Read version
-        run: echo "VERSION=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_ENV
-
-      - name: Setup Java
-        uses: actions/setup-java@v3.9.0
-        with:
-          distribution: "temurin"
-          java-version: "11"
-
       - name: Setup CommandBox
         uses: Ortus-Solutions/setup-commandbox@main
         with:
           forgeboxAPIKey: ${{ secrets.FORGEBOX_API_TOKEN }}
 
       - run: |
-          box package set version=${{ env.VERSION }}
-          box package set location="https://s3.amazonaws.com/downloads.ortussolutions.com/ortussolutions/lucee-extensions/ortus-orm/${{ env.VERSION }}/ortus_orm_${{ env.VERSION }}.lex"
+          box package set version=${{ env.BUILD_VERSION }}
+          box package set location="https://s3.amazonaws.com/downloads.ortussolutions.com/ortussolutions/lucee-extensions/ortus-orm/${{ env.BUILD_VERSION }}/ortus_orm_${{ env.BUILD_VERSION }}.lex"
           box publish
+
+      - name: Tag Version
+        uses: rickstaa/action-create-tag@v1.6.1
+        if: env.SNAPSHOT == 'false'
+        with:
+          tag: "${{ env.BUILD_VERSION }}"
+          force_push_tag: true
+          tag_exists_error: false
+          message: "Release v${{ env.BUILD_VERSION }}"
+
+      - name: Check whether a Slack Webhook is Configured
+        id: webhook_configured
+        env:
+            WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+            echo "::set-output name=is_set::${{ env.WEBHOOK_URL != '' }}"
+
+      - name: Inform Slack
+        if: ${{ steps.webhook_configured.outputs.is_set == 'true' && failure() }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: ortus-hibernate-extension
+          SLACK_COLOR: ${{ job.status }} # or a specific color like 'green' or '#ff00ff'
+          SLACK_ICON_EMOJI: ":bell:"
+          SLACK_MESSAGE: '${{ env.EXTENSION_SLUG }} v${{ env.BUILD_VERSION }} ( ${{ env.BRANCH }} ) failed :cry:'
+          SLACK_TITLE: "${{ env.PACKAGE_NAME }} Build"
+          SLACK_USERNAME: CI
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+
