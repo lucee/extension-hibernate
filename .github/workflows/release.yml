@@ -95,17 +95,6 @@ jobs:
           SOURCE_DIR: ".tmp/"
           DEST_DIR: "ortussolutions/lucee-extensions/ortus-orm/${{ env.BUILD_VERSION }}/"
 
-      - name: Upload Logo to S3
-        uses: jakejarvis/s3-sync-action@master
-        with:
-          args: --acl public-read
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_DOWNLOADS_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
-          SOURCE_DIR: "extension/src/main/cfml/logo.png"
-          DEST_DIR: "ortussolutions/lucee-extensions/ortus-orm/"
-
       - name: Setup CommandBox
         uses: Ortus-Solutions/setup-commandbox@main
         with:
@@ -113,7 +102,7 @@ jobs:
 
       - run: |
           box package set version=${{ env.BUILD_VERSION }}
-          box package set location="https://s3.amazonaws.com/downloads.ortussolutions.com/ortussolutions/lucee-extensions/ortus-orm/${{ env.BUILD_VERSION }}/ortus_orm_${{ env.BUILD_VERSION }}.lex"
+          box package set location="https://s3.amazonaws.com/${{ env.AWS_BUCKETNAME }}/ortussolutions/lucee-extensions/ortus-orm/${{ env.BUILD_VERSION }}/ortus_orm_${{ env.BUILD_VERSION }}.lex"
           box publish
 
       - name: Tag Version
