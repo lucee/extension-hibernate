@@ -58,7 +58,7 @@ jobs:
 
       - name: Update version in pom.xml
         if: env.SNAPSHOT == 'true'
-        run: sed -i -e "s/${{ env.PACKAGE_VERSION }}/${{ env.BUILD_VERSION }}/g" pom.xml
+        run: sed -i -e "s/${{ env.EXTENSION_VERSION }}/${{ env.BUILD_VERSION }}/g" pom.xml
 
       - name: Generate Javadocs
         if: env.SNAPSHOT == 'false'
