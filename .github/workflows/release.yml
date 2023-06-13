@@ -124,10 +124,10 @@ jobs:
         env:
             WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-            echo "::set-output name=is_set::${{ env.WEBHOOK_URL != '' }}"
+            echo "HAS_WEBHOOK=${{ env.WEBHOOK_URL != '' }}" >> $GITHUB_OUTPUT
 
       - name: Inform Slack
-        if: ${{ steps.webhook_configured.outputs.is_set == 'true' && failure() }}
+        if: ${{ steps.webhook_configured.outputs.HAS_WEBHOOK == 'true' && failure() }}
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_CHANNEL: ortus-hibernate-extension
