@@ -2,7 +2,7 @@
 
 You will need to install the following for extension development:
 
-* Java 1.8+ (JRE and JDK)
+* Java 1.8, 11, or 17 (JRE and JDK)
 * [maven](https://linuxize.com/post/how-to-install-apache-maven-on-ubuntu-20-04/) (for other automated tooling)
 * Optional: [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/) (for managing test database servers)
 
@@ -29,8 +29,6 @@ You will need to install the following for extension development:
 
 ## Testing
 
-See Lucee documentation on [testing-a-lucee-extension-locally](https://docs.lucee.org/guides/working-with-source/building-and-testing-extensions.html#testing-a-lucee-extension-locally).
-
 To run CFML tests against the extension:
 
 1. Start the test server using `box server start`
@@ -39,6 +37,7 @@ To run CFML tests against the extension:
 4. Run tests from the extension root with `box testbox run`
 
 For "full" database suite tests, you'll want to start the test databases using Docker-compose `docker-compose up -d`. This will start up MSSQL, MySQL, and Postgres database instances for database-specific tests.
+
 ## Publishing a Release
 
 Releasing is *mostly* automated. You will need to, at a minimum:
