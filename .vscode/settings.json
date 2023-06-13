@@ -1,0 +1,25 @@
+{
+    "search.exclude": {
+        "/bin/": true,
+        "/docs/": true,
+        "/lucee/": true,
+        "/target/": true,
+        "/temp/": true,
+        "WEB-INF/": true
+    },
+    "java.project.sourcePaths": [
+        "extension/src/main/java",
+        "extension/src/test/java"
+    ],
+    "java.project.referencedLibraries": {
+        "include" : [
+            "extension/lib-lucee5/**/*.jar",
+            "extension/lib/**/*.jar"
+        ],
+        "sources" : {
+            "extension/lib/hibernate-5.4.29.jar" : "extension/lib-source/hibernate-5.4.29.jar"
+        }
+    },
+    "java.format.enabled": true,
+    "java.format.settings.url": "extension/ortus-java-style.xml"
+}

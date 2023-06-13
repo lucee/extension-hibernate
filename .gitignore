@@ -1,5 +1,4 @@
 # Editor and OS artifacts
-.vscode
 .DS_Store
 **/.svn/
 /*.project
