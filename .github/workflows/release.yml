@@ -26,7 +26,7 @@ env:
   ARTIFACTS_DIRECTORY: artifacts
 
 jobs:
-  test:
+  tests:
     uses: ./.github/workflows/tests.yml
 
   build:
