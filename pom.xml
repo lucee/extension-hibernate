@@ -115,6 +115,8 @@
             <extensions>true</extensions>
             <configuration>
                <instructions>
+                  <Embed-Dependency>*;scope=compile|runtime;inline=true</Embed-Dependency>
+                  <Embed-Transitive>true</Embed-Transitive>
                   <Specification-Version>${project.version}</Specification-Version>
                   <Implementation-Version>${project.version}</Implementation-Version>
                   <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
@@ -124,8 +126,7 @@
                         ortus.extension.orm,ortus.extension.orm.jdbc,ortus.extension.orm.util
                      </Export-Package> -->
                   <Import-Package>net.sf.ehcache.hibernate;,!lucee.*;,!org.osgi.framework;,*</Import-Package>
-                  <Require-Bundle>
-                     org.lucee.hibernate;bundle-version=5.4.29.1,org.lucee.antlr;bundle-version=2.7.6,org.lucee.javassist;bundle-version=3.9.0.GA,org.lucee.jta;bundle-version=1.1.0,slf4j.api;bundle-version=1.7.36,org.apache.commons.collections;bundle-version=3.2.1,org.lucee.xml.apis;bundle-version=1.4.1,com.fasterxml.classmate;bundle-version=1.5.1,net.bytebuddy.byte-buddy;bundle-version=1.10.21,org.lucee.hibernate-annotations;bundle-version=5.1.2.Final,javax.persistence-api;bundle-version=2.2,org.lucee.hibernate-ehcache;bundle-version=5.4.29.Final,org.lucee.ehcache;bundle-version=2.10.6,jakarta.xml.bind-api;bundle-version=2.3.3,org.glassfish.jaxb.runtime;bundle-version=2.3.4</Require-Bundle>
+                  <Require-Bundle>org.lucee.xml.apis;bundle-version=1.4.1</Require-Bundle>
 
                   <!-- 
                         See:
@@ -273,6 +274,7 @@ lucee-core-version: ${minLuceeVersion}
          <version>4.0.0</version>
          <scope>test</scope>
       </dependency>
+
       <dependency>
          <groupId>org.mockito</groupId>
          <artifactId>mockito-junit-jupiter</artifactId>
@@ -287,12 +289,6 @@ lucee-core-version: ${minLuceeVersion}
          <version>${lucee.version}</version>
          <!-- https://www.baeldung.com/maven-dependency-scopes#2-provided -->
          <scope>provided</scope>
-      </dependency>
-
-      <dependency>
-         <groupId>org.lucee</groupId>
-         <artifactId>txw2</artifactId>
-         <version>2011.8.9</version>
       </dependency>
 
       <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
@@ -324,34 +320,14 @@ lucee-core-version: ${minLuceeVersion}
          </exclusions>
       </dependency>
 
-      <!--
-      https://mvnrepository.com/artifact/org.apache.servicemix.bundles/org.apache.servicemix.bundles.dom4j -->
-      <dependency>
-         <groupId>org.apache.servicemix.bundles</groupId>
-         <artifactId>org.apache.servicemix.bundles.dom4j</artifactId>
-         <version>2.1.4_1</version>
-      </dependency>
-
-      <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-osgi -->
-      <dependency>
-         <groupId>com.sun.xml.bind</groupId>
-         <artifactId>jaxb-osgi</artifactId>
-         <version>2.3.7</version>
-      </dependency>
-
    </dependencies>
 
 
    <repositories>
-      <!-- Needed for the w3c dom dependency.-->
       <repository>
-         <id>repo</id>
-         <url>https://raw.githubusercontent.com/lucee/mvn/master/releases</url>
-      </repository>
-      <!-- <repository>
          <id>maven</id>
          <url>https://repo1.maven.org/maven2/</url>
-      </repository> -->
+      </repository>
    </repositories>
 
    <scm>
