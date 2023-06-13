@@ -34,7 +34,7 @@
         "format":"cfformat run path=tests/ overwrite=true settingsPath=./.cfformat.json",
         "format:watch":"cfformat watch path=tests/ settingsPath=./.cfformat.json",
         "format:check":"cfformat check path=tests/ settingsPath=./.cfformat.json",
-        "postVersion":"sed commands='s/<extension.version>[0-9.]+</extension.version>/${interceptData.versionArgs.version}/g' inputOrFile=pom.xml file=true"
+        "postVersion":"!./build/bump.sh ${interceptData.versionArgs.version}"
     },
     "testbox":{
         "runner":[

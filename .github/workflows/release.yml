@@ -2,11 +2,12 @@
 name: Publish a Release
 
 on:
-  # If you push to master|main this will trigger a stable release
+  # If you push to master|main this will trigger a stable release. Else, a snapshot.
   push:
     branches:
       - master
       - main
+      - development
   workflow_dispatch:
   # Reusable workflow : Usually called by a `snapshot` workflow
   workflow_call:
@@ -26,7 +27,7 @@ env:
 
 jobs:
   test:
-    uses: ./.github/workflows/test.yml
+    uses: ./.github/workflows/tests.yml
 
   build:
     runs-on: ubuntu-latest

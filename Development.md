@@ -43,9 +43,10 @@ For "full" database suite tests, you'll want to start the test databases using D
 Releasing is *mostly* automated. You will need to, at a minimum:
 
 1. Update `CHANGELOG.md` to move release notes from the `## [Unreleased]` section to a new `### [1.2.3.4] - YYYY-MM-DD` section
-2. Run `bump.sh` with a version number to merge to master and push a release commit: `./bump.sh 5.4.29.25`
+2. Bump the major, minor, or patch version: `box bump --minor`
+3. 
 
-Once `bump.sh` pushes to `master`, the `release` GitHub workflow will kick in and:
+Once you push to `master`, the `release` GitHub workflow will kick in and:
 
 1. compile and test the extension
 2. create javadocs
@@ -53,6 +54,8 @@ Once `bump.sh` pushes to `master`, the `release` GitHub workflow will kick in an
 4. publish the extension to Forgebox
 5. create a git tag
 6. create a GitHub release with changelog release notes
+
+If you push to `development`, steps 5 and 6 will be ignored and the release pushed to ForgeBox will be a `-SNAPSHOT` release version.
 
 ## Java IDE
 
