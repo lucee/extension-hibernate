@@ -485,6 +485,14 @@ public class CommonUtil {
      * public static Node toXML(Object obj, Node defaultValue) { return caster().toXML(obj,defaultValue); }
      */
 
+     /**
+      * Parse XML file contents into an XML object ready for manipulation
+
+      * @param res Resource (File) to read
+      * @param cs Charset to use when parsing document
+      * @return XML Document
+      * @throws PageException
+      */
     public static Document toDocument(Resource res, Charset cs) throws PageException {
         return XMLUtil.parse(XMLUtil.toInputSource(res, cs), null, false);
     }

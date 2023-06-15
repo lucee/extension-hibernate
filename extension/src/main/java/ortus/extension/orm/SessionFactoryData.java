@@ -268,7 +268,7 @@ public class SessionFactoryData {
     /**
      * Build a Hibernate SessionFactory for this datasource name.
      *
-     * Uses the Thread Context ClassLoader, presumably to allow Hibernate classes running into the Hibernate OSGI bundle
+     * Uses the Thread Context ClassLoader, presumably to allow Hibernate classes running inside the Hibernate OSGI bundle
      * to talk to the lucee components outside that lucee bundle.
      *
      * @param datasSourceName
@@ -281,6 +281,10 @@ public class SessionFactoryData {
             throw new RuntimeException("cannot build factory because there is no configuration"); // this should never
                                                                                                   // happen
 
+        /**
+         * TODO: Investigate OSGISessionFactoryService
+         * https://docs.jboss.org/hibernate/orm/5.4/javadocs/org/hibernate/osgi/OsgiSessionFactoryService.html
+         */
         Thread thread = Thread.currentThread();
         ClassLoader old = thread.getContextClassLoader();
         SessionFactory sf;

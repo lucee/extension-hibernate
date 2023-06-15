@@ -53,8 +53,9 @@ public class ORMUtil {
     }
 
     /**
+     * Reset (reload) ORM engine
      *
-     * @param pc
+     * @param pc Lucee PageContext object
      * @param force
      *            if set to false the engine is on loaded when the configuration has changed
      *
