@@ -60,11 +60,7 @@ public class HibernateORMEngine implements ORMEngine {
 
     @Override
     public ORMSession createSession(PageContext pc) throws PageException {
-        try {
-            return new HibernateORMSession(pc, getSessionFactory(pc.getApplicationContext().getName()));
-        } catch (PageException pe) {
-            throw pe;
-        }
+        return new HibernateORMSession(pc, getSessionFactory(pc.getApplicationContext().getName()));
     }
 
     /**
@@ -80,7 +76,9 @@ public class HibernateORMEngine implements ORMEngine {
 
     @Override
     public boolean reload(PageContext pc, boolean force) throws PageException {
-        if (force || !isInitializedForApplication(pc.getApplicationContext().getName())) {
+        String applicationName = pc.getApplicationContext().getName();
+        if (force || !isInitializedForApplication(applicationName)) {
+            clearSessionFactory(applicationName);
             buildSessionFactoryData(pc);
             return false;
         }
@@ -112,11 +110,12 @@ public class HibernateORMEngine implements ORMEngine {
      * @throws PageException
      */
     private SessionFactoryData getOrBuildSessionFactoryData(PageContext pc) throws PageException {
-        if (!isInitializedForApplication(pc.getApplicationContext().getName())) {
+        String applicationName = pc.getApplicationContext().getName();
+        if (!isInitializedForApplication(applicationName)) {
             SessionFactoryData data = buildSessionFactoryData(pc);
             data.init();
         }
-        return getSessionFactory(pc.getApplicationContext().getName());
+        return getSessionFactory(applicationName);
     }
 
     /**
@@ -159,13 +158,11 @@ public class HibernateORMEngine implements ORMEngine {
         ApplicationContext appContext = pc.getApplicationContext();
         if (!appContext.isORMEnabled())
             throw ExceptionUtil.createException((ORMSession) null, null, "ORM is not enabled", "");
-        String applicationName = pc.getApplicationContext().getName();
-        clearSessionFactory(applicationName);
 
         // datasource
         ORMConfiguration ormConf = appContext.getORMConfiguration();
         SessionFactoryData data = new SessionFactoryData(this, ormConf);
-        setSessionFactory(applicationName, data);
+        setSessionFactory(pc.getApplicationContext().getName(), data);
 
         // config
         try {
@@ -293,7 +290,6 @@ public class HibernateORMEngine implements ORMEngine {
             DataSource ds = CommonUtil.getDataSource(pc, cfc);
 
             if (ormConf.autogenmap()) {
-                data.reset();
                 pc.addPageSource(cfc.getPageSource(), true);
 
                 /**
