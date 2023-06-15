@@ -30,7 +30,7 @@
     },
     "scripts":{
         "build":"!mvn clean package",
-        "deploy.local":"!mvn clean package && cp target/*.lex .engine/lucee5/WEB-INF/lucee-server/deploy",
+        "deploy.local":"!mvn clean package -Dmaven.javadoc.skip=true && cp target/*.lex .engine/lucee5/WEB-INF/lucee-server/deploy",
         "format":"cfformat run path=tests/ overwrite=true settingsPath=./.cfformat.json",
         "format:watch":"cfformat watch path=tests/ settingsPath=./.cfformat.json",
         "format:check":"cfformat check path=tests/ settingsPath=./.cfformat.json",

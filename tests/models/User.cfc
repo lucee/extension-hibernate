@@ -1,4 +1,4 @@
-component persistent="true" {
+component persistent="true" cacheUse="read-write" {
 
 	property
 		name     ="id"
