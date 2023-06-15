@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Java source moved to `extension/src/main/java`
   * All java classes are now under the `ortus.extension.orm` package
   * Dropped the java source format-on-push in favor of format-on-save IDE tooling
+* Re-architected all extension tests:
+  * Internal tests rewritten to native Testbox specs
+  * Cloned all ORM tests from the Lucee repository
+  * Updated to TestBox 5.0
+* The extension will now throw an error if you try to configure an unsupported cache provider like `"jbosscache"`, `"swarmcache"`, etc. Previously, the extension would silently switch to ehcache if any cache provider besides EHCache was configured.
 
 ### Fixed
 

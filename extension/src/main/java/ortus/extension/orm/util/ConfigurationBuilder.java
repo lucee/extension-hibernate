@@ -124,55 +124,6 @@ public class ConfigurationBuilder {
             addProperty(Environment.CONNECTION_PROVIDER, this.connectionProvider);
         }
 
-        // Cache Provider
-        String cacheProvider = ormConf.getCacheProvider();
-        Class<?> cacheProviderFactory = null;
-
-        if (Util.isEmpty(cacheProvider) || "EHCache".equalsIgnoreCase(cacheProvider)) {
-            cacheProviderFactory = EhcacheRegionFactory.class;
-        }
-        // else if ("JBossCache".equalsIgnoreCase(cacheProvider)) cacheProvider =
-        // "org.hibernate.cache.TreeCacheProvider";
-        // else if ("HashTable".equalsIgnoreCase(cacheProvider)) cacheProvider =
-        // "org.hibernate.cache.HashtableCacheProvider";
-        // else if ("SwarmCache".equalsIgnoreCase(cacheProvider)) cacheProvider =
-        // "org.hibernate.cache.SwarmCacheProvider";
-        // else if ("OSCache".equalsIgnoreCase(cacheProvider)) cacheProvider =
-        // "org.hibernate.cache.OSCacheProvider";
-
-        /// JBossCache -> https://mvnrepository.com/artifact/org.hibernate/hibernate-jbosscache
-        // OSCache -> https://mvnrepository.com/artifact/org.hibernate/hibernate-oscache
-        // SwarmCache -> https://mvnrepository.com/artifact/org.hibernate/hibernate-swarmcache
-
-        Resource cc = ormConf.getCacheConfig();
-
-        // is ehcache
-        Resource cacheConfig = null;
-        if (cacheProvider != null && cacheProvider.toLowerCase().indexOf("ehcache") != -1) {
-            CFMLEngine eng = CFMLEngineFactory.getInstance();
-            String varName = eng.getCastUtil().toVariableName(applicationName, applicationName);
-            String xml;
-            if (cc == null || !cc.isFile()) {
-                cacheConfig = eng.getResourceUtil().getTempDirectory().getRealResource("ehcache/" + varName + ".xml");
-                xml = createEHConfigXML(varName);
-            }
-            // we need to change or set the name
-            else {
-                String b64 = varName + eng.getSystemUtil().hash64b(CommonUtil.toString(cc, (Charset) null));
-                cacheConfig = eng.getResourceUtil().getTempDirectory().getRealResource("ehcache/" + b64 + ".xml");
-                Document doc = CommonUtil.toDocument(cc, null);
-                Element root = doc.getDocumentElement();
-                root.setAttribute("name", b64);
-
-                xml = XMLUtil.toString(root);
-            }
-
-            if (!cacheConfig.isFile()) {
-                cacheConfig.getParentResource().mkdirs();
-                eng.getIOUtil().write(cacheConfig, xml, false, null);
-            }
-        }
-
         // ormConfig
         Resource conf = ormConf.getOrmConfig();
         if (conf != null) {
@@ -192,46 +143,83 @@ public class ConfigurationBuilder {
         }
 
         configuration.setProperty(AvailableSettings.FLUSH_BEFORE_COMPLETION, "false")
-
                 .setProperty(AvailableSettings.ALLOW_UPDATE_OUTSIDE_TRANSACTION, "true")
-
-                .setProperty(AvailableSettings.AUTO_CLOSE_SESSION, "false");
-
-        // Enable Hibernate's current session context
-        configuration.setProperty(AvailableSettings.CURRENT_SESSION_CONTEXT_CLASS, "thread")
-
+                .setProperty(AvailableSettings.AUTO_CLOSE_SESSION, "false")
+                // Enable Hibernate's current session context
+                .setProperty(AvailableSettings.CURRENT_SESSION_CONTEXT_CLASS, "thread")
                 // Echo all executed SQL to stdout
-                .setProperty(AvailableSettings.SHOW_SQL, ormConf.logSQL() ? "true" : "false")
+                .setProperty(AvailableSettings.SHOW_SQL, Boolean.toString(ormConf.logSQL()))
                 // formatting of SQL logged to the console
-                .setProperty(AvailableSettings.FORMAT_SQL, ormConf.logSQL() ? "true" : "false")
+                .setProperty(AvailableSettings.FORMAT_SQL, Boolean.toString(ormConf.logSQL()))
                 // Specifies whether secondary caching should be enabled
-                .setProperty(AvailableSettings.USE_SECOND_LEVEL_CACHE,
-                        ormConf.secondaryCacheEnabled() ? "true" : "false")
+                .setProperty(AvailableSettings.USE_SECOND_LEVEL_CACHE, Boolean.toString(ormConf.secondaryCacheEnabled()))
                 // Drop and re-create the database schema on startup
                 .setProperty("hibernate.exposeTransactionAwareSessionFactory", "false")
                 // .setProperty("hibernate.hbm2ddl.auto", "create")
                 .setProperty(AvailableSettings.DEFAULT_ENTITY_MODE, "dynamic-map");
 
         if (ormConf.secondaryCacheEnabled()) {
-            if (cacheConfig != null && cacheConfig.isFile()) {
-                configuration.setProperty(AvailableSettings.CACHE_PROVIDER_CONFIG, cacheConfig.getAbsolutePath());
-                if (cacheConfig instanceof File)
-                    configuration.setProperty("net.sf.ehcache.configurationResourceName",
-                            ((File) cacheConfig).toURI().toURL().toExternalForm());
-                else
-                    throw new IOException("only local configuration files are supported");
+            String cacheProvider = ormConf.getCacheProvider();
 
-            }
+            if (cacheProvider != null ){
+                if( cacheProvider.equalsIgnoreCase("ehcache") ){
+                    Resource cacheConfig = buildEHCacheConfig();
+                    configuration.setProperty(AvailableSettings.CACHE_PROVIDER_CONFIG, cacheConfig.getAbsolutePath());
+                }
 
-            if (cacheProviderFactory != null) {
-                addProperty(AvailableSettings.CACHE_REGION_FACTORY, cacheProviderFactory);
+                addProperty(AvailableSettings.CACHE_REGION_FACTORY, getCacheRegionFactory(cacheProvider));
             }
-            // <property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
 
             configuration.setProperty(AvailableSettings.USE_QUERY_CACHE, "true");
         }
 
         return configuration;
+    }
+
+    private Class<?> getCacheRegionFactory(String cacheProvider) throws PageException{
+        String unsupportedCacheProvider = "Unsupported ORM configuration: cache provider " + cacheProvider + " is no longer supported in Hibernate 4+.";
+        switch (cacheProvider.toLowerCase()) {
+            case "jbosscache":
+                throw ExceptionUtil.createException(unsupportedCacheProvider);
+            case "hashtable":
+                throw ExceptionUtil.createException(unsupportedCacheProvider);
+            case "swarmcache":
+                throw ExceptionUtil.createException(unsupportedCacheProvider);
+            case "OSCache":
+                throw ExceptionUtil.createException(unsupportedCacheProvider);
+            case "infinispan":
+                // https://mvnrepository.com/artifact/org.infinispan/infinispan-hibernate-cache-spi
+            case "ehcache":
+            default:
+                return EhcacheRegionFactory.class;
+        }
+    }
+
+    private Resource buildEHCacheConfig() throws IOException, PageException {
+        Resource cacheConfig;
+        Resource cc = ormConf.getCacheConfig();
+        CFMLEngine eng = CFMLEngineFactory.getInstance();
+        String varName = eng.getCastUtil().toVariableName(applicationName, applicationName);
+        String xml;
+        if (cc == null || !cc.isFile()) {
+            cacheConfig = eng.getResourceUtil().getTempDirectory().getRealResource("ehcache/" + varName + ".xml");
+            xml = createEHConfigXML(varName);
+        }
+        // we need to change or set the name
+        else {
+            String b64 = varName + eng.getSystemUtil().hash64b(CommonUtil.toString(cc, (Charset) null));
+            cacheConfig = eng.getResourceUtil().getTempDirectory().getRealResource("ehcache/" + b64 + ".xml");
+            Document doc = CommonUtil.toDocument(cc, null);
+            Element root = doc.getDocumentElement();
+            root.setAttribute("name", b64);
+
+            xml = XMLUtil.toString(root);
+        }
+        if (!cacheConfig.isFile()) {
+            cacheConfig.getParentResource().mkdirs();
+            eng.getIOUtil().write(cacheConfig, xml, false, null);
+        }
+        return cacheConfig;
     }
 
     public ConfigurationBuilder withSessionFactoryData(SessionFactoryData data) {
