@@ -1,14 +1,16 @@
-<cfcomponent displayname="Application" output="false">
+component displayname="Application" output="false" {
+	this.name = "autogenmap-missing-LDEV-3525-#url.autogenmap#";
+	this.sessionManagement = true;
+	this.setClientCookies = true;
+	this.setDomainCookies = false;
+	this.sessionTimeOut = CreateTimeSpan(0,1,0,0);
+	this.applicationTimeOut = CreateTimeSpan(1,0,0,0);
+	this.datasource = server.getDatasource("h2", server._getTempDir( "LDEV-3525" ) );
 
-	<cfset this.name = "autogenmap-missing-LDEV-3525">
-	<cfset this.sessionManagement = true />
-	<cfset this.setClientCookies = true />
-	<cfset this.setDomainCookies = false />
-	<cfset this.sessionTimeOut = CreateTimeSpan(0,1,0,0) />
-	<cfset this.applicationTimeOut = CreateTimeSpan(1,0,0,0) />
-	<cfset this.datasource = server.getDatasource("h2", server._getTempDir( "LDEV-3525" ) ) />
+	this.ormenabled = true;
+	this.ormSettings.savemapping = true;
+	this.ormSettings.autogenmap = url.autogenmap;
 
-	<cfset this.ormenabled = true />
-	<cfset this.ormSettings.savemapping = true />
-	<cfset this.ormSettings.autogenmap = false />
-</cfcomponent>
+	if ( url.autogenmap )
+		this.ormSettings.dbcreate = "dropcreate";
+}
