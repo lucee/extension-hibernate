@@ -1,7 +1,7 @@
 # This workflow will build a Java project with Ant
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-ant
 
-name: Java CI
+name: Java CI - Lucee 6
 
 on: [push, pull_request,workflow_dispatch]
 
@@ -10,7 +10,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      luceeVersion: light-6.0.0.316-SNAPSHOT
+      luceeVersion: light-6.0.0.462-SNAPSHOT
 
     steps:
     - uses: actions/checkout@v3
@@ -19,6 +19,12 @@ jobs:
       with:
         java-version: '11'
         distribution: 'adopt'
+    - name: Set up MySQL (local)
+      run: |
+        sudo systemctl start mysql
+        mysql -e 'CREATE DATABASE lucee' -uroot -proot
+        mysql -e 'CREATE USER "lucee"@"localhost" IDENTIFIED WITH mysql_native_password BY "lucee";' -uroot -proot
+        mysql -e 'GRANT ALL PRIVILEGES ON lucee.* TO "lucee"@"localhost"' -uroot -proot
     - name: Cache Maven packages
       uses: actions/cache@v3
       with:
@@ -50,9 +56,15 @@ jobs:
         execute: /bootstrap-tests.cfm
         luceeVersion: ${{ env.luceeVersion }}
         extensionDir: ${{ github.workspace }}/dist
+        extensions:
       env:
         testLabels: orm
         testAdditional: ${{ github.workspace }}/tests
+        MYSQL_SERVER: localhost
+        MYSQL_USERNAME: lucee
+        MYSQL_PASSWORD: lucee
+        MYSQL_PORT: 3306
+        MYSQL_DATABASE: lucee
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: always()

@@ -25,7 +25,8 @@ public class ColumnInfo {
 	}
 
 	/**
-	 * @param name the name to set
+     * @param name
+     *            the name to set
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -39,7 +40,8 @@ public class ColumnInfo {
 	}
 
 	/**
-	 * @param type the type to set
+     * @param type
+     *            the type to set
 	 */
 	public void setType(int type) {
 		this.type = type;
@@ -53,7 +55,8 @@ public class ColumnInfo {
 	}
 
 	/**
-	 * @param typeName the typeName to set
+     * @param typeName
+     *            the typeName to set
 	 */
 	public void setTypeName(String typeName) {
 		this.typeName = typeName;
@@ -67,7 +70,8 @@ public class ColumnInfo {
 	}
 
 	/**
-	 * @param size the size to set
+     * @param size
+     *            the size to set
 	 */
 	public void setSize(int size) {
 		this.size = size;
@@ -81,7 +85,8 @@ public class ColumnInfo {
 	}
 
 	/**
-	 * @param nullable the nullable to set
+     * @param nullable
+     *            the nullable to set
 	 */
 	public void setNullable(boolean nullable) {
 		this.nullable = nullable;

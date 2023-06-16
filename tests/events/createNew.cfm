@@ -5,10 +5,10 @@
 	code.setCode( 'a' );
 	// should trigger preInsert, postInsert, and onFlush
 	entitySave( code );
-// should trigger onFlush event
+	// should trigger onFlush event
 	ormFlush();
-    ormClearSession();
-    result = {
+	ormClearSession();
+	result = {
 		events: [],
 		errors: []
 	};

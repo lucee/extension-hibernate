@@ -28,14 +28,15 @@ component hint="logs out any orm events"  {
 		eventLog( arguments );
 	}
 
-	function preInsert( entity ){
+	function preInsert( entity, event ){
 		eventLog( arguments );
 	}
 	function postInsert( entity ){
 		eventLog( arguments );
 	}
 
-	function preUpdate( entity, Struct oldData  ){
+	function preUpdate( entity, oldData ){
+		systemOutput("@PreUpdate", true);
 		systemOutput(oldData, true);
 		eventLog( arguments );
 	}
@@ -46,7 +47,7 @@ component hint="logs out any orm events"  {
 	function preDelete( entity ){
 		eventLog( arguments );
 	}	
-	function onDelete( entity ) {
+	function onDelete( entity, event ) {
 		eventLog( arguments );
 	}
 	function postDelete( entity ) {
@@ -80,10 +81,10 @@ component hint="logs out any orm events"  {
 			if ( isSimpleValue( args.2 ) ){
 				systemOutput("simple arguments.2: " & args.2, true);
 			} else if ( isStruct( args.2) ) {
-				systemOutput("struct arguments.2: " & args.2.toJson(), true);
+				systemOutput("struct arguments.2: " & serializeJson(args.2), true); // hmm??
 			} else {
 				try {
-					systemOutput("arguments.2: " & args.2.toJson(), true);
+					systemOutput("arguments.2: java " & args.2.getClass(), true); //hmm?
 				} catch (e) {
 					systemOutput("arguments.2: " & e.message, true);
 				}
@@ -98,15 +99,26 @@ component hint="logs out any orm events"  {
 			"args": args
 		} );
 
+		var noEntityExpected = {
+			"onFlush" : true,
+			"onClear" : true
+		};
+
+		if (structKeyExists(noEntityExpected, eventName)) return;
+
 		try {
 			if ( isNull(arguments.args.entity ) ) {
+				systemOutput("!!!! Entity was null, Arguments KeyList: " & arguments.keyList(), true);
+				systemOutput(arguments);
 				throw ("entity was null");
 			}
 
-			if (isObject( args.entity ) ){
+			if ( isObject( args.entity ) ){
 				try {
 					var obj = GetComponentMetaData(args.entity);
-					if (obj.fullname neq "testAdditional.events.Code")
+					//systemOutput( "------dump obj------", true );
+					//systemOutput( obj, true );
+					if (obj.fullname neq "testAdditional.events." & obj.cfcname)
 						throw "wrong entity: " & obj.fullname;
 				} catch( e ) {
 					systemOutput( e.message, true );
