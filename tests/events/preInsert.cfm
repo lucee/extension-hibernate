@@ -1,16 +1,16 @@
 <cfsetting showdebugoutput="false">
 <cfscript>
-	code = entityNew( 'Code' );
-	code.setId( 1 );
-	code.setCode( 'a' );
-	// should trigger preInsert, postInsert, and onFlush
-	entitySave( code );
-	// should trigger onFlush event
-	ormFlush();
+	person = entityNew( 'Person' );
+    person.setPerson( "ralio" );  // preInsert handler updates this to Lucee
+    entitySave(person);
+
+    ormFlush();
+	// trigger onClear
 	ormClearSession();
 	result = {
 		events: [],
-		errors: []
+		errors: [],
+        person: entityLoadByPK("Person", 1).getPerson()
 	};
 
 	loop array=application.ormEventLog item="a" {
