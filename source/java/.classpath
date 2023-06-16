@@ -8,9 +8,7 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/javax.servlet.jar"/>
 	<classpathentry kind="lib" path="libs/org-apache-felix-main-4-2-1.jar"/>
-	<classpathentry kind="lib" path="libs/org-apache-commons-collections-3-2-1.jar"/>
 	<classpathentry kind="lib" path="libs/antlr-2.7.6.jar"/>
-	<classpathentry kind="lib" path="libs/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libs/javassist-3.9.0.GA.jar"/>
 	<classpathentry kind="lib" path="libs/jta-1.1.0.jar"/>
 	<classpathentry kind="lib" path="libs/xml-apis-1.4.1.jar"/>
@@ -30,5 +28,6 @@
 	<classpathentry kind="lib" path="libs/org.lucee.hibernate-5.4.33.Final.jar"/>
 	<classpathentry kind="lib" path="libs/org.lucee.hibernate-ehcache-5.4.33.Final.jar"/>
 	<classpathentry kind="lib" path="libs/org.lucee.hibernate-annotations-5.1.2.Final.jar"/>
+	<classpathentry kind="lib" path="libs/org.apache.commons.commons-collections4-4.4.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
