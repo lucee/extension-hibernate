@@ -1883,11 +1883,9 @@ public class HBMCreator {
 	 * @return A giant XML string
 	 */
 	public static String loadMapping(Component cfc) throws PageException, IOException {
-
 		Resource resource = getMappingResource(cfc);
-		if (resource == null)
-			throw ExceptionUtil.createException("Hibernate mapping not found for entity: " + cfc.getName());
-
+		if (resource == null || !resource.exists())
+			throw ExceptionUtil.createException("Hibernate mapping not found for entity: [" + cfc.getName() + "], missing xml file [" + resource.getAbsoluteResource() + "]");
 		String xml = CommonUtil.toString(resource, CommonUtil.UTF8());
 		// return CommonUtil.toXML(xml).getOwnerDocument().getDocumentElement();
 		return xml;
@@ -1907,7 +1905,7 @@ public class HBMCreator {
 	 */
 	public static long getMappingLastModified(Component cfc) {
 		Resource res = getMappingResource(cfc);
-		if (res == null)
+		if (res == null || !res.exists())
 			return 0;
 		return res.lastModified();
 	}
@@ -1922,7 +1920,7 @@ public class HBMCreator {
 	 */
 	public static Resource getMappingResource(Component cfc) {
 		Resource res = cfc.getPageSource().getResource();
-		if (res == null)
+		if (!res.exists())
 			return null;
 		return res.getParentResource().getRealResource(res.getName() + ".hbm.xml");
 	}
