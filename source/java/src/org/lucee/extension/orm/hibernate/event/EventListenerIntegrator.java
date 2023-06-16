@@ -135,7 +135,6 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 	@Override
 	public boolean onPreInsert(PreInsertEvent event) {
 		Struct state = entityStateToStruct(event.getPersister().getPropertyNames(), event.getState());
-		fireEventOnGlobalListener(CommonUtil.PRE_INSERT, event.getEntity(), event, state);
 
 		// fire on entity
 		Component listener = getEventListener(event.getEntity());
@@ -143,65 +142,61 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 			fireEventOnEntityListener(listener, CommonUtil.PRE_INSERT, event, state);
 		}
 
+		fireEventOnGlobalListener(CommonUtil.PRE_INSERT, event.getEntity(), event, state);
 		return false;
 	}
 
 	@Override
 	public void onPostInsert(PostInsertEvent event) {
-		fireEventOnGlobalListener(CommonUtil.POST_INSERT, event.getEntity(), event, null);
-
 		// fire on entity
 		Component listener = getEventListener(event.getEntity());
 		if (listener != null) {
 			fireEventOnEntityListener(listener, CommonUtil.POST_INSERT, event, null);
 		}
+		fireEventOnGlobalListener(CommonUtil.POST_INSERT, event.getEntity(), event, null);
 	}
 
 	// PreDeleteEventListener
 	@Override
 	public boolean onPreDelete(PreDeleteEvent event) {
-		fireEventOnGlobalListener(CommonUtil.PRE_DELETE, event.getEntity(), event, null);
-
 		Component listener = getEventListener(event.getEntity());
 		if (listener != null) {
 			fireEventOnEntityListener(listener, CommonUtil.PRE_DELETE, event, null);
 		}
+		fireEventOnGlobalListener(CommonUtil.PRE_DELETE, event.getEntity(), event, null);
 		return false;
 	}
 
 	// PostDeleteEventListener
 	@Override
 	public void onPostDelete(PostDeleteEvent event) {
-		fireEventOnGlobalListener(CommonUtil.POST_DELETE, event.getEntity(), event, null);
-
 		Component listener = getEventListener(event.getEntity());
 		if (listener != null) {
 			fireEventOnEntityListener(listener, CommonUtil.POST_DELETE, event, null);
 		}
+		fireEventOnGlobalListener(CommonUtil.POST_DELETE, event.getEntity(), event, null);
 	}
 
 	// PreUpdateEventListener
 	@Override
 	public boolean onPreUpdate(PreUpdateEvent event) {
 		Struct oldState = entityStateToStruct(event.getPersister().getPropertyNames(), event.getOldState());
-		fireEventOnGlobalListener(CommonUtil.PRE_UPDATE, event.getEntity(), event, oldState);
-
 		Component listener = getEventListener(event.getEntity());
 		if (listener != null) {
 			fireEventOnEntityListener(listener, CommonUtil.PRE_UPDATE, event, oldState);
 		}
+		fireEventOnGlobalListener(CommonUtil.PRE_UPDATE, event.getEntity(), event, oldState);
 		return false;
 	}
 
 	// PostUpdateEventListener
 	@Override
 	public void onPostUpdate(PostUpdateEvent event) {
-		fireEventOnGlobalListener(CommonUtil.POST_UPDATE, event.getEntity(), event, null);
-
 		Component listener = getEventListener(event.getEntity());
 		if (listener != null) {
 			fireEventOnEntityListener(listener, CommonUtil.POST_UPDATE, event, null);
 		}
+		fireEventOnGlobalListener(CommonUtil.POST_UPDATE, event.getEntity(), event, null);
 	}
 
 	// PreLoadEventListener
@@ -218,12 +213,11 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 	// PostLoadEventListener
 	@Override
 	public void onPostLoad(PostLoadEvent event) {
-		fireEventOnGlobalListener(CommonUtil.POST_LOAD, event.getEntity(), event, null);
-
 		Component listener = getEventListener(event.getEntity());
 		if (listener != null) {
 			fireEventOnEntityListener(listener, CommonUtil.POST_LOAD, event, null);
 		}
+		fireEventOnGlobalListener(CommonUtil.POST_LOAD, event.getEntity(), event, null);
 	}
 
 	@Override
