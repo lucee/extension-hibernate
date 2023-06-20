@@ -1,7 +1,5 @@
 package ortus.extension.orm.tuplizer.proxy;
 
-import java.io.Serializable;
-
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.LazyInitializer;
 
@@ -12,7 +10,7 @@ import lucee.runtime.type.ObjectWrap;
 /**
  * Proxy for "dynamic-map" entity representations. SLOW
  */
-public class CFCHibernateProxy extends ComponentProxy implements HibernateProxy, Serializable, ObjectWrap {
+public class CFCHibernateProxy extends ComponentProxy implements HibernateProxy, ObjectWrap {
 
     private static final long serialVersionUID = 4115236247834562085L;
 

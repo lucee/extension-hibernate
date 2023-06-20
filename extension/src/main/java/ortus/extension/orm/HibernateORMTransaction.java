@@ -46,10 +46,6 @@ public class HibernateORMTransaction implements ORMTransaction {
     @Override
     public void begin() {
         if (autoManage) {
-            // FlushM
-            // FlushModeType fm = session.getFlushMode();
-            // FlushMode hfm = session.getHibernateFlushMode();
-
             session.flush();
         }
         trans = session.getTransaction();

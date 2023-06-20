@@ -12,13 +12,11 @@ import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.property.access.spi.Getter;
 import org.hibernate.type.Type;
 import ortus.extension.orm.HibernateCaster;
-import ortus.extension.orm.HibernateORMEngine;
 import ortus.extension.orm.HibernatePageException;
 import ortus.extension.orm.util.CommonUtil;
 import ortus.extension.orm.util.HibernateUtil;
 import ortus.extension.orm.util.ORMUtil;
 
-import lucee.loader.engine.CFMLEngineFactory;
 import lucee.runtime.Component;
 import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
@@ -65,11 +63,6 @@ public class CFCGetter implements Getter {
         } catch (PageException pe) {
             throw new HibernatePageException(pe);
         }
-    }
-
-    // was used in previous versions, we keep it just in case
-    public Object getForInsert(Object trg, Map map, SessionImplementor si) throws HibernateException {
-        return get(trg);// MUST better solution? this is from MapGetter
     }
 
     @Override

@@ -1,7 +1,6 @@
 package ortus.extension.orm.util;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
@@ -121,7 +120,7 @@ public class ConfigurationBuilder {
                         datasourceCreds.get("PASSWORD")));
             }
 
-            addProperty(Environment.CONNECTION_PROVIDER, this.connectionProvider);
+            addProperty(AvailableSettings.CONNECTION_PROVIDER, this.connectionProvider);
         }
 
         // ormConfig

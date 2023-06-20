@@ -130,7 +130,6 @@ public class HibernateORMSession implements ORMSession {
     public HibernateORMSession(PageContext pc, SessionFactoryData data) throws PageException {
         this.data = data;
         this.castUtil = CFMLEngineFactory.getInstance().getCastUtil();
-        // this.dc=dc;
         DataSource[] sources = data.getDataSources();
 
         for (int i = 0; i < sources.length; i++) {
@@ -270,11 +269,7 @@ public class HibernateORMSession implements ORMSession {
      */
     @Override
     public void flush(PageContext pc, String datasource) throws PageException {
-        _flush(pc, CommonUtil.getDataSource(pc, datasource));
-    }
-
-    private void _flush(PageContext pc, DataSource datasource) throws PageException {
-        Key dsn = CommonUtil.toKey(datasource.getName());
+        Key dsn = CommonUtil.toKey(CommonUtil.getDataSource(pc, datasource).getName());
 
         try {
             getSession(pc, dsn).flush();
@@ -691,7 +686,7 @@ public class HibernateORMSession implements ORMSession {
             return query.uniqueResult();
         } catch (NonUniqueResultException e) {
             List list = query.list();
-            if (list.size() > 0)
+            if (!list.isEmpty())
                 return list.iterator().next();
             throw CommonUtil.toPageException(e);
         } catch (Throwable t) {

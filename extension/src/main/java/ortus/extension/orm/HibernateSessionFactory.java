@@ -107,7 +107,7 @@ public class HibernateSessionFactory {
 
     private static void printError(Log log, SessionFactoryData data, List<Exception> exceptions, boolean throwException)
             throws PageException {
-        if (exceptions == null || exceptions.size() == 0 || !throwException)
+        if (exceptions == null || exceptions.isEmpty() || !throwException)
             return;
         for (Exception e : exceptions) {
             log.log(Log.LEVEL_ERROR, "hibernate", e);

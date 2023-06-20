@@ -45,9 +45,6 @@ public class HibernateCaster {
         if (src instanceof List) {
             return toCFML((List) src);
         }
-        /*
-         * if(src instanceof Map){ return toCFML(pc,(Map) src); }
-         */
         return src;
     }
 
@@ -60,19 +57,6 @@ public class HibernateCaster {
         }
         return trg;
     }
-
-    /*
-     * public static Object toCFML(PageContext pc,Map src) throws PageException {
-     *
-     * Object type =src.remove("$type$"); if(type instanceof String){
-     *
-     * Component cfc = toComponent(pc, (String)type); return toCFML(pc,src, cfc); }
-     *
-     *
-     * Iterator<Map.Entry<String, Object>> it = src.entrySet().iterator(); Struct trg=CommonUtil.createStruct();
-     * Map.Entry<String, Object> entry; while(it.hasNext()){ entry=it.next();
-     * trg.setEL(entry.getKey(),toCFML(pc,entry.getValue())); } return trg; }
-     */
 
     public static String getEntityName(Component cfc) {
 
