@@ -5,7 +5,7 @@
 
    <groupId>ortus.extension</groupId>
    <artifactId>orm-extension</artifactId>
-   <version>5.4.30</version>
+   <version>6.0.0</version>
    <packaging>bundle</packaging>
 
    <name>Ortus ORM Extension</name>
@@ -301,6 +301,12 @@ lucee-core-version: ${minLuceeVersion}
          <artifactId>hibernate-core</artifactId>
          <version>5.4.29.Final</version>
       </dependency>
+      <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-jcache -->
+      <!-- <dependency>
+         <groupId>org.hibernate</groupId>
+         <artifactId>hibernate-jcache</artifactId>
+         <version>5.4.29.Final</version>
+      </dependency> -->
 
       <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-ehcache -->
       <dependency>
