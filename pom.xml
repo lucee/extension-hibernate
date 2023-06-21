@@ -115,19 +115,25 @@
             <extensions>true</extensions>
             <configuration>
                <instructions>
-                  <Embed-Dependency>*;scope=compile|runtime;inline=true</Embed-Dependency>
-                  <Embed-Transitive>true</Embed-Transitive>
-                  <Specification-Version>${project.version}</Specification-Version>
-                  <Implementation-Version>${project.version}</Implementation-Version>
                   <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                   <Bundle-Name>${project.artifactId}</Bundle-Name>
+
+                  <!--
+                     Embed all dependencies inline, EXCEPT:
+                     1. ehcache as it requires a certain package structure
+                     2. jtaextensions as it is an optional dependency
+                     https://felix.apache.org/documentation/subprojects/apache-felix-maven-bundle-plugin-bnd.html#_embedding_dependencies
+                  -->
+                  <Embed-Dependency>*;scope=compile|runtime;inline=true;artifactId=!jtaextensions</Embed-Dependency>
+                  <Embed-Transitive>true</Embed-Transitive>
+                  <!-- Empty imports, because most dependencies are inlined.-->
+                  <Import-Package>javax.transaction.*</Import-Package>
                   <Private-Package>ortus.extension.orm</Private-Package>
-                  <!-- <Export-Package>
-                        ortus.extension.orm,ortus.extension.orm.jdbc,ortus.extension.orm.util
-                     </Export-Package> -->
-                  <Import-Package>net.sf.ehcache.hibernate;,!lucee.*;,!org.osgi.framework;,*</Import-Package>
                   <Require-Bundle>org.lucee.xml.apis;bundle-version=1.4.1</Require-Bundle>
 
+                  <!-- Useful for retrieving version info from class.getBundle()-->
+                  <Specification-Version>${project.version}</Specification-Version>
+                  <Implementation-Version>${project.version}</Implementation-Version>
                   <!-- 
                         See:
                         https://liferay.dev/blogs/-/blogs/osgi-and-java-package-imports
