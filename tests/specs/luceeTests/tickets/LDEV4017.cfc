@@ -12,7 +12,7 @@ component
 		describe( "Testcase for LDEV4017", function(){
 			it(
 				title = "Access the lazy-loaded ORM entity after the transaction ends",
-				skip  = !!server.helpers.isValidDatasource( "h2" ),
+				skip  = !!server.helpers.canUseDatasource( "h2" ),
 				body  = function( currentSpec ){
 					var result = _InternalRequest(
 						template: "#variables.uri#/LDEV4017.cfm",

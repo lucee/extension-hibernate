@@ -21,7 +21,7 @@ component {
 		return this;
 	}
 
-	public boolean function isValidDatasource( required string name ){
+	public boolean function canUseDatasource( required string name ){
 		return application.validDatasources.some( ( dsn ) => dsn == name );
 	}
 
