@@ -22,6 +22,7 @@
       <!-- Dependency versions -->
       <minLuceeVersion>5.3.9.73</minLuceeVersion>
       <lucee.version>5.3.10.97</lucee.version>
+      <hibernate.version>5.4.29.Final</hibernate.version>
 
       <!-- What version of the JDK should we compile against? -->
       <jdk.version>1.8</jdk.version>
@@ -131,9 +132,11 @@
                   <Private-Package>ortus.extension.orm</Private-Package>
                   <Require-Bundle>org.lucee.xml.apis;bundle-version=1.4.1</Require-Bundle>
 
-                  <!-- Useful for retrieving version info from class.getBundle()-->
+                  <!-- The extension version, used in ExtensionUtil -->
                   <Specification-Version>${project.version}</Specification-Version>
-                  <Implementation-Version>${project.version}</Implementation-Version>
+
+                  <!-- The Hibernate version, used in org.hibernate.Version  -->
+                  <Implementation-Version>${hibernate.version}</Implementation-Version>
                   <!-- 
                         See:
                         https://liferay.dev/blogs/-/blogs/osgi-and-java-package-imports
@@ -301,20 +304,20 @@ lucee-core-version: ${minLuceeVersion}
       <dependency>
          <groupId>org.hibernate</groupId>
          <artifactId>hibernate-core</artifactId>
-         <version>5.4.29.Final</version>
+         <version>${hibernate.version}</version>
       </dependency>
       <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-jcache -->
       <!-- <dependency>
          <groupId>org.hibernate</groupId>
          <artifactId>hibernate-jcache</artifactId>
-         <version>5.4.29.Final</version>
+         <version>${hibernate.version}</version>
       </dependency> -->
 
       <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-ehcache -->
       <dependency>
          <groupId>org.hibernate</groupId>
          <artifactId>hibernate-ehcache</artifactId>
-         <version>5.4.29.Final</version>
+         <version>${hibernate.version}</version>
 
          <!--
          https://maven.apache.org/guides/introduction/introduction-to-optional-and-excludes-dependencies.html#how-to-use-dependency-exclusions -->

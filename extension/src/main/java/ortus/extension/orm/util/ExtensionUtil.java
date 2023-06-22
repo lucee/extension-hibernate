@@ -6,13 +6,13 @@ package ortus.extension.orm.util;
 public class ExtensionUtil {
 
     /**
-     * Get the extension version as compiled into the Manifest.MF's `Implementation-Version` entry.
+     * Get the extension version as compiled into the Manifest.MF's `Specification-Version` entry.
      *
      * Will not work in compiled class files (think junit tests) because these are run outside of the packaged .jar
      * file.
      */
     public static String getExtensionVersion() {
-        return ExtensionUtil.class.getPackage().getImplementationVersion();
+        return ExtensionUtil.class.getPackage().getSpecificationVersion();
     }
 
     /**
