@@ -9,9 +9,10 @@ You will need to install the following for extension development:
 ## Getting Started
 
 1. Install the repo - `git clone git@github.com:ortus-solutions/extension-hibernate.git`
-1. Set up an environment/secrets file - `cp .env.template .env`
-3. [Build extension via `mvn package`](#building)
-4. Test via `box run-script deploy.local && server restart && testbox run` (See [#Testing](#testing) for more info)
+2. Set up an environment/secrets file - `cp .env.template .env`
+3. Download dependency sources for IDE integration - `mvn dependency:copy-dependencies`
+4. [Build extension via `mvn package`](#building)
+5. Test via `box run-script deploy.local && server restart && testbox run` (See [#Testing](#testing) for more info)
 
 **Before you send a PR:**
 
@@ -21,6 +22,7 @@ You will need to install the following for extension development:
 
 ## Building
 
+* `mvn dependency:copy-dependencies` Download dependency sources for VS code detection and source browsing. This is not needed to build the extension, but it is useful to remove the "Import not found" errors in VS Code.
 * `mvn clean` clean build directories
 * `mvn package` Package the extension into a Lucee-installable `.lex` extension file
 * `mvn test` run java-based (junit) tests

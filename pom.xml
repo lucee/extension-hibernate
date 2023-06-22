@@ -252,6 +252,28 @@ lucee-core-version: ${minLuceeVersion}
             </executions>
          </plugin>
 
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>3.6.0</version>
+            <executions>
+               <execution>
+                  <id>download</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>copy-dependencies</goal>
+                  </goals>
+                  <configuration>
+                     <classifier>sources</classifier>
+                     <overWrite>true</overWrite>
+                     <includeScope>compile</includeScope>
+                     <!-- We can possibly use this setting to save sources with a custom filename which would please Lucee's OSGI bundle resolver. 🤔 -->
+                     <!-- <destFileName>[ filename ]</destFileName> -->
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
       </plugins>
 
    </build>
