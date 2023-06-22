@@ -53,7 +53,7 @@ jobs:
           then
             echo "SNAPSHOT=true" >> $GITHUB_ENV
             echo "BRANCH=development" >> $GITHUB_ENV
-            echo "BUILD_VERSION=$PACKAGE_VERSION-snapshot" >> $GITHUB_ENV
+            echo "BUILD_VERSION=$PACKAGE_VERSION-snapshot+${{ github.run_number}}" >> $GITHUB_ENV
           fi
 
       - name: Update version in pom.xml
