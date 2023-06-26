@@ -1,4 +1,8 @@
-component hint="logs out any orm events" persistent="false" implements="cfide.orm.IEventHandler"{
+component
+	hint      ="logs out any orm events"
+	persistent="false"
+	implements="cfide.orm.IEventHandler"
+{
 
 	this.name = "EventHandler"; // used for logging out events
 
