@@ -1,4 +1,4 @@
-component hint="logs out any orm events" persistent="false" {
+component hint="logs out any orm events" persistent="false" implements="cfide.orm.IEventHandler"{
 
 	this.name = "EventHandler"; // used for logging out events
 
@@ -6,59 +6,59 @@ component hint="logs out any orm events" persistent="false" {
 		return this;
 	}
 
-	function onFlush( entity ){
+	public void function onFlush( entity ){
 		eventLog( "onFlush", arguments );
 	}
 
-	function postNew( any entity, any entityName ){
+	public void function postNew( any entity, any entityName ){
 		eventLog( "postNew", arguments );
 	}
 
-	function preLoad( entity ){
+	public void function preLoad( entity ){
 		eventLog( "preLoad", arguments );
 	}
-	function postLoad( entity ){
+	public void function postLoad( entity ){
 		eventLog( "postLoad", arguments );
 	}
 
-	function preInsert( entity ){
+	public void function preInsert( entity ){
 		eventLog( "preInsert", arguments );
 	}
-	function postInsert( entity ){
+	public void function postInsert( entity ){
 		eventLog( "postInsert", arguments );
 	}
 
-	function preUpdate( entity, Struct oldData ){
+	public void function preUpdate( entity, Struct oldData ){
 		eventLog( "preUpdate", arguments );
 	}
-	function postUpdate( entity ){
+	public void function postUpdate( entity ){
 		eventLog( "postUpdate", arguments );
 	}
 
-	function preDelete( entity ){
+	public void function preDelete( entity ){
 		eventLog( "preDelete", arguments );
 	}
-	function onDelete( entity ){
+	public void function onDelete( entity ){
 		eventLog( "onDelete", arguments );
 	}
-	function postDelete( entity ){
+	public void function postDelete( entity ){
 		eventLog( "postDelete", arguments );
 	}
 
-	function onEvict(){
+	public void function onEvict(){
 		eventLog( "onEvict", arguments );
 	}
-	function onClear( entity ){
+	public void function onClear( entity ){
 		eventLog( "onClear", arguments );
 	}
-	function onDirtyCheck( entity ){
+	public void function onDirtyCheck( entity ){
 		eventLog( "onDirtyCheck", arguments );
 	}
-	function onAutoFlush( entity ){
+	public void function onAutoFlush( entity ){
 		eventLog( "onAutoFlush", arguments );
 	}
 
-	function onMissingMethod( missingMethodName ){
+	public void function onMissingMethod( missingMethodName ){
 		systemOutput( "on missing method [#missingMethodName#]", true );
 	}
 
