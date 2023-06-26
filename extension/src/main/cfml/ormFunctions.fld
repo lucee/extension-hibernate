@@ -268,7 +268,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- isValidDatasource -->
 	<function>
 		<name>isValidDatasource</name>
-		<class bundle-name="orm-extension">ortus.extension.orm.functions.isValidDatasource</class>
+		<class bundle-name="orm-extension">ortus.extension.orm.functions.IsValidDatasource</class>
 		<description>Confirm whether Lucee can connect to this datasource. Currently VERY slow due to Lucee's hardcoded retries.</description>
 		<argument>
 			<name>name</name>

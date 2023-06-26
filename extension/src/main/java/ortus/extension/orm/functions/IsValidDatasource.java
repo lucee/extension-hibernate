@@ -10,7 +10,7 @@ import lucee.runtime.db.DataSource;
 import lucee.runtime.db.DataSourceManager;
 import lucee.runtime.db.DatasourceConnection;
 
-public class isValidDatasource extends BIF {
+public class IsValidDatasource extends BIF {
 
     public static Boolean call(PageContext pc, String name) throws PageException {
         DataSource d = pc.getDataSource(name);
