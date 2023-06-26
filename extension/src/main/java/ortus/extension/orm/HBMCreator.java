@@ -519,9 +519,6 @@ public class HBMCreator {
     private static void addGeneralClassAttributes(PageContext pc, Component cfc, Struct meta, Element clazz,
             SessionFactoryData data) throws PageException {
 
-        // name
-        clazz.setAttribute("node", HibernateCaster.toComponentName(cfc));
-
         // entity-name
         String str = toString(cfc, null, meta, "entityname", data);
         if (Util.isEmpty(str, true))

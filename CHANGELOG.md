@@ -19,19 +19,23 @@ The extension will now throw an error if you try to configure an unsupported cac
 * All java classes are now under the `ortus.extension.orm` package
 * Dropped the java source format-on-push in favor of format-on-save IDE tooling
 
-### New Test Layout
+#### New Test Layout
 
 * Internal tests rewritten to native Testbox specs
 * Cloned all ORM tests from the Lucee repository
 * Updated to TestBox 5.0
 
-### New Build (and .jar file) Layout
+#### New Build (and .jar file) Layout
 
 We re-architected the build to inline most dependencies. I.e. we no longer copy in extension dependencies as (custom-built) OSGI bundles, but instead as compiled classes.
 
 * This resolves intermittent issues with bundle resolution and/or duplicate bundle collision upon installing the ORM extension into a Lucee server prior to uninstalling the Lucee Hibernate extension.
 * This also removes a number of direct dependencies on custom OSGI bundles, thus it is more reliable and will offer easier dependency upgrades with less pain.
 * This also re-enables Hibernate logging, which (previously) appeared to be silenced by the lack of a logging provider on the bundle's classpath. One negative is that this logging is somewhat chatty and (thus far) unconfigurable. We will be investigating updating the logging configuration in a near release.
+
+#### Other
+
+* The `"node"` attribute is deprecated in Hibernate 5.x, and has been removed from our `hbml.xml` files to avoid constant Hibernate warning logs.
 
 ### Fixed
 
