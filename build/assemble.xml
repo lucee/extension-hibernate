@@ -36,19 +36,21 @@
         </file>
     </files>
     <!-- 
-        Uncomment to attempt a build using project dependencies...
-        Note we have to manually exclude test dependencies, and some non-OSGI jars that Lucee throws exceptions on.
+        Copy in OSGI-ready dependency jars
+        May need to either
+        1) manually exclude test dependencies, OR
+        2) specify specific includes instead
+
+        Note that this will not work for bundles whose filename does not match the Bundle-SymbolicName, because Lucee has their own proprietary, non-standard OSGI bundle resolution code.
+    
         <dependencySets>
-        <dependencySet>
-            <outputDirectory>/jars</outputDirectory>
-            <useProjectArtifact>true</useProjectArtifact>
-            <excludes>
-                <exclude>org.glassfish.jaxb:txw2</exclude>
-                <exclude>org.junit.jupiter:*</exclude>
-                <exclude>org.mockito:*</exclude>
-                <exclude>org.dom4j:*</exclude>
-                <exclude>org.glassfish.jaxb:jaxb-runtime</exclude>
-            </excludes>
-        </dependencySet>
-    </dependencySets> -->
+            <dependencySet>
+                <outputDirectory>/jars</outputDirectory>
+                <includes>
+                    <include>org.slf4j:slf4j-api</include>
+                    <include>ch.qos.logback:logback-classic</include>
+                </includes>
+            </dependencySet>
+        </dependencySets>
+    -->
 </assembly>
