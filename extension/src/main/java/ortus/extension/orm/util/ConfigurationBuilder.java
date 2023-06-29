@@ -146,10 +146,6 @@ public class ConfigurationBuilder {
                 .setProperty(AvailableSettings.AUTO_CLOSE_SESSION, "false")
                 // Enable Hibernate's current session context
                 .setProperty(AvailableSettings.CURRENT_SESSION_CONTEXT_CLASS, "thread")
-                // Echo all executed SQL to stdout
-                .setProperty(AvailableSettings.SHOW_SQL, Boolean.toString(ormConf.logSQL()))
-                // formatting of SQL logged to the console
-                .setProperty(AvailableSettings.FORMAT_SQL, Boolean.toString(ormConf.logSQL()))
                 // Specifies whether secondary caching should be enabled
                 .setProperty(AvailableSettings.USE_SECOND_LEVEL_CACHE, Boolean.toString(ormConf.secondaryCacheEnabled()))
                 // Drop and re-create the database schema on startup
