@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Second-Level Caching
+
 The extension will now throw an error if you try to configure an unsupported cache provider like `"jbosscache"`, `"swarmcache"`, etc. Previously, the extension would silently switch to ehcache if any cache provider besides EHCache was configured.
+
+#### Hibernate Logging
+
+This version re-enables Hibernate logging via SLF4j and LogBack. Hibernate root and cache loggers are defaulted to `WARN` level at ORM init/reload time, while SQL logging is set to `DEBUG` if `this.ormSettings.logSQL` is enabled. (Set to `true`.)
 
 ### Changed
 
@@ -31,7 +37,6 @@ We re-architected the build to inline most dependencies. I.e. we no longer copy 
 
 * This resolves intermittent issues with bundle resolution and/or duplicate bundle collision upon installing the ORM extension into a Lucee server prior to uninstalling the Lucee Hibernate extension.
 * This also removes a number of direct dependencies on custom OSGI bundles, thus it is more reliable and will offer easier dependency upgrades with less pain.
-* This also re-enables Hibernate logging, which (previously) appeared to be silenced by the lack of a logging provider on the bundle's classpath. One negative is that this logging is somewhat chatty and (thus far) unconfigurable. We will be investigating updating the logging configuration in a near release.
 
 #### Other
 
