@@ -167,7 +167,7 @@ public class HibernateORMEngine implements ORMEngine {
         ORMConfiguration ormConf = appContext.getORMConfiguration();
 
         ch.qos.logback.classic.Logger hibernateLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.hibernate");
-        new LoggingConfigurator(hibernateLogger.getLoggerContext(), ormConf).configure();
+        new LoggingConfigurator(hibernateLogger.getLoggerContext(), ormConf.logSQL()).configure();
 
         SessionFactoryData data = new SessionFactoryData(this, ormConf);
         setSessionFactory(pc.getApplicationContext().getName(), data);

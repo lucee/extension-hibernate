@@ -24,23 +24,23 @@ public class LoggingConfigurator {
     private LoggerContext loggerContext;
 
     /**
-     * The Lucee/CFML defined ORM configuration object.
+     * Enable logging of all SQL queries and parameters.
      */
-    private ORMConfiguration ormConfig;
+    private Boolean enableSQLLogging;
 
-    public LoggingConfigurator(LoggerContext loggerContext, ORMConfiguration ormConfig){
+    public LoggingConfigurator(LoggerContext loggerContext, Boolean enableSQLLogging){
         this.loggerContext = loggerContext;
-        this.ormConfig = ormConfig;
+        this.enableSQLLogging = enableSQLLogging;
     }
+
     public void configure() {
 
         Logger hibernateLogger = loggerContext.getLogger("org.hibernate");
         hibernateLogger.setLevel(Level.WARN);
 
-        Level sqlLogLevel = this.ormConfig.logSQL() ? Level.DEBUG : Level.ERROR;
         // TODO: In Hibernate 6, this will be `org.hibernate.orm.jdbc.bind`
         Logger sqlLogger = loggerContext.getLogger("org.hibernate.type.descriptor.sql");
-        sqlLogger.setLevel(sqlLogLevel);
+        sqlLogger.setLevel(getSQLLogLevel());
 
         Logger cacheLogger = loggerContext.getLogger("org.hibernate.cache");
         cacheLogger.setLevel(Level.WARN);
@@ -49,5 +49,9 @@ public class LoggingConfigurator {
         Logger ehcacheLogger = loggerContext.getLogger("net.sf.ehcache");
         ehcacheLogger.setLevel(Level.WARN);
 
+    }
+
+    public Level getSQLLogLevel(){
+        return Boolean.TRUE.equals(this.enableSQLLogging) ? Level.DEBUG : Level.ERROR;
     }
 }
