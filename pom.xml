@@ -253,6 +253,7 @@ lucee-core-version: ${minLuceeVersion}
             <configuration>
                <skipProvidedScope>true</skipProvidedScope>
                <skipTestScope>true</skipTestScope>
+               <suppressionFiles>${project.basedir}/extension/src/main/resources/security/owasp-suppression.xml</suppressionFiles>
             </configuration>
          </plugin>
 
