@@ -114,7 +114,7 @@ jobs:
         uses: rickstaa/action-create-tag@v1.6.1
         if: env.SNAPSHOT == 'false'
         with:
-          tag: "${{ env.BUILD_VERSION }}"
+          tag: "v${{ env.BUILD_VERSION }}"
           force_push_tag: true
           tag_exists_error: false
           message: "Release v${{ env.BUILD_VERSION }}"
