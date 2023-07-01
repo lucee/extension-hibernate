@@ -2,6 +2,7 @@
 name: Owasp Scan
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
 
@@ -16,7 +17,7 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
-        java-version: "${{matrix.java_version}}"
+        java-version: "11"
         distribution: "temurin"
 
     - name: Add Owasp Report to Github Release Notes
