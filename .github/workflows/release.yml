@@ -20,8 +20,8 @@ on:
 
 env:
   SNAPSHOT: ${{ inputs.snapshot || false }}
-  PROJECT_NAME: Ortus Lucee Extensions - Redis
-  EXTENSION_SLUG: ortus-redis-cache
+  PROJECT_NAME: Ortus Lucee Extensions - ORM
+  EXTENSION_SLUG: ortus-orm-extension
   AWS_BUCKETNAME: downloads.ortussolutions.com
   ARTIFACTS_DIRECTORY: artifacts
 
