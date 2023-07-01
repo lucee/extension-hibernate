@@ -42,13 +42,15 @@ For "full" database suite tests, you'll want to start the test databases using D
 
 ## Publishing a Release
 
-Releasing is *mostly* automated. You will need to, at a minimum:
+Releasing is *mostly* automated. To publish a release:
 
-1. Update `CHANGELOG.md` to move release notes from the `## [Unreleased]` section to a new `### [1.2.3.4] - YYYY-MM-DD` section
-2. Bump the major, minor, or patch version: `box bump --minor`
-3. 
+1. Check out the `master` branch - `git checkout master`
+2. Merge in `development` changes - `git merge development`
+3. Push to github: `git push`
+4. Check out `development` branch for further work - `git checkout development`
+5. Bump the major, minor, or patch version so you don't push snapshots on a released version: `box bump --minor`
 
-Once you push to `master`, the `release` GitHub workflow will kick in and:
+Once you push, the `release` GitHub workflow will kick in and:
 
 1. compile and test the extension
 2. create javadocs

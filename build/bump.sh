@@ -15,4 +15,4 @@ git checkout -- pom.xml
 sed -i -e "s/$OLD_VERSION/$NEW_VERSION/g" pom.xml
 
 git add pom.xml box.json
-git commit -m "🚀 RELEASE: $NEW_VERSION"
+git commit -m "🚀 RELEASE: Begin development on $NEW_VERSION"
