@@ -1,0 +1,28 @@
+# After a release is baked, scan it for CVEs and save the report to the github release.
+name: Owasp Scan
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  scan:
+    name: Run Owasp Scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: "${{matrix.java_version}}"
+        distribution: "temurin"
+
+    - name: Add Owasp Report to Github Release Notes
+      uses: fnkr/github-action-ghr@v1.3
+      env:
+        GHR_REPLACE: false
+        GHR_DELETE: false
+        GHR_PATH: target/dependency-check-report.html
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

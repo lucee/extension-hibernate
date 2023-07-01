@@ -17,6 +17,10 @@ The extension will now throw an error if you try to configure an unsupported cac
 
 This version re-enables Hibernate logging via SLF4j and LogBack. Hibernate root and cache loggers are defaulted to `WARN` level at ORM init/reload time, while SQL logging is set to `DEBUG` if `this.ormSettings.logSQL` is enabled. (Set to `true`.)
 
+#### OWASP Dependency CVE Scans
+
+The extension [GitHub Release page](https://github.com/Ortus-Solutions/extension-hibernate/releases/latest) now generates a dependency CVE report via [Jeremy Long's OWASP dependency-check maven plugin](https://jeremylong.github.io/DependencyCheck/index.html). Any known CVEs contained in dependencies ( excluding `test` and `provided`-scoped dependencies) will be noted in [each release's CVE report artifact](https://github.com/Ortus-Solutions/extension-hibernate/releases/download/latest/dependency-check-report.html).
+
 ### Changed
 
 #### New Repo Layout

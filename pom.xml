@@ -250,6 +250,10 @@ lucee-core-version: ${minLuceeVersion}
                   </goals>
                </execution>
             </executions>
+            <configuration>
+               <skipProvidedScope>true</skipProvidedScope>
+               <skipTestScope>true</skipTestScope>
+            </configuration>
          </plugin>
 
          <plugin>
