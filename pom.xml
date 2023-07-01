@@ -292,6 +292,17 @@ lucee-core-version: ${minLuceeVersion}
             <type>pom</type>
             <scope>import</scope>
          </dependency>
+         <!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
+         <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <!--
+               Ensure jaxb-runtime (a transitive dependency from hibernate-core) uses the latest version,
+               (4.0.3), in order to avoid CVEs on the istack dependency,
+               which is itself a transitive dep on jaxb-runtime. 
+            -->
+            <version>4.0.3</version>
+         </dependency>
       </dependencies>
    </dependencyManagement>
 
