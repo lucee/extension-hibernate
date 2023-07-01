@@ -10,7 +10,8 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.FileAppender;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import ch.qos.logback.core.spi.ContextAwareBase;
-import lucee.runtime.orm.ORMConfiguration;
+import ch.qos.logback.classic.LoggerContext;
+import org.slf4j.LoggerFactory;
 
 /**
  * Configure Hibernate logging with a bit of Logback hackery.
