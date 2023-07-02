@@ -2,13 +2,12 @@
 name: Owasp Scan
 
 on:
-  workflow_dispatch:
   release:
     types: [published]
 
 jobs:
   scan:
-    name: Run Owasp Scan
+    name: Run Owasp CVE Scan
     runs-on: ubuntu-latest
 
     steps:
@@ -20,10 +19,15 @@ jobs:
         java-version: "11"
         distribution: "temurin"
 
-    - name: Add Owasp Report to Github Release Notes
+    - name: Run CVE Scan
+      run: |
+        mvn --batch-mode -f pom.xml verify
+        mv target/dependency-check-report.html target/owasp-cve-report.html
+
+    - name: Add CVE Report to Github Release Notes
       uses: fnkr/github-action-ghr@v1.3
       env:
         GHR_REPLACE: false
         GHR_DELETE: false
-        GHR_PATH: target/dependency-check-report.html
+        GHR_PATH: target/owasp-cve-report.html
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
