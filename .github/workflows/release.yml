@@ -143,13 +143,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up JDK
-      uses: actions/setup-java@v3
-      with:
-        java-version: "11"
-        distribution: "temurin"
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: "11"
+          distribution: "temurin"
 
       - name: Read version
         id: current_version
@@ -165,13 +165,13 @@ jobs:
             echo "BUILD_VERSION=$PACKAGE_VERSION-snapshot+${{ github.run_number}}" >> $GITHUB_ENV
           fi
 
-    - name: Run CVE Scan
-      run: |
-        mvn --batch-mode -f pom.xml verify
-        mv target/dependency-check-report.html target/owasp-cve-report.html
+      - name: Run CVE Scan
+        run: |
+          mvn --batch-mode -f pom.xml verify
+          mv target/dependency-check-report.html target/owasp-cve-report.html
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: owasp_cve_report_${{ env.BUILD_VERSION }}.html
-        path: target/owasp-cve-report.html
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: owasp_cve_report_${{ env.BUILD_VERSION }}.html
+          path: target/owasp-cve-report.html
