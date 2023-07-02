@@ -14,4 +14,11 @@
       <packageUrl regex="true">^pkg:maven/jakarta\.activation/jakarta\.activation\-api@.*$</packageUrl>
       <cpe>cpe:/a:eclipse:eclipse_ide</cpe>
    </suppress>
+   <suppress>
+      <notes><![CDATA[
+      file name: istack-commons-runtime-3.0.7.jar
+      ]]></notes>
+      <packageUrl regex="true">^pkg:maven/com\.sun\.istack/istack\-commons\-runtime@.*$</packageUrl>
+      <cpe>cpe:/a:apache:commons_net</cpe>
+   </suppress>
 </suppressions>

@@ -293,12 +293,6 @@ lucee-core-version: ${minLuceeVersion}
             <type>pom</type>
             <scope>import</scope>
          </dependency>
-         <!-- https://mvnrepository.com/artifact/com.sun.istack/istack-commons-runtime -->
-         <dependency>
-            <groupId>com.sun.istack</groupId>
-            <artifactId>istack-commons-runtime</artifactId>
-            <version>4.1.0-M1</version>
-         </dependency>
       </dependencies>
    </dependencyManagement>
 
