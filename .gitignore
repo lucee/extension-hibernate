@@ -14,6 +14,7 @@ target/
 # Test artifacts
 .engine
 WEB-INF/
+tests/models/testSeeder.sql
 tests/results/
 tests/**/*.db
 tests/**/*.hbm.xml
