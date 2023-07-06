@@ -1,10 +1,8 @@
 package ortus.extension.orm.event;
 
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.HibernateException;
 import org.hibernate.boot.Metadata;
@@ -74,7 +72,7 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
     /**
      * The EventHandler CFC defined in the application's `this.ormSettings.eventHandler`.
      */
-    private Component GlobalEventListener;
+    private Component globalEventListener;
 
     public static final Key ON_EVICT = CommonUtil.createKey("onEvict");
     public static final Key ON_DIRTY_CHECK = CommonUtil.createKey("onDirtyCheck");
@@ -126,11 +124,11 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
     /**
      * Set the "Global" EventHandler to fire on all events in the application.
      *
-     * @param GlobalEventListener
+     * @param globalEventListener
      *            Instantiated Lucee Component object.
      */
-    public void setGlobalEventListener(Component GlobalEventListener) {
-        this.GlobalEventListener = GlobalEventListener;
+    public void setGlobalEventListener(Component globalEventListener) {
+        this.globalEventListener = globalEventListener;
     }
 
     @Override
@@ -271,7 +269,7 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
      * @return The configured Component to use as this application's event handler.
      */
     public Component getGlobalEventListener() {
-        return GlobalEventListener;
+        return globalEventListener;
     }
 
     /**
@@ -289,11 +287,11 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
      *            A struct of data to pass to the event
      */
     public void fireEventOnGlobalListener(Key name, Object entity, AbstractEvent event, Struct data) {
-        if (GlobalEventListener == null) {
+        if (globalEventListener == null) {
             return;
         }
 
-        _fireOnComponent(getGlobalEventListener(), name, entity, data, event);
+        fireOnComponent(getGlobalEventListener(), name, entity, data, event);
     }
 
     /**
@@ -311,7 +309,7 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
     public void fireOnEntity(Object entity, Key name, AbstractEvent event, Struct data) {
         Component listener = CommonUtil.toComponent(entity, null);
         if (listener != null) {
-            _fireOnComponent(listener, name, data, event);
+            fireOnComponent(listener, name, data, event);
         }
     }
 
@@ -329,7 +327,7 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
         return comp.get(methodName, null) instanceof UDF;
     }
 
-    private void _fireOnComponent(Component cfc, Key name, Object... args) {
+    private void fireOnComponent(Component cfc, Key name, Object... args) {
         if (!componentHasMethod(cfc, name)) {
             return;
         }
@@ -388,7 +386,8 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
             for (int n = 0; n < stateProperties.length; ++n) {
                 final String currentProperty = stateProperties[n];
                 Optional<Property> property = Arrays.stream(properties)
-                        .filter(prop -> prop.getName() == currentProperty).findFirst();
+                        .filter(prop -> prop.getName().equals( currentProperty ))
+                        .findFirst();
                 if (property.isPresent()) {
                     Property theprop = property.get();
                     if (theprop.getValue() != null) {
