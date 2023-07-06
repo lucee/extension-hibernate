@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 💥 Removed
+
+* Dropped the public `getDialectNames()` method from the Dialect class. This method was unused (to my knowledge) and unnecessary.
+
 ### 🔐 Security
 
 -   Suppressed [an erroneous vulnerability](CVE-2021-37533) noted in the OWASP dependency scan report. This is a false positive due to the scanner conflating `istack-commons-runtime-3.0.7.jar` with Apache Commons Net version `3.0.7`.

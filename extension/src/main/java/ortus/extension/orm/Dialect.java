@@ -52,7 +52,6 @@ public class Dialect {
                             dialects.setEL(CommonUtil.createKey(name), path);
                         }
 
-                        // print.e("dialects.setEL(\"" + name + "\",\"" + path + "\");");
                     }
                 } catch (Exception exx) {
                     exx.printStackTrace();
@@ -175,8 +174,7 @@ public class Dialect {
     public static String getDialect(String name) {
         if (Util.isEmpty(name))
             return null;
-        String dialect = (String) dialects.get(CommonUtil.createKey(name), null);
-        return dialect;
+        return (String) dialects.get(CommonUtil.createKey(name), null);
     }
 
     /**
@@ -186,14 +184,5 @@ public class Dialect {
      */
     public static Struct getDialects() {
         return dialects;
-    }
-
-    /**
-     * Get an iterator of dialect key names
-     *
-     * @return a String iteratator to iterate over all known dialects
-     */
-    public static Iterator<String> getDialectNames() {
-        return dialects.keysAsStringIterator();
     }
 }
