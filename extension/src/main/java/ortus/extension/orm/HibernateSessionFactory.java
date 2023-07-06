@@ -142,12 +142,13 @@ public class HibernateSessionFactory {
             String line;
             StringBuilder sql = new StringBuilder();
             String str;
-            Statement stat = null;
             PageContext pc = CFMLEngineFactory.getInstance().getThreadPageContext();
-            DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds, user, pass, true);
-            try {
-
-                stat = dc.getConnection().createStatement();
+            
+            try(
+                DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds, user, pass, true);
+                Statement stat = dc.getConnection().createStatement();
+            ) {
+                
                 while ((line = br.readLine()) != null) {
                     line = line.trim();
                     if (line.startsWith("//") || line.startsWith("--"))
@@ -166,9 +167,6 @@ public class HibernateSessionFactory {
                 if (str.length() > 0) {
                     stat.execute(str);
                 }
-            } finally {
-                CFMLEngineFactory.getInstance().getDBUtil().closeSilent(stat);
-                CommonUtil.releaseDatasourceConnection(pc, dc, true);
             }
         }
     }
