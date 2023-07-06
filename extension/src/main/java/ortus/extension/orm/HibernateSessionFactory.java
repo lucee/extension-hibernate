@@ -42,6 +42,10 @@ import lucee.runtime.type.Collection.Key;
 
 public class HibernateSessionFactory {
 
+    private HibernateSessionFactory() {
+        throw new IllegalStateException("Utility class; please don't instantiate!");
+    }
+
     /**
      * Generate the database schema based on the configured settings (dropcreate, update, etc.)
      *
@@ -72,36 +76,49 @@ public class HibernateSessionFactory {
         MetadataSources metadata = new MetadataSources(serviceRegistry);
         EnumSet<TargetType> enumSet = EnumSet.of(TargetType.DATABASE);
 
-        if (ORMConfiguration.DBCREATE_NONE == ormConf.getDbCreate()) {
-            configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "none");
-            return;
-        } else if (ORMConfiguration.DBCREATE_DROP_CREATE == ormConf.getDbCreate()) {
-            configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create");
-            SchemaExport export = new SchemaExport();
-            export.setHaltOnError(true);
-            export.execute(enumSet, Action.BOTH, metadata.buildMetadata());
-            HibernateSessionFactory.printError(log, data, export.getExceptions(), false);
+        List<Exception> exportExceptions = null;
+        SchemaExport export;
+
+        switch(ormConf.getDbCreate()){
+            case ORMConfiguration.DBCREATE_NONE:
+                configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "none");
+            break;
+            case ORMConfiguration.DBCREATE_DROP_CREATE:
+                configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create");
+                export = new SchemaExport();
+                export.setHaltOnError(true);
+                export.execute(enumSet, Action.BOTH, metadata.buildMetadata());
+                exportExceptions = export.getExceptions();
+            break;
+            case 3:
+                /* ORMConfiguration.DBCREATE_CREATE */
+                configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create-only");
+                export = new SchemaExport();
+                export.setHaltOnError(true);
+                export.execute(enumSet, Action.CREATE, metadata.buildMetadata());
+                exportExceptions = export.getExceptions();
+            break;
+            case 4:
+                /* ORMConfiguration.DBCREATE_CREATE_DROP */
+                configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create-drop");
+                export = new SchemaExport();
+                export.setHaltOnError(true);
+                export.execute(enumSet, Action.BOTH, metadata.buildMetadata());
+                exportExceptions = export.getExceptions();
+            break;
+            case ORMConfiguration.DBCREATE_UPDATE:
+                configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "update");
+                SchemaUpdate update = new SchemaUpdate();
+                update.setHaltOnError(true);
+                update.execute(enumSet, metadata.buildMetadata());
+                exportExceptions = update.getExceptions();
+            break;
+            default:
+                throw new IllegalStateException("Unrecognized dbCreate configuration setting; could not export schema.");
+        }
+        HibernateSessionFactory.printError(log, data, exportExceptions, false);
+        if ( ormConf.getDbCreate() != ORMConfiguration.DBCREATE_NONE && ormConf.getDbCreate() != ORMConfiguration.DBCREATE_UPDATE ){
             executeSQLScript(ormConf, ds, user, pass);
-        } else if (/* ORMConfiguration.DBCREATE_CREATE */3 == ormConf.getDbCreate()) {
-            configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create-only");
-            SchemaExport export = new SchemaExport();
-            export.setHaltOnError(true);
-            export.execute(enumSet, Action.CREATE, metadata.buildMetadata());
-            HibernateSessionFactory.printError(log, data, export.getExceptions(), false);
-            executeSQLScript(ormConf, ds, user, pass);
-        } else if (/* ORMConfiguration.DBCREATE_CREATE_DROP */4 == ormConf.getDbCreate()) {
-            configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create-drop");
-            SchemaExport export = new SchemaExport();
-            export.setHaltOnError(true);
-            export.execute(enumSet, Action.BOTH, metadata.buildMetadata());
-            HibernateSessionFactory.printError(log, data, export.getExceptions(), false);
-            executeSQLScript(ormConf, ds, user, pass);
-        } else if (ORMConfiguration.DBCREATE_UPDATE == ormConf.getDbCreate()) {
-            configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "update");
-            SchemaUpdate update = new SchemaUpdate();
-            update.setHaltOnError(true);
-            update.execute(enumSet, metadata.buildMetadata());
-            HibernateSessionFactory.printError(log, data, update.getExceptions(), false);
         }
     }
 
@@ -111,7 +128,9 @@ public class HibernateSessionFactory {
             return;
         for (Exception e : exceptions) {
             log.log(Log.LEVEL_ERROR, "hibernate", e);
-            throw ExceptionUtil.createException(data, null, e);
+        }
+        if ( !exceptions.isEmpty()){
+            throw ExceptionUtil.createException(data, null, exceptions.get(0));
         }
     }
 
@@ -164,18 +183,18 @@ public class HibernateSessionFactory {
      */
     public static Map<Key, String> assembleMappingsByDatasource(SessionFactoryData data) {
         Map<Key, String> mappings = new HashMap<Key, String>();
-        Iterator<Entry<Key, Map<String, CFCInfo>>> it = data.getCFCs().entrySet().iterator();
-        while (it.hasNext()) {
-            Entry<Key, Map<String, CFCInfo>> e = it.next();
+        Iterator<Entry<Key, Map<String, CFCInfo>>> dsnGroup = data.getCFCs().entrySet().iterator();
+        while (dsnGroup.hasNext()) {
+            Entry<Key, Map<String, CFCInfo>> e = dsnGroup.next();
 
             Set<String> done = new HashSet<String>();
             StringBuilder mapping = new StringBuilder();
             mapping.append(HBMCreator.getXMLOpen());
             mapping.append("<hibernate-mapping>");
-            Iterator<Entry<String, CFCInfo>> _it = e.getValue().entrySet().iterator();
-            _it.forEachRemaining(entry -> {
-                mapping.append(assembleMappingForCFC(entry.getKey(), entry.getValue(), done, data));
-            });
+            Iterator<Entry<String, CFCInfo>> entityType = e.getValue().entrySet().iterator();
+            entityType.forEachRemaining(entry ->
+                mapping.append(assembleMappingForCFC(entry.getKey(), entry.getValue(), done, data))
+            );
             mapping.append("</hibernate-mapping>");
             mappings.put(e.getKey(), mapping.toString());
         }
@@ -209,9 +228,8 @@ public class HibernateSessionFactory {
             try {
                 Component parent = data.getEntityByCFCName(ext, false);
                 ext = HibernateCaster.getEntityName(parent);
-            } catch (Throwable t) {
-                if (t instanceof ThreadDeath)
-                    throw (ThreadDeath) t;
+            } catch (Exception t) {
+                // TODO: Throw 'entity name not found' exception!
             }
 
             ext = HibernateUtil.sanitizeEntityName(CommonUtil.last(ext, ".").trim());
