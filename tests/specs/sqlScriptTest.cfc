@@ -47,13 +47,13 @@ component extends="testbox.system.BaseSpec" {
             it( "should throw if sql is not valid", () => {
                 fileWrite( "/tests/models/testSeeder.sql", "CREATABLE fudge(id varchar(36))" );
 
-                // expect(()=> {
+                expect(()=> {
                     _internalRequest(
                         template: "/tests/testApp/index.cfm",
                         url     : { "ormReload" : true },
                         forms   : { ormSettings : serializeJSON( variables.ormSettings ) }
                     );
-                // }).toThrow();
+                }).toThrow();
             } );
         } )
     }
