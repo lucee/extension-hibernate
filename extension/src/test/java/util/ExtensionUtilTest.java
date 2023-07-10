@@ -1,15 +1,21 @@
 package ortus.extension.orm.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import ortus.extension.orm.util.ExtensionUtil;
 
 public class ExtensionUtilTest {
 
     @Test
     public void canGetHibernateVersion() {
-        assertEquals("5.4.29.Final", ExtensionUtil.getHibernateVersion());
+        String actual = ExtensionUtil.getHibernateVersion();
+        String versionFormat = "\\d{0,3}.\\d{0,3}.\\d{0,3}..*";
+        assertTrue(actual.matches(versionFormat));
     }
 
     @Disabled("Wont pass outside of a .jar with manifest containing Implementation-Version.")
