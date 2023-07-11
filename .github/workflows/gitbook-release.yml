@@ -24,7 +24,7 @@ jobs:
         run: |
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
           echo "CHANGELOG<<$EOF" >> "$GITHUB_ENV"
-          cat CHANGELOG.md >> "$GITHUB_OUTPUT"
+          echo "$(cat CHANGELOG.md)" >> "$GITHUB_OUTPUT"
           echo "$EOF" >> "$GITHUB_ENV"
 
       - uses: actions/checkout@v3
