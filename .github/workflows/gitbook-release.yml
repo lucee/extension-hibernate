@@ -10,27 +10,38 @@ jobs:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '__CI__')"
     steps:
+
       - uses: actions/checkout@v3
-        with:
-          repository: 'ortus-docs/orm-extension'
-          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read version
+        id: current_version
+        run: |
+          export PACKAGE_VERSION=$( cat box.json | jq '.version' -r )
+          echo "EXTENSION_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
 
       - name: Read the changelog
         id: changelog
         uses: 3liz/changelog-release@0.2.0
         with:
           TAG_NAME: ${{ env.EXTENSION_VERSION }}
+          ADD_EMOJIS: false
           CHANGELOG_FILE: CHANGELOG.md
+
+      - uses: actions/checkout@v3
+        with:
+          repository: 'ortus-docs/orm-extension'
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Append Changelog to Release History doc
         run: |
           echo '# Release History' > release-history-NEW.md
-          cat CHANGELOG.md >> release-history-NEW.md
-          sed -i '' "1s/.*/`cat release-history-NEW.md`" intro/release-history.md
+          echo ${{ steps.changelog.outputs.markdown }} >> release-history-NEW.md
+          cat intro/release-history.md >> release-history-NEW.md
+          rm intro/release-history.md
+          cat release-history-NEW.md > intro/release-history.md
 
       - name: Commit changelog updates to docs repo
         uses: EndBug/add-and-commit@v9.1.1
-        if: env.SNAPSHOT == 'false'
         with:
           author_name: Github Actions
           author_email: info@ortussolutions.com
