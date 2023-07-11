@@ -27,7 +27,6 @@ You will need to install the following for extension development:
 * `mvn package` Package the extension into a Lucee-installable `.lex` extension file
 * `mvn test` run java-based (junit) tests
 * `mvn javadoc:javadoc` generate java docs
-* `mvn verify` Run OWASP dependency checker to look for vulnerabilities
 
 ## Testing
 

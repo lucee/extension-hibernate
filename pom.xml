@@ -237,26 +237,6 @@ lucee-core-version: ${minLuceeVersion}
             </executions>
          </plugin>
 
-         <!-- https://jeremylong.github.io/DependencyCheck/index.html -->
-         <!-- run 'mvn verify' to check dependencies for known CVEs.-->
-         <plugin>
-            <groupId>org.owasp</groupId>
-            <artifactId>dependency-check-maven</artifactId>
-            <version>7.3.2</version>
-            <executions>
-               <execution>
-                  <goals>
-                     <goal>check</goal>
-                  </goals>
-               </execution>
-            </executions>
-            <configuration>
-               <skipProvidedScope>true</skipProvidedScope>
-               <skipTestScope>true</skipTestScope>
-               <suppressionFiles>${project.basedir}/extension/src/main/resources/security/owasp-suppression.xml</suppressionFiles>
-            </configuration>
-         </plugin>
-
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
