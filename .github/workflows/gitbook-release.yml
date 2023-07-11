@@ -22,7 +22,7 @@ jobs:
       - name: Drop unnecessary changelog starter
         run: |
           # Delete first 8 lines from changelog
-          sed -i '8d' CHANGELOG.md
+          sed -i '1,8d' CHANGELOG.md
 
       - name: Read the changelog
         id: changelog
