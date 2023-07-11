@@ -20,8 +20,12 @@ jobs:
           echo "RELEASE_DATE=$(date +%F)" >> $GITHUB_ENV
 
       - name: Read the changelog
+        id: changelog
         run: |
-          echo "CHANGELOG=$(cat CHANGELOG.md)" >> $GITHUB_ENV
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "CHANGELOG<<$EOF" >> "$GITHUB_ENV"
+          cat CHANGELOG.md >> "$GITHUB_OUTPUT"
+          echo "$EOF" >> "$GITHUB_ENV"
 
       - uses: actions/checkout@v3
         with:
@@ -33,7 +37,7 @@ jobs:
           # prepend our new release notes to new release history file
           echo "# Release History" > release-history-NEW.md
           echo "## ${{ env.EXTENSION_VERSION }} - ${{ env.RELEASE_DATE }}" > release-history-NEW.md
-          echo "${{ env.CHANGELOG }}" >> release-history-NEW.md
+          echo "${{ changelog.outputs.CHANGELOG }}" >> release-history-NEW.md
           
           # Delete first 8 lines from original release history notes
           sed -i '8d' intro/release-history.md
