@@ -24,8 +24,9 @@ jobs:
         uses: 3liz/changelog-release@0.2.0
         with:
           TAG_NAME: ${{ env.EXTENSION_VERSION }}
-          ADD_EMOJIS: false
           CHANGELOG_FILE: CHANGELOG.md
+          ADD_EMOJIS: false
+          ALLOW_FAILURE: false
 
       - uses: actions/checkout@v3
         with:
