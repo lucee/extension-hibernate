@@ -18,7 +18,7 @@ jobs:
         run: |
           export PACKAGE_VERSION=$( cat box.json | jq '.version' -r )
           echo "EXTENSION_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
-          echo "RELEASE_DATE=`printf -v date '%(%Y-%m-%d)T\n' -1 `" >> $GITHUB_ENV
+          echo "RELEASE_DATE=$(date +%F)" >> $GITHUB_ENV
 
       - name: Read the changelog
         id: changelog
