@@ -7,6 +7,7 @@
     "shortDescription":"Lucee extension providing a Hibernate ORM wrapper for CFML",
     "description":"The Ortus ORM extension is a Lucee extension which integrates the popular Hibernate ORM library into the Lucee CFML server.",
     "author":"Ortus Solutions",
+    "organization": "ortus-solutions",
     "homepage":"https://github.com/ortus-solutions/extension-hibernate",
     "documentation":"https://github.com/ortus-solutions/extension-hibernate/blob/master/README.md",
     "bugs":"https://ortussolutions.atlassian.net/jira/software/c/projects/OOE/issues",
