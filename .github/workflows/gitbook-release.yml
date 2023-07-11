@@ -8,13 +8,12 @@ on:
 jobs:
   update_gitbook:
     runs-on: ubuntu-latest
-    # needs: release
     if: "!contains(github.event.head_commit.message, '__CI__')"
     steps:
       - uses: actions/checkout@v3
         with:
           repository: 'ortus-docs/orm-extension'
-          token: ${{ env.GH_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Read the changelog
         id: changelog
