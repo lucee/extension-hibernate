@@ -19,6 +19,11 @@ jobs:
           echo "EXTENSION_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
           echo "RELEASE_DATE=$(date +%F)" >> $GITHUB_ENV
 
+      - name: Drop unnecessary changelog starter
+        run: |
+          # Delete first 8 lines from changelog
+          sed -i '8d' CHANGELOG.md
+
       - name: Read the changelog
         id: changelog
         run: |
@@ -36,17 +41,13 @@ jobs:
         run: |
           # prepend our new release notes to new release history file
           echo "# Release History" > release-history-NEW.md
-          echo "## ${{ env.EXTENSION_VERSION }} - ${{ env.RELEASE_DATE }}" > release-history-NEW.md
+          echo "## ${{ env.EXTENSION_VERSION }} - ${{ env.RELEASE_DATE }}" >> release-history-NEW.md
           echo "${{ steps.changelog.outputs.CHANGELOG }}" >> release-history-NEW.md
-          
-          # Delete first 8 lines from original release history notes
-          sed -i '8d' intro/release-history.md
           
           # copy current release history to temp file
           cat intro/release-history.md >> release-history-NEW.md
           
           # put the final release history into docs
-          rm intro/release-history.md
           cat release-history-NEW.md > intro/release-history.md
 
       - name: Commit changelog updates to docs repo
