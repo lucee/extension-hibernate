@@ -1,5 +1,4 @@
-# Publish Github Release
-name: Github Release
+name: Gitbook Release Notes
 
 on:
   workflow_dispatch:
