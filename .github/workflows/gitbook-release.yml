@@ -18,6 +18,7 @@ jobs:
         run: |
           export PACKAGE_VERSION=$( cat box.json | jq '.version' -r )
           echo "EXTENSION_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+          echo "RELEASE_DATE=`printf -v date '%(%Y-%m-%d)T\n' -1 `" >> $GITHUB_ENV
 
       - name: Read the changelog
         id: changelog
@@ -35,9 +36,15 @@ jobs:
 
       - name: Append Changelog to Release History doc
         run: |
+          # prepend our new release notes to new release history file
           echo "# Release History" > release-history-NEW.md
+          echo "## ${{ env.EXTENSION_VERSION }} - ${{ env.RELEASE_DATE }}" > release-history-NEW.md
           echo "${{ steps.changelog.outputs.markdown }}" >> release-history-NEW.md
+          # Delete first line (heading) from original release history notes
+          sed -i '1d' intro/release-history.md
+          # copy current release history to temp file
           cat intro/release-history.md >> release-history-NEW.md
+          # put the final release history into docs
           rm intro/release-history.md
           cat release-history-NEW.md > intro/release-history.md
 
@@ -46,5 +53,5 @@ jobs:
         with:
           author_name: Github Actions
           author_email: info@ortussolutions.com
-          message: '📖 DOC: Add latest changelog to Release History doc - __CI__'
+          message: '📖 DOC: Add ${{ env.EXTENSION_VERSION }} changelog to Release History - __CI__'
           add: intro/release-history.md
