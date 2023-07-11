@@ -35,8 +35,8 @@ jobs:
 
       - name: Append Changelog to Release History doc
         run: |
-          echo '# Release History' > release-history-NEW.md
-          echo ${{ steps.changelog.outputs.markdown }} >> release-history-NEW.md
+          echo "# Release History" > release-history-NEW.md
+          echo "${{ steps.changelog.outputs.markdown }}" >> release-history-NEW.md
           cat intro/release-history.md >> release-history-NEW.md
           rm intro/release-history.md
           cat release-history-NEW.md > intro/release-history.md
