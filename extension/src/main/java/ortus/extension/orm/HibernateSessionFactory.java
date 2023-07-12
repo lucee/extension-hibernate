@@ -117,6 +117,9 @@ public class HibernateSessionFactory {
             default:
                 throw new IllegalStateException("Unrecognized dbCreate configuration setting; could not export schema.");
         }
+        /**
+         * TODO: For 7.0, pass throwException: ormConf.skipCFCWithError()
+         */
         HibernateSessionFactory.printError(log, data, exportExceptions, false);
         if ( ormConf.getDbCreate() != ORMConfiguration.DBCREATE_NONE && ormConf.getDbCreate() != ORMConfiguration.DBCREATE_UPDATE ){
             Resource sqlScript = ORMConfigurationUtil.getSqlScript(ormConf, ds.getName());
@@ -126,15 +129,28 @@ public class HibernateSessionFactory {
         }
     }
 
+    /**
+     * Log all provided (Hibernate-generated) exceptions, then throw the first.
+     * 
+     * @param log Lucee logger
+     * @param data Extension session factory data
+     * @param exceptions List of Hibernate exceptions created during schema generation
+     * @param throwException Enable exception throwing. If false, schema exceptions will be logged only.
+     * @throws PageException
+     */
     private static void printError(Log log, SessionFactoryData data, List<Exception> exceptions, boolean throwException)
             throws PageException {
-        if (exceptions == null || exceptions.isEmpty() || !throwException)
+        if ( exceptions == null || exceptions.isEmpty() ){ 
             return;
-        for (Exception e : exceptions) {
-            log.log(Log.LEVEL_ERROR, "hibernate", e);
         }
-        if ( !exceptions.isEmpty()){
-            throw ExceptionUtil.createException(data, null, exceptions.get(0));
+        if ( !throwException ){
+            for (Exception e : exceptions) {
+                log.log(Log.LEVEL_ERROR, "hibernate", e);
+            }
+        } else {
+            if ( !exceptions.isEmpty()){
+                throw ExceptionUtil.createException(data, null, exceptions.get(0));
+            }
         }
     }
 

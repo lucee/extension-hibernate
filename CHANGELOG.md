@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 🐛Fixed
+
+* Any hibernate exceptions returned during schema generation are once again logged to the Lucee ORM log file.
+
 ### 💥 Removed
 
 * Dropped the public `getDialectNames()` method from the Dialect class. This method was unused (to my knowledge) and unnecessary.
