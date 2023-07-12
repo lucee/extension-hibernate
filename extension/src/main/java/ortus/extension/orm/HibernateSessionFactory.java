@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -118,7 +119,10 @@ public class HibernateSessionFactory {
         }
         HibernateSessionFactory.printError(log, data, exportExceptions, false);
         if ( ormConf.getDbCreate() != ORMConfiguration.DBCREATE_NONE && ormConf.getDbCreate() != ORMConfiguration.DBCREATE_UPDATE ){
-            executeSQLScript(ormConf, ds, user, pass);
+            Resource sqlScript = ORMConfigurationUtil.getSqlScript(ormConf, ds.getName());
+            if (sqlScript != null && sqlScript.isFile()) {
+                executeSQLScript(sqlScript, ds, user, pass);
+            }
         }
     }
 
@@ -134,41 +138,60 @@ public class HibernateSessionFactory {
         }
     }
 
-    private static void executeSQLScript(ORMConfiguration ormConf, DataSource ds, String user, String pass)
+    /**
+     * Execute the provided SQL script.
+     * 
+     * @param sqlScript File resource containing SQL script to execute
+     * @param ds Datasource to run the script on
+     * @param user Username credential for the datasource
+     * @param pass Password credential for the datasource
+     * @throws SQLException
+     * @throws IOException
+     * @throws PageException
+     */
+    private static void executeSQLScript(Resource sqlScript, DataSource ds, String user, String pass)
             throws SQLException, IOException, PageException {
-        Resource sqlScript = ORMConfigurationUtil.getSqlScript(ormConf, ds.getName());
-        if (sqlScript != null && sqlScript.isFile()) {
-            BufferedReader br = CommonUtil.toBufferedReader(sqlScript, (Charset) null);
-            String line;
-            StringBuilder sql = new StringBuilder();
-            String str;
-            PageContext pc = CFMLEngineFactory.getInstance().getThreadPageContext();
-            
-            try(
-                DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds, user, pass, true);
-                Statement stat = dc.getConnection().createStatement();
-            ) {
-                
-                while ((line = br.readLine()) != null) {
-                    line = line.trim();
-                    if (line.startsWith("//") || line.startsWith("--"))
-                        continue;
-                    if (line.endsWith(";")) {
-                        sql.append(line.substring(0, line.length() - 1));
-                        str = sql.toString().trim();
-                        if (str.length() > 0)
-                            stat.execute(str);
-                        sql = new StringBuilder();
-                    } else {
-                        sql.append(line).append(" ");
-                    }
-                }
-                str = sql.toString().trim();
-                if (str.length() > 0) {
-                    stat.execute(str);
+        PageContext pc = CFMLEngineFactory.getInstance().getThreadPageContext();
+        List<String> statements = readSQLScriptIntoStatements(sqlScript);
+
+        try(
+            DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds, user, pass, true);
+            Statement stat = dc.getConnection().createStatement();
+        ) {
+            for( String statement : statements ){
+                if (statement.length() > 0){
+                    stat.execute(statement);
                 }
             }
         }
+    }
+
+    /**
+     * Read the given SQL script (File object) into a list of executeable statements.
+     * 
+     * @param sqlScript The Lucee Resource object to read the sql from.
+     * @throws IOException
+     */
+    private static List<String> readSQLScriptIntoStatements(Resource sqlScript) throws IOException{
+        BufferedReader br = CommonUtil.toBufferedReader(sqlScript, (Charset) null);
+        String line;
+        StringBuilder sql = new StringBuilder();
+        List<String> statements = new ArrayList<>();
+            
+        while ((line = br.readLine()) != null) {
+            line = line.trim();
+            if (line.startsWith("//") || line.startsWith("--"))
+                continue;
+            if (line.endsWith(";")) {
+                sql.append(line.substring(0, line.length() - 1));
+                statements.add( sql.toString().trim() );
+                sql = new StringBuilder();
+            } else {
+                sql.append(line).append(" ");
+            }
+        }
+        statements.add( sql.toString().trim() );
+        return statements;
     }
 
     /**
