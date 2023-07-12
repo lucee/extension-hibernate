@@ -13,7 +13,6 @@ import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.cache.ehcache.internal.EhcacheRegionFactory;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Environment;
 import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 import ortus.extension.orm.Dialect;
 import ortus.extension.orm.SessionFactoryData;
