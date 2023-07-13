@@ -21,7 +21,7 @@
 
       <!-- Dependency versions -->
       <minLuceeVersion>5.3.9.73</minLuceeVersion>
-      <lucee.version>5.3.10.120</lucee.version>
+      <lucee.version>5.4.0.80</lucee.version>
       <hibernate.version>5.4.29.Final</hibernate.version>
 
       <!-- What version of the JDK should we compile against? -->
