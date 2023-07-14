@@ -59,17 +59,17 @@ jobs:
             echo "BUILD_VERSION=$PACKAGE_VERSION.${{ github.run_number}}-snapshot" >> $GITHUB_ENV
           fi
 
-      - name: Update version in pom.xml
-        if: env.SNAPSHOT == 'true'
+      - name: Set temporary (snapshot) version in pom.xml
+        if: env.SNAPSHOT
         run: sed -i -e "s/${{ env.EXTENSION_VERSION }}/${{ env.BUILD_VERSION }}/g" pom.xml
 
       - name: Generate Javadocs
-        if: env.SNAPSHOT == 'false'
+        if: !env.SNAPSHOT
         run: mvn --batch-mode -f pom.xml javadoc:javadoc
 
       - name: Upload API Docs to S3
         uses: jakejarvis/s3-sync-action@master
-        if: env.SNAPSHOT == 'false'
+        if: !env.SNAPSHOT
         with:
           args: --acl public-read
         env:
@@ -115,7 +115,7 @@ jobs:
 
       - name: Tag Version
         uses: rickstaa/action-create-tag@v1.6.1
-        if: env.SNAPSHOT == 'false'
+        if: !env.SNAPSHOT
         with:
           tag: "v${{ env.BUILD_VERSION }}"
           force_push_tag: true
