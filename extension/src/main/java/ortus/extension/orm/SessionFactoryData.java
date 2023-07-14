@@ -47,11 +47,11 @@ public class SessionFactoryData {
     /**
      * HashMap of datasources by datasource name
      */
-    private final Map<Key, DataSource> sources = new HashMap<Key, DataSource>();
-    private final Map<Key, Map<String, CFCInfo>> cfcs = new HashMap<Key, Map<String, CFCInfo>>();
-    private final Map<Key, DataSourceConfig> configurations = new HashMap<Key, DataSourceConfig>();
-    private final Map<Key, SessionFactory> factories = new HashMap<Key, SessionFactory>();
-    private final Map<Key, QueryPlanCache> queryPlanCaches = new HashMap<Key, QueryPlanCache>();
+    private final Map<Key, DataSource> sources = new HashMap<>();
+    private final Map<Key, Map<String, CFCInfo>> cfcs = new HashMap<>();
+    private final Map<Key, DataSourceConfig> configurations = new HashMap<>();
+    private final Map<Key, SessionFactory> factories = new HashMap<>();
+    private final Map<Key, QueryPlanCache> queryPlanCaches = new HashMap<>();
 
     private final ORMConfiguration ormConf;
     private NamingStrategy namingStrategy;
@@ -133,7 +133,7 @@ public class SessionFactoryData {
     }
 
     public List<String> getEntityNames() {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (Map<String, CFCInfo> entityTypes : cfcs.values()) {
             for (CFCInfo entityType : entityTypes.values()) {
                 names.add(HibernateCaster.getEntityName(entityType.getCFC()));
@@ -274,7 +274,6 @@ public class SessionFactoryData {
      *            Name of the datasource for which to build and configure a session factory.
      */
     public SessionFactory buildSessionFactory(Key datasSourceName) {
-        // Key key=eng.getCreationUtil().createKey(ds.getName());
         DataSourceConfig dsc = getConfiguration(datasSourceName);
         if (dsc == null)
             throw new RuntimeException("cannot build factory because there is no configuration"); // this should never
@@ -372,7 +371,7 @@ public class SessionFactoryData {
 
         Map<String, CFCInfo> map = cfcs.get(dsn);
         if (map == null)
-            cfcs.put(dsn, map = new HashMap<String, CFCInfo>());
+            cfcs.put(dsn, map = new HashMap<>());
         map.put(HibernateUtil.sanitizeEntityName(entityName), info);
         sources.put(dsn, ds);
     }
@@ -418,7 +417,7 @@ public class SessionFactoryData {
     public Map<String, CFCInfo> getCFCs(Key datasSourceName) {
         Map<String, CFCInfo> rtn = cfcs.get(datasSourceName);
         if (rtn == null)
-            return new HashMap<String, CFCInfo>();
+            return new HashMap<>();
         return rtn;
     }
 

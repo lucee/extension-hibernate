@@ -76,7 +76,7 @@ public class ORMUtil {
         }
 
         // no id field defined
-        if (ids.size() == 0) {
+        if (ids.isEmpty()) {
             String fieldType;
             for (int y = 0; y < props.length; y++) {
                 fieldType = CommonUtil.toString(props[y].getDynamicAttributes().get(PROPS_FIELDTYPE, null), null);
@@ -88,7 +88,7 @@ public class ORMUtil {
         }
 
         // still no id field defined
-        if (ids.size() == 0 && props.length > 0) {
+        if (ids.isEmpty() && props.length > 0) {
             String owner = props[0].getOwnerName();
             if (!Util.isEmpty(owner))
                 owner = CommonUtil.last(owner, DELIMITER).trim();
@@ -174,7 +174,6 @@ public class ORMUtil {
     }
 
     public static DataSource getDefaultDataSource(PageContext pc) throws PageException {
-        // pc = ThreadLocalPageContext.get(pc);
         Object datasource = pc.getApplicationContext().getORMDataSource();
 
         if (datasource == null) {
@@ -185,7 +184,6 @@ public class ORMUtil {
     }
 
     public static DataSource getDefaultDataSource(PageContext pc, DataSource defaultValue) {
-        // pc = ThreadLocalPageContext.get(pc);
         Object datasource = pc.getApplicationContext().getORMDataSource();
         if (datasource == null)
             return defaultValue;
@@ -220,7 +218,6 @@ public class ORMUtil {
      * @return Lucee Datasource object
      */
     public static DataSource getDataSource(PageContext pc, Component cfc, DataSource defaultValue) {
-        // pc = ThreadLocalPageContext.get(pc);
 
         // datasource defined with cfc
         try {
@@ -252,8 +249,6 @@ public class ORMUtil {
      * @throws PageException
      */
     public static DataSource getDataSource(PageContext pc, Component cfc) throws PageException {
-        // pc = ThreadLocalPageContext.get(pc);
-
         // datasource defined with cfc
         Struct meta = cfc.getMetaData(pc);
         String datasourceName = CommonUtil.toString(meta.get(PROPS_DATASOURCE, null), null);
@@ -265,8 +260,6 @@ public class ORMUtil {
     }
 
     public static String getDataSourceName(PageContext pc, Component cfc) throws PageException {
-        // pc = ThreadLocalPageContext.get(pc);
-
         // datasource defined with cfc
         Struct meta = cfc.getMetaData(pc);
         String datasourceName = CommonUtil.toString(meta.get(PROPS_DATASOURCE, null), null);
@@ -277,8 +270,6 @@ public class ORMUtil {
     }
 
     public static String getDataSourceName(PageContext pc, Component cfc, String defaultValue) {
-        // pc = ThreadLocalPageContext.get(pc);
-
         // datasource defined with cfc
         Struct meta = null;
         try {

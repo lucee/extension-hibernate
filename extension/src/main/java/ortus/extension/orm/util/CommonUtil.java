@@ -219,13 +219,10 @@ public class CommonUtil {
      * @throws IOException
      */
     public static String toString(Resource file, Charset charset) throws IOException {
-        Reader r = null;
-        try {
-            r = getReader(file, charset);
-            String str = toString(r);
-            return str;
-        } finally {
-            closeEL(r);
+        try(
+            Reader r = getReader(file, charset);
+        ) {
+            return toString(r);
         }
     }
 
@@ -275,7 +272,6 @@ public class CommonUtil {
             int third = is.read();
             // EF BB BF UTF-8
             if (first == 0xEF && second == 0xBB && third == 0xBF) {
-                // is.reset();
                 return _getReader(is, UTF8());
             }
 
@@ -481,9 +477,6 @@ public class CommonUtil {
     public static Node toXML(Object obj) throws PageException {
         return XMLUtil.toNode(obj);
     }
-    /*
-     * public static Node toXML(Object obj, Node defaultValue) { return caster().toXML(obj,defaultValue); }
-     */
 
      /**
       * Parse XML file contents into an XML object ready for manipulation
@@ -618,7 +611,7 @@ public class CommonUtil {
         if (coll == null)
             return new Key[0];
         Iterator<Key> it = coll.keyIterator();
-        List<Key> rtn = new ArrayList<Key>();
+        List<Key> rtn = new ArrayList<>();
         if (it != null)
             while (it.hasNext()) {
                 rtn.add(it.next());
@@ -810,7 +803,6 @@ public class CommonUtil {
 
     public static void releaseDatasourceConnection(PageContext pc, DatasourceConnection dc,
             boolean transactionSensitive) throws PageException {
-        // print.ds("rel:" + transactionSensitive);
         if (transactionSensitive) {
             pc.getDataSourceManager().releaseConnection(pc, dc);
             return;
@@ -974,7 +966,6 @@ public class CommonUtil {
     }
 
     public static boolean equals(Component l, Component r) {
-        // TODO Auto-generated method stub
         return orm().equals(l, r);
     }
 

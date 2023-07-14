@@ -219,12 +219,12 @@ public class HibernateSessionFactory {
      * @return a Map of XML mappings per datasource key.
      */
     public static Map<Key, String> assembleMappingsByDatasource(SessionFactoryData data) {
-        Map<Key, String> mappings = new HashMap<Key, String>();
+        Map<Key, String> mappings = new HashMap<>();
         Iterator<Entry<Key, Map<String, CFCInfo>>> dsnGroup = data.getCFCs().entrySet().iterator();
         while (dsnGroup.hasNext()) {
             Entry<Key, Map<String, CFCInfo>> e = dsnGroup.next();
 
-            Set<String> done = new HashSet<String>();
+            Set<String> done = new HashSet<>();
             StringBuilder mapping = new StringBuilder();
             mapping.append(HBMCreator.getXMLOpen());
             mapping.append("<hibernate-mapping>");
@@ -266,7 +266,7 @@ public class HibernateSessionFactory {
                 Component parent = data.getEntityByCFCName(ext, false);
                 ext = HibernateCaster.getEntityName(parent);
             } catch (Exception t) {
-                // TODO: Throw 'entity name not found' exception!
+                // TODO: for 7.0, Throw 'entity name not found' exception!
             }
 
             ext = HibernateUtil.sanitizeEntityName(CommonUtil.last(ext, ".").trim());

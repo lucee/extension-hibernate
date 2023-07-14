@@ -31,7 +31,7 @@ import lucee.runtime.type.Collection.Key;
 import ch.qos.logback.classic.Level;
 public class HibernateORMEngine implements ORMEngine {
 
-    private Map<String, SessionFactoryData> factories = new ConcurrentHashMap<String, SessionFactoryData>();
+    private Map<String, SessionFactoryData> factories = new ConcurrentHashMap<>();
 
     static {
         /**
@@ -197,7 +197,7 @@ public class HibernateORMEngine implements ORMEngine {
                      * loop?
                      */
                     if (data.tmpList.size() != data.sizeCFCs()) {
-                        Map<String, String> names = new HashMap<String, String>();
+                        Map<String, String> names = new HashMap<>();
                         for (Component cfc : data.tmpList) {
                             String name = HibernateCaster.getEntityName(cfc);
                             if (names.containsKey(name.toLowerCase()))
@@ -371,7 +371,7 @@ public class HibernateORMEngine implements ORMEngine {
             throws PageException {
         SessionFactoryData data = session.getSessionFactoryData();
         // get existing entity
-        Component cfc = _create(pc, entityName, unique, data);
+        Component cfc = createComponentFromDataMap(pc, entityName, unique, data);
         if (cfc != null)
             return cfc;
 
@@ -397,7 +397,7 @@ public class HibernateORMEngine implements ORMEngine {
         return sb.toString();
     }
 
-    private static Component _create(PageContext pc, String entityName, boolean unique, SessionFactoryData data)
+    private static Component createComponentFromDataMap(PageContext pc, String entityName, boolean unique, SessionFactoryData data)
             throws PageException {
         CFCInfo info = data.getCFC(entityName, null);
         if (info != null) {

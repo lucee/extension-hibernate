@@ -92,7 +92,7 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
                     value = HibernateCaster.toHibernateValue(CFMLEngineFactory.getInstance().getThreadPageContext(),
                             value, type);
                 } catch (PageException pe) {
-                    // TODO: log this!
+                    // TODO: for 7.0, log this!
                 }
 
                 map.put(name, value);
@@ -110,7 +110,6 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
     @Override
     protected Getter buildPropertyGetter(Property mappedProperty, PersistentClass mappedEntity) {
         Type type = null;
-        // Type type = null;
         if (mappedProperty.getValue() != null)
             type = mappedProperty.getType();
         return new CFCGetter(mappedProperty.getName(), type, mappedEntity.getEntityName());
@@ -119,7 +118,6 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
     @Override
     protected Setter buildPropertySetter(Property mappedProperty, PersistentClass mappedEntity) {
         Type type = null;
-        // Type type = null;
         if (mappedProperty.getValue() != null)
             type = mappedProperty.getType();
         return new CFCSetter(mappedProperty.getName(), type, mappedEntity.getEntityName());

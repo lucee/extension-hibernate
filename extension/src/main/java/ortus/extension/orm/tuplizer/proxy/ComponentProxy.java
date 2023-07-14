@@ -559,8 +559,8 @@ public abstract class ComponentProxy implements Component {
     }
 
     @Override
-    public void afterStaticConstructor(PageContext pc, Variables var) {
-        getComponent().afterStaticConstructor(pc, var);
+    public void afterStaticConstructor(PageContext pc, Variables variableScope) {
+        getComponent().afterStaticConstructor(pc, variableScope);
     }
 
     @Override

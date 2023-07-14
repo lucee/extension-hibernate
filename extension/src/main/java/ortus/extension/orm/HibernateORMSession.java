@@ -59,7 +59,7 @@ public class HibernateORMSession implements ORMSession {
         private final DataSource d;
         private SessionFactory factory;
 
-        public SessionAndConn(PageContext pc, SessionFactory factory, DataSource ds) throws PageException {
+        public SessionAndConn(PageContext pc, SessionFactory factory, DataSource ds) {
             this.d = ds;
             this.factory = factory;
             getSession(pc);
@@ -75,7 +75,7 @@ public class HibernateORMSession implements ORMSession {
          *
          * @throws PageException
          */
-        public Session getSession(PageContext pc) throws PageException {
+        public Session getSession(PageContext pc) {
             if (s == null || !s.isOpen())
                 s = factory.openSession();
             return s;
@@ -120,7 +120,7 @@ public class HibernateORMSession implements ORMSession {
     }
 
     private SessionFactoryData data;
-    private Map<Key, SessionAndConn> sessions = new HashMap<Key, SessionAndConn>();
+    private Map<Key, SessionAndConn> sessions = new HashMap<>();
 
     /**
      * Lucee Cast instance for assistance with casting values between types.
@@ -173,7 +173,7 @@ public class HibernateORMSession implements ORMSession {
         return sac;
     }
 
-    private boolean isClosed(Session s) throws PageException {
+    private boolean isClosed(Session s) {
         return !s.isConnected();
     }
 
@@ -240,7 +240,7 @@ public class HibernateORMSession implements ORMSession {
                 try {
                     sessionConn.getSession(pc).flush();
                 } catch (Exception e) {
-                    // TODO: Add logging
+                    // TODO: for 7.0, Add logging
                 } // we do this because of a Bug in Lucee that keeps session object in case of an exception for future
                   // request, this session then fail to flush, because the underlaying datasource is not defined in
                   // the current application.cfc.
@@ -292,7 +292,7 @@ public class HibernateORMSession implements ORMSession {
         if (CommonUtil.isArray(obj)) {
 
             // convert to a usable structure
-            Map<Key, List<Component>> cfcs = new HashMap<Key, List<Component>>();
+            Map<Key, List<Component>> cfcs = new HashMap<>();
             {
                 Array arr = CommonUtil.toArray(obj);
                 Iterator<?> it = arr.valueIterator();
@@ -304,8 +304,10 @@ public class HibernateORMSession implements ORMSession {
                     cfc = HibernateCaster.toComponent(it.next());
                     dsn = CommonUtil.toKey(CommonUtil.getDataSourceName(pc, cfc));
                     list = cfcs.get(dsn);
-                    if (list == null)
-                        cfcs.put(dsn, list = new ArrayList<Component>());
+                    if (list == null){
+                        list = new ArrayList<>();
+                        cfcs.put(dsn, list);
+                    }
                     list.add(cfc);
                 }
             }
@@ -531,7 +533,6 @@ public class HibernateORMSession implements ORMSession {
 
     private Object __executeQuery(PageContext pc, Session session, Key dsn, String hql, Object params, boolean unique,
             Struct options) throws PageException {
-        // Session session = getSession(pc,null);
         hql = hql.trim();
         boolean isParamArray = params != null && CommonUtil.isArray(params);
         if (isParamArray)
@@ -782,7 +783,6 @@ public class HibernateORMSession implements ORMSession {
     }
 
     public Component load(PageContext pc, String cfcName, Object id) throws PageException {
-        // Component cfc = create(pc,cfcName);
         Component cfc = data.getEngine().create(pc, this, cfcName, false);
         Key dsn = CommonUtil.toKey(CommonUtil.getDataSourceName(pc, cfc));
         Session sess = getSession(pc, dsn);
@@ -825,7 +825,6 @@ public class HibernateORMSession implements ORMSession {
         Object rtn = null;
 
         try {
-            // trans.begin();
 
             ClassMetadata metaData = sess.getSessionFactory().getClassMetadata(name);
             String idName = metaData.getIdentifierPropertyName();
@@ -845,14 +844,11 @@ public class HibernateORMSession implements ORMSession {
             if (!unique) {
                 rtn = criteria.list();
             } else {
-                // Map map=(Map) criteria.uniqueResult();
                 rtn = criteria.uniqueResult();
             }
         } catch (Throwable t) {
-            // trans.rollback();
             throw CommonUtil.toPageException(t);
         }
-        // trans.commit();
 
         return rtn;
     }
@@ -934,7 +930,6 @@ public class HibernateORMSession implements ORMSession {
                 String col;
                 boolean isDesc;
                 Order _order;
-                // ColumnInfo ci;
                 for (int i = 0; i < arr.length; i++) {
                     parts = CommonUtil.toStringArray(arr[i], " \t\n\b\r");
                     CommonUtil.trimItems(parts);
@@ -1012,7 +1007,6 @@ public class HibernateORMSession implements ORMSession {
     }
 
     private String addIndexIfNecessary(String sql) {
-        // if(namedParams.size()==0) return new Pair<String, List<Param>>(sql,params);
         StringBuilder sb = new StringBuilder();
         int sqlLen = sql.length();
         char c, quoteType = 0;

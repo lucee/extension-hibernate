@@ -22,7 +22,7 @@ import lucee.runtime.exp.PageException;
 public class CFCInstantiator implements Instantiator {
 
     private String entityName;
-    private Set<String> isInstanceEntityNames = new HashSet<String>();
+    private Set<String> isInstanceEntityNames = new HashSet<>();
     private EntityMetamodel entityMetamodel;
 
     public CFCInstantiator() {

@@ -18,12 +18,22 @@ import lucee.commons.io.res.Resource;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.runtime.exp.PageException;
 
+/**
+ * Utility class for reading (parsing) and writing XML documents.
+ * 
+ * Most of the hard work is phoned out (reflected) to Lucee's own XMLUtil, `lucee.runtime.text.xml.XMLUtil`.
+ */
 public class XMLUtil {
+
+    /**
+     * Hardcoded path to Lucee's XML util which we use via reflection.
+     */
+    public static final String LUCEE_XML_UTIL_PATH = "lucee.runtime.text.xml.XMLUtil";
 
     public static InputSource toInputSource(Object obj) throws PageException {
         // FUTURE use interface from loader
         try {
-            Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass("lucee.runtime.text.xml.XMLUtil");
+            Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass(XMLUtil.LUCEE_XML_UTIL_PATH);
             Method method = clazz.getMethod("toInputSource", new Class[] { Object.class });
             return (InputSource) method.invoke(null, new Object[] { obj });
         } catch (Exception e) {
@@ -34,7 +44,7 @@ public class XMLUtil {
     public static InputSource toInputSource(Resource res, Charset cs) throws PageException {
         // FUTURE use interface from loader
         try {
-            Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass("lucee.runtime.text.xml.XMLUtil");
+            Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass(XMLUtil.LUCEE_XML_UTIL_PATH);
             Method method = clazz.getMethod("toInputSource", new Class[] { Resource.class, Charset.class });
             return (InputSource) method.invoke(null, new Object[] { res, cs });
         } catch (Exception e) {
@@ -45,7 +55,7 @@ public class XMLUtil {
     public static final Document parse(InputSource xml, InputSource validator, boolean isHtml) throws PageException {
         // FUTURE use interface from loader
         try {
-            Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass("lucee.runtime.text.xml.XMLUtil");
+            Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass(XMLUtil.LUCEE_XML_UTIL_PATH);
             Method method = clazz.getMethod("parse",
                     new Class[] { InputSource.class, InputSource.class, boolean.class });
             return (Document) method.invoke(null, new Object[] { xml, validator, isHtml });
@@ -57,7 +67,7 @@ public class XMLUtil {
     public static Document newDocument() throws PageException {
         // FUTURE use interface from loader
         try {
-            Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass("lucee.runtime.text.xml.XMLUtil");
+            Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass(XMLUtil.LUCEE_XML_UTIL_PATH);
             Method method = clazz.getMethod("newDocument", new Class[] {});
             return (Document) method.invoke(null, new Object[] {});
         } catch (Exception e) {
