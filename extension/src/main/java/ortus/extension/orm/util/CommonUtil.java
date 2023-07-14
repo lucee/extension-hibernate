@@ -67,51 +67,11 @@ public class CommonUtil {
     public static final Key FIELDTYPE = CommonUtil.createKey("fieldtype");
     public static final Key INIT = CommonUtil.createKey("init");
     private static final short INSPECT_UNDEFINED = (short) 4; /* ConfigImpl.INSPECT_UNDEFINED */
-    private static Charset _charset;
+    private static Charset charset;
 
-    public static Charset _UTF8;
-    public static Charset _UTF16BE;
-    public static Charset _UTF16LE;
-
-    public static Charset getCharset() {
-        if (_charset == null) {
-            String strCharset = System.getProperty("file.encoding");
-            if (strCharset == null || strCharset.equalsIgnoreCase("MacRoman"))
-                strCharset = "cp1252";
-
-            if (strCharset.equalsIgnoreCase("utf-8"))
-                _charset = UTF8();
-            else
-                _charset = toCharset(strCharset);
-        }
-        return _charset;
-    }
-
-    public static Charset UTF8() {
-        if (_UTF8 == null)
-            _UTF8 = toCharset("UTF-8");
-        return _UTF8;
-    }
-
-    private static Charset UTF16LE() {
-        if (_UTF16LE == null)
-            _UTF16LE = toCharset("UTF-16LE");
-        return _UTF16LE;
-    }
-
-    private static Charset UTF16BE() {
-        if (_UTF16BE == null)
-            _UTF16BE = toCharset("UTF-16BE");
-        return _UTF16BE;
-    }
-
-    private static Charset toCharset(String charset) {
-        try {
-            return CFMLEngineFactory.getInstance().getCastUtil().toCharset(charset);
-        } catch (PageException pe) {
-            throw CFMLEngineFactory.getInstance().getExceptionUtil().createPageRuntimeException(pe);
-        }
-    }
+    private static Charset utf8Charset;
+    private static Charset utf16beCharset;
+    private static Charset uitf16leCharset;
 
     private static Cast caster;
     private static Decision decision;
@@ -123,6 +83,46 @@ public class CommonUtil {
 
     private static Method mGetDatasourceConnection;
     private static Method mReleaseDatasourceConnection;
+
+    public static Charset getCharset() {
+        if (charset == null) {
+            String strCharset = System.getProperty("file.encoding");
+            if (strCharset == null || strCharset.equalsIgnoreCase("MacRoman"))
+                strCharset = "cp1252";
+
+            if (strCharset.equalsIgnoreCase("utf-8"))
+                charset = getUTF8Charset();
+            else
+                charset = toCharset(strCharset);
+        }
+        return charset;
+    }
+
+    public static Charset getUTF8Charset() {
+        if (utf8Charset == null)
+            utf8Charset = toCharset("UTF-8");
+        return utf8Charset;
+    }
+
+    private static Charset getUTF16LECharset() {
+        if (uitf16leCharset == null)
+            uitf16leCharset = toCharset("UTF-16LE");
+        return uitf16leCharset;
+    }
+
+    private static Charset getUTF16BECharset() {
+        if (utf16beCharset == null)
+            utf16beCharset = toCharset("UTF-16BE");
+        return utf16beCharset;
+    }
+
+    private static Charset toCharset(String charset) {
+        try {
+            return CFMLEngineFactory.getInstance().getCastUtil().toCharset(charset);
+        } catch (PageException pe) {
+            throw CFMLEngineFactory.getInstance().getExceptionUtil().createPageRuntimeException(pe);
+        }
+    }
 
     public static Object castTo(PageContext pc, Class trgClass, Object obj) throws PageException {
         return caster().castTo(pc, trgClass, obj);
@@ -258,22 +258,22 @@ public class CommonUtil {
             int second = is.read();
             // FE FF UTF-16, big-endian
             if (first == 0xFE && second == 0xFF) {
-                return _getReader(is, UTF16BE());
+                return getReaderForInputStream(is, getUTF16BECharset());
             }
             // FF FE UTF-16, little-endian
             if (first == 0xFF && second == 0xFE) {
-                return _getReader(is, UTF16LE());
+                return getReaderForInputStream(is, getUTF16LECharset());
             }
 
             int third = is.read();
             // EF BB BF UTF-8
             if (first == 0xEF && second == 0xBB && third == 0xBF) {
-                return _getReader(is, UTF8());
+                return getReaderForInputStream(is, getUTF8Charset());
             }
 
             if (markSupported) {
                 is.reset();
-                return _getReader(is, charset);
+                return getReaderForInputStream(is, charset);
             }
         } catch (IOException ioe) {
             closeEL(is);
@@ -289,17 +289,19 @@ public class CommonUtil {
             closeEL(is);
             throw ioe;
         }
-        return _getReader(is, charset);
+        return getReaderForInputStream(is, charset);
     }
 
-    private static Reader _getReader(InputStream is, Charset cs) {
-        if (cs == null)
+    private static Reader getReaderForInputStream(InputStream is, Charset cs) {
+        // TODO: This is a very bad pattern - setting and using class state on a util class from a static method.
+        if (cs == null){
             cs = getCharset();
+        }
         return new BufferedReader(new InputStreamReader(is, cs));
     }
 
     public static String[] toStringArray(String list, String delimiter) {
-        return list().toStringArray(list().toArray(list, delimiter), ""); // TODO better
+        return list().toStringArray(list().toArray(list, delimiter), "");
     }
 
     public static Float toFloat(Object obj) throws PageException {
@@ -812,8 +814,10 @@ public class CommonUtil {
     }
 
     public static Writer getWriter(OutputStream os, Charset cs) {
-        if (cs == null)
+        // TODO: This is a very bad pattern - setting and using class state on a util class from a static method.
+        if (cs == null){
             cs = getCharset();
+        }
         return new BufferedWriter(new OutputStreamWriter(os, getCharset()));
     }
 

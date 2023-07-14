@@ -2106,8 +2106,9 @@ public class HBMCreator {
         Resource res = getMappingResource(cfc);
         if (res != null) {
             try {
-                CommonUtil.write(res, xml, CommonUtil.UTF8(), false);
+                CommonUtil.write(res, xml, CommonUtil.getUTF8Charset(), false);
             } catch (Exception e) {
+                // TODO: For 7.0, throw "Unable to save XML mapping to disk"
             }
         }
     }
@@ -2126,8 +2127,7 @@ public class HBMCreator {
         if (resource == null)
             throw ExceptionUtil.createException("Hibernate mapping not found for entity: " + cfc.getName());
 
-        String xml = CommonUtil.toString(resource, CommonUtil.UTF8());
-        // return CommonUtil.toXML(xml).getOwnerDocument().getDocumentElement();
+        String xml = CommonUtil.toString(resource, CommonUtil.getUTF8Charset());
         return xml;
     }
 
@@ -2172,7 +2172,6 @@ public class HBMCreator {
         StringBuilder xml = new StringBuilder();
         xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
         xml.append(HIBERNATE_3_DOCTYPE_DEFINITION + "\n");
-        // xml.append("<hibernate-mapping>\n");
         return xml.toString();
     }
 
