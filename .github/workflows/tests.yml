@@ -77,4 +77,4 @@ jobs:
       if: always()
       with:
         files: tests/results/**/*.xml
-        check_name: "${{ env.BRANCH }} Test Results - ${{matrix.lucee_version}} on JRE ${{matrix.java_version}}"
+        check_name: "Test Results - Lucee ${{matrix.lucee_version}} on JRE ${{matrix.java_version}}"
