@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [6.1.0] - 2023-07-14
-
 ### ♻️ Changed
 
 -   Lots of java source code cleanup that won't affect the CFML experience, but will aid in faster development and fewer bugs. 
@@ -145,7 +143,3 @@ See [OOE-3](https://ortussolutions.atlassian.net/browse/OOE-3).
 -   Improved maintenance and build docs
 
 [6.0.0]: https://github.com/Ortus-Solutions/extension-hibernate/compare/b86f26e383ead941d18791e2e008cb62b2598cdc...6.0.0
-
-[Unreleased]: https://github.com/Ortus-Solutions/extension-hibernate/compare/6.1.0...HEAD
-
-[6.1.0]: https://github.com/Ortus-Solutions/extension-hibernate/compare/292742aacb108ceb8316172a9cc56aedccfd394d...6.1.0

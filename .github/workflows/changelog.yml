@@ -6,7 +6,7 @@ on: workflow_call
 
 jobs:
   changelog:
-    if: "!contains(github.event.head_commit.message, '__CI__') && ${{ github.ref != 'refs/heads/development' }}"
+    if: "!contains(github.event.head_commit.message, '__CI__') && github.ref_name != 'development'"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
