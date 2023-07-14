@@ -658,62 +658,6 @@ public class CommonUtil {
     }
 
     /**
-     * represents a SQL Statement with his defined arguments for a prepared statement
-     */
-    static class SQLImpl implements SQL {
-
-        private String strSQL;
-
-        /**
-         * Constructor only with SQL String
-         *
-         * @param strSQL
-         *            SQL String
-         */
-        public SQLImpl(String strSQL) {
-            this.strSQL = strSQL;
-        }
-
-        public void addItems(SQLItem item) {
-
-        }
-
-        @Override
-        public SQLItem[] getItems() {
-            return new SQLItem[0];
-        }
-
-        @Override
-        public int getPosition() {
-            return 0;
-        }
-
-        @Override
-        public void setPosition(int position) {
-        }
-
-        @Override
-        public String getSQLString() {
-            return strSQL;
-        }
-
-        @Override
-        public void setSQLString(String strSQL) {
-            this.strSQL = strSQL;
-        }
-
-        @Override
-        public String toString() {
-            return strSQL;
-        }
-
-        @Override
-        public String toHashString() {
-            return strSQL;
-        }
-    }
-
-    /**
      * Integer Type that can be modified
      */
     public static final class RefBooleanImpl implements RefBoolean {// MUST add interface Castable
