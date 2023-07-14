@@ -1,6 +1,6 @@
 
 # Rename [Unreleased] section in Changelog based on the current version in box.json
-name: Bump 'Unreleased' Changelog section
+name: Changelog "Unreleased" Bumper
 
 on:
   workflow_call:

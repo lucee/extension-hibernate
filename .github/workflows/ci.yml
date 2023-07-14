@@ -1,5 +1,5 @@
 
-name: Publish a Release
+name: Main Build
 
 on:
   # If you push to master|main this will trigger a stable release. Else, a snapshot.
@@ -20,6 +20,9 @@ env:
   ARTIFACTS_DIRECTORY: artifacts
 
 jobs:
+  security:
+    uses: ./.github/workflows/security.yml
+
   tests:
     uses: ./.github/workflows/tests.yml
 

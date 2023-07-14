@@ -1,6 +1,7 @@
-name: Security Scan
+name: Snyk Vulnerability Scan
 
-on: push
+on:
+  workflow_call:
 
 jobs:
   scan:
