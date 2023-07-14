@@ -11,15 +11,9 @@ on:
   workflow_dispatch:
   # Reusable workflow : Usually called by a `snapshot` workflow
   workflow_call:
-    inputs:
-      snapshot:
-          description: 'Is this a snapshot build?'
-          required: false
-          default: false
-          type: boolean
 
 env:
-  SNAPSHOT: ${{ inputs.snapshot || false }}
+  SNAPSHOT: ${{ github.ref_name == 'development' }}
   PROJECT_NAME: Ortus Lucee Extensions - ORM
   EXTENSION_SLUG: ortus-orm-extension
   AWS_BUCKETNAME: downloads.ortussolutions.com
@@ -55,10 +49,8 @@ jobs:
           echo "EXTENSION_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
           echo "BRANCH=master" >> $GITHUB_ENV
           echo "BUILD_VERSION=$PACKAGE_VERSION.${{ github.run_number}}" >> $GITHUB_ENV
-          if [ $GITHUB_REF == 'refs/heads/development' ]
+          if [ $GITHUB_REF_NAME == 'development' ]
           then
-            echo "SNAPSHOT=true" >> $GITHUB_ENV
-            echo "BRANCH=development" >> $GITHUB_ENV
             echo "BUILD_VERSION=$PACKAGE_VERSION.${{ github.run_number}}-snapshot" >> $GITHUB_ENV
           fi
 
@@ -139,7 +131,7 @@ jobs:
           SLACK_CHANNEL: ortus-hibernate-extension
           SLACK_COLOR: ${{ job.status }} # or a specific color like 'green' or '#ff00ff'
           SLACK_ICON_EMOJI: ":bell:"
-          SLACK_MESSAGE: '${{ env.EXTENSION_SLUG }} v${{ env.BUILD_VERSION }} ( ${{ env.BRANCH }} ) failed :cry:'
+          SLACK_MESSAGE: '${{ env.EXTENSION_SLUG }} v${{ env.BUILD_VERSION }} ( ${{ github.ref_name }} ) failed :cry:'
           SLACK_TITLE: "${{ env.PACKAGE_NAME }} Build"
           SLACK_USERNAME: CI
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
