@@ -53,7 +53,7 @@ jobs:
           export PACKAGE_VERSION=$( cat box.json | jq '.version' -r )
           echo "EXTENSION_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
           echo "BRANCH=master" >> $GITHUB_ENV
-          echo "BUILD_VERSION=$PACKAGE_VERSION.${{ github.run_number}}" >> $GITHUB_ENV
+          echo "BUILD_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
           if [ $GITHUB_REF_NAME == 'development' ]
           then
             echo "BUILD_VERSION=$PACKAGE_VERSION.${{ github.run_number}}-snapshot" >> $GITHUB_ENV
