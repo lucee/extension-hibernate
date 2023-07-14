@@ -18,6 +18,10 @@ public class ORMConfigurationUtil {
     private static Method getSqlScript;
     private static Method getDialect;
 
+    private ORMConfigurationUtil() {
+        throw new IllegalStateException("Utility class; please don't instantiate!");
+    }
+
     public static int getDbCreate(ORMConfiguration conf, String datasourceName) throws PageException {
         if (!Util.isEmpty(datasourceName)
                 && !(datasourceName = datasourceName.trim().toLowerCase()).equals("__default__")) {

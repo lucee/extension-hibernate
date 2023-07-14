@@ -415,7 +415,7 @@ public abstract class ComponentProxy implements Component {
     }
 
     @Override
-    public java.util.Iterator<String> getIterator() {
+    public Iterator<String> getIterator() {
         return keysAsStringIterator();
     }
 

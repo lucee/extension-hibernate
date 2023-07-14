@@ -54,7 +54,7 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 
     private Serializable toIdentifier(Serializable id) {
         if (id instanceof Component) {
-            HashMap<String, Object> map = new HashMap<String, Object>();
+            HashMap<String, Object> map = new HashMap<>();
             Component cfc = (Component) id;
             ComponentScope scope = cfc.getComponentScope();
             lucee.runtime.component.Property[] props = HibernateUtil.getIDProperties(cfc, true, true);

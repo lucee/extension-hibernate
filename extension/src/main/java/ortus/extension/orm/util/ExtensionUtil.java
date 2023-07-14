@@ -5,6 +5,10 @@ package ortus.extension.orm.util;
  */
 public class ExtensionUtil {
 
+    private ExtensionUtil() {
+        throw new IllegalStateException("Utility class; please don't instantiate!");
+    }
+
     /**
      * Get the extension version as compiled into the Manifest.MF's `Specification-Version` entry.
      *

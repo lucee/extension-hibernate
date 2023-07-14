@@ -77,7 +77,7 @@ public class EntityFinder {
      */
     public List<Component> loadComponents(PageContext pc) throws PageException {
 
-        List<Component> components = new ArrayList<Component>();
+        List<Component> components = new ArrayList<>();
         loadComponents(pc, components);
         return components;
     }

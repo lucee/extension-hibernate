@@ -549,7 +549,7 @@ public class HibernateCaster {
             isArray.setValue(true);
         Array src = CommonUtil.toArray(value);
         Iterator<Object> it = src.valueIterator();
-        ArrayList<Object> trg = new ArrayList<Object>();
+        ArrayList<Object> trg = new ArrayList<>();
         Object v;
         while (it.hasNext()) {
             v = it.next();

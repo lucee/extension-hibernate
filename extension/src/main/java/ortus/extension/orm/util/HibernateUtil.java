@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.hibernate.metadata.ClassMetadata;
@@ -109,11 +110,15 @@ public class HibernateUtil {
             "values", "varbinary", "varchar", "varchar2", "varcharacter", "variable", "variant", "varying", "vcat",
             "view", "volumes", "waitfor", "when", "whenever", "where", "while", "window", "with", "within", "without",
             "wlm", "work", "write", "writetext", "xor", "year", "year_month", "zerofill", "zone" };
-    private static final Set<String> keywords = new HashSet<String>();
+    private static final Set<String> keywords = new HashSet<>();
     static {
         for (int i = 0; i < KEYWORDS.length; i++) {
             keywords.add(KEYWORDS[i]);
         }
+    }
+
+    private HibernateUtil() {
+        throw new IllegalStateException("Utility class; please don't instantiate!");
     }
 
     public static boolean isKeyword(String word) {
@@ -239,7 +244,7 @@ public class HibernateUtil {
 
     public static Property[] getProperties(Component component, int fieldType, Property[] defaultValue) {
         Property[] props = component.getProperties(true, false, false, false);
-        java.util.List<Property> rtn = new ArrayList<Property>();
+        List<Property> rtn = new ArrayList<>();
 
         if (props != null) {
             for (int i = 0; i < props.length; i++) {
@@ -400,7 +405,7 @@ public class HibernateUtil {
 
     public static Property[] getIDProperties(Component c, boolean onlyPeristent, boolean includeBaseProperties) {
         Property[] props = CommonUtil.getProperties(c, onlyPeristent, includeBaseProperties, false, false);
-        java.util.List<Property> tmp = new ArrayList<Property>();
+        List<Property> tmp = new ArrayList<>();
         for (int i = 0; i < props.length; i++) {
             if ("id".equalsIgnoreCase(
                     CommonUtil.toString(props[i].getDynamicAttributes().get(CommonUtil.FIELDTYPE, null), "")))

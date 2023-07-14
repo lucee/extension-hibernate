@@ -25,6 +25,10 @@ import lucee.runtime.exp.PageException;
  */
 public class XMLUtil {
 
+    private XMLUtil() {
+        throw new IllegalStateException("Utility class; please don't instantiate!");
+    }
+
     /**
      * Hardcoded path to Lucee's XML util which we use via reflection.
      */

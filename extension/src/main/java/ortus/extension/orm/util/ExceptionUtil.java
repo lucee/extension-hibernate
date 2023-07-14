@@ -22,17 +22,21 @@ public class ExceptionUtil {
 
     private static Method setAdditional;
 
+    private ExceptionUtil() {
+        throw new IllegalStateException("Utility class; please don't instantiate!");
+    }
+
     /**
      * creates a message for key not found with soundex check for similar key
      *
-     * @param _keys
+     * @param keys
      * @param keyLabel
      *
      * @return
      */
-    public static String similarKeyMessage(Collection.Key[] _keys, String keySearched, String keyLabel,
+    public static String similarKeyMessage(Collection.Key[] keys, String keySearched, String keyLabel,
             String keyLabels, String in, boolean listAll) {
-        return CFMLEngineFactory.getInstance().getExceptionUtil().similarKeyMessage(_keys, keySearched, keyLabel,
+        return CFMLEngineFactory.getInstance().getExceptionUtil().similarKeyMessage(keys, keySearched, keyLabel,
                 keyLabels, in, listAll);
     }
 

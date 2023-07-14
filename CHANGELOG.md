@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### ♻️ Changed
+
+* Lots of java source code cleanup that won't affect the CFML experience, but will aid in faster development and fewer bugs. 
+
 ### 🐛Fixed
 
 * Any hibernate exceptions returned during schema generation are once again logged to the Lucee ORM log file.

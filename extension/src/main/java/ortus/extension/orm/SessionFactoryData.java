@@ -171,7 +171,7 @@ public class SessionFactoryData {
             cfcName = null;
 
         Component cfc;
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
 
         if (hasTempCFCs()) {
             for (Component entity : tmpList) {

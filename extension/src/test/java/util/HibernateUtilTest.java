@@ -15,19 +15,13 @@ import ortus.extension.orm.util.HibernateUtil;
 public class HibernateUtilTest {
 
     @Test
-    public void canInitialize() {
-        HibernateUtil util = new HibernateUtil();
-    }
-
-    @Test
     public void canIdentifyReservedKeywords() {
-        HibernateUtil util = new HibernateUtil();
 
-        assertEquals(true, util.isKeyword("year"));
-        assertEquals(true, util.isKeyword("and"));
-        assertEquals(true, util.isKeyword("select"));
-        assertEquals(false, util.isKeyword("name"));
-        assertEquals(false, util.isKeyword("age"));
-        assertEquals(false, util.isKeyword("description"));
+        assertEquals(true, HibernateUtil.isKeyword("year"));
+        assertEquals(true, HibernateUtil.isKeyword("and"));
+        assertEquals(true, HibernateUtil.isKeyword("select"));
+        assertEquals(false, HibernateUtil.isKeyword("name"));
+        assertEquals(false, HibernateUtil.isKeyword("age"));
+        assertEquals(false, HibernateUtil.isKeyword("description"));
     }
 }

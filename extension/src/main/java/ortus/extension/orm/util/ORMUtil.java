@@ -38,6 +38,10 @@ public class ORMUtil {
 
     public static final String DELIMITER = new String(".");
 
+    private ORMUtil() {
+        throw new IllegalStateException("Utility class; please don't instantiate!");
+    }
+
     public static ORMSession getSession(PageContext pc) throws PageException {
         return getSession(pc, true);
     }
@@ -66,7 +70,7 @@ public class ORMUtil {
     }
 
     public static Property[] getIds(Property[] props) {
-        ArrayList<Property> ids = new ArrayList<Property>();
+        ArrayList<Property> ids = new ArrayList<>();
         for (int y = 0; y < props.length; y++) {
             String fieldType = CommonUtil.toString(props[y].getDynamicAttributes().get(PROPS_FIELDTYPE, null), null);
             Character delimiterChar = Character.valueOf(DELIMITER.charAt(0));

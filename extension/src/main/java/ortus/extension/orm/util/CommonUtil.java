@@ -84,6 +84,10 @@ public class CommonUtil {
     private static Method mGetDatasourceConnection;
     private static Method mReleaseDatasourceConnection;
 
+    private CommonUtil() {
+        throw new IllegalStateException("Utility class; please don't instantiate!");
+    }
+
     public static Charset getCharset() {
         if (charset == null) {
             String strCharset = System.getProperty("file.encoding");

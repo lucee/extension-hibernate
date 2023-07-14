@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.List;
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -111,7 +112,7 @@ public class HBMCreator {
 
         Property[] _props = getProperties(pc, cfc, dc, meta, isClass, true, data);
 
-        Map<String, PropertyCollection> joins = new HashMap<String, PropertyCollection>();
+        Map<String, PropertyCollection> joins = new HashMap<>();
         PropertyCollection propColl = splitJoins(cfc, joins, _props, data);
 
         StringBuilder comment = new StringBuilder();
@@ -268,8 +269,8 @@ public class HBMCreator {
     private static PropertyCollection splitJoins(Component cfc, Map<String, PropertyCollection> joins, Property[] props,
             SessionFactoryData data) {
         Struct sct = CommonUtil.createStruct();
-        ArrayList<Property> others = new ArrayList<Property>();
-        java.util.List<Property> list;
+        ArrayList<Property> others = new ArrayList<>();
+        List<Property> list;
         String table;
         Property prop;
         String fieldType;
@@ -310,9 +311,9 @@ public class HBMCreator {
 
                 if (isJoin) {
                     table = table.trim();
-                    list = (java.util.List<Property>) sct.get(table, null);
+                    list = (List<Property>) sct.get(table, null);
                     if (list == null) {
-                        list = new ArrayList<Property>();
+                        list = new ArrayList<>();
                         sct.setEL(CommonUtil.createKey(table), list);
                     }
                     list.add(prop);
@@ -327,7 +328,7 @@ public class HBMCreator {
         Entry<Key, Object> e;
         while (it.hasNext()) {
             e = it.next();
-            list = (java.util.List<Property>) e.getValue();
+            list = (List<Property>) e.getValue();
             joins.put(e.getKey().getString(), new PropertyCollection(e.getKey().getString(), list));
         }
 
@@ -340,7 +341,7 @@ public class HBMCreator {
 
     private static Property[] getIds(Component cfc, Property[] props, String tableName, boolean ignoreTableName,
             SessionFactoryData data) {
-        ArrayList<Property> ids = new ArrayList<Property>();
+        ArrayList<Property> ids = new ArrayList<>();
         for (int y = 0; y < props.length; y++) {
             if (!ignoreTableName && !hasTable(cfc, props[y], tableName, data))
                 continue;
@@ -1356,7 +1357,7 @@ public class HBMCreator {
                 boolean isClass = Util.isEmpty(other.getExtends());
                 // MZ: Recursive search for persistent mappedSuperclass properties
                 Property[] _props = getProperties(pc, other, dc, meta, isClass, true, data);
-                PropertyCollection _propColl = splitJoins(cfc, new HashMap<String, PropertyCollection>(), _props, data);
+                PropertyCollection _propColl = splitJoins(cfc, new HashMap<>(), _props, data);
                 _props = _propColl.getProperties();
 
                 Struct m;
@@ -2200,7 +2201,7 @@ class PropertyCollection {
         this.properties = properties;
     }
 
-    public PropertyCollection(String tableName, java.util.List<Property> properties) {
+    public PropertyCollection(String tableName, List<Property> properties) {
         this.tableName = tableName;
         this.properties = properties.toArray(new Property[properties.size()]);
     }
