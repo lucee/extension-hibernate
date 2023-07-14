@@ -30,7 +30,7 @@ jobs:
     uses: ./.github/workflows/tests.yml
 
   changelog:
-    if: "!contains(github.event.head_commit.message, '__CI__') && $GITHUB_REF != 'refs/heads/development'"
+    if: "!contains(github.event.head_commit.message, '__CI__') && ${{ github.ref != 'refs/heads/development' }}"
     uses: ./.github/workflows/changelog.yml
 
   release:
