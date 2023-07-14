@@ -35,7 +35,7 @@ public class XMLUtil {
         try {
             Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass(XMLUtil.LUCEE_XML_UTIL_PATH);
             Method method = clazz.getMethod("toInputSource", new Class[] { Object.class });
-            return (InputSource) method.invoke(null, new Object[] { obj });
+            return (InputSource) method.invoke(null, obj);
         } catch (Exception e) {
             throw CommonUtil.toPageException(e);
         }
@@ -46,7 +46,7 @@ public class XMLUtil {
         try {
             Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass(XMLUtil.LUCEE_XML_UTIL_PATH);
             Method method = clazz.getMethod("toInputSource", new Class[] { Resource.class, Charset.class });
-            return (InputSource) method.invoke(null, new Object[] { res, cs });
+            return (InputSource) method.invoke(null, res, cs);
         } catch (Exception e) {
             throw CommonUtil.toPageException(e);
         }
@@ -58,7 +58,7 @@ public class XMLUtil {
             Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass(XMLUtil.LUCEE_XML_UTIL_PATH);
             Method method = clazz.getMethod("parse",
                     new Class[] { InputSource.class, InputSource.class, boolean.class });
-            return (Document) method.invoke(null, new Object[] { xml, validator, isHtml });
+            return (Document) method.invoke(null, xml, validator, isHtml);
         } catch (Exception e) {
             throw CommonUtil.toPageException(e);
         }
@@ -68,8 +68,8 @@ public class XMLUtil {
         // FUTURE use interface from loader
         try {
             Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass(XMLUtil.LUCEE_XML_UTIL_PATH);
-            Method method = clazz.getMethod("newDocument", new Class[] {});
-            return (Document) method.invoke(null, new Object[] {});
+            Method method = clazz.getMethod("newDocument");
+            return (Document) method.invoke(null);
         } catch (Exception e) {
             throw CommonUtil.toPageException(e);
         }

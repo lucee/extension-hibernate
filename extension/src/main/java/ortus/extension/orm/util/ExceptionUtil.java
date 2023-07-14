@@ -108,9 +108,9 @@ public class ExceptionUtil {
     public static void setAdditional(PageException pe, Key name, Object value) {
         try {
             if (setAdditional == null || setAdditional.getDeclaringClass() != pe.getClass()) {
-                setAdditional = pe.getClass().getMethod("setAdditional", new Class[] { Key.class, Object.class });
+                setAdditional = pe.getClass().getMethod("setAdditional", Key.class, Object.class );
             }
-            setAdditional.invoke(pe, new Object[] { name, value });
+            setAdditional.invoke(pe, name, value);
         } catch (Throwable t) {
             if (t instanceof ThreadDeath)
                 throw (ThreadDeath) t;

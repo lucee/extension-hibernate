@@ -12,7 +12,6 @@ import lucee.runtime.orm.ORMConfiguration;
 // FUTURE update ORMConfiguration interface
 public class ORMConfigurationUtil {
 
-    private static final Class[] CLASS_STRING = new Class[] { String.class };
     private static Method getDbCreate;
     private static Method getCatalog;
     private static Method getSchema;
@@ -26,9 +25,9 @@ public class ORMConfigurationUtil {
             // Lucee >= 5.3.2.16
             try {
                 if (getDbCreate == null || getDbCreate.getDeclaringClass() != conf.getClass()) {
-                    getDbCreate = conf.getClass().getMethod("getDbCreate", CLASS_STRING);
+                    getDbCreate = conf.getClass().getMethod("getDbCreate", String.class);
                 }
-                return eng.getCastUtil().toIntValue(getDbCreate.invoke(conf, new Object[] { datasourceName }));
+                return eng.getCastUtil().toIntValue(getDbCreate.invoke(conf, datasourceName ));
             } catch (NoSuchMethodException e) {
                 // older Lucee version
             } catch (Exception e) {
@@ -45,9 +44,9 @@ public class ORMConfigurationUtil {
             // Lucee >= 5.3.2.16
             try {
                 if (getCatalog == null || getCatalog.getDeclaringClass() != conf.getClass()) {
-                    getCatalog = conf.getClass().getMethod("getCatalog", CLASS_STRING);
+                    getCatalog = conf.getClass().getMethod("getCatalog", String.class);
                 }
-                return eng.getCastUtil().toString(getCatalog.invoke(conf, new Object[] { datasourceName }));
+                return eng.getCastUtil().toString(getCatalog.invoke(conf, datasourceName));
             } catch (NoSuchMethodException e) {
                 // older Lucee version
             } catch (Exception e) {
@@ -64,9 +63,9 @@ public class ORMConfigurationUtil {
             // Lucee >= 5.3.2.16
             try {
                 if (getSchema == null || getSchema.getDeclaringClass() != conf.getClass()) {
-                    getSchema = conf.getClass().getMethod("getSchema", CLASS_STRING);
+                    getSchema = conf.getClass().getMethod("getSchema", String.class);
                 }
-                return eng.getCastUtil().toString(getSchema.invoke(conf, new Object[] { datasourceName }));
+                return eng.getCastUtil().toString(getSchema.invoke(conf, datasourceName));
             } catch (NoSuchMethodException e) {
                 // older Lucee version
             } catch (Exception e) {
@@ -83,9 +82,9 @@ public class ORMConfigurationUtil {
             // Lucee >= 5.3.2.16
             try {
                 if (getDialect == null || getDialect.getDeclaringClass() != conf.getClass()) {
-                    getDialect = conf.getClass().getMethod("getDialect", CLASS_STRING);
+                    getDialect = conf.getClass().getMethod("getDialect", String.class);
                 }
-                return eng.getCastUtil().toString(getDialect.invoke(conf, new Object[] { datasourceName }));
+                return eng.getCastUtil().toString(getDialect.invoke(conf, datasourceName));
             } catch (NoSuchMethodException e) {
                 // older Lucee version
             } catch (Exception e) {
@@ -102,9 +101,9 @@ public class ORMConfigurationUtil {
             // Lucee >= 5.3.2.16
             try {
                 if (getSqlScript == null || getSqlScript.getDeclaringClass() != conf.getClass()) {
-                    getSqlScript = conf.getClass().getMethod("getSqlScript", CLASS_STRING);
+                    getSqlScript = conf.getClass().getMethod("getSqlScript", String.class);
                 }
-                return (Resource) getSqlScript.invoke(conf, new Object[] { datasourceName });
+                return (Resource) getSqlScript.invoke(conf, datasourceName);
             } catch (NoSuchMethodException e) {
                 // older Lucee version
             } catch (Exception e) {

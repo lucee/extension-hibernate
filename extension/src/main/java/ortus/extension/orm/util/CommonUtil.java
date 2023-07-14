@@ -67,10 +67,6 @@ public class CommonUtil {
     public static final Key FIELDTYPE = CommonUtil.createKey("fieldtype");
     public static final Key INIT = CommonUtil.createKey("init");
     private static final short INSPECT_UNDEFINED = (short) 4; /* ConfigImpl.INSPECT_UNDEFINED */
-    private static final Class<?>[] GET_DSCONN = new Class[] { PageContext.class, DataSource.class, String.class,
-            String.class, boolean.class };
-    private static final Class<?>[] REL_DSCONN = new Class[] { PageContext.class, DatasourceConnection.class,
-            boolean.class };
     private static Charset _charset;
 
     public static Charset _UTF8;
@@ -792,10 +788,9 @@ public class CommonUtil {
         DBUtil dbutil = db();
         try {
             if (mGetDatasourceConnection == null || dbutil.getClass() != mGetDatasourceConnection.getDeclaringClass()) {
-                mGetDatasourceConnection = dbutil.getClass().getMethod("getDatasourceConnection", GET_DSCONN);
+                mGetDatasourceConnection = dbutil.getClass().getMethod("getDatasourceConnection", PageContext.class,  DataSource.class, String.class, String.class, boolean.class);
             }
-            return (DatasourceConnection) mGetDatasourceConnection.invoke(dbutil,
-                    new Object[] { pc, ds, user, pass, false });
+            return (DatasourceConnection) mGetDatasourceConnection.invoke(dbutil, pc, ds, user, pass, false );
         } catch (Exception e) {
             throw CommonUtil.toPageException(e);
         }
@@ -812,9 +807,9 @@ public class CommonUtil {
         try {
             if (mReleaseDatasourceConnection == null
                     || dbutil.getClass() != mReleaseDatasourceConnection.getDeclaringClass()) {
-                mReleaseDatasourceConnection = dbutil.getClass().getMethod("releaseDatasourceConnection", REL_DSCONN);
+                mReleaseDatasourceConnection = dbutil.getClass().getMethod("releaseDatasourceConnection", PageContext.class, DatasourceConnection.class, boolean.class);
             }
-            mReleaseDatasourceConnection.invoke(dbutil, new Object[] { pc, dc, false });
+            mReleaseDatasourceConnection.invoke(dbutil, pc, dc, false );
         } catch (Exception e) {
             throw CommonUtil.toPageException(e);
         }
