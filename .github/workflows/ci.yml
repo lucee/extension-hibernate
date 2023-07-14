@@ -22,8 +22,7 @@ env:
 jobs:
   security:
     uses: ./.github/workflows/security.yml
-    with:
-      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    secrets: inherit
 
   tests:
     if: "!contains(github.event.head_commit.message, '__CI__')"

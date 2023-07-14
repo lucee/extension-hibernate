@@ -2,11 +2,6 @@ name: Snyk Vulnerability Scan
 
 on:
   workflow_call:
-    inputs:
-      SNYK_TOKEN:
-          description: 'Authentication token for Snyk'
-          required: true
-          type: string
 
 
 jobs:
@@ -21,7 +16,7 @@ jobs:
         uses: snyk/actions/maven-3-jdk-11@master
         continue-on-error: true # To make sure that SARIF upload gets called
         env:
-          SNYK_TOKEN: ${{ inputs.SNYK_TOKEN }}
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --sarif-file-output=snyk.sarif
 
