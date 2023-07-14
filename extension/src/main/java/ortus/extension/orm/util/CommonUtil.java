@@ -854,12 +854,10 @@ public class CommonUtil {
         if (cs == null)
             cs = getCharset();
 
-        Writer writer = null;
-        try {
-            writer = getWriter(res, cs, append);
+        try(
+            Writer writer = getWriter(res, cs, append);
+        ) {
             writer.write(string);
-        } finally {
-            closeEL(writer);
         }
     }
 
@@ -907,42 +905,10 @@ public class CommonUtil {
         }
     }
 
-    public static void closeEL(Writer w) {
-        if (w != null) {
-            try {
-                w.close();
-            } catch (Throwable t) {
-                if (t instanceof ThreadDeath)
-                    throw (ThreadDeath) t;
-            }
-        }
-    }
-
-    public static void closeEL(ResultSet rs) {
-        if (rs != null) {
-            try {
-                rs.close();
-            } catch (Throwable t) {
-                if (t instanceof ThreadDeath)
-                    throw (ThreadDeath) t;
-            }
-        }
-    }
-
     public static void closeEL(InputStream is) {
         try {
             if (is != null)
                 is.close();
-        } catch (Throwable t) {
-            if (t instanceof ThreadDeath)
-                throw (ThreadDeath) t;
-        }
-    }
-
-    public static void closeEL(Reader r) {
-        try {
-            if (r != null)
-                r.close();
         } catch (Throwable t) {
             if (t instanceof ThreadDeath)
                 throw (ThreadDeath) t;

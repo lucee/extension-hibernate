@@ -348,8 +348,10 @@ public class HibernateUtil {
             throws SQLException, PageException {
         Struct rows = CFMLEngineFactory.getInstance().getCreationUtil().createCastableStruct(tableName,
                 Struct.TYPE_LINKED);
-        ResultSet columns = md.getColumns(dbName, null, tableName, null);
-        try {
+        
+        try(
+            ResultSet columns = md.getColumns(dbName, null, tableName, null);
+        ) {
             String name;
             Object nullable;
             while (columns.next()) {
@@ -360,18 +362,16 @@ public class HibernateUtil {
                         new ColumnInfo(name, columns.getInt("DATA_TYPE"), columns.getString("TYPE_NAME"),
                                 columns.getInt("COLUMN_SIZE"), CommonUtil.toBooleanValue(nullable)));
             }
-        } finally {
-            CommonUtil.closeEL(columns);
-        } // Table susid defined for cfc susid does not exist.
+        }
 
         return rows;
     }
 
     private static String checkTableValidate(DatabaseMetaData md, String dbName, String tableName) {
 
-        ResultSet tables = null;
-        try {
-            tables = md.getTables(dbName, null, null, null);
+        try(
+            ResultSet tables = md.getTables(dbName, null, null, null);
+        ) {
             String name;
             while (tables.next()) {
                 name = tables.getString("TABLE_NAME");
@@ -382,8 +382,6 @@ public class HibernateUtil {
         } catch (Throwable t) {
             if (t instanceof ThreadDeath)
                 throw (ThreadDeath) t;
-        } finally {
-            CommonUtil.closeEL(tables);
         }
         return null;
 
