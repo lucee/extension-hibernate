@@ -22,6 +22,8 @@ env:
 jobs:
   security:
     uses: ./.github/workflows/security.yml
+    with:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
   tests:
     uses: ./.github/workflows/tests.yml
