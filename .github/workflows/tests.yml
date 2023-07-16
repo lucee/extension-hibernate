@@ -1,6 +1,5 @@
 name: Test
 
-# We are a reusable Workflow only
 on:
   workflow_call:
     secrets:
@@ -11,10 +10,7 @@ on:
         - main
         - master
         - development
-  pull_request:
-    branches-ignore:
-        - main
-        - master
+        - release/**
 
 jobs:
   test:

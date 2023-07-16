@@ -3,9 +3,10 @@ name: Pull Requests
 on:
   push:
     branches-ignore:
-      - "main"
-      - "master"
-      - "development"
+      - main
+      - master
+      - development
+      - release/**
   pull_request:
     branches:
       - development
