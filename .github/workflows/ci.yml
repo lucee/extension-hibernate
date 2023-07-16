@@ -32,7 +32,7 @@ jobs:
   changelog:
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
     uses: ./.github/workflows/changelog.yml
-    env:
+    with:
       snapshot: ${{ env.SNAPSHOT }}
 
   release:
