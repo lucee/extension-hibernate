@@ -2,14 +2,10 @@
 # Rename [Unreleased] section in Changelog based on the current version in box.json
 name: Changelog "Unreleased" Bumper
 
-on:
-  workflow_call:
-    inputs:
-      snapshot:
-          description: 'Is this a snapshot build?'
-          required: false
-          default: false
-          type: boolean
+on: workflow_call
+
+env:
+  SNAPSHOT: ${{ github.ref_name != 'main' && github.ref_name != 'master' }}
 
 jobs:
   changelog:
@@ -34,14 +30,14 @@ jobs:
 
       - name: Update changelog [unreleased] with latest version
         uses: thomaseizinger/keep-a-changelog-new-release@1.3.0
-        if: "steps.changelog_check.outputs.HAS_VERSION == 'false' && !inputs.SNAPSHOT"
+        if: "steps.changelog_check.outputs.HAS_VERSION == 'false' && !env.SNAPSHOT"
         with:
           changelogPath: ./CHANGELOG.md
           tag: ${{ env.EXTENSION_VERSION }}
 
       - name: Commit Changelog To Master
         uses: EndBug/add-and-commit@v9.1.1
-        if: "steps.changelog_check.outputs.HAS_VERSION == 'false' && !inputs.SNAPSHOT"
+        if: "steps.changelog_check.outputs.HAS_VERSION == 'false' && !env.SNAPSHOT"
         with:
           author_name: Github Actions
           author_email: info@ortussolutions.com
