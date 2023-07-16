@@ -20,7 +20,7 @@ jobs:
   test:
     name: Maven Build and Test
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '__CI__')"
+    if: "!contains(github.event.head_commit.message, '[ci skip]')"
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false

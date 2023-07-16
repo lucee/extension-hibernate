@@ -8,7 +8,7 @@ on:
 jobs:
   update_gitbook:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '__CI__')"
+    if: "!contains(github.event.head_commit.message, '[ci skip]')"
     steps:
 
       - uses: actions/checkout@v3
@@ -55,5 +55,5 @@ jobs:
         with:
           author_name: Github Actions
           author_email: info@ortussolutions.com
-          message: '📖 DOC: Add ${{ env.EXTENSION_VERSION }} changelog to Release History - __CI__'
+          message: '📖 DOC: Add ${{ env.EXTENSION_VERSION }} changelog to Release History - [ci skip]'
           add: intro/release-history.md

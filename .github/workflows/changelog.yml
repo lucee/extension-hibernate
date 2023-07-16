@@ -45,5 +45,5 @@ jobs:
         with:
           author_name: Github Actions
           author_email: info@ortussolutions.com
-          message: '📖 DOC: Finalized changelog for v${{ env.EXTENSION_VERSION }} - __CI__'
+          message: '📖 DOC: Finalized changelog for v${{ env.EXTENSION_VERSION }} - [ci skip]'
           add: CHANGELOG.md
