@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 💣 Breaking Changes
+
+#### CLOB columns in Postgres81
+
+Due to the Hibernate 5.6 upgrade, if you are using the `PostgreSQL81` dialect and have `CLOB` columns in your database, [it is recommended you migrate existing text columns for LOBs to `oid`](https://github.com/hibernate/hibernate-orm/blob/5.6/migration-guide.adoc#changes-to-the-ddl-type-for-clob-in-postgresql81dialect-and-its-subclasses).
+
+### ♻️ Changed
+
+#### Hibernate Upgraded from 5.4 to 5.6
+
+This brings the Hibernate dependencies up to date (released Feb. 2023), and should not change any CFML-facing features for *most* users. (See Breaking Change note on [CLOB columns in Postgres81](#clob-columns-in-postgres81))
+
+See the migration guides for more info:
+
+* [Hibernate 5.4 -> 5.4 migration guide](https://github.com/hibernate/hibernate-orm/blob/5.5/migration-guide.adoc)
+* [Hibernate 5.5 -> 5.6 migration guide](https://github.com/hibernate/hibernate-orm/blob/5.6/migration-guide.adoc)
+
 ## [6.1.0] - 2023-07-14
 
 ### ♻️ Changed
