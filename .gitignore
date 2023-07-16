@@ -19,6 +19,7 @@ tests/results/
 tests/**/*.db
 tests/**/*.hbm.xml
 testbox
+db
 
 # Secrets
 .env
