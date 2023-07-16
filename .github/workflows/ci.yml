@@ -14,7 +14,7 @@ on:
   workflow_call:
 
 env:
-  SNAPSHOT: ${{ github.ref_name == 'development' }}
+  SNAPSHOT: ${{ github.ref_name != 'main' && github.ref_name != 'master' }}
   PROJECT_NAME: Ortus Lucee Extensions - ORM
   EXTENSION_SLUG: ortus-orm-extension
   AWS_BUCKETNAME: downloads.ortussolutions.com
@@ -33,7 +33,7 @@ jobs:
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
     uses: ./.github/workflows/changelog.yml
     with:
-      snapshot: ${{ github.ref_name == 'development' }}
+      snapshot: ${{ env.SNAPSHOT }}
 
   release:
     runs-on: ubuntu-latest
@@ -55,7 +55,7 @@ jobs:
           echo "EXTENSION_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
           echo "BRANCH=master" >> $GITHUB_ENV
           echo "BUILD_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
-          if [ $GITHUB_REF_NAME == 'development' ]
+          if [ $SNAPSHOT ]
           then
             echo "BUILD_VERSION=$PACKAGE_VERSION.${{ github.run_number}}-snapshot" >> $GITHUB_ENV
           fi
