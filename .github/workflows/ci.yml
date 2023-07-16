@@ -32,8 +32,8 @@ jobs:
   changelog:
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
     uses: ./.github/workflows/changelog.yml
-    with:
-      snapshot: $SNAPSHOT
+    env:
+      snapshot: ${{ env.SNAPSHOT }}
 
   release:
     runs-on: ubuntu-latest
