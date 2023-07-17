@@ -334,13 +334,13 @@ public class HibernateUtil {
             String dbName = CFMLEngineFactory.getInstance().getDBUtil().getDatabaseName(dc);
             DatabaseMetaData md = dc.getConnection().getMetaData();
             Struct rows = checkTableFill(md, dbName, tableName);
-            if (rows.size() == 0) {
+            if (rows.isEmpty()) {
                 String tableName2 = checkTableValidate(md, dbName, tableName);
                 if (tableName2 != null)
                     rows = checkTableFill(md, dbName, tableName2);
             }
 
-            if (rows.size() == 0) {
+            if (rows.isEmpty()) {
                 return null;
             }
             return rows;

@@ -352,7 +352,7 @@ public class HBMCreator {
         }
 
         // no id field defined
-        if (ids.size() == 0) {
+        if (ids.isEmpty()) {
             String fieldType;
             for (int y = 0; y < props.length; y++) {
                 if (!ignoreTableName && !hasTable(cfc, props[y], tableName, data))
@@ -366,7 +366,7 @@ public class HBMCreator {
         }
 
         // still no id field defined
-        if (ids.size() == 0 && props.length > 0) {
+        if (ids.isEmpty() && props.length > 0) {
             String owner = props[0].getOwnerName();
             if (!Util.isEmpty(owner))
                 owner = CommonUtil.last(owner, ".").trim();
