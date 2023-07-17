@@ -60,6 +60,21 @@ Once you push, the `release` GitHub workflow will kick in and:
 
 If you push to `development`, steps 5 and 6 will be ignored and the release pushed to ForgeBox will be a `-SNAPSHOT` release version.
 
+## Branching Strategy
+
+We use the following branches for managing releases:
+
+* `master` - Each push to this branch will trigger a stable release build.
+* `development` - Each push to this branch will trigger a `snapshot` build.
+* `release/x.x` - These are occasionally used for work-in-progress on a new version without affecting the main development-to-master workflow. Each push to this branch will trigger a `snapshot` build
+
+General development can be branched at will, but we prefer the following naming structure:
+
+* `feat/the-new-feature` - Contains work in progress on a new feature
+* `patch/the-bug-in-question` - Contains work in progress on a patch for a known bug or issue
+
+In general, work on a new feature, bug fix, or improvement should be done on a new branch. When the work is ready for releasing, it should be merged or PR-ed to the `development` branch, where it will be deployed with the next release.
+
 ## Java IDE
 
 I highly recommend [VS Code](https://code.visualstudio.com/) for java development. More experienced Java developers may appreciate a java-specific IDE like [Intellij](https://www.jetbrains.com/idea/). For VS Code Java support, check out:
