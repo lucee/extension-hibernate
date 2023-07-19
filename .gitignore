@@ -18,6 +18,7 @@ tests/models/testSeeder.sql
 tests/results/
 tests/**/*.db
 tests/**/*.hbm.xml
+tests/resources/hibernate.cfg.xml
 testbox
 db
 
