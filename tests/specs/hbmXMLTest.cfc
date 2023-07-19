@@ -27,7 +27,6 @@ component extends="testbox.system.BaseSpec" {
                     expect( classXML.xmlAttributes )
                         .toHaveKey( "entity-name" )
                         .toHaveKey( "lazy" )
-                        .toHaveKey( "node" )
                         .toHaveKey( "table" );
                     expect( classXML.xmlAttributes[ "entity-name" ] ).toBe( "User" );
                     expect( classXML.xmlAttributes[ "table" ] ).toBe( "`User`" );

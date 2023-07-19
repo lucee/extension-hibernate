@@ -21,6 +21,7 @@ component {
 	this.ormSettings = {
 		cfclocation      : [ "models" ],
 		dbcreate         : "dropcreate",
+		saveMapping      : true,
 		skipCFCWithError : false,
 		datasource       : "h2",
 		eventHandling    : true,
