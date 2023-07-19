@@ -28,6 +28,13 @@ component {
 		eventHandler     : "models.EventHandler"
 	};
 
+	// https://luceeserver.atlassian.net/browse/LDEV-1676
+	this.xmlFeatures = {
+		externalGeneralEntities: false,
+		secure: true,
+		disallowDoctypeDecl: false
+	};
+
 	// Create testing mapping
 	this.mappings[ "/tests" ] = getDirectoryFromPath( getCurrentTemplatePath() );
 	// Map back to its root

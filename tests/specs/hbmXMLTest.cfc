@@ -9,8 +9,8 @@ component extends="testbox.system.BaseSpec" {
             describe( "format", () => {
                 it( "is generated on orm startup", () => {
                     expect( fileExists( variables.testXMLFile ) ).toBeTrue();
-                })
-                it( "is valid, parseable XML", () => {
+                });
+                it( "is valid XML", () => {
                     var xmlString = fileRead( variables.testXMLFile );
                     expect( isValid( "xml", xmlString ) ).tobeTrue();
                     variables.testXML = xmlParse( xmlString );
