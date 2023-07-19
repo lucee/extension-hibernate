@@ -12,7 +12,7 @@ You will need to install the following for extension development:
 2. Set up an environment/secrets file - `cp .env.template .env`
 3. Download dependency sources for IDE integration - `mvn dependency:copy-dependencies`
 4. [Build extension via `mvn package`](#building)
-5. Test via `box run-script deploy.local && server restart && testbox run` (See [#Testing](#testing) for more info)
+5. Test via `box run-script deploy.lucee5 && server restart && testbox run` (See [#Testing](#testing) for more info)
 
 **Before you send a PR:**
 
@@ -38,6 +38,15 @@ To run CFML tests against the extension:
 4. Run tests from the extension root with `box testbox run`
 
 For "full" database suite tests, you'll want to start the test databases using Docker-compose `docker-compose up -d`. This will start up MSSQL, MySQL, and Postgres database instances for database-specific tests.
+
+### Lucee 6 Testing
+
+To build and test on Lucee 6, use the `server-lucee6.json` file and `deploy.lucee6` build script:
+
+* `box server start server-lucee6.json`
+* `box run-script deploy.lucee6`
+* `box server restart name=lucee6`
+* `box testbox run`
 
 ## Publishing a Release
 

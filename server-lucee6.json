@@ -1,0 +1,13 @@
+{
+    "app":{
+        "serverHomeDirectory":"./.engine/lucee6",
+        "cfengine":"lucee@6-snapshot"
+    },
+    "web":{
+        "directoryBrowsing":true,
+        "http":{
+            "port":"49339"
+        }
+    },
+    "name":"lucee6"
+}
