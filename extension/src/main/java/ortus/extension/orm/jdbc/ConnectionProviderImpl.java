@@ -24,7 +24,6 @@ public class ConnectionProviderImpl implements ConnectionProvider {
 
     public ConnectionProviderImpl(DataSource ds, String user, String pass) {
         engine = CFMLEngineFactory.getInstance();
-        // dbu = engine.getDBUtil();
         this.ds = ds;
         this.user = user;
         this.pass = pass;
@@ -59,18 +58,17 @@ public class ConnectionProviderImpl implements ConnectionProvider {
 
     @Override
     public boolean supportsAggressiveRelease() {
-        // nope
         return false;
     }
 
     @Override
-    public boolean isUnwrappableAs(Class arg0) {
+    public boolean isUnwrappableAs(Class unwrapType) {
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public <T> T unwrap(Class<T> arg0) {
+    public <T> T unwrap(Class<T> unwrapType) {
         // TODO Auto-generated method stub
         return null;
     }

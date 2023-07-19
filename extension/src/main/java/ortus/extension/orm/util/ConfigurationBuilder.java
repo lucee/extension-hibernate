@@ -210,7 +210,8 @@ public class ConfigurationBuilder {
             xml = XMLUtil.toString(root);
         }
         if (!cacheConfig.isFile()) {
-            cacheConfig.getParentResource().mkdirs();
+            Boolean alsoCreateParents = true;
+            cacheConfig.getParentResource().createDirectory(alsoCreateParents);
             eng.getIOUtil().write(cacheConfig, xml, false, null);
         }
         return cacheConfig;

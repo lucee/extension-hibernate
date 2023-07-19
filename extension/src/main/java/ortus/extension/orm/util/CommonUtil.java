@@ -413,6 +413,11 @@ public class CommonUtil {
         return trg;
     }
 
+    /**
+     * TODO: Move to ExceptionUtil.
+     * @param t
+     * @return
+     */
     public static PageException toPageException(Throwable t) {
         PageException pe = caster().toPageException(t);
         if (t instanceof org.hibernate.HibernateException) {
