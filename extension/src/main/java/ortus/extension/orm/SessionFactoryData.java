@@ -64,9 +64,9 @@ public class SessionFactoryData {
      */
     private EventListenerIntegrator eventListenerIntegrator;
 
-    public SessionFactoryData(HibernateORMEngine engine, ORMConfiguration ormConf) {
-        this.engine = engine;
-        this.ormConf = ormConf;
+    public SessionFactoryData( HibernateORMEngine engine, ORMConfiguration ormConf ) {
+        this.engine                  = engine;
+        this.ormConf                 = ormConf;
         this.eventListenerIntegrator = new EventListenerIntegrator();
     }
 
@@ -78,11 +78,11 @@ public class SessionFactoryData {
         return engine;
     }
 
-    public QueryPlanCache getQueryPlanCache(Key datasSourceName) {
-        QueryPlanCache qpc = queryPlanCaches.get(datasSourceName);
-        if (qpc == null) {
-            qpc = ((SessionFactoryImpl) this.getFactory(datasSourceName)).getQueryPlanCache();
-            queryPlanCaches.put(datasSourceName, qpc);
+    public QueryPlanCache getQueryPlanCache( Key datasSourceName ) {
+        QueryPlanCache qpc = queryPlanCaches.get( datasSourceName );
+        if ( qpc == null ) {
+            qpc = ( ( SessionFactoryImpl ) this.getFactory( datasSourceName ) ).getQueryPlanCache();
+            queryPlanCaches.put( datasSourceName, qpc );
         }
         return qpc;
     }
@@ -99,117 +99,113 @@ public class SessionFactoryData {
      * @throws PageException
      */
     public NamingStrategy getNamingStrategy() throws PageException {
-        if (namingStrategy == null) {
+        if ( namingStrategy == null ) {
             String strNamingStrategy = ormConf.namingStrategy();
-            if (Util.isEmpty(strNamingStrategy, true)) {
+            if ( Util.isEmpty( strNamingStrategy, true ) ) {
                 namingStrategy = DefaultNamingStrategy.INSTANCE;
             } else {
                 strNamingStrategy = strNamingStrategy.trim();
-                if ("default".equalsIgnoreCase(strNamingStrategy))
+                if ( "default".equalsIgnoreCase( strNamingStrategy ) )
                     namingStrategy = DefaultNamingStrategy.INSTANCE;
-                else if ("smart".equalsIgnoreCase(strNamingStrategy))
+                else if ( "smart".equalsIgnoreCase( strNamingStrategy ) )
                     namingStrategy = SmartNamingStrategy.INSTANCE;
                 else {
                     CFCNamingStrategy cfcNS = new CFCNamingStrategy(
-                            cfcNamingStrategy == null ? strNamingStrategy : cfcNamingStrategy);
+                            cfcNamingStrategy == null ? strNamingStrategy : cfcNamingStrategy );
                     cfcNamingStrategy = cfcNS.getComponent().getPageSource().getComponentName();
-                    namingStrategy = cfcNS;
+                    namingStrategy    = cfcNS;
 
                 }
             }
         }
-        if (namingStrategy == null)
+        if ( namingStrategy == null )
             return DefaultNamingStrategy.INSTANCE;
         return namingStrategy;
     }
 
-    public CFCInfo checkExistent(PageContext pc, Component cfc) throws PageException {
-        CFCInfo info = getCFC(HibernateCaster.getEntityName(cfc), null);
-        if (info != null)
+    public CFCInfo checkExistent( PageContext pc, Component cfc ) throws PageException {
+        CFCInfo info = getCFC( HibernateCaster.getEntityName( cfc ), null );
+        if ( info != null )
             return info;
 
-        String message = String.format("there is no mapping definition for component [%s]", cfc.getAbsName());
-        throw ExceptionUtil.createException(this, null, message, null);
+        String message = String.format( "there is no mapping definition for component [%s]", cfc.getAbsName() );
+        throw ExceptionUtil.createException( this, null, message, null );
     }
 
     public List<String> getEntityNames() {
         List<String> names = new ArrayList<>();
-        for (Map<String, CFCInfo> entityTypes : cfcs.values()) {
-            for (CFCInfo entityType : entityTypes.values()) {
-                names.add(HibernateCaster.getEntityName(entityType.getCFC()));
+        for ( Map<String, CFCInfo> entityTypes : cfcs.values() ) {
+            for ( CFCInfo entityType : entityTypes.values() ) {
+                names.add( HibernateCaster.getEntityName( entityType.getCFC() ) );
             }
         }
         return names;
     }
 
-    public Component getEntityByEntityName(String entityName, boolean unique) throws PageException {
+    public Component getEntityByEntityName( String entityName, boolean unique ) throws PageException {
         Component cfc;
 
         // first check cfcs for this entity
-        CFCInfo info = getCFC(entityName, null);
-        if (info != null) {
+        CFCInfo info = getCFC( entityName, null );
+        if ( info != null ) {
             cfc = info.getCFC();
-            return unique ? (Component) cfc.duplicate(false) : cfc;
+            return unique ? ( Component ) cfc.duplicate( false ) : cfc;
         }
 
         // if parsing is in progress, the cfc can be found here
-        if (hasTempCFCs()) {
-            for (Component entityType : tmpList) {
-                if (HibernateCaster.getEntityName(entityType).equalsIgnoreCase(entityName))
-                    return unique ? (Component) entityType.duplicate(false) : entityType;
+        if ( hasTempCFCs() ) {
+            for ( Component entityType : tmpList ) {
+                if ( HibernateCaster.getEntityName( entityType ).equalsIgnoreCase( entityName ) )
+                    return unique ? ( Component ) entityType.duplicate( false ) : entityType;
             }
         }
-        String message = String.format("entity [%s] does not exist", entityName);
-        throw ExceptionUtil.createException((ORMSession) null, null, message, null);
+        String message = String.format( "entity [%s] does not exist", entityName );
+        throw ExceptionUtil.createException( ( ORMSession ) null, null, message, null );
     }
 
-    public Component getEntityByCFCName(String cfcName, boolean unique) throws PageException {
+    public Component getEntityByCFCName( String cfcName, boolean unique ) throws PageException {
         String name = cfcName;
-        int pointIndex = cfcName.lastIndexOf('.');
-        if (pointIndex != -1) {
-            name = cfcName.substring(pointIndex + 1);
+        int pointIndex = cfcName.lastIndexOf( '.' );
+        if ( pointIndex != -1 ) {
+            name = cfcName.substring( pointIndex + 1 );
         } else
             cfcName = null;
 
         Component cfc;
         List<String> names = new ArrayList<>();
 
-        if (hasTempCFCs()) {
-            for (Component entity : tmpList) {
-                names.add(entity.getName());
-                if (HibernateUtil.isEntity(ormConf, entity, cfcName, name)) // if(cfc.equalTo(name))
-                    return unique ? (Component) entity.duplicate(false) : entity;
+        if ( hasTempCFCs() ) {
+            for ( Component entity : tmpList ) {
+                names.add( entity.getName() );
+                if ( HibernateUtil.isEntity( ormConf, entity, cfcName, name ) ) // if(cfc.equalTo(name))
+                    return unique ? ( Component ) entity.duplicate( false ) : entity;
             }
         } else {
             // search cfcs
             Iterator<Map<String, CFCInfo>> it = cfcs.values().iterator();
             Map<String, CFCInfo> _cfcs;
-            while (it.hasNext()) {
+            while ( it.hasNext() ) {
                 _cfcs = it.next();
                 Iterator<CFCInfo> _it = _cfcs.values().iterator();
-                while (_it.hasNext()) {
+                while ( _it.hasNext() ) {
                     cfc = _it.next().getCFC();
-                    names.add(cfc.getName());
-                    if (HibernateUtil.isEntity(ormConf, cfc, cfcName, name)) // if(cfc.instanceOf(name))
-                        return unique ? (Component) cfc.duplicate(false) : cfc;
+                    names.add( cfc.getName() );
+                    if ( HibernateUtil.isEntity( ormConf, cfc, cfcName, name ) ) // if(cfc.instanceOf(name))
+                        return unique ? ( Component ) cfc.duplicate( false ) : cfc;
                 }
             }
         }
 
-        CFCInfo info = getCFC(name, null);
-        if (info != null) {
+        CFCInfo info = getCFC( name, null );
+        if ( info != null ) {
             cfc = info.getCFC();
-            return unique ? (Component) cfc.duplicate(false) : cfc;
+            return unique ? ( Component ) cfc.duplicate( false ) : cfc;
         }
 
-        String cfcNameClause = Util.isEmpty(cfcName) ? "" : String.format("with cfc name [%s]", cfcName );
-        String message = String.format(
-            "entity [%s] %s does not exist, existing  entities are [%s]",
-            name,
-            cfcNameClause,
-            CFMLEngineFactory.getInstance().getListUtil().toList(names, ", ")
-        );
-        throw ExceptionUtil.createException(message);
+        String cfcNameClause = Util.isEmpty( cfcName ) ? "" : String.format( "with cfc name [%s]", cfcName );
+        String message = String.format( "entity [%s] %s does not exist, existing  entities are [%s]", name, cfcNameClause,
+                CFMLEngineFactory.getInstance().getListUtil().toList( names, ", " ) );
+        throw ExceptionUtil.createException( message );
 
     }
 
@@ -217,12 +213,12 @@ public class SessionFactoryData {
      * Get the Hibernate configuration for the given datasource name.
      *
      * @param ds
-     *            Datasource object
+     *           Datasource object
      *
      * @return an instance of the {@link ortus.extension.orm.jdbc.DataSourceConfig} object
      */
-    public DataSourceConfig getConfiguration(DataSource ds) {
-        return configurations.get(CommonUtil.toKey(ds.getName()));
+    public DataSourceConfig getConfiguration( DataSource ds ) {
+        return configurations.get( CommonUtil.toKey( ds.getName() ) );
     }
 
     /**
@@ -233,39 +229,39 @@ public class SessionFactoryData {
      *
      * @return an instance of the {@link ortus.extension.orm.jdbc.DataSourceConfig} object
      */
-    public DataSourceConfig getConfiguration(Key key) {
-        return configurations.get(key);
+    public DataSourceConfig getConfiguration( Key key ) {
+        return configurations.get( key );
     }
 
     /**
      * Use the ConfigurationBuilder to build a configuration object using the provided arguments.
      *
      * @param log
-     *            Lucee logger to use for logging
+     *                               Lucee logger to use for logging
      * @param mappings
-     *            A string of generated or loaded Hibernate mapping XML.
+     *                               A string of generated or loaded Hibernate mapping XML.
      * @param ds
-     *            The datasource to use
+     *                               The datasource to use
      * @param user
-     *            The username credential to use for the given datasource
+     *                               The username credential to use for the given datasource
      * @param pass
-     *            The password credential to use for the given datasource
+     *                               The password credential to use for the given datasource
      * @param applicationContextName
-     *            Name of the CFML application, used to ensure ORM configuration is only built once per application, and
-     *            only cleared on ORMReload.
+     *                               Name of the CFML application, used to ensure ORM configuration is only built once per application, and
+     *                               only cleared on ORMReload.
      *
      * @throws PageException
      * @throws SQLException
      * @throws IOException
      */
-    public void setConfiguration(Log log, String mappings, DataSource ds, String user, String pass,
-            String applicationContextName) throws PageException, SQLException, IOException {
+    public void setConfiguration( Log log, String mappings, DataSource ds, String user, String pass,
+            String applicationContextName ) throws PageException, SQLException, IOException {
 
-        Configuration configuration = new ConfigurationBuilder().withDatasource(ds).withDatasourceCreds(user, pass)
-                .withORMConfig(getORMConfiguration()).withEventListener(getEventListenerIntegrator())
-                .withApplicationName(applicationContextName).withXMLMappings(mappings).withLog(log).build();
-        configurations.put(CommonUtil.toKey(ds.getName()), new DataSourceConfig(ds, configuration));
-        HibernateSessionFactory.schemaExport(log, configuration, ds, user, pass, this);
+        Configuration configuration = new ConfigurationBuilder().withDatasource( ds ).withDatasourceCreds( user, pass )
+                .withORMConfig( getORMConfiguration() ).withEventListener( getEventListenerIntegrator() )
+                .withApplicationName( applicationContextName ).withXMLMappings( mappings ).withLog( log ).build();
+        configurations.put( CommonUtil.toKey( ds.getName() ), new DataSourceConfig( ds, configuration ) );
+        HibernateSessionFactory.schemaExport( log, configuration, ds, user, pass, this );
     }
 
     /**
@@ -275,13 +271,13 @@ public class SessionFactoryData {
      * to talk to the lucee components outside that lucee bundle.
      *
      * @param datasSourceName
-     *            Name of the datasource for which to build and configure a session factory.
+     *                        Name of the datasource for which to build and configure a session factory.
      */
-    public SessionFactory buildSessionFactory(Key datasSourceName) {
-        DataSourceConfig dsc = getConfiguration(datasSourceName);
-        if (dsc == null)
-            throw new RuntimeException("cannot build factory because there is no configuration"); // this should never
-                                                                                                  // happen
+    public SessionFactory buildSessionFactory( Key datasSourceName ) {
+        DataSourceConfig dsc = getConfiguration( datasSourceName );
+        if ( dsc == null )
+            throw new RuntimeException( "cannot build factory because there is no configuration" ); // this should never
+                                                                                                    // happen
 
         /**
          * TODO: Investigate OSGISessionFactoryService
@@ -292,14 +288,14 @@ public class SessionFactoryData {
         SessionFactory sf;
         try {
             // use the core classloader
-            thread.setContextClassLoader(CFMLEngineFactory.getInstance().getClass().getClassLoader());
+            thread.setContextClassLoader( CFMLEngineFactory.getInstance().getClass().getClassLoader() );
             sf = dsc.config.buildSessionFactory();
         } finally {
             // reset
-            thread.setContextClassLoader(old);
+            thread.setContextClassLoader( old );
         }
 
-        factories.put(datasSourceName, sf);
+        factories.put( datasSourceName, sf );
         return sf;
     }
 
@@ -308,14 +304,14 @@ public class SessionFactoryData {
      * and built.
      *
      * @param datasSourceName
-     *            Name of the datasource for which to retrieve the SessionFactory.
+     *                        Name of the datasource for which to retrieve the SessionFactory.
      */
-    public SessionFactory getFactory(Key datasSourceName) {
-        SessionFactory factory = factories.get(datasSourceName);
-        if (factory != null && factory.isClosed())
+    public SessionFactory getFactory( Key datasSourceName ) {
+        SessionFactory factory = factories.get( datasSourceName );
+        if ( factory != null && factory.isClosed() )
             factory = null;
-        if (factory == null && getConfiguration(datasSourceName) != null)
-            factory = buildSessionFactory(datasSourceName);// this should never be happen
+        if ( factory == null && getConfiguration( datasSourceName ) != null )
+            factory = buildSessionFactory( datasSourceName );// this should never be happen
         return factory;
     }
 
@@ -324,7 +320,7 @@ public class SessionFactoryData {
      */
     public void reset() {
         configurations.clear();
-        for (SessionFactory factory : factories.values()) {
+        for ( SessionFactory factory : factories.values() ) {
             factory.close();
         }
         factories.clear();
@@ -340,22 +336,22 @@ public class SessionFactoryData {
      * Once queried and built, will store table metadata in <code>this.tableInfo</code> for faster retrieval.
      *
      * @param dc
-     *            Datasource connection object
+     *                  Datasource connection object
      * @param tableName
-     *            Table name to retrieve / build entity mapping from.
+     *                  Table name to retrieve / build entity mapping from.
      *
      * @return Struct of table information.
      *
      * @throws PageException
      */
-    public Struct getTableInfo(DatasourceConnection dc, String tableName) throws PageException {
-        Collection.Key keyTableName = CommonUtil.createKey(tableName);
-        Struct columnsInfo = (Struct) tableInfo.get(keyTableName, null);
-        if (columnsInfo != null)
+    public Struct getTableInfo( DatasourceConnection dc, String tableName ) throws PageException {
+        Collection.Key keyTableName = CommonUtil.createKey( tableName );
+        Struct columnsInfo = ( Struct ) tableInfo.get( keyTableName, null );
+        if ( columnsInfo != null )
             return columnsInfo;
 
-        columnsInfo = HibernateUtil.checkTable(dc, tableName, this);
-        tableInfo.setEL(keyTableName, columnsInfo);
+        columnsInfo = HibernateUtil.checkTable( dc, tableName, this );
+        tableInfo.setEL( keyTableName, columnsInfo );
         return columnsInfo;
     }
 
@@ -365,36 +361,36 @@ public class SessionFactoryData {
      * entity mappings by datasource.
      *
      * @param entityName
-     *            Name of the entity to store. This will be the key for the inner hashmap.
+     *                   Name of the entity to store. This will be the key for the inner hashmap.
      * @param info
-     *            CFCInfo object, containing datasource, component data, and XML mapping string.
+     *                   CFCInfo object, containing datasource, component data, and XML mapping string.
      */
-    public void addCFC(String entityName, CFCInfo info) {
+    public void addCFC( String entityName, CFCInfo info ) {
         DataSource ds = info.getDataSource();
-        Key dsn = CommonUtil.toKey(ds.getName());
+        Key dsn = CommonUtil.toKey( ds.getName() );
 
-        Map<String, CFCInfo> map = cfcs.get(dsn);
-        if (map == null)
-            cfcs.put(dsn, map = new HashMap<>());
-        map.put(HibernateUtil.sanitizeEntityName(entityName), info);
-        sources.put(dsn, ds);
+        Map<String, CFCInfo> map = cfcs.get( dsn );
+        if ( map == null )
+            cfcs.put( dsn, map = new HashMap<>() );
+        map.put( HibernateUtil.sanitizeEntityName( entityName ), info );
+        sources.put( dsn, ds );
     }
 
     /**
      * Retrieve the CFCInfo object for this entity name from the known entities across all datasources.
      *
      * @param entityName
-     *            Name of entity to retrieve.
+     *                     Name of entity to retrieve.
      * @param defaultValue
-     *            Default CFCInfo object to return. (Unused, consider deleting.)
+     *                     Default CFCInfo object to return. (Unused, consider deleting.)
      *
      * @return
      */
-    CFCInfo getCFC(String entityName, CFCInfo defaultValue) {
+    CFCInfo getCFC( String entityName, CFCInfo defaultValue ) {
         Iterator<Map<String, CFCInfo>> it = cfcs.values().iterator();
-        while (it.hasNext()) {
-            CFCInfo info = it.next().get(HibernateUtil.sanitizeEntityName(entityName));
-            if (info != null)
+        while ( it.hasNext() ) {
+            CFCInfo info = it.next().get( HibernateUtil.sanitizeEntityName( entityName ) );
+            if ( info != null )
                 return info;
         }
         return defaultValue;
@@ -414,13 +410,13 @@ public class SessionFactoryData {
      * Retrieve all known entity types for the provided datasource name.
      *
      * @param datasSourceName
-     *            Datasource Key name to filter on.
+     *                        Datasource Key name to filter on.
      *
      * @return HashMap of entities by entity name.
      */
-    public Map<String, CFCInfo> getCFCs(Key datasSourceName) {
-        Map<String, CFCInfo> rtn = cfcs.get(datasSourceName);
-        if (rtn == null)
+    public Map<String, CFCInfo> getCFCs( Key datasSourceName ) {
+        Map<String, CFCInfo> rtn = cfcs.get( datasSourceName );
+        if ( rtn == null )
             return new HashMap<>();
         return rtn;
     }
@@ -440,7 +436,7 @@ public class SessionFactoryData {
     public int sizeCFCs() {
         Iterator<Map<String, CFCInfo>> it = cfcs.values().iterator();
         int size = 0;
-        while (it.hasNext()) {
+        while ( it.hasNext() ) {
             size += it.next().size();
         }
         return size;
@@ -452,7 +448,7 @@ public class SessionFactoryData {
      * @return An array populated with all known datasources.
      */
     public DataSource[] getDataSources() {
-        return sources.values().toArray(new DataSource[sources.size()]);
+        return sources.values().toArray( new DataSource[ sources.size() ] );
     }
 
     /**
@@ -460,8 +456,8 @@ public class SessionFactoryData {
      */
     public void init() {
         Iterator<Key> it = cfcs.keySet().iterator();
-        while (it.hasNext()) {
-            getFactory(it.next());
+        while ( it.hasNext() ) {
+            getFactory( it.next() );
         }
     }
 
@@ -469,12 +465,12 @@ public class SessionFactoryData {
      * Get datasource configuration by datasource name.
      *
      * @param datasSourceName
-     *            Key matching name of datasource to retrieve.
+     *                        Key matching name of datasource to retrieve.
      *
      * @return Fully configured datasource object.
      */
-    public DataSource getDataSource(Key datasSourceName) {
-        return sources.get(datasSourceName);
+    public DataSource getDataSource( Key datasSourceName ) {
+        return sources.get( datasSourceName );
     }
 
     /**

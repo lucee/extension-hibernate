@@ -9,11 +9,11 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * License along with this library. If not, see <http://www.gnu.org/licenses/>.
  *
  **/
 package ortus.extension.orm.functions;
@@ -33,26 +33,26 @@ import lucee.loader.engine.CFMLEngine;
  */
 public class EntitySave extends BIF {
 
-    public static String call(PageContext pc, Object obj) throws PageException {
-        return call(pc, obj, false);
+    public static String call( PageContext pc, Object obj ) throws PageException {
+        return call( pc, obj, false );
     }
 
-    public static String call(PageContext pc, Object obj, boolean forceInsert) throws PageException {
-        ORMSession session = ORMUtil.getSession(pc);
-        session.save(pc, obj, forceInsert);
+    public static String call( PageContext pc, Object obj, boolean forceInsert ) throws PageException {
+        ORMSession session = ORMUtil.getSession( pc );
+        session.save( pc, obj, forceInsert );
         return null;
     }
 
     @Override
-    public Object invoke(PageContext pc, Object[] args) throws PageException {
+    public Object invoke( PageContext pc, Object[] args ) throws PageException {
         CFMLEngine engine = CFMLEngineFactory.getInstance();
         Cast cast = engine.getCastUtil();
 
-        if (args.length == 1)
-            return call(pc, args[0]);
-        if (args.length == 2)
-            return call(pc, args[0], cast.toBoolean(args[1]));
+        if ( args.length == 1 )
+            return call( pc, args[ 0 ] );
+        if ( args.length == 2 )
+            return call( pc, args[ 0 ], cast.toBoolean( args[ 1 ] ) );
 
-        throw engine.getExceptionUtil().createFunctionException(pc, "EntitySave", 1, 2, args.length);
+        throw engine.getExceptionUtil().createFunctionException( pc, "EntitySave", 1, 2, args.length );
     }
 }

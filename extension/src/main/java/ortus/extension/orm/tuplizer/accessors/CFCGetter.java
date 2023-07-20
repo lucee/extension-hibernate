@@ -32,41 +32,41 @@ public class CFCGetter implements Getter {
      * Constructor of the class
      *
      * @param key
-     *            Persistent property name
+     *                   Persistent property name
      * @param type
-     *            Persistent property type
+     *                   Persistent property type
      * @param entityName
-     *            Name of the Hibernate entity to retrieve the value from
+     *                   Name of the Hibernate entity to retrieve the value from
      */
-    public CFCGetter(String key, Type type, String entityName) {
-        this.key = CommonUtil.createKey(key);
-        this.type = type;
+    public CFCGetter( String key, Type type, String entityName ) {
+        this.key        = CommonUtil.createKey( key );
+        this.type       = type;
         this.entityName = entityName;
     }
 
     @Override
-    public Object get(Object trg) throws HibernateException {
+    public Object get( Object trg ) throws HibernateException {
         try {
             // MUST cache this, perhaps when building xml
             PageContext pc = CommonUtil.pc();
-            ORMSession session = pc.getORMSession(true);
-            Component cfc = CommonUtil.toComponent(trg);
-            String dsn = ORMUtil.getDataSourceName(pc, cfc);
-            String name = HibernateCaster.getEntityName(cfc);
-            SessionFactory sf = (SessionFactory) session.getRawSessionFactory(dsn);
-            ClassMetadata metaData = sf.getClassMetadata(name);
-            Type type = HibernateUtil.getPropertyType(metaData, key.getString());
+            ORMSession session = pc.getORMSession( true );
+            Component cfc = CommonUtil.toComponent( trg );
+            String dsn = ORMUtil.getDataSourceName( pc, cfc );
+            String name = HibernateCaster.getEntityName( cfc );
+            SessionFactory sf = ( SessionFactory ) session.getRawSessionFactory( dsn );
+            ClassMetadata metaData = sf.getClassMetadata( name );
+            Type type = HibernateUtil.getPropertyType( metaData, key.getString() );
 
-            Object rtn = cfc.getComponentScope().get(key, null);
-            return HibernateCaster.toSQL(type, rtn, null);
-        } catch (PageException pe) {
-            throw new HibernatePageException(pe);
+            Object rtn = cfc.getComponentScope().get( key, null );
+            return HibernateCaster.toSQL( type, rtn, null );
+        } catch ( PageException pe ) {
+            throw new HibernatePageException( pe );
         }
     }
 
     @Override
-    public Object getForInsert(Object trg, Map map, SharedSessionContractImplementor ssci) {
-        return get(trg);// MUST better solution? this is from MapGetter
+    public Object getForInsert( Object trg, Map map, SharedSessionContractImplementor ssci ) {
+        return get( trg );// MUST better solution? this is from MapGetter
     }
 
     @Override

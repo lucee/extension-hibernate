@@ -12,8 +12,8 @@ public class CFCNamingStrategy implements NamingStrategy {
 
     Component cfc;
 
-    public CFCNamingStrategy(String cfcName) throws PageException {
-        this.cfc = CFMLEngineFactory.getInstance().getThreadPageContext().loadComponent(cfcName);
+    public CFCNamingStrategy( String cfcName ) throws PageException {
+        this.cfc = CFMLEngineFactory.getInstance().getThreadPageContext().loadComponent( cfcName );
     }
 
     public Component getComponent() {
@@ -21,25 +21,25 @@ public class CFCNamingStrategy implements NamingStrategy {
     }
 
     @Override
-    public String convertTableName(String tableName) {
-        return call("getTableName", tableName);
+    public String convertTableName( String tableName ) {
+        return call( "getTableName", tableName );
     }
 
     @Override
-    public String convertColumnName(String columnName) {
-        return call("getColumnName", columnName);
+    public String convertColumnName( String columnName ) {
+        return call( "getColumnName", columnName );
     }
 
-    private String call(String functionName, String name) {
-        Object res = cfc.get(CommonUtil.createKey(functionName), null);
-        if (!(res instanceof UDF))
+    private String call( String functionName, String name ) {
+        Object res = cfc.get( CommonUtil.createKey( functionName ), null );
+        if ( ! ( res instanceof UDF ) )
             return name;
         CFMLEngine engine = CFMLEngineFactory.getInstance();
         try {
             return engine.getCastUtil()
-                    .toString(cfc.call(engine.getThreadPageContext(), functionName, new Object[] { name }));
-        } catch (PageException pe) {
-            throw engine.getCastUtil().toPageRuntimeException(pe);
+                    .toString( cfc.call( engine.getThreadPageContext(), functionName, new Object[] { name } ) );
+        } catch ( PageException pe ) {
+            throw engine.getCastUtil().toPageRuntimeException( pe );
         }
     }
 

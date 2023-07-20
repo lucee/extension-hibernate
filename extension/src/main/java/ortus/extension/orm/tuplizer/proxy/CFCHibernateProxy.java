@@ -21,7 +21,7 @@ public class CFCHibernateProxy extends ComponentProxy implements HibernateProxy,
         return li.getCFC();
     }
 
-    public CFCHibernateProxy(CFCLazyInitializer li) {
+    public CFCHibernateProxy( CFCLazyInitializer li ) {
         this.li = li;
     }
 
@@ -36,7 +36,7 @@ public class CFCHibernateProxy extends ComponentProxy implements HibernateProxy,
     }
 
     @Override
-    public Object getEmbededObject(Object defaultValue) {
+    public Object getEmbededObject( Object defaultValue ) {
         return getComponent();
     }
 

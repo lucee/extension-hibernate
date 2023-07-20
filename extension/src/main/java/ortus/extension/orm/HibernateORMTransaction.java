@@ -22,17 +22,17 @@ public class HibernateORMTransaction implements ORMTransaction {
      * To open a Hibernate transaction, call begin() after this method:
      *
      * <pre>
-     * HibernateORMTransaction tx = new HibernateORMTransaction(session, true);
+     * HibernateORMTransaction tx = new HibernateORMTransaction( session, true );
      * tx.begin();
      * </pre>
      *
      * @param session
-     *            Hibernate session to open a transaction on
+     *                   Hibernate session to open a transaction on
      * @param autoManage
-     *            Should the Transaction be auto-managed
+     *                   Should the Transaction be auto-managed
      */
-    public HibernateORMTransaction(Session session, boolean autoManage) {
-        this.session = session;
+    public HibernateORMTransaction( Session session, boolean autoManage ) {
+        this.session    = session;
         this.autoManage = autoManage;
     }
 
@@ -45,7 +45,7 @@ public class HibernateORMTransaction implements ORMTransaction {
      */
     @Override
     public void begin() {
-        if (autoManage) {
+        if ( autoManage ) {
             session.flush();
         }
         trans = session.getTransaction();
@@ -83,13 +83,13 @@ public class HibernateORMTransaction implements ORMTransaction {
      */
     @Override
     public void end() {
-        if (doRollback) {
+        if ( doRollback ) {
             trans.rollback();
-            if (autoManage) {
+            if ( autoManage ) {
                 session.clear();
             }
         } else {
-            if (trans.getStatus() == TransactionStatus.COMMITTED) {
+            if ( trans.getStatus() == TransactionStatus.COMMITTED ) {
                 trans.commit();
             }
             session.flush();

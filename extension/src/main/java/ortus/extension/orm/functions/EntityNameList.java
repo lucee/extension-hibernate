@@ -9,11 +9,11 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * License along with this library. If not, see <http://www.gnu.org/licenses/>.
  *
  **/
 package ortus.extension.orm.functions;
@@ -33,25 +33,25 @@ import lucee.loader.engine.CFMLEngine;
  */
 public class EntityNameList extends BIF {
 
-    public static String call(PageContext pc) throws PageException {
-        return call(pc, ",");
+    public static String call( PageContext pc ) throws PageException {
+        return call( pc, "," );
     }
 
-    public static String call(PageContext pc, String delimiter) throws PageException {
-        ORMSession sess = ORMUtil.getSession(pc);
-        return String.join(delimiter, sess.getEntityNames());
+    public static String call( PageContext pc, String delimiter ) throws PageException {
+        ORMSession sess = ORMUtil.getSession( pc );
+        return String.join( delimiter, sess.getEntityNames() );
     }
 
     @Override
-    public Object invoke(PageContext pc, Object[] args) throws PageException {
+    public Object invoke( PageContext pc, Object[] args ) throws PageException {
         CFMLEngine engine = CFMLEngineFactory.getInstance();
         Cast cast = engine.getCastUtil();
 
-        if (args.length == 0)
-            return call(pc);
-        if (args.length == 1)
-            return call(pc, cast.toString(args[0]));
+        if ( args.length == 0 )
+            return call( pc );
+        if ( args.length == 1 )
+            return call( pc, cast.toString( args[ 0 ] ) );
 
-        throw engine.getExceptionUtil().createFunctionException(pc, "EntityNameList", 0, 1, args.length);
+        throw engine.getExceptionUtil().createFunctionException( pc, "EntityNameList", 0, 1, args.length );
     }
 }

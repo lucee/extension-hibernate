@@ -9,11 +9,11 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * License along with this library. If not, see <http://www.gnu.org/licenses/>.
  *
  **/
 package ortus.extension.orm.functions;
@@ -34,26 +34,26 @@ import lucee.loader.engine.CFMLEngine;
  */
 public class EntityToQuery extends BIF {
 
-    public static Query call(PageContext pc, Object obj) throws PageException {
-        return call(pc, obj, null);
+    public static Query call( PageContext pc, Object obj ) throws PageException {
+        return call( pc, obj, null );
     }
 
-    public static Query call(PageContext pc, Object obj, String name) throws PageException {
-        ORMSession session = ORMUtil.getSession(pc);
-        return session.toQuery(pc, obj, name);
+    public static Query call( PageContext pc, Object obj, String name ) throws PageException {
+        ORMSession session = ORMUtil.getSession( pc );
+        return session.toQuery( pc, obj, name );
 
     }
 
     @Override
-    public Object invoke(PageContext pc, Object[] args) throws PageException {
+    public Object invoke( PageContext pc, Object[] args ) throws PageException {
         CFMLEngine engine = CFMLEngineFactory.getInstance();
         Cast cast = engine.getCastUtil();
 
-        if (args.length == 1)
-            return call(pc, args[0]);
-        if (args.length == 2)
-            return call(pc, args[0], cast.toString(args[1]));
+        if ( args.length == 1 )
+            return call( pc, args[ 0 ] );
+        if ( args.length == 2 )
+            return call( pc, args[ 0 ], cast.toString( args[ 1 ] ) );
 
-        throw engine.getExceptionUtil().createFunctionException(pc, "EntityToQuery", 1, 2, args.length);
+        throw engine.getExceptionUtil().createFunctionException( pc, "EntityToQuery", 1, 2, args.length );
     }
 }

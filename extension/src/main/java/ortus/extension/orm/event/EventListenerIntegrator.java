@@ -62,10 +62,10 @@ import lucee.runtime.type.UDF;
  * For example, a <code>postInsert()</code> method in a <code>User</code> entity will be invoked prior to the entity's
  * insertion into the database. This same method will also be invoked on the EventHandler component, if configured.
  */
-public class EventListenerIntegrator implements Integrator, PreInsertEventListener, PostInsertEventListener,
-        PreDeleteEventListener, PostDeleteEventListener, DeleteEventListener, PreUpdateEventListener,
-        PostUpdateEventListener, PreLoadEventListener, PostLoadEventListener, FlushEventListener,
-        AutoFlushEventListener, ClearEventListener, DirtyCheckEventListener, EvictEventListener {
+public class EventListenerIntegrator
+        implements Integrator, PreInsertEventListener, PostInsertEventListener, PreDeleteEventListener, PostDeleteEventListener,
+        DeleteEventListener, PreUpdateEventListener, PostUpdateEventListener, PreLoadEventListener, PostLoadEventListener,
+        FlushEventListener, AutoFlushEventListener, ClearEventListener, DirtyCheckEventListener, EvictEventListener {
 
     private static final long serialVersionUID = -5954121166467541422L;
 
@@ -74,50 +74,50 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
      */
     private Component globalEventListener;
 
-    public static final Key ON_EVICT = CommonUtil.createKey("onEvict");
-    public static final Key ON_DIRTY_CHECK = CommonUtil.createKey("onDirtyCheck");
-    public static final Key ON_DELETE = CommonUtil.createKey("onDelete");
-    public static final Key ON_CLEAR = CommonUtil.createKey("onClear");
-    public static final Key ON_AUTO_FLUSH = CommonUtil.createKey("onAutoFlush");
-    public static final Key ON_FLUSH = CommonUtil.createKey("onFlush");
-    public static final Key PRE_INSERT = CommonUtil.createKey("preInsert");
-    public static final Key PRE_UPDATE = CommonUtil.createKey("preUpdate");
-    public static final Key POST_LOAD = CommonUtil.createKey("postLoad");
-    public static final Key PRE_LOAD = CommonUtil.createKey("preLoad");
-    public static final Key POST_DELETE = CommonUtil.createKey("postDelete");
-    public static final Key PRE_DELETE = CommonUtil.createKey("preDelete");
-    public static final Key POST_UPDATE = CommonUtil.createKey("postUpdate");
-    public static final Key POST_INSERT = CommonUtil.createKey("postInsert");
+    public static final Key ON_EVICT = CommonUtil.createKey( "onEvict" );
+    public static final Key ON_DIRTY_CHECK = CommonUtil.createKey( "onDirtyCheck" );
+    public static final Key ON_DELETE = CommonUtil.createKey( "onDelete" );
+    public static final Key ON_CLEAR = CommonUtil.createKey( "onClear" );
+    public static final Key ON_AUTO_FLUSH = CommonUtil.createKey( "onAutoFlush" );
+    public static final Key ON_FLUSH = CommonUtil.createKey( "onFlush" );
+    public static final Key PRE_INSERT = CommonUtil.createKey( "preInsert" );
+    public static final Key PRE_UPDATE = CommonUtil.createKey( "preUpdate" );
+    public static final Key POST_LOAD = CommonUtil.createKey( "postLoad" );
+    public static final Key PRE_LOAD = CommonUtil.createKey( "preLoad" );
+    public static final Key POST_DELETE = CommonUtil.createKey( "postDelete" );
+    public static final Key PRE_DELETE = CommonUtil.createKey( "preDelete" );
+    public static final Key POST_UPDATE = CommonUtil.createKey( "postUpdate" );
+    public static final Key POST_INSERT = CommonUtil.createKey( "postInsert" );
 
     @Override
-    public void integrate(Metadata metadata, SessionFactoryImplementor sessionFactory,
-            SessionFactoryServiceRegistry serviceRegistry) {
-        EventListenerRegistry eventListenerRegistry = serviceRegistry.getService(EventListenerRegistry.class);
+    public void integrate( Metadata metadata, SessionFactoryImplementor sessionFactory,
+            SessionFactoryServiceRegistry serviceRegistry ) {
+        EventListenerRegistry eventListenerRegistry = serviceRegistry.getService( EventListenerRegistry.class );
 
-        eventListenerRegistry.prependListeners(EventType.PRE_INSERT, this);
-        eventListenerRegistry.prependListeners(EventType.POST_INSERT, this);
+        eventListenerRegistry.prependListeners( EventType.PRE_INSERT, this );
+        eventListenerRegistry.prependListeners( EventType.POST_INSERT, this );
 
-        eventListenerRegistry.prependListeners(EventType.PRE_DELETE, this);
-        eventListenerRegistry.prependListeners(EventType.POST_DELETE, this);
-        eventListenerRegistry.prependListeners(EventType.DELETE, this);
+        eventListenerRegistry.prependListeners( EventType.PRE_DELETE, this );
+        eventListenerRegistry.prependListeners( EventType.POST_DELETE, this );
+        eventListenerRegistry.prependListeners( EventType.DELETE, this );
 
-        eventListenerRegistry.prependListeners(EventType.PRE_UPDATE, this);
-        eventListenerRegistry.prependListeners(EventType.POST_UPDATE, this);
+        eventListenerRegistry.prependListeners( EventType.PRE_UPDATE, this );
+        eventListenerRegistry.prependListeners( EventType.POST_UPDATE, this );
 
-        eventListenerRegistry.prependListeners(EventType.PRE_LOAD, this);
-        eventListenerRegistry.prependListeners(EventType.POST_LOAD, this);
+        eventListenerRegistry.prependListeners( EventType.PRE_LOAD, this );
+        eventListenerRegistry.prependListeners( EventType.POST_LOAD, this );
 
-        eventListenerRegistry.prependListeners(EventType.AUTO_FLUSH, this);
-        eventListenerRegistry.prependListeners(EventType.FLUSH, this);
+        eventListenerRegistry.prependListeners( EventType.AUTO_FLUSH, this );
+        eventListenerRegistry.prependListeners( EventType.FLUSH, this );
 
-        eventListenerRegistry.prependListeners(EventType.EVICT, this);
-        eventListenerRegistry.prependListeners(EventType.CLEAR, this);
+        eventListenerRegistry.prependListeners( EventType.EVICT, this );
+        eventListenerRegistry.prependListeners( EventType.CLEAR, this );
 
-        eventListenerRegistry.prependListeners(EventType.DIRTY_CHECK, this);
+        eventListenerRegistry.prependListeners( EventType.DIRTY_CHECK, this );
     }
 
     @Override
-    public void disintegrate(SessionFactoryImplementor sessionFactory, SessionFactoryServiceRegistry serviceRegistry) {
+    public void disintegrate( SessionFactoryImplementor sessionFactory, SessionFactoryServiceRegistry serviceRegistry ) {
 
     }
 
@@ -125,140 +125,140 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
      * Set the "Global" EventHandler to fire on all events in the application.
      *
      * @param globalEventListener
-     *            Instantiated Lucee Component object.
+     *                            Instantiated Lucee Component object.
      */
-    public void setGlobalEventListener(Component globalEventListener) {
+    public void setGlobalEventListener( Component globalEventListener ) {
         this.globalEventListener = globalEventListener;
     }
 
     @Override
-    public boolean requiresPostCommitHanding(EntityPersister arg0) {
+    public boolean requiresPostCommitHanding( EntityPersister arg0 ) {
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public boolean onPreInsert(PreInsertEvent event) {
+    public boolean onPreInsert( PreInsertEvent event ) {
         String[] propertyNames = event.getPersister().getEntityMetamodel().getPropertyNames();
-        Struct state = entityStateToStruct(propertyNames, event.getState());
-        fireEventOnGlobalListener(EventListenerIntegrator.PRE_INSERT, event.getEntity(), event, state);
+        Struct state = entityStateToStruct( propertyNames, event.getState() );
+        fireEventOnGlobalListener( EventListenerIntegrator.PRE_INSERT, event.getEntity(), event, state );
 
-        fireOnEntity(event.getEntity(), EventListenerIntegrator.PRE_INSERT, event, null);
+        fireOnEntity( event.getEntity(), EventListenerIntegrator.PRE_INSERT, event, null );
 
-        Component entity = CommonUtil.toComponent(event.getEntity(), null);
-        if (entity != null)
-            persistEntityChangesToState(event.getState(), propertyNames, entity);
+        Component entity = CommonUtil.toComponent( event.getEntity(), null );
+        if ( entity != null )
+            persistEntityChangesToState( event.getState(), propertyNames, entity );
         return false;
     }
 
     @Override
-    public void onPostInsert(PostInsertEvent event) {
-        fireEventOnGlobalListener(EventListenerIntegrator.POST_INSERT, event.getEntity(), event, null);
+    public void onPostInsert( PostInsertEvent event ) {
+        fireEventOnGlobalListener( EventListenerIntegrator.POST_INSERT, event.getEntity(), event, null );
 
-        fireOnEntity(event.getEntity(), EventListenerIntegrator.POST_INSERT, event, null);
+        fireOnEntity( event.getEntity(), EventListenerIntegrator.POST_INSERT, event, null );
     }
 
     // PreDeleteEventListener
     @Override
-    public boolean onPreDelete(PreDeleteEvent event) {
-        fireEventOnGlobalListener(EventListenerIntegrator.PRE_DELETE, event.getEntity(), event, null);
+    public boolean onPreDelete( PreDeleteEvent event ) {
+        fireEventOnGlobalListener( EventListenerIntegrator.PRE_DELETE, event.getEntity(), event, null );
 
-        fireOnEntity(event.getEntity(), EventListenerIntegrator.PRE_DELETE, event, null);
+        fireOnEntity( event.getEntity(), EventListenerIntegrator.PRE_DELETE, event, null );
         return false;
     }
 
     // PostDeleteEventListener
     @Override
-    public void onPostDelete(PostDeleteEvent event) {
-        fireEventOnGlobalListener(EventListenerIntegrator.POST_DELETE, event.getEntity(), event, null);
+    public void onPostDelete( PostDeleteEvent event ) {
+        fireEventOnGlobalListener( EventListenerIntegrator.POST_DELETE, event.getEntity(), event, null );
 
-        fireOnEntity(event.getEntity(), EventListenerIntegrator.POST_DELETE, event, null);
+        fireOnEntity( event.getEntity(), EventListenerIntegrator.POST_DELETE, event, null );
     }
 
     // PreUpdateEventListener
     @Override
-    public boolean onPreUpdate(PreUpdateEvent event) {
+    public boolean onPreUpdate( PreUpdateEvent event ) {
         String[] propertyNames = event.getPersister().getEntityMetamodel().getPropertyNames();
-        Struct oldState = entityStateToStruct(propertyNames, event.getOldState());
-        fireEventOnGlobalListener(EventListenerIntegrator.PRE_UPDATE, event.getEntity(), event, oldState);
+        Struct oldState = entityStateToStruct( propertyNames, event.getOldState() );
+        fireEventOnGlobalListener( EventListenerIntegrator.PRE_UPDATE, event.getEntity(), event, oldState );
 
-        fireOnEntity(event.getEntity(), EventListenerIntegrator.PRE_UPDATE, event, oldState);
-        Component entity = CommonUtil.toComponent(event.getEntity(), null);
-        if (entity != null)
-            persistEntityChangesToState(event.getState(), propertyNames, entity);
+        fireOnEntity( event.getEntity(), EventListenerIntegrator.PRE_UPDATE, event, oldState );
+        Component entity = CommonUtil.toComponent( event.getEntity(), null );
+        if ( entity != null )
+            persistEntityChangesToState( event.getState(), propertyNames, entity );
         return false;
     }
 
     // PostUpdateEventListener
     @Override
-    public void onPostUpdate(PostUpdateEvent event) {
-        fireEventOnGlobalListener(EventListenerIntegrator.POST_UPDATE, event.getEntity(), event, null);
+    public void onPostUpdate( PostUpdateEvent event ) {
+        fireEventOnGlobalListener( EventListenerIntegrator.POST_UPDATE, event.getEntity(), event, null );
 
-        fireOnEntity(event.getEntity(), EventListenerIntegrator.POST_UPDATE, event, null);
+        fireOnEntity( event.getEntity(), EventListenerIntegrator.POST_UPDATE, event, null );
     }
 
     // PreLoadEventListener
     @Override
-    public void onPreLoad(PreLoadEvent event) {
-        fireEventOnGlobalListener(EventListenerIntegrator.PRE_LOAD, event.getEntity(), event, null);
+    public void onPreLoad( PreLoadEvent event ) {
+        fireEventOnGlobalListener( EventListenerIntegrator.PRE_LOAD, event.getEntity(), event, null );
 
-        fireOnEntity(event.getEntity(), EventListenerIntegrator.PRE_LOAD, event, null);
+        fireOnEntity( event.getEntity(), EventListenerIntegrator.PRE_LOAD, event, null );
     }
 
     // PostLoadEventListener
     @Override
-    public void onPostLoad(PostLoadEvent event) {
-        fireEventOnGlobalListener(EventListenerIntegrator.POST_LOAD, event.getEntity(), event, null);
+    public void onPostLoad( PostLoadEvent event ) {
+        fireEventOnGlobalListener( EventListenerIntegrator.POST_LOAD, event.getEntity(), event, null );
 
-        fireOnEntity(event.getEntity(), EventListenerIntegrator.POST_LOAD, event, null);
+        fireOnEntity( event.getEntity(), EventListenerIntegrator.POST_LOAD, event, null );
     }
 
     @Override
-    public void onFlush(FlushEvent event) throws HibernateException {
+    public void onFlush( FlushEvent event ) throws HibernateException {
         // Sadly, the FlushEvent does not allow / provide a method to retrieve the entity.
         Object entity = null;
-        fireEventOnGlobalListener(EventListenerIntegrator.ON_FLUSH, entity, event, null);
+        fireEventOnGlobalListener( EventListenerIntegrator.ON_FLUSH, entity, event, null );
     }
 
     @Override
-    public void onAutoFlush(AutoFlushEvent event) throws HibernateException {
+    public void onAutoFlush( AutoFlushEvent event ) throws HibernateException {
         // Sadly, the AutoFlushEvent does not allow / provide a method to retrieve the entity.
         Object entity = null;
-        fireEventOnGlobalListener(EventListenerIntegrator.ON_AUTO_FLUSH, entity, event, null);
+        fireEventOnGlobalListener( EventListenerIntegrator.ON_AUTO_FLUSH, entity, event, null );
     }
 
     @Override
-    public void onClear(ClearEvent event) {
+    public void onClear( ClearEvent event ) {
         // Sadly, the ClearEvent does not allow / provide a method to retrieve the entity.
         Object entity = null;
-        fireEventOnGlobalListener(EventListenerIntegrator.ON_CLEAR, entity, event, null);
+        fireEventOnGlobalListener( EventListenerIntegrator.ON_CLEAR, entity, event, null );
     }
 
     @Override
-    public void onDelete(DeleteEvent event) throws HibernateException {
+    public void onDelete( DeleteEvent event ) throws HibernateException {
         Object entity = event.getObject();
-        fireEventOnGlobalListener(EventListenerIntegrator.ON_DELETE, entity, event, null);
+        fireEventOnGlobalListener( EventListenerIntegrator.ON_DELETE, entity, event, null );
     }
 
     @Override
-    public void onDelete(DeleteEvent event, Set transientEntities) throws HibernateException {
+    public void onDelete( DeleteEvent event, Set transientEntities ) throws HibernateException {
         Object entity = event.getObject();
         // TODO: handle transientEntities
-        fireEventOnGlobalListener(EventListenerIntegrator.ON_DELETE, entity, event, null);
+        fireEventOnGlobalListener( EventListenerIntegrator.ON_DELETE, entity, event, null );
     }
 
     @Override
-    public void onDirtyCheck(DirtyCheckEvent event) throws HibernateException {
+    public void onDirtyCheck( DirtyCheckEvent event ) throws HibernateException {
         // Sadly, the DirtyCheckEvent does not allow / provide a method to retrieve the entity.
         Object entity = null;
-        fireEventOnGlobalListener(EventListenerIntegrator.ON_DIRTY_CHECK, entity, event, null);
+        fireEventOnGlobalListener( EventListenerIntegrator.ON_DIRTY_CHECK, entity, event, null );
     }
 
     @Override
-    public void onEvict(EvictEvent event) throws HibernateException {
+    public void onEvict( EvictEvent event ) throws HibernateException {
         // Sadly, the EvictEvent does not allow / provide a method to retrieve the entity.
         Object entity = null;
-        fireEventOnGlobalListener(EventListenerIntegrator.ON_EVICT, entity, event, null);
+        fireEventOnGlobalListener( EventListenerIntegrator.ON_EVICT, entity, event, null );
     }
 
     /**
@@ -278,38 +278,38 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
      * If no global event handler is configured, will exit.
      *
      * @param name
-     *            event type name to fire, for example "preInsert" or "preDelete"
+     *               event type name to fire, for example "preInsert" or "preDelete"
      * @param entity
-     *            the entity from event.getEntity()
+     *               the entity from event.getEntity()
      * @param event
-     *            the Hibernate event object.
+     *               the Hibernate event object.
      * @param data
-     *            A struct of data to pass to the event
+     *               A struct of data to pass to the event
      */
-    public void fireEventOnGlobalListener(Key name, Object entity, AbstractEvent event, Struct data) {
-        if (globalEventListener == null) {
+    public void fireEventOnGlobalListener( Key name, Object entity, AbstractEvent event, Struct data ) {
+        if ( globalEventListener == null ) {
             return;
         }
 
-        fireOnComponent(getGlobalEventListener(), name, entity, data, event);
+        fireOnComponent( getGlobalEventListener(), name, entity, data, event );
     }
 
     /**
      * Fire the event listener UDF, if found, on the entity component
      *
      * @param listener
-     *            the Lucee Component on which to fire this listener method
+     *                 the Lucee Component on which to fire this listener method
      * @param name
-     *            event type name to fire, for example "preInsert" or "preDelete"
+     *                 event type name to fire, for example "preInsert" or "preDelete"
      * @param event
-     *            the Hibernate event object.
+     *                 the Hibernate event object.
      * @param data
-     *            A struct of data to pass to the event
+     *                 A struct of data to pass to the event
      */
-    public void fireOnEntity(Object entity, Key name, AbstractEvent event, Struct data) {
-        Component listener = CommonUtil.toComponent(entity, null);
-        if (listener != null) {
-            fireOnComponent(listener, name, data, event);
+    public void fireOnEntity( Object entity, Key name, AbstractEvent event, Struct data ) {
+        Component listener = CommonUtil.toComponent( entity, null );
+        if ( listener != null ) {
+            fireOnComponent( listener, name, data, event );
         }
     }
 
@@ -317,26 +317,26 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
      * See if the given component has a method matching the given name.
      *
      * @param comp
-     *            Lucee Component to look on, for example events.EventHandler.
+     *                   Lucee Component to look on, for example events.EventHandler.
      * @param methodName
-     *            Method name to look for, for example "preInsert"
+     *                   Method name to look for, for example "preInsert"
      *
      * @return true if method found
      */
-    private boolean componentHasMethod(Component comp, Collection.Key methodName) {
-        return comp.get(methodName, null) instanceof UDF;
+    private boolean componentHasMethod( Component comp, Collection.Key methodName ) {
+        return comp.get( methodName, null ) instanceof UDF;
     }
 
-    private void fireOnComponent(Component cfc, Key name, Object... args) {
-        if (!componentHasMethod(cfc, name)) {
+    private void fireOnComponent( Component cfc, Key name, Object... args ) {
+        if ( !componentHasMethod( cfc, name ) ) {
             return;
         }
         CFMLEngine engine = CFMLEngineFactory.getInstance();
         try {
             PageContext pc = engine.getThreadPageContext();
-            cfc.call(pc, name, args);
-        } catch (PageException pe) {
-            throw engine.getCastUtil().toPageRuntimeException(pe);
+            cfc.call( pc, name, args );
+        } catch ( PageException pe ) {
+            throw engine.getCastUtil().toPageRuntimeException( pe );
         }
     }
 
@@ -344,19 +344,19 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
      * Merge the provided arrays of properties and values into a CFML-friendly struct.
      *
      * @param properties
-     *            Array of property names, usually retrieved from <code>event.getPersister().getPropertyNames()</code>
+     *                   Array of property names, usually retrieved from <code>event.getPersister().getPropertyNames()</code>
      * @param values
-     *            Array of property values, either retrieved from <code>event.getPersister().getPropertyValues()</code>,
-     *            <code>event.getState()</code> or <code>event.getOldState()</code>
+     *                   Array of property values, either retrieved from <code>event.getPersister().getPropertyValues()</code>,
+     *                   <code>event.getState()</code> or <code>event.getOldState()</code>
      *
      * @return A struct
      */
-    private Struct entityStateToStruct(String[] properties, Object[] values) {
+    private Struct entityStateToStruct( String[] properties, Object[] values ) {
         Struct entityState = CommonUtil.createStruct();
 
-        if (values != null && properties != null && values.length == properties.length) {
-            for (int i = 0; i < values.length; i++) {
-                entityState.setEL(CommonUtil.createKey(properties[i]), values[i]);
+        if ( values != null && properties != null && values.length == properties.length ) {
+            for ( int i = 0; i < values.length; i++ ) {
+                entityState.setEL( CommonUtil.createKey( properties[ i ] ), values[ i ] );
             }
         }
         return entityState;
@@ -374,31 +374,30 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
      * See http://anshuiitk.blogspot.com/2010/11/hibernate-pre-database-opertaion-event.html
      *
      * @param state
-     *            The entity state to persist, from event.getState(). {@link org.hibernate.event.spi.PreInsertEvent}
+     *                        The entity state to persist, from event.getState(). {@link org.hibernate.event.spi.PreInsertEvent}
      * @param stateProperties
-     *            Array of properties to update, matching the order of the `state[]` fields.
+     *                        Array of properties to update, matching the order of the `state[]` fields.
      * @param entity
-     *            The entity to pull a potentially altered value from.
+     *                        The entity to pull a potentially altered value from.
      */
-    private void persistEntityChangesToState(Object[] state, String[] stateProperties, Component entity) {
+    private void persistEntityChangesToState( Object[] state, String[] stateProperties, Component entity ) {
         try {
-            Property[] properties = entity.getProperties(true, false, false, false);
-            for (int n = 0; n < stateProperties.length; ++n) {
-                final String currentProperty = stateProperties[n];
-                Optional<Property> property = Arrays.stream(properties)
-                        .filter(prop -> prop.getName().equals( currentProperty ))
-                        .findFirst();
-                if (property.isPresent()) {
+            Property[] properties = entity.getProperties( true, false, false, false );
+            for ( int n = 0; n < stateProperties.length; ++n ) {
+                final String currentProperty = stateProperties[ n ];
+                Optional<Property> property = Arrays.stream( properties )
+                        .filter( prop -> prop.getName().equals( currentProperty ) ).findFirst();
+                if ( property.isPresent() ) {
                     Property theprop = property.get();
-                    if (theprop.getValue() != null) {
-                        Object value = HibernateCaster.toHibernateValue(entity, theprop);
-                        state[n] = value;
+                    if ( theprop.getValue() != null ) {
+                        Object value = HibernateCaster.toHibernateValue( entity, theprop );
+                        state[ n ] = value;
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch ( Exception e ) {
             throw new RuntimeException(
-                    "Error populating event state for persistance in pre-event listener method: " + e.getMessage(), e);
+                    "Error populating event state for persistance in pre-event listener method: " + e.getMessage(), e );
         }
     }
 }

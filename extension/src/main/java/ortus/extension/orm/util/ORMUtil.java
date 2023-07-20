@@ -9,11 +9,11 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * License along with this library. If not, see <http://www.gnu.org/licenses/>.
  *
  */
 package ortus.extension.orm.util;
@@ -33,181 +33,181 @@ import lucee.loader.util.Util;
 
 public class ORMUtil {
 
-    public static final Key PROPS_FIELDTYPE = CommonUtil.createKey("fieldtype");
-    public static final Key PROPS_DATASOURCE = CommonUtil.createKey("datasource");
+    public static final Key PROPS_FIELDTYPE = CommonUtil.createKey( "fieldtype" );
+    public static final Key PROPS_DATASOURCE = CommonUtil.createKey( "datasource" );
 
-    public static final String DELIMITER = new String(".");
+    public static final String DELIMITER = new String( "." );
 
     private ORMUtil() {
-        throw new IllegalStateException("Utility class; please don't instantiate!");
+        throw new IllegalStateException( "Utility class; please don't instantiate!" );
     }
 
-    public static ORMSession getSession(PageContext pc) throws PageException {
-        return getSession(pc, true);
+    public static ORMSession getSession( PageContext pc ) throws PageException {
+        return getSession( pc, true );
     }
 
-    public static ORMSession getSession(PageContext pc, boolean create) throws PageException {
-        return pc.getORMSession(create);
+    public static ORMSession getSession( PageContext pc, boolean create ) throws PageException {
+        return pc.getORMSession( create );
     }
 
-    public static ORMEngine getEngine(PageContext pc) throws PageException {
-        return pc.getConfig().getORMEngine(pc);
+    public static ORMEngine getEngine( PageContext pc ) throws PageException {
+        return pc.getConfig().getORMEngine( pc );
     }
 
     /**
      * Reset (reload) ORM engine
      *
-     * @param pc Lucee PageContext object
+     * @param pc    Lucee PageContext object
      * @param force
-     *            if set to false the engine is on loaded when the configuration has changed
+     *              if set to false the engine is on loaded when the configuration has changed
      *
      * @throws PageException
      */
-    public static ORMEngine resetEngine(PageContext pc, boolean force) throws PageException {
-        ORMEngine e = getEngine(pc);
-        e.reload(pc, force);
+    public static ORMEngine resetEngine( PageContext pc, boolean force ) throws PageException {
+        ORMEngine e = getEngine( pc );
+        e.reload( pc, force );
         return e;
     }
 
-    public static Property[] getIds(Property[] props) {
+    public static Property[] getIds( Property[] props ) {
         ArrayList<Property> ids = new ArrayList<>();
-        for (int y = 0; y < props.length; y++) {
-            String fieldType = CommonUtil.toString(props[y].getDynamicAttributes().get(PROPS_FIELDTYPE, null), null);
-            Character delimiterChar = Character.valueOf(DELIMITER.charAt(0));
-            if ("id".equalsIgnoreCase(fieldType)
-                    || CommonUtil.listFindNoCaseIgnoreEmpty(fieldType, "id", delimiterChar) != -1)
-                ids.add(props[y]);
+        for ( int y = 0; y < props.length; y++ ) {
+            String fieldType = CommonUtil.toString( props[ y ].getDynamicAttributes().get( PROPS_FIELDTYPE, null ), null );
+            Character delimiterChar = Character.valueOf( DELIMITER.charAt( 0 ) );
+            if ( "id".equalsIgnoreCase( fieldType )
+                    || CommonUtil.listFindNoCaseIgnoreEmpty( fieldType, "id", delimiterChar ) != -1 )
+                ids.add( props[ y ] );
         }
 
         // no id field defined
-        if (ids.isEmpty()) {
+        if ( ids.isEmpty() ) {
             String fieldType;
-            for (int y = 0; y < props.length; y++) {
-                fieldType = CommonUtil.toString(props[y].getDynamicAttributes().get(PROPS_FIELDTYPE, null), null);
-                if (Util.isEmpty(fieldType, true) && props[y].getName().equalsIgnoreCase("id")) {
-                    ids.add(props[y]);
-                    props[y].getDynamicAttributes().setEL(PROPS_FIELDTYPE, "id");
+            for ( int y = 0; y < props.length; y++ ) {
+                fieldType = CommonUtil.toString( props[ y ].getDynamicAttributes().get( PROPS_FIELDTYPE, null ), null );
+                if ( Util.isEmpty( fieldType, true ) && props[ y ].getName().equalsIgnoreCase( "id" ) ) {
+                    ids.add( props[ y ] );
+                    props[ y ].getDynamicAttributes().setEL( PROPS_FIELDTYPE, "id" );
                 }
             }
         }
 
         // still no id field defined
-        if (ids.isEmpty() && props.length > 0) {
-            String owner = props[0].getOwnerName();
-            if (!Util.isEmpty(owner))
-                owner = CommonUtil.last(owner, DELIMITER).trim();
+        if ( ids.isEmpty() && props.length > 0 ) {
+            String owner = props[ 0 ].getOwnerName();
+            if ( !Util.isEmpty( owner ) )
+                owner = CommonUtil.last( owner, DELIMITER ).trim();
 
             String fieldType;
-            if (!Util.isEmpty(owner)) {
+            if ( !Util.isEmpty( owner ) ) {
                 String id = owner + "id";
-                for (int y = 0; y < props.length; y++) {
-                    fieldType = CommonUtil.toString(props[y].getDynamicAttributes().get(PROPS_FIELDTYPE, null), null);
-                    if (Util.isEmpty(fieldType, true) && props[y].getName().equalsIgnoreCase(id)) {
-                        ids.add(props[y]);
-                        props[y].getDynamicAttributes().setEL(PROPS_FIELDTYPE, "id");
+                for ( int y = 0; y < props.length; y++ ) {
+                    fieldType = CommonUtil.toString( props[ y ].getDynamicAttributes().get( PROPS_FIELDTYPE, null ), null );
+                    if ( Util.isEmpty( fieldType, true ) && props[ y ].getName().equalsIgnoreCase( id ) ) {
+                        ids.add( props[ y ] );
+                        props[ y ].getDynamicAttributes().setEL( PROPS_FIELDTYPE, "id" );
                     }
                 }
             }
         }
-        return ids.toArray(new Property[ids.size()]);
+        return ids.toArray( new Property[ ids.size() ] );
     }
 
-    public static Object getPropertyValue(Component cfc, String name, Object defaultValue) {
-        Property[] props = getProperties(cfc);
+    public static Object getPropertyValue( Component cfc, String name, Object defaultValue ) {
+        Property[] props = getProperties( cfc );
 
-        for (int i = 0; i < props.length; i++) {
-            if (!props[i].getName().equalsIgnoreCase(name))
+        for ( int i = 0; i < props.length; i++ ) {
+            if ( !props[ i ].getName().equalsIgnoreCase( name ) )
                 continue;
-            return cfc.getComponentScope().get(CommonUtil.createKey(name), null);
+            return cfc.getComponentScope().get( CommonUtil.createKey( name ), null );
         }
         return defaultValue;
     }
 
-    private static Property[] getProperties(Component cfc) {
-        return cfc.getProperties(true, true, false, false);
+    private static Property[] getProperties( Component cfc ) {
+        return cfc.getProperties( true, true, false, false );
     }
 
-    public static boolean isRelated(Property prop) {
-        String fieldType = CommonUtil.toString(prop.getDynamicAttributes().get(PROPS_FIELDTYPE, "column"), "column");
-        if (Util.isEmpty(fieldType, true))
+    public static boolean isRelated( Property prop ) {
+        String fieldType = CommonUtil.toString( prop.getDynamicAttributes().get( PROPS_FIELDTYPE, "column" ), "column" );
+        if ( Util.isEmpty( fieldType, true ) )
             return false;
         fieldType = fieldType.toLowerCase().trim();
 
-        if ("one-to-one".equals(fieldType))
+        if ( "one-to-one".equals( fieldType ) )
             return true;
-        if ("many-to-one".equals(fieldType))
+        if ( "many-to-one".equals( fieldType ) )
             return true;
-        if ("one-to-many".equals(fieldType))
+        if ( "one-to-many".equals( fieldType ) )
             return true;
-        if ("many-to-many".equals(fieldType))
+        if ( "many-to-many".equals( fieldType ) )
             return true;
         return false;
     }
 
-    public static Struct convertToSimpleMap(String paramsStr) {
+    public static Struct convertToSimpleMap( String paramsStr ) {
         paramsStr = paramsStr.trim();
-        if (!CommonUtil.startsWith(paramsStr, '{') || !CommonUtil.endsWith(paramsStr, '}'))
+        if ( !CommonUtil.startsWith( paramsStr, '{' ) || !CommonUtil.endsWith( paramsStr, '}' ) )
             return null;
 
-        paramsStr = paramsStr.substring(1, paramsStr.length() - 1);
-        String items[] = CommonUtil.toStringArray(paramsStr, DELIMITER);
+        paramsStr = paramsStr.substring( 1, paramsStr.length() - 1 );
+        String items[] = CommonUtil.toStringArray( paramsStr, DELIMITER );
 
         Struct params = CommonUtil.createStruct();
         String arr$[] = items;
         int index;
-        for (int i = 0; i < arr$.length; i++) {
-            String pair = arr$[i];
-            index = pair.indexOf('=');
-            if (index == -1)
+        for ( int i = 0; i < arr$.length; i++ ) {
+            String pair = arr$[ i ];
+            index = pair.indexOf( '=' );
+            if ( index == -1 )
                 return null;
 
-            params.setEL(CommonUtil.createKey(deleteQuotes(pair.substring(0, index).trim()).trim()),
-                    deleteQuotes(pair.substring(index + 1).trim()));
+            params.setEL( CommonUtil.createKey( deleteQuotes( pair.substring( 0, index ).trim() ).trim() ),
+                    deleteQuotes( pair.substring( index + 1 ).trim() ) );
         }
 
         return params;
     }
 
-    private static String deleteQuotes(String str) {
-        if (Util.isEmpty(str, true))
+    private static String deleteQuotes( String str ) {
+        if ( Util.isEmpty( str, true ) )
             return "";
-        char first = str.charAt(0);
-        if ((first == '\'' || first == '"') && CommonUtil.endsWith(str, first))
-            return str.substring(1, str.length() - 1);
+        char first = str.charAt( 0 );
+        if ( ( first == '\'' || first == '"' ) && CommonUtil.endsWith( str, first ) )
+            return str.substring( 1, str.length() - 1 );
         return str;
     }
 
-    public static DataSource getDefaultDataSource(PageContext pc) throws PageException {
+    public static DataSource getDefaultDataSource( PageContext pc ) throws PageException {
         Object datasource = pc.getApplicationContext().getORMDataSource();
 
-        if (datasource == null) {
-            throw ExceptionUtil.createException("missing datasource definition in Application.cfc/cfapplication");
+        if ( datasource == null ) {
+            throw ExceptionUtil.createException( "missing datasource definition in Application.cfc/cfapplication" );
         }
-        return datasource instanceof DataSource ? (DataSource) datasource
-                : pc.getDataSource(CommonUtil.toString(datasource));
+        return datasource instanceof DataSource ? ( DataSource ) datasource
+                : pc.getDataSource( CommonUtil.toString( datasource ) );
     }
 
-    public static DataSource getDefaultDataSource(PageContext pc, DataSource defaultValue) {
+    public static DataSource getDefaultDataSource( PageContext pc, DataSource defaultValue ) {
         Object datasource = pc.getApplicationContext().getORMDataSource();
-        if (datasource == null)
+        if ( datasource == null )
             return defaultValue;
         try {
-            return getDefaultDataSource(pc);
-        } catch (PageException e) {
+            return getDefaultDataSource( pc );
+        } catch ( PageException e ) {
             return defaultValue;
         }
     }
 
-    public static DataSource getDataSource(PageContext pc, String dsn, DataSource defaultValue) {
-        if (Util.isEmpty(dsn, true))
-            return ORMUtil.getDefaultDataSource(pc, defaultValue);
-        return pc.getDataSource(dsn.trim(), defaultValue);
+    public static DataSource getDataSource( PageContext pc, String dsn, DataSource defaultValue ) {
+        if ( Util.isEmpty( dsn, true ) )
+            return ORMUtil.getDefaultDataSource( pc, defaultValue );
+        return pc.getDataSource( dsn.trim(), defaultValue );
     }
 
-    public static DataSource getDataSource(PageContext pc, String dsn) throws PageException {
-        if (Util.isEmpty(dsn, true))
-            return ORMUtil.getDefaultDataSource(pc);
-        return pc.getDataSource(dsn.trim());
+    public static DataSource getDataSource( PageContext pc, String dsn ) throws PageException {
+        if ( Util.isEmpty( dsn, true ) )
+            return ORMUtil.getDefaultDataSource( pc );
+        return pc.getDataSource( dsn.trim() );
     }
 
     /**
@@ -221,22 +221,22 @@ public class ORMUtil {
      *
      * @return Lucee Datasource object
      */
-    public static DataSource getDataSource(PageContext pc, Component cfc, DataSource defaultValue) {
+    public static DataSource getDataSource( PageContext pc, Component cfc, DataSource defaultValue ) {
 
         // datasource defined with cfc
         try {
-            Struct meta = cfc.getMetaData(pc);
-            String datasourceName = CommonUtil.toString(meta.get(PROPS_DATASOURCE, null), null);
-            if (!Util.isEmpty(datasourceName, true)) {
-                DataSource ds = pc.getDataSource(datasourceName, null);
-                if (ds != null)
+            Struct meta = cfc.getMetaData( pc );
+            String datasourceName = CommonUtil.toString( meta.get( PROPS_DATASOURCE, null ), null );
+            if ( !Util.isEmpty( datasourceName, true ) ) {
+                DataSource ds = pc.getDataSource( datasourceName, null );
+                if ( ds != null )
                     return ds;
             }
-        } catch (Throwable t) {
-            ExceptionUtil.rethrowIfNecessary(t);
+        } catch ( Throwable t ) {
+            ExceptionUtil.rethrowIfNecessary( t );
         }
 
-        return getDefaultDataSource(pc, defaultValue);
+        return getDefaultDataSource( pc, defaultValue );
     }
 
     /**
@@ -252,41 +252,41 @@ public class ORMUtil {
      *
      * @throws PageException
      */
-    public static DataSource getDataSource(PageContext pc, Component cfc) throws PageException {
+    public static DataSource getDataSource( PageContext pc, Component cfc ) throws PageException {
         // datasource defined with cfc
-        Struct meta = cfc.getMetaData(pc);
-        String datasourceName = CommonUtil.toString(meta.get(PROPS_DATASOURCE, null), null);
-        if (!Util.isEmpty(datasourceName, true)) {
-            return pc.getDataSource(datasourceName);
+        Struct meta = cfc.getMetaData( pc );
+        String datasourceName = CommonUtil.toString( meta.get( PROPS_DATASOURCE, null ), null );
+        if ( !Util.isEmpty( datasourceName, true ) ) {
+            return pc.getDataSource( datasourceName );
         }
 
-        return getDefaultDataSource(pc);
+        return getDefaultDataSource( pc );
     }
 
-    public static String getDataSourceName(PageContext pc, Component cfc) throws PageException {
+    public static String getDataSourceName( PageContext pc, Component cfc ) throws PageException {
         // datasource defined with cfc
-        Struct meta = cfc.getMetaData(pc);
-        String datasourceName = CommonUtil.toString(meta.get(PROPS_DATASOURCE, null), null);
-        if (!Util.isEmpty(datasourceName, true)) {
+        Struct meta = cfc.getMetaData( pc );
+        String datasourceName = CommonUtil.toString( meta.get( PROPS_DATASOURCE, null ), null );
+        if ( !Util.isEmpty( datasourceName, true ) ) {
             return datasourceName.trim();
         }
-        return getDefaultDataSource(pc).getName();
+        return getDefaultDataSource( pc ).getName();
     }
 
-    public static String getDataSourceName(PageContext pc, Component cfc, String defaultValue) {
+    public static String getDataSourceName( PageContext pc, Component cfc, String defaultValue ) {
         // datasource defined with cfc
         Struct meta = null;
         try {
-            meta = cfc.getMetaData(pc);
-            String datasourceName = CommonUtil.toString(meta.get(PROPS_DATASOURCE, null), null);
-            if (!Util.isEmpty(datasourceName, true)) {
+            meta = cfc.getMetaData( pc );
+            String datasourceName = CommonUtil.toString( meta.get( PROPS_DATASOURCE, null ), null );
+            if ( !Util.isEmpty( datasourceName, true ) ) {
                 return datasourceName.trim();
             }
-        } catch (PageException e) {
+        } catch ( PageException e ) {
         }
 
-        DataSource ds = getDefaultDataSource(pc, null);
-        if (ds != null)
+        DataSource ds = getDefaultDataSource( pc, null );
+        if ( ds != null )
             return ds.getName();
         return defaultValue;
     }

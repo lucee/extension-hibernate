@@ -25,10 +25,10 @@ public class HibernatePageException extends HibernateException implements IPageE
      * constructor of the class
      *
      * @param pe
-     *            page exception to hold
+     *           page exception to hold
      */
-    public HibernatePageException(PageException pe) {
-        super(pe.getMessage());
+    public HibernatePageException( PageException pe ) {
+        super( pe.getMessage() );
         this.pe = pe;
     }
 
@@ -48,33 +48,33 @@ public class HibernatePageException extends HibernateException implements IPageE
     }
 
     @Override
-    public Struct getCatchBlock(PageContext pc) {
-        return getCatchBlock(pc.getConfig());
+    public Struct getCatchBlock( PageContext pc ) {
+        return getCatchBlock( pc.getConfig() );
     }
 
     public Struct getCatchBlock() {
         // TLPC
-        return pe.getCatchBlock(CommonUtil.config());
+        return pe.getCatchBlock( CommonUtil.config() );
     }
 
     @Override
-    public CatchBlock getCatchBlock(Config config) {
-        return pe.getCatchBlock(config);
+    public CatchBlock getCatchBlock( Config config ) {
+        return pe.getCatchBlock( config );
     }
 
     @Override
-    public Struct getErrorBlock(PageContext pc, ErrorPage ep) {
-        return pe.getErrorBlock(pc, ep);
+    public Struct getErrorBlock( PageContext pc, ErrorPage ep ) {
+        return pe.getErrorBlock( pc, ep );
     }
 
     @Override
-    public void addContext(PageSource template, int line, int column, StackTraceElement ste) {
-        pe.addContext(template, line, column, ste);
+    public void addContext( PageSource template, int line, int column, StackTraceElement ste ) {
+        pe.addContext( template, line, column, ste );
     }
 
     @Override
-    public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-        return pe.toDumpData(pageContext, maxlevel, dp);
+    public DumpData toDumpData( PageContext pageContext, int maxlevel, DumpProperties dp ) {
+        return pe.toDumpData( pageContext, maxlevel, dp );
     }
 
     @Override
@@ -83,23 +83,23 @@ public class HibernatePageException extends HibernateException implements IPageE
     }
 
     @Override
-    public void setDetail(String detail) {
-        pe.setDetail(detail);
+    public void setDetail( String detail ) {
+        pe.setDetail( detail );
     }
 
     @Override
-    public void setErrorCode(String errorCode) {
-        pe.setErrorCode(errorCode);
+    public void setErrorCode( String errorCode ) {
+        pe.setErrorCode( errorCode );
     }
 
     @Override
-    public void setExtendedInfo(String extendedInfo) {
-        pe.setExtendedInfo(extendedInfo);
+    public void setExtendedInfo( String extendedInfo ) {
+        pe.setExtendedInfo( extendedInfo );
     }
 
     @Override
-    public boolean typeEqual(String type) {
-        return pe.typeEqual(type);
+    public boolean typeEqual( String type ) {
+        return pe.typeEqual( type );
     }
 
     @Override
@@ -118,8 +118,8 @@ public class HibernatePageException extends HibernateException implements IPageE
     }
 
     @Override
-    public void setTracePointer(int tracePointer) {
-        pe.setTracePointer(tracePointer);
+    public void setTracePointer( int tracePointer ) {
+        pe.setTracePointer( tracePointer );
     }
 
     @Override

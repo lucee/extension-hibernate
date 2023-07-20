@@ -7,12 +7,12 @@ public class DefaultNamingStrategy implements NamingStrategy {
     public static final NamingStrategy INSTANCE = new DefaultNamingStrategy();
 
     @Override
-    public String convertTableName(String tableName) {
+    public String convertTableName( String tableName ) {
         return tableName;
     }
 
     @Override
-    public String convertColumnName(String columnName) {
+    public String convertColumnName( String columnName ) {
         return columnName;
     }
 

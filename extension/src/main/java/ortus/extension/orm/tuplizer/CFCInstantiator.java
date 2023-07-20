@@ -33,25 +33,25 @@ public class CFCInstantiator implements Instantiator {
      * Constructor of the class
      *
      * @param entityMetamodel
-     *            Hibernate EntityMetamodel object
+     *                        Hibernate EntityMetamodel object
      * @param mappingInfo
-     *            Hibernate PersistentClass mapping info for this CFC
+     *                        Hibernate PersistentClass mapping info for this CFC
      */
-    public CFCInstantiator(EntityMetamodel entityMetamodel, PersistentClass mappingInfo) {
-        this.entityName = mappingInfo.getEntityName();
+    public CFCInstantiator( EntityMetamodel entityMetamodel, PersistentClass mappingInfo ) {
+        this.entityName      = mappingInfo.getEntityName();
         this.entityMetamodel = entityMetamodel;
-        isInstanceEntityNames.add(entityName);
-        if (mappingInfo.hasSubclasses()) {
+        isInstanceEntityNames.add( entityName );
+        if ( mappingInfo.hasSubclasses() ) {
             Iterator<PersistentClass> itr = mappingInfo.getSubclassClosureIterator();
-            while (itr.hasNext()) {
+            while ( itr.hasNext() ) {
                 final PersistentClass subclassInfo = itr.next();
-                isInstanceEntityNames.add(subclassInfo.getEntityName());
+                isInstanceEntityNames.add( subclassInfo.getEntityName() );
             }
         }
     }
 
     @Override
-    public final Object instantiate(Serializable id) {
+    public final Object instantiate( Serializable id ) {
         return instantiate();
     }
 
@@ -59,21 +59,21 @@ public class CFCInstantiator implements Instantiator {
     public final Object instantiate() {
         try {
             PageContext pc = CommonUtil.pc();
-            HibernateORMSession session = HibernateUtil.getORMSession(pc, true);
-            HibernateORMEngine engine = (HibernateORMEngine) session.getEngine();
-            Component c = engine.create(pc, session, entityName, true);
-            c.setEntity(true);
+            HibernateORMSession session = HibernateUtil.getORMSession( pc, true );
+            HibernateORMEngine engine = ( HibernateORMEngine ) session.getEngine();
+            Component c = engine.create( pc, session, entityName, true );
+            c.setEntity( true );
             return c;
-        } catch (PageException pe) {
-            throw new HibernatePageException(pe);
+        } catch ( PageException pe ) {
+            throw new HibernatePageException( pe );
         }
     }
 
     @Override
-    public final boolean isInstance(Object object) {
-        Component cfc = CommonUtil.toComponent(object, null);
-        if (cfc == null)
+    public final boolean isInstance( Object object ) {
+        Component cfc = CommonUtil.toComponent( object, null );
+        if ( cfc == null )
             return false;
-        return isInstanceEntityNames.contains(HibernateCaster.getEntityName(cfc));
+        return isInstanceEntityNames.contains( HibernateCaster.getEntityName( cfc ) );
     }
 }

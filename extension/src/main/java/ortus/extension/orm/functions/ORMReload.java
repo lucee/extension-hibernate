@@ -9,11 +9,11 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * License along with this library. If not, see <http://www.gnu.org/licenses/>.
  *
  **/
 package ortus.extension.orm.functions;
@@ -32,29 +32,30 @@ import lucee.loader.engine.CFMLEngine;
  * CFML built-in function to flush the current session.
  */
 public class ORMReload extends BIF {
-    public static String call(PageContext pc) throws PageException {
+
+    public static String call( PageContext pc ) throws PageException {
 
         // flush and close session
-        ORMSession session = ORMUtil.getSession(pc, false);
-        if (session != null) {// MUST do the same with all sesson using the same engine
-            ORMConfiguration config = session.getEngine().getConfiguration(pc);
-            if (config.autoManageSession()) {
-                session.flushAll(pc);
-                session.closeAll(pc);
+        ORMSession session = ORMUtil.getSession( pc, false );
+        if ( session != null ) {// MUST do the same with all sesson using the same engine
+            ORMConfiguration config = session.getEngine().getConfiguration( pc );
+            if ( config.autoManageSession() ) {
+                session.flushAll( pc );
+                session.closeAll( pc );
             }
         }
-        pc.getApplicationContext().reinitORM(pc);
-        ORMUtil.resetEngine(pc, true);
+        pc.getApplicationContext().reinitORM( pc );
+        ORMUtil.resetEngine( pc, true );
         return null;
     }
 
     @Override
-    public Object invoke(PageContext pc, Object[] args) throws PageException {
+    public Object invoke( PageContext pc, Object[] args ) throws PageException {
         CFMLEngine engine = CFMLEngineFactory.getInstance();
 
-        if (args.length == 0)
-            return call(pc);
+        if ( args.length == 0 )
+            return call( pc );
 
-        throw engine.getExceptionUtil().createFunctionException(pc, "ORMReload", 0, 0, args.length);
+        throw engine.getExceptionUtil().createFunctionException( pc, "ORMReload", 0, 0, args.length );
     }
 }

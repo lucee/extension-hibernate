@@ -26,7 +26,7 @@ import lucee.runtime.exp.PageException;
 public class XMLUtil {
 
     private XMLUtil() {
-        throw new IllegalStateException("Utility class; please don't instantiate!");
+        throw new IllegalStateException( "Utility class; please don't instantiate!" );
     }
 
     /**
@@ -34,48 +34,47 @@ public class XMLUtil {
      */
     public static final String LUCEE_XML_UTIL_PATH = "lucee.runtime.text.xml.XMLUtil";
 
-    public static InputSource toInputSource(Object obj) throws PageException {
+    public static InputSource toInputSource( Object obj ) throws PageException {
         // FUTURE use interface from loader
         try {
-            Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass(XMLUtil.LUCEE_XML_UTIL_PATH);
-            Method method = clazz.getMethod("toInputSource", new Class[] { Object.class });
-            return (InputSource) method.invoke(null, obj);
-        } catch (Exception e) {
-            throw CommonUtil.toPageException(e);
+            Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass( XMLUtil.LUCEE_XML_UTIL_PATH );
+            Method method = clazz.getMethod( "toInputSource", new Class[] { Object.class } );
+            return ( InputSource ) method.invoke( null, obj );
+        } catch ( Exception e ) {
+            throw CommonUtil.toPageException( e );
         }
     }
 
-    public static InputSource toInputSource(Resource res, Charset cs) throws PageException {
+    public static InputSource toInputSource( Resource res, Charset cs ) throws PageException {
         // FUTURE use interface from loader
         try {
-            Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass(XMLUtil.LUCEE_XML_UTIL_PATH);
-            Method method = clazz.getMethod("toInputSource", new Class[] { Resource.class, Charset.class });
-            return (InputSource) method.invoke(null, res, cs);
-        } catch (Exception e) {
-            throw CommonUtil.toPageException(e);
+            Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass( XMLUtil.LUCEE_XML_UTIL_PATH );
+            Method method = clazz.getMethod( "toInputSource", new Class[] { Resource.class, Charset.class } );
+            return ( InputSource ) method.invoke( null, res, cs );
+        } catch ( Exception e ) {
+            throw CommonUtil.toPageException( e );
         }
     }
 
-    public static final Document parse(InputSource xml, InputSource validator, boolean isHtml) throws PageException {
+    public static final Document parse( InputSource xml, InputSource validator, boolean isHtml ) throws PageException {
         // FUTURE use interface from loader
         try {
-            Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass(XMLUtil.LUCEE_XML_UTIL_PATH);
-            Method method = clazz.getMethod("parse",
-                    new Class[] { InputSource.class, InputSource.class, boolean.class });
-            return (Document) method.invoke(null, xml, validator, isHtml);
-        } catch (Exception e) {
-            throw CommonUtil.toPageException(e);
+            Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass( XMLUtil.LUCEE_XML_UTIL_PATH );
+            Method method = clazz.getMethod( "parse", new Class[] { InputSource.class, InputSource.class, boolean.class } );
+            return ( Document ) method.invoke( null, xml, validator, isHtml );
+        } catch ( Exception e ) {
+            throw CommonUtil.toPageException( e );
         }
     }
 
     public static Document newDocument() throws PageException {
         // FUTURE use interface from loader
         try {
-            Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass(XMLUtil.LUCEE_XML_UTIL_PATH);
-            Method method = clazz.getMethod("newDocument");
-            return (Document) method.invoke(null);
-        } catch (Exception e) {
-            throw CommonUtil.toPageException(e);
+            Class<?> clazz = CFMLEngineFactory.getInstance().getClassUtil().loadClass( XMLUtil.LUCEE_XML_UTIL_PATH );
+            Method method = clazz.getMethod( "newDocument" );
+            return ( Document ) method.invoke( null );
+        } catch ( Exception e ) {
+            throw CommonUtil.toPageException( e );
         }
     }
 
@@ -83,45 +82,45 @@ public class XMLUtil {
      * Generate an XML string from the provided w3c Document Element.
      *
      * @param document
-     *            The root element of an XML document.
+     *                 The root element of an XML document.
      *
      * @return a fully-formed and formatted XML string. Does not append or prepend <xml> tags or DOCTYPE, etc.
      *
      * @throws PageException
      */
-    public static String toString(Element document) throws PageException {
+    public static String toString( Element document ) throws PageException {
         try {
             TransformerFactory tf = TransformerFactory.newInstance();
             Transformer transformer = tf.newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
+            transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
+            transformer.setOutputProperty( OutputKeys.ENCODING, "UTF-8" );
             StringWriter writer = new StringWriter();
-            transformer.transform(new DOMSource(document), new StreamResult(writer));
+            transformer.transform( new DOMSource( document ), new StreamResult( writer ) );
             return writer.toString();
-        } catch (Exception e) {
-            throw CommonUtil.toPageException(e);
+        } catch ( Exception e ) {
+            throw CommonUtil.toPageException( e );
         }
     }
 
-    public static Node toNode(Object value) throws PageException {
-        if (value instanceof Node)
-            return (Node) value;
-        return parse(toInputSource(value), null, false);
+    public static Node toNode( Object value ) throws PageException {
+        if ( value instanceof Node )
+            return ( Node ) value;
+        return parse( toInputSource( value ), null, false );
     }
 
-    public static Document getDocument(Node node) {
-        if (node instanceof Document)
-            return (Document) node;
+    public static Document getDocument( Node node ) {
+        if ( node instanceof Document )
+            return ( Document ) node;
         return node.getOwnerDocument();
     }
 
-    public static void setFirst(Node parent, Node node) {
+    public static void setFirst( Node parent, Node node ) {
         Node first = parent.getFirstChild();
-        if (first != null)
-            parent.insertBefore(node, first);
+        if ( first != null )
+            parent.insertBefore( node, first );
         else
-            parent.appendChild(node);
+            parent.appendChild( node );
     }
 
 }

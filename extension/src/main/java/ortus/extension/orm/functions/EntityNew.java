@@ -9,11 +9,11 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * License along with this library. If not, see <http://www.gnu.org/licenses/>.
  *
  **/
 package ortus.extension.orm.functions;
@@ -42,56 +42,56 @@ import lucee.loader.engine.CFMLEngine;
  */
 public class EntityNew extends BIF {
 
-    public static Object call(PageContext pc, String name) throws PageException {
-        return call(pc, name, null);
+    public static Object call( PageContext pc, String name ) throws PageException {
+        return call( pc, name, null );
     }
 
-    public static Object call(PageContext pc, String name, Struct properties) throws PageException {
-        ORMSession session = ORMUtil.getSession(pc);
-        if (properties == null)
-            return session.create(pc, name);
+    public static Object call( PageContext pc, String name, Struct properties ) throws PageException {
+        ORMSession session = ORMUtil.getSession( pc );
+        if ( properties == null )
+            return session.create( pc, name );
 
-        Component entity = session.create(pc, name);
-        setPropeties(pc, entity, properties, false);
+        Component entity = session.create( pc, name );
+        setPropeties( pc, entity, properties, false );
         return entity;
 
     }
 
-    public static void setPropeties(PageContext pc, Component c, Struct properties, boolean ignoreNotExisting)
+    public static void setPropeties( PageContext pc, Component c, Struct properties, boolean ignoreNotExisting )
             throws PageException {
-        if (properties == null)
+        if ( properties == null )
             return;
 
         // argumentCollection
-        if (properties.size() == 1 && properties.containsKey(CommonUtil.createKey("argumentCollection"))
-                && !c.containsKey(CommonUtil.createKey("setArgumentCollection"))) {
-            properties = CommonUtil.toStruct(properties.get(CommonUtil.createKey("argumentCollection")));
+        if ( properties.size() == 1 && properties.containsKey( CommonUtil.createKey( "argumentCollection" ) )
+                && !c.containsKey( CommonUtil.createKey( "setArgumentCollection" ) ) ) {
+            properties = CommonUtil.toStruct( properties.get( CommonUtil.createKey( "argumentCollection" ) ) );
         }
 
         Iterator<Entry<Key, Object>> it = properties.entryIterator();
         Entry<Key, Object> e;
-        while (it.hasNext()) {
+        while ( it.hasNext() ) {
             e = it.next();
-            Key funcName = CommonUtil.createKey("set" + e.getKey().getString());
-            if (ignoreNotExisting) {
-                if (c.get(funcName, null) instanceof UDF)
-                    c.call(pc, funcName, new Object[] { e.getValue() });
+            Key funcName = CommonUtil.createKey( "set" + e.getKey().getString() );
+            if ( ignoreNotExisting ) {
+                if ( c.get( funcName, null ) instanceof UDF )
+                    c.call( pc, funcName, new Object[] { e.getValue() } );
             } else {
-                c.call(pc, funcName, new Object[] { e.getValue() });
+                c.call( pc, funcName, new Object[] { e.getValue() } );
             }
         }
     }
 
     @Override
-    public Object invoke(PageContext pc, Object[] args) throws PageException {
+    public Object invoke( PageContext pc, Object[] args ) throws PageException {
         CFMLEngine engine = CFMLEngineFactory.getInstance();
         Cast cast = engine.getCastUtil();
 
-        if (args.length == 1)
-            return call(pc, cast.toString(args[0]));
-        if (args.length == 2)
-            return call(pc, cast.toString(args[0]), cast.toStruct(args[1]));
+        if ( args.length == 1 )
+            return call( pc, cast.toString( args[ 0 ] ) );
+        if ( args.length == 2 )
+            return call( pc, cast.toString( args[ 0 ] ), cast.toStruct( args[ 1 ] ) );
 
-        throw engine.getExceptionUtil().createFunctionException(pc, "EntityNew", 1, 2, args.length);
+        throw engine.getExceptionUtil().createFunctionException( pc, "EntityNew", 1, 2, args.length );
     }
 }

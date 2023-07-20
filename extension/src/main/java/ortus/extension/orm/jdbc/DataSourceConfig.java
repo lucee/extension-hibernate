@@ -9,8 +9,8 @@ public class DataSourceConfig {
     public final DataSource ds;
     public final Configuration config;
 
-    public DataSourceConfig(DataSource ds, Configuration config) {
-        this.ds = ds;
+    public DataSourceConfig( DataSource ds, Configuration config ) {
+        this.ds     = ds;
         this.config = config;
     }
 }

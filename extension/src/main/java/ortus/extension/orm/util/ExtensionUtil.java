@@ -6,7 +6,7 @@ package ortus.extension.orm.util;
 public class ExtensionUtil {
 
     private ExtensionUtil() {
-        throw new IllegalStateException("Utility class; please don't instantiate!");
+        throw new IllegalStateException( "Utility class; please don't instantiate!" );
     }
 
     /**
@@ -35,15 +35,15 @@ public class ExtensionUtil {
      * @return the major java version, like `8`, `9`, `11`, `17`, etc.
      */
     public static int getJVMVersion() {
-        String version = System.getProperty("java.version");
-        if (version.startsWith("1.")) {
-            version = version.substring(2, 3);
+        String version = System.getProperty( "java.version" );
+        if ( version.startsWith( "1." ) ) {
+            version = version.substring( 2, 3 );
         } else {
-            int dot = version.indexOf(".");
-            if (dot != -1) {
-                version = version.substring(0, dot);
+            int dot = version.indexOf( "." );
+            if ( dot != -1 ) {
+                version = version.substring( 0, dot );
             }
         }
-        return Integer.parseInt(version);
+        return Integer.parseInt( version );
     }
 }

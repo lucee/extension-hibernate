@@ -32,21 +32,20 @@ public abstract class ComponentProxy implements Component {
     public abstract Component getComponent();
 
     @Override
-    public Class getJavaAccessClass(RefBoolean isNew) throws PageException {
-        return getComponent().getJavaAccessClass(isNew);
+    public Class getJavaAccessClass( RefBoolean isNew ) throws PageException {
+        return getComponent().getJavaAccessClass( isNew );
     }
 
     @Override
-    public Class getJavaAccessClass(PageContext pc, RefBoolean isNew, boolean writeLog, boolean takeTop, boolean create,
-            boolean supressWSbeforeArg) throws PageException {
-        return getComponent().getJavaAccessClass(pc, isNew, writeLog, takeTop, create, supressWSbeforeArg);
+    public Class getJavaAccessClass( PageContext pc, RefBoolean isNew, boolean writeLog, boolean takeTop, boolean create,
+            boolean supressWSbeforeArg ) throws PageException {
+        return getComponent().getJavaAccessClass( pc, isNew, writeLog, takeTop, create, supressWSbeforeArg );
     }
 
     @Override
-    public Class getJavaAccessClass(PageContext pc, RefBoolean isNew, boolean writeLog, boolean takeTop, boolean create,
-            boolean supressWSbeforeArg, boolean output, boolean returnValue) throws PageException {
-        return getComponent().getJavaAccessClass(pc, isNew, writeLog, takeTop, create, supressWSbeforeArg, output,
-                returnValue);
+    public Class getJavaAccessClass( PageContext pc, RefBoolean isNew, boolean writeLog, boolean takeTop, boolean create,
+            boolean supressWSbeforeArg, boolean output, boolean returnValue ) throws PageException {
+        return getComponent().getJavaAccessClass( pc, isNew, writeLog, takeTop, create, supressWSbeforeArg, output, returnValue );
     }
 
     @Override
@@ -90,28 +89,28 @@ public abstract class ComponentProxy implements Component {
     }
 
     @Override
-    public boolean instanceOf(String type) {
-        return getComponent().instanceOf(type);
+    public boolean instanceOf( String type ) {
+        return getComponent().instanceOf( type );
     }
 
     @Override
-    public boolean isValidAccess(int access) {
-        return getComponent().isValidAccess(access);
+    public boolean isValidAccess( int access ) {
+        return getComponent().isValidAccess( access );
     }
 
     @Override
-    public Struct getMetaData(PageContext pc) throws PageException {
-        return getComponent().getMetaData(pc);
+    public Struct getMetaData( PageContext pc ) throws PageException {
+        return getComponent().getMetaData( pc );
     }
 
     @Override
-    public Object call(PageContext pc, String key, Object[] args) throws PageException {
-        return getComponent().call(pc, key, args);
+    public Object call( PageContext pc, String key, Object[] args ) throws PageException {
+        return getComponent().call( pc, key, args );
     }
 
     @Override
-    public Object callWithNamedValues(PageContext pc, String key, Struct args) throws PageException {
-        return getComponent().callWithNamedValues(pc, key, args);
+    public Object callWithNamedValues( PageContext pc, String key, Struct args ) throws PageException {
+        return getComponent().callWithNamedValues( pc, key, args );
     }
 
     @Override
@@ -125,18 +124,18 @@ public abstract class ComponentProxy implements Component {
     }
 
     @Override
-    public Object remove(Key key) throws PageException {
-        return getComponent().remove(key);
+    public Object remove( Key key ) throws PageException {
+        return getComponent().remove( key );
     }
 
     @Override
-    public Object removeEL(Key key) {
-        return getComponent().removeEL(key);
+    public Object removeEL( Key key ) {
+        return getComponent().removeEL( key );
     }
 
     @Override
-    public Object remove(Key key, Object defaultValue) {
-        return getComponent().remove(key, defaultValue);
+    public Object remove( Key key, Object defaultValue ) {
+        return getComponent().remove( key, defaultValue );
     }
 
     @Override
@@ -145,58 +144,58 @@ public abstract class ComponentProxy implements Component {
     }
 
     @Override
-    public Object get(String key) throws PageException {
-        return get(CommonUtil.toKey(key));
+    public Object get( String key ) throws PageException {
+        return get( CommonUtil.toKey( key ) );
     }
 
     @Override
-    public Object get(Key key) throws PageException {
-        return getComponent().get(key);
+    public Object get( Key key ) throws PageException {
+        return getComponent().get( key );
     }
 
     @Override
-    public Object get(String key, Object defaultValue) {
-        return getComponent().get(key, defaultValue);
+    public Object get( String key, Object defaultValue ) {
+        return getComponent().get( key, defaultValue );
     }
 
     @Override
-    public Object get(Key key, Object defaultValue) {
-        return getComponent().get(key, defaultValue);
+    public Object get( Key key, Object defaultValue ) {
+        return getComponent().get( key, defaultValue );
     }
 
     @Override
-    public Object set(String key, Object value) throws PageException {
-        return getComponent().set(key, value);
+    public Object set( String key, Object value ) throws PageException {
+        return getComponent().set( key, value );
     }
 
     @Override
-    public Object set(Key key, Object value) throws PageException {
-        return getComponent().set(key, value);
+    public Object set( Key key, Object value ) throws PageException {
+        return getComponent().set( key, value );
     }
 
     @Override
-    public Object setEL(String key, Object value) {
-        return getComponent().setEL(key, value);
+    public Object setEL( String key, Object value ) {
+        return getComponent().setEL( key, value );
     }
 
     @Override
-    public Object setEL(Key key, Object value) {
-        return getComponent().setEL(key, value);
+    public Object setEL( Key key, Object value ) {
+        return getComponent().setEL( key, value );
     }
 
     @Override
-    public boolean containsKey(String key) {
-        return getComponent().containsKey(key);
+    public boolean containsKey( String key ) {
+        return getComponent().containsKey( key );
     }
 
     @Override
-    public boolean containsKey(Key key) {
-        return getComponent().containsKey(key);
+    public boolean containsKey( Key key ) {
+        return getComponent().containsKey( key );
     }
 
     @Override
-    public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties properties) {
-        return getComponent().toDumpData(pageContext, maxlevel, properties);
+    public DumpData toDumpData( PageContext pageContext, int maxlevel, DumpProperties properties ) {
+        return getComponent().toDumpData( pageContext, maxlevel, properties );
     }
 
     @Override
@@ -225,8 +224,8 @@ public abstract class ComponentProxy implements Component {
     }
 
     @Override
-    public String castToString(String defaultValue) {
-        return getComponent().castToString(defaultValue);
+    public String castToString( String defaultValue ) {
+        return getComponent().castToString( defaultValue );
     }
 
     @Override
@@ -235,8 +234,8 @@ public abstract class ComponentProxy implements Component {
     }
 
     @Override
-    public Boolean castToBoolean(Boolean defaultValue) {
-        return getComponent().castToBoolean(defaultValue);
+    public Boolean castToBoolean( Boolean defaultValue ) {
+        return getComponent().castToBoolean( defaultValue );
     }
 
     @Override
@@ -245,8 +244,8 @@ public abstract class ComponentProxy implements Component {
     }
 
     @Override
-    public double castToDoubleValue(double defaultValue) {
-        return getComponent().castToDoubleValue(defaultValue);
+    public double castToDoubleValue( double defaultValue ) {
+        return getComponent().castToDoubleValue( defaultValue );
     }
 
     @Override
@@ -255,38 +254,38 @@ public abstract class ComponentProxy implements Component {
     }
 
     @Override
-    public DateTime castToDateTime(DateTime defaultValue) {
-        return getComponent().castToDateTime(defaultValue);
+    public DateTime castToDateTime( DateTime defaultValue ) {
+        return getComponent().castToDateTime( defaultValue );
     }
 
     @Override
-    public int compareTo(String str) throws PageException {
-        return getComponent().compareTo(str);
+    public int compareTo( String str ) throws PageException {
+        return getComponent().compareTo( str );
     }
 
     @Override
-    public int compareTo(boolean b) throws PageException {
-        return getComponent().compareTo(b);
+    public int compareTo( boolean b ) throws PageException {
+        return getComponent().compareTo( b );
     }
 
     @Override
-    public int compareTo(double d) throws PageException {
-        return getComponent().compareTo(d);
+    public int compareTo( double d ) throws PageException {
+        return getComponent().compareTo( d );
     }
 
     @Override
-    public int compareTo(DateTime dt) throws PageException {
-        return getComponent().compareTo(dt);
+    public int compareTo( DateTime dt ) throws PageException {
+        return getComponent().compareTo( dt );
     }
 
     @Override
-    public boolean containsKey(Object key) {
-        return getComponent().containsKey(key);
+    public boolean containsKey( Object key ) {
+        return getComponent().containsKey( key );
     }
 
     @Override
-    public boolean containsValue(Object value) {
-        return getComponent().containsValue(value);
+    public boolean containsValue( Object value ) {
+        return getComponent().containsValue( value );
     }
 
     @Override
@@ -295,8 +294,8 @@ public abstract class ComponentProxy implements Component {
     }
 
     @Override
-    public Object get(Object key) {
-        return getComponent().get(key);
+    public Object get( Object key ) {
+        return getComponent().get( key );
     }
 
     @Override
@@ -310,18 +309,18 @@ public abstract class ComponentProxy implements Component {
     }
 
     @Override
-    public Object put(Object key, Object value) {
-        return getComponent().put(key, value);
+    public Object put( Object key, Object value ) {
+        return getComponent().put( key, value );
     }
 
     @Override
-    public void putAll(Map m) {
-        getComponent().putAll(m);
+    public void putAll( Map m ) {
+        getComponent().putAll( m );
     }
 
     @Override
-    public Object remove(Object key) {
-        return getComponent().remove(key);
+    public Object remove( Object key ) {
+        return getComponent().remove( key );
     }
 
     @Override
@@ -330,43 +329,43 @@ public abstract class ComponentProxy implements Component {
     }
 
     @Override
-    public Object get(PageContext pc, Key key, Object defaultValue) {
-        return getComponent().get(pc, key, defaultValue);
+    public Object get( PageContext pc, Key key, Object defaultValue ) {
+        return getComponent().get( pc, key, defaultValue );
     }
 
     @Override
-    public Object get(PageContext pc, Key key) throws PageException {
-        return getComponent().get(pc, key);
+    public Object get( PageContext pc, Key key ) throws PageException {
+        return getComponent().get( pc, key );
     }
 
     @Override
-    public Object set(PageContext pc, Key propertyName, Object value) throws PageException {
-        return getComponent().set(pc, propertyName, value);
+    public Object set( PageContext pc, Key propertyName, Object value ) throws PageException {
+        return getComponent().set( pc, propertyName, value );
     }
 
     @Override
-    public Object setEL(PageContext pc, Key propertyName, Object value) {
-        return getComponent().setEL(pc, propertyName, value);
+    public Object setEL( PageContext pc, Key propertyName, Object value ) {
+        return getComponent().setEL( pc, propertyName, value );
     }
 
     @Override
-    public Object call(PageContext pc, Key methodName, Object[] arguments) throws PageException {
-        return getComponent().call(pc, methodName, arguments);
+    public Object call( PageContext pc, Key methodName, Object[] arguments ) throws PageException {
+        return getComponent().call( pc, methodName, arguments );
     }
 
     @Override
-    public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
-        return getComponent().callWithNamedValues(pc, methodName, args);
+    public Object callWithNamedValues( PageContext pc, Key methodName, Struct args ) throws PageException {
+        return getComponent().callWithNamedValues( pc, methodName, args );
     }
 
     @Override
-    public Property[] getProperties(boolean onlyPeristent) {
-        return getComponent().getProperties(onlyPeristent);
+    public Property[] getProperties( boolean onlyPeristent ) {
+        return getComponent().getProperties( onlyPeristent );
     }
 
     @Override
-    public void setProperty(Property property) throws PageException {
-        getComponent().setProperty(property);
+    public void setProperty( Property property ) throws PageException {
+        getComponent().setProperty( property );
     }
 
     @Override
@@ -375,8 +374,8 @@ public abstract class ComponentProxy implements Component {
     }
 
     @Override
-    public boolean contains(PageContext pc, Key key) {
-        return getComponent().contains(pc, key);
+    public boolean contains( PageContext pc, Key key ) {
+        return getComponent().contains( pc, key );
     }
 
     @Override
@@ -395,23 +394,23 @@ public abstract class ComponentProxy implements Component {
     }
 
     @Override
-    public boolean equalTo(String type) {
-        return getComponent().equalTo(type);
+    public boolean equalTo( String type ) {
+        return getComponent().equalTo( type );
     }
 
     @Override
     public Object clone() {
-        return duplicate(true);
+        return duplicate( true );
     }
 
     @Override
-    public void registerUDF(Collection.Key key, UDF udf) throws PageException {
-        getComponent().registerUDF(key, udf);
+    public void registerUDF( Collection.Key key, UDF udf ) throws PageException {
+        getComponent().registerUDF( key, udf );
     }
 
     @Override
-    public void registerUDF(Collection.Key key, UDFProperties props) throws PageException {
-        getComponent().registerUDF(key, props);
+    public void registerUDF( Collection.Key key, UDFProperties props ) throws PageException {
+        getComponent().registerUDF( key, props );
     }
 
     @Override
@@ -425,15 +424,15 @@ public abstract class ComponentProxy implements Component {
     }
 
     @Override
-    public Collection duplicate(boolean deepCopy) {
-        return getComponent().duplicate(deepCopy);
+    public Collection duplicate( boolean deepCopy ) {
+        return getComponent().duplicate( deepCopy );
     }
 
     @Override
-    public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean overrideProperties,
-            boolean inheritedMappedSuperClassOnly) {
-        return getComponent().getProperties(onlyPeristent, includeBaseProperties, overrideProperties,
-                inheritedMappedSuperClassOnly);
+    public Property[] getProperties( boolean onlyPeristent, boolean includeBaseProperties, boolean overrideProperties,
+            boolean inheritedMappedSuperClassOnly ) {
+        return getComponent().getProperties( onlyPeristent, includeBaseProperties, overrideProperties,
+                inheritedMappedSuperClassOnly );
     }
 
     @Override
@@ -441,7 +440,7 @@ public abstract class ComponentProxy implements Component {
         return getComponent().isPersistent();
     }
 
-    public static boolean isPersistent(Component c) {
+    public static boolean isPersistent( Component c ) {
         return c.isPersistent();
     }
 
@@ -451,91 +450,91 @@ public abstract class ComponentProxy implements Component {
     }
 
     @Override
-    public Object getMetaStructItem(Key name) {
-        return getComponent().getMetaStructItem(name);
+    public Object getMetaStructItem( Key name ) {
+        return getComponent().getMetaStructItem( name );
     }
 
-    public static Object getMetaStructItem(Component c, Key name) {
-        return c.getMetaStructItem(name);
-    }
-
-    @Override
-    public Set<Key> keySet(int access) {
-        return getComponent().keySet(access);
+    public static Object getMetaStructItem( Component c, Key name ) {
+        return c.getMetaStructItem( name );
     }
 
     @Override
-    public Object call(PageContext pc, int access, Key name, Object[] args) throws PageException {
-        return getComponent().call(pc, access, name, args);
+    public Set<Key> keySet( int access ) {
+        return getComponent().keySet( access );
     }
 
     @Override
-    public Object callWithNamedValues(PageContext pc, int access, Key name, Struct args) throws PageException {
-        return getComponent().callWithNamedValues(pc, access, name, args);
+    public Object call( PageContext pc, int access, Key name, Object[] args ) throws PageException {
+        return getComponent().call( pc, access, name, args );
     }
 
     @Override
-    public int size(int access) {
-        return getComponent().size(access);
+    public Object callWithNamedValues( PageContext pc, int access, Key name, Struct args ) throws PageException {
+        return getComponent().callWithNamedValues( pc, access, name, args );
     }
 
     @Override
-    public Key[] keys(int access) {
-        return getComponent().keys(access);
+    public int size( int access ) {
+        return getComponent().size( access );
     }
 
     @Override
-    public Iterator<Entry<Key, Object>> entryIterator(int access) {
-        return getComponent().entryIterator(access);
+    public Key[] keys( int access ) {
+        return getComponent().keys( access );
     }
 
     @Override
-    public Iterator<Object> valueIterator(int access) {
-        return getComponent().valueIterator(access);
+    public Iterator<Entry<Key, Object>> entryIterator( int access ) {
+        return getComponent().entryIterator( access );
     }
 
     @Override
-    public Object get(int access, Key key) throws PageException {
-        return getComponent().get(access, key);
+    public Iterator<Object> valueIterator( int access ) {
+        return getComponent().valueIterator( access );
     }
 
     @Override
-    public Object get(int access, Key key, Object defaultValue) {
-        return getComponent().get(access, key, defaultValue);
+    public Object get( int access, Key key ) throws PageException {
+        return getComponent().get( access, key );
     }
 
     @Override
-    public Iterator<Key> keyIterator(int access) {
-        return getComponent().keyIterator(access);
+    public Object get( int access, Key key, Object defaultValue ) {
+        return getComponent().get( access, key, defaultValue );
     }
 
     @Override
-    public Iterator<String> keysAsStringIterator(int access) {
-        return getComponent().keysAsStringIterator(access);
+    public Iterator<Key> keyIterator( int access ) {
+        return getComponent().keyIterator( access );
     }
 
     @Override
-    public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp, int access) {
-        return getComponent().toDumpData(pageContext, maxlevel, dp, access);
+    public Iterator<String> keysAsStringIterator( int access ) {
+        return getComponent().keysAsStringIterator( access );
     }
 
     @Override
-    public boolean contains(int access, Key name) {
-        return getComponent().contains(access, name);
+    public DumpData toDumpData( PageContext pageContext, int maxlevel, DumpProperties dp, int access ) {
+        return getComponent().toDumpData( pageContext, maxlevel, dp, access );
     }
 
     @Override
-    public Member getMember(int access, Key key, boolean dataMember, boolean superAccess) {
-        return getComponent().getMember(access, key, dataMember, superAccess);
+    public boolean contains( int access, Key name ) {
+        return getComponent().contains( access, name );
     }
 
     @Override
-    public void setEntity(boolean entity) {
-        getComponent().setEntity(entity);
+    public Member getMember( int access, Key key, boolean dataMember, boolean superAccess ) {
+        return getComponent().getMember( access, key, dataMember, superAccess );
     }
 
-    public static void setEntity(Component c, boolean entity) {
-        c.setEntity(entity);
+    @Override
+    public void setEntity( boolean entity ) {
+        getComponent().setEntity( entity );
+    }
+
+    public static void setEntity( Component c, boolean entity ) {
+        c.setEntity( entity );
     }
 
     @Override
@@ -554,13 +553,13 @@ public abstract class ComponentProxy implements Component {
     }
 
     @Override
-    public Variables beforeStaticConstructor(PageContext pc) {
-        return getComponent().beforeStaticConstructor(pc);
+    public Variables beforeStaticConstructor( PageContext pc ) {
+        return getComponent().beforeStaticConstructor( pc );
     }
 
     @Override
-    public void afterStaticConstructor(PageContext pc, Variables variableScope) {
-        getComponent().afterStaticConstructor(pc, variableScope);
+    public void afterStaticConstructor( PageContext pc, Variables variableScope ) {
+        getComponent().afterStaticConstructor( pc, variableScope );
     }
 
     @Override

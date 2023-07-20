@@ -23,15 +23,15 @@ public final class CFCSetter implements Setter {
      * Constructor of the class
      *
      * @param key
-     *            String name of the persistent property
+     *                   String name of the persistent property
      * @param type
-     *            Hibernate Type of this persistent property
+     *                   Hibernate Type of this persistent property
      * @param entityName
-     *            String name of the Hibernate entity this property is defined on
+     *                   String name of the Hibernate entity this property is defined on
      */
-    public CFCSetter(String key, Type type, String entityName) {
-        this.key = CommonUtil.createKey(key);
-        this.type = type;
+    public CFCSetter( String key, Type type, String entityName ) {
+        this.key        = CommonUtil.createKey( key );
+        this.type       = type;
         this.entityName = entityName;
     }
 
@@ -49,12 +49,12 @@ public final class CFCSetter implements Setter {
      * {@inheritDoc}
      */
     @Override
-    public void set(Object trg, Object value, SessionFactoryImplementor factory) throws HibernateException {
+    public void set( Object trg, Object value, SessionFactoryImplementor factory ) throws HibernateException {
         try {
-            Component cfc = CommonUtil.toComponent(trg);
-            cfc.getComponentScope().set(key, value);
-        } catch (PageException pe) {
-            throw new HibernatePageException(pe);
+            Component cfc = CommonUtil.toComponent( trg );
+            cfc.getComponentScope().set( key, value );
+        } catch ( PageException pe ) {
+            throw new HibernatePageException( pe );
         }
     }
 }

@@ -9,11 +9,11 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * License along with this library. If not, see <http://www.gnu.org/licenses/>.
  *
  **/
 package ortus.extension.orm.functions;
@@ -31,31 +31,32 @@ import lucee.loader.engine.CFMLEngine;
  * CFML built-in function to evict queries from the named query cache.
  */
 public class ORMEvictQueries extends BIF {
-    public static String call(PageContext pc) throws PageException {
-        return call(pc, null, null);
+
+    public static String call( PageContext pc ) throws PageException {
+        return call( pc, null, null );
     }
 
-    public static String call(PageContext pc, String cacheName) throws PageException {
-        return call(pc, cacheName, null);
+    public static String call( PageContext pc, String cacheName ) throws PageException {
+        return call( pc, cacheName, null );
     }
 
-    public static String call(PageContext pc, String cacheName, String datasource) throws PageException {
-        ORMUtil.getSession(pc).evictQueries(pc, cacheName, datasource);
+    public static String call( PageContext pc, String cacheName, String datasource ) throws PageException {
+        ORMUtil.getSession( pc ).evictQueries( pc, cacheName, datasource );
         return null;
     }
 
     @Override
-    public Object invoke(PageContext pc, Object[] args) throws PageException {
+    public Object invoke( PageContext pc, Object[] args ) throws PageException {
         CFMLEngine engine = CFMLEngineFactory.getInstance();
         Cast cast = engine.getCastUtil();
 
-        if (args.length == 0)
-            return call(pc);
-        if (args.length == 1)
-            return call(pc, cast.toString(args[0]));
-        if (args.length == 2)
-            return call(pc, cast.toString(args[0]), cast.toString(args[1]));
+        if ( args.length == 0 )
+            return call( pc );
+        if ( args.length == 1 )
+            return call( pc, cast.toString( args[ 0 ] ) );
+        if ( args.length == 2 )
+            return call( pc, cast.toString( args[ 0 ] ), cast.toString( args[ 1 ] ) );
 
-        throw engine.getExceptionUtil().createFunctionException(pc, "ORMEvictQueries", 0, 2, args.length);
+        throw engine.getExceptionUtil().createFunctionException( pc, "ORMEvictQueries", 0, 2, args.length );
     }
 }
