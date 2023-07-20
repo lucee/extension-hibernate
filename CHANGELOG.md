@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Due to the Hibernate 5.6 upgrade, if you are using the `PostgreSQL81` dialect and have `CLOB` columns in your database, [it is recommended you migrate existing text columns for LOBs to `oid`](https://github.com/hibernate/hibernate-orm/blob/5.6/migration-guide.adoc#changes-to-the-ddl-type-for-clob-in-postgresql81dialect-and-its-subclasses).
 
+#### Java 11+ Required
+
+Java 11 is the minimum version supported by Hibernate 6.0. Thus, in the interest of moving forward, we will be dropping support for Java 1.8, 9, and 10.
+
 ### ♻️ Changed
 
 #### Hibernate Upgraded from 5.4 to 5.6
