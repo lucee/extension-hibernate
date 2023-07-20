@@ -11,6 +11,10 @@ target/
 *.DS_Store
 /cache
 
+# Dependencies
+extension/lib-source/*.jar
+extension/lib-test/*.jar
+
 # Test artifacts
 .engine
 WEB-INF/
