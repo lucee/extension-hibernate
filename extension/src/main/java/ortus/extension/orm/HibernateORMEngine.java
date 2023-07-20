@@ -231,7 +231,7 @@ public class HibernateORMEngine implements ORMEngine {
                 data.setConfiguration( log, mappingXML, data.getDataSource( datasourceName ), null, null,
                         appContext == null ? "" : appContext.getName() );
             } catch ( Exception ex ) {
-                throw CommonUtil.toPageException( ex );
+                throw ExceptionUtil.toPageException( ex );
             }
 
             EntityTuplizerFactory tuplizerFactory = data.getConfiguration( datasourceName ).config.getEntityTuplizerFactory();
@@ -307,7 +307,7 @@ public class HibernateORMEngine implements ORMEngine {
                         HBMCreator.saveMapping( cfc, xml );
                     }
                 } catch ( Exception e ) {
-                    throw CommonUtil.toPageException( e );
+                    throw ExceptionUtil.toPageException( e );
                 } finally {
                     pc.removeLastPageSource( true );
                     CommonUtil.releaseDatasourceConnection( pc, dc, false );
@@ -318,7 +318,7 @@ public class HibernateORMEngine implements ORMEngine {
                 try {
                     xml = HBMCreator.loadMapping( cfc );
                 } catch ( Exception e ) {
-                    throw CommonUtil.toPageException( e );
+                    throw ExceptionUtil.toPageException( e );
                 }
 
             }

@@ -102,7 +102,7 @@ public class HibernateORMSession implements ORMSession {
                     connect( pc );
                 }
             } catch ( SQLException e ) {
-                throw CommonUtil.toPageException( e );
+                throw ExceptionUtil.toPageException( e );
             }
             return dc.getConnection();
         }
@@ -289,7 +289,7 @@ public class HibernateORMSession implements ORMSession {
         try {
             getSession( pc, dsn ).flush();
         } catch ( Throwable t ) {
-            throw CommonUtil.toPageException( t );
+            throw ExceptionUtil.toPageException( t );
         }
 
     }
@@ -343,7 +343,7 @@ public class HibernateORMSession implements ORMSession {
                 } catch ( Throwable t ) {
                     if ( trans != null )
                         trans.rollback();
-                    throw CommonUtil.toPageException( t );
+                    throw ExceptionUtil.toPageException( t );
                 }
                 if ( trans != null )
                     trans.commit();
@@ -368,7 +368,7 @@ public class HibernateORMSession implements ORMSession {
         try {
             getSession( pc, dsn ).delete( HibernateCaster.getEntityName( cfc ), cfc );
         } catch ( Throwable t ) {
-            throw CommonUtil.toPageException( t );
+            throw ExceptionUtil.toPageException( t );
         }
     }
 
@@ -724,9 +724,9 @@ public class HibernateORMSession implements ORMSession {
             List list = query.list();
             if ( !list.isEmpty() )
                 return list.iterator().next();
-            throw CommonUtil.toPageException( e );
+            throw ExceptionUtil.toPageException( e );
         } catch ( Throwable t ) {
-            throw CommonUtil.toPageException( t );
+            throw ExceptionUtil.toPageException( t );
         }
     }
 
@@ -831,7 +831,7 @@ public class HibernateORMSession implements ORMSession {
                     .toSerializable( CommonUtil.castTo( pc, metaData.getIdentifierType().getReturnedClass(), id ) );
             obj = sess.get( name, oId );
         } catch ( Throwable t ) {
-            throw CommonUtil.toPageException( t );
+            throw ExceptionUtil.toPageException( t );
         }
 
         return ( Component ) obj;
@@ -881,7 +881,7 @@ public class HibernateORMSession implements ORMSession {
                 rtn = criteria.uniqueResult();
             }
         } catch ( Throwable t ) {
-            throw CommonUtil.toPageException( t );
+            throw ExceptionUtil.toPageException( t );
         }
 
         return rtn;
@@ -998,7 +998,7 @@ public class HibernateORMSession implements ORMSession {
             }
 
         } catch ( Throwable t ) {
-            throw CommonUtil.toPageException( t );
+            throw ExceptionUtil.toPageException( t );
         }
         return rtn;
     }

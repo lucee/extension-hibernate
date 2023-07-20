@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import ortus.extension.orm.SessionFactoryData;
 
 import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.util.Util;
 import lucee.runtime.Component;
 import lucee.runtime.db.DataSource;
 // import lucee.runtime.exp.NativeException;
@@ -141,5 +142,35 @@ public class ExceptionUtil {
         if ( cause != null && cause != t )
             return unwrap( cause );
         return t;
+    }
+
+    /**
+     * TODO: Move to ExceptionUtil.
+     * 
+     * @param t
+     * 
+     * @return
+     */
+    public static PageException toPageException( Throwable t ) {
+        PageException pe = CommonUtil.caster().toPageException( t );
+        if ( t instanceof org.hibernate.HibernateException ) {
+            org.hibernate.HibernateException he = ( org.hibernate.HibernateException ) t;
+            Throwable cause = he.getCause();
+            if ( cause != null ) {
+                pe = CommonUtil.caster().toPageException( cause );
+                setAdditional( pe, CommonUtil.createKey( "hibernate exception" ), t );
+            }
+        }
+        if ( t instanceof JDBCException ) {
+            JDBCException je = ( JDBCException ) t;
+            setAdditional( pe, CommonUtil.createKey( "sql" ), je.getSQL() );
+        }
+        if ( t instanceof ConstraintViolationException ) {
+            ConstraintViolationException cve = ( ConstraintViolationException ) t;
+            if ( !Util.isEmpty( cve.getConstraintName() ) ) {
+                setAdditional( pe, CommonUtil.createKey( "constraint name" ), cve.getConstraintName() );
+            }
+        }
+        return pe;
     }
 }

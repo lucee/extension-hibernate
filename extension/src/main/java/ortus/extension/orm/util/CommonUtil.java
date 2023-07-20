@@ -411,36 +411,6 @@ public class CommonUtil {
         return trg;
     }
 
-    /**
-     * TODO: Move to ExceptionUtil.
-     * 
-     * @param t
-     * 
-     * @return
-     */
-    public static PageException toPageException( Throwable t ) {
-        PageException pe = caster().toPageException( t );
-        if ( t instanceof org.hibernate.HibernateException ) {
-            org.hibernate.HibernateException he = ( org.hibernate.HibernateException ) t;
-            Throwable cause = he.getCause();
-            if ( cause != null ) {
-                pe = caster().toPageException( cause );
-                ExceptionUtil.setAdditional( pe, CommonUtil.createKey( "hibernate exception" ), t );
-            }
-        }
-        if ( t instanceof JDBCException ) {
-            JDBCException je = ( JDBCException ) t;
-            ExceptionUtil.setAdditional( pe, CommonUtil.createKey( "sql" ), je.getSQL() );
-        }
-        if ( t instanceof ConstraintViolationException ) {
-            ConstraintViolationException cve = ( ConstraintViolationException ) t;
-            if ( !Util.isEmpty( cve.getConstraintName() ) ) {
-                ExceptionUtil.setAdditional( pe, CommonUtil.createKey( "constraint name" ), cve.getConstraintName() );
-            }
-        }
-        return pe;
-    }
-
     public static Serializable toSerializable( Object obj ) throws PageException {
         return caster().toSerializable( obj );
     }
@@ -639,7 +609,7 @@ public class CommonUtil {
         return decision;
     }
 
-    private static Cast caster() {
+    static Cast caster() {
         if ( caster == null )
             caster = CFMLEngineFactory.getInstance().getCastUtil();
         return caster;
@@ -749,7 +719,7 @@ public class CommonUtil {
             }
             return ( DatasourceConnection ) mGetDatasourceConnection.invoke( dbutil, pc, ds, user, pass, false );
         } catch ( Exception e ) {
-            throw CommonUtil.toPageException( e );
+            throw ExceptionUtil.toPageException( e );
         }
     }
 
@@ -768,7 +738,7 @@ public class CommonUtil {
             }
             mReleaseDatasourceConnection.invoke( dbutil, pc, dc, false );
         } catch ( Exception e ) {
-            throw CommonUtil.toPageException( e );
+            throw ExceptionUtil.toPageException( e );
         }
     }
 

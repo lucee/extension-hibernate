@@ -41,7 +41,7 @@ public class XMLUtil {
             Method method = clazz.getMethod( "toInputSource", new Class[] { Object.class } );
             return ( InputSource ) method.invoke( null, obj );
         } catch ( Exception e ) {
-            throw CommonUtil.toPageException( e );
+            throw ExceptionUtil.toPageException( e );
         }
     }
 
@@ -52,7 +52,7 @@ public class XMLUtil {
             Method method = clazz.getMethod( "toInputSource", new Class[] { Resource.class, Charset.class } );
             return ( InputSource ) method.invoke( null, res, cs );
         } catch ( Exception e ) {
-            throw CommonUtil.toPageException( e );
+            throw ExceptionUtil.toPageException( e );
         }
     }
 
@@ -63,7 +63,7 @@ public class XMLUtil {
             Method method = clazz.getMethod( "parse", new Class[] { InputSource.class, InputSource.class, boolean.class } );
             return ( Document ) method.invoke( null, xml, validator, isHtml );
         } catch ( Exception e ) {
-            throw CommonUtil.toPageException( e );
+            throw ExceptionUtil.toPageException( e );
         }
     }
 
@@ -74,7 +74,7 @@ public class XMLUtil {
             Method method = clazz.getMethod( "newDocument" );
             return ( Document ) method.invoke( null );
         } catch ( Exception e ) {
-            throw CommonUtil.toPageException( e );
+            throw ExceptionUtil.toPageException( e );
         }
     }
 
@@ -99,7 +99,7 @@ public class XMLUtil {
             transformer.transform( new DOMSource( document ), new StreamResult( writer ) );
             return writer.toString();
         } catch ( Exception e ) {
-            throw CommonUtil.toPageException( e );
+            throw ExceptionUtil.toPageException( e );
         }
     }
 

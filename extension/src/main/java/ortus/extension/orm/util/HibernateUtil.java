@@ -339,7 +339,7 @@ public class HibernateUtil {
             }
             return rows;
         } catch ( SQLException e ) {
-            throw CommonUtil.toPageException( e );
+            throw ExceptionUtil.toPageException( e );
         }
     }
 
