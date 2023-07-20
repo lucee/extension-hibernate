@@ -172,8 +172,8 @@ public class HibernateORMSession implements ORMSession {
         if (sac == null) {
             ExceptionUtil.similarKeyMessage(sessions.keySet().toArray(new Key[sessions.size()]),
                     datasSourceName.getString(), "datasource", "datasources", null, true);
-            throw ExceptionUtil.createException(data, null,
-                    "there is no Session for the datasource [" + datasSourceName + "]", null);
+            String message = String.format("there is no Session for the datasource [%s]", datasSourceName);
+            throw ExceptionUtil.createException(data, null, message, null);
         }
         Session s = sac.getSession(pc);
         if (!s.isOpen() || !s.isConnected() || isClosed(s)) {
@@ -388,10 +388,11 @@ public class HibernateORMSession implements ORMSession {
 
         try {
             Session session = getSession(pc, dsn);
-            if (forceInsert)
+            if (forceInsert){
                 session.save(name, cfc);
-            else
+            } else{
                 session.saveOrUpdate(name, cfc);
+            }
         } catch (Exception e) {
             throw ExceptionUtil.createException(this, null, e);
         }
@@ -588,9 +589,7 @@ public class HibernateORMSession implements ORMSession {
                 Boolean ro = CommonUtil.toBoolean(obj, null);
                 if (ro == null){
                     String message = String.format( "option [%s] has an invalid value [%s], value should be a boolean value", QUERYOPTS.READONLY.getString(), obj);
-                    throw ExceptionUtil.createException(this, null,
-                            message,
-                            null);
+                    throw ExceptionUtil.createException(this, null, message, null);
                 }
                 query.setReadOnly(ro.booleanValue());
             }
@@ -666,9 +665,10 @@ public class HibernateORMSession implements ORMSession {
             else if (isParamArray) {
                 Array arr = CommonUtil.toArray(params);
 
-                if (meta.getOrdinalParameterCount() > arr.size())
-                    throw ExceptionUtil.createException(this, null, "parameter array is to small [" + arr.size()
-                            + "], need [" + meta.getOrdinalParameterCount() + "] elements", null);
+                if (meta.getOrdinalParameterCount() > arr.size()){
+                    String message = String.format("parameter array is t0o small [%s], need [%s] elements", arr.size(), meta.getOrdinalParameterCount());
+                    throw ExceptionUtil.createException(this, null, message, null);
+                }
 
                 Iterator it = arr.valueIterator();
                 int idx = 1;
@@ -821,9 +821,10 @@ public class HibernateORMSession implements ORMSession {
         Object obj = null;
         try {
             ClassMetadata metaData = sess.getSessionFactory().getClassMetadata(name);
-            if (metaData == null)
-                throw ExceptionUtil.createException(this, null,
-                        "could not load meta information for entity [" + name + "]", null);
+            if (metaData == null){
+                String message = String.format("could not load meta information for entity [%s]", name);
+                throw ExceptionUtil.createException(this, null, message, null);
+            }
             Serializable oId = CommonUtil
                     .toSerializable(CommonUtil.castTo(pc, metaData.getIdentifierType().getReturnedClass(), id));
             obj = sess.get(name, oId);
@@ -972,8 +973,9 @@ public class HibernateORMSession implements ORMSession {
                         if (parts[1].equalsIgnoreCase("desc"))
                             isDesc = true;
                         else if (!parts[1].equalsIgnoreCase("asc")) {
+                            String message = String.format("invalid order direction definition [%s]", parts[1]);
                             throw ExceptionUtil.createException((ORMSession) null, null,
-                                    "invalid order direction defintion [" + parts[1] + "]",
+                                    message,
                                     "valid values are [asc, desc]");
                         }
 

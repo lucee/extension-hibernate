@@ -255,15 +255,14 @@ public class HBMCreator {
             Struct columnsInfo, String tableName, SessionFactoryData data) throws PageException {
         Property[] _ids = getIds(cfc, propColl, data);
 
-        // Property[] _ids = ids.toArray(new Property[ids.size()]);
-
         if (_ids.length == 1)
             createXMLMappingId(cfc, clazz, _ids[0], columnsInfo, tableName, data);
         else if (_ids.length > 1)
             createXMLMappingCompositeId(cfc, clazz, _ids, columnsInfo, tableName, data);
-        else
-            throw ExceptionUtil.createException(data, cfc,
-                    "missing id property for entity [" + HibernateCaster.getEntityName(cfc) + "]", null);
+        else{
+            String message = String.format( "missing id property for entity [%s]", HibernateCaster.getEntityName(cfc) );
+            throw ExceptionUtil.createException(data, cfc, message, null);
+        }
     }
 
     private static PropertyCollection splitJoins(Component cfc, Map<String, PropertyCollection> joins, Property[] props,
@@ -558,10 +557,10 @@ public class HBMCreator {
             str = str.trim().toLowerCase();
             if ("all".equals(str) || "dirty".equals(str) || "none".equals(str) || "version".equals(str))
                 clazz.setAttribute("optimistic-lock", str);
-            else
-                throw ExceptionUtil.createException(data, cfc, "invalid value [" + str
-                        + "] for attribute [optimisticlock] of tag [component], valid values are [all,dirty,none,version]",
-                        null);
+            else{
+                String message = String.format("invalid value [%s] for attribute [optimisticlock] of tag [component], valid values are [all,dirty,none,version]", str );
+                throw ExceptionUtil.createException(data, cfc, message, null);
+            }
         }
 
         // read-only
@@ -876,11 +875,8 @@ public class HBMCreator {
 
         generator.setAttribute("class", className);
 
-        // print.e("generator:"+className);
-
         // params
         Object obj = meta.get(PARAMS, null);
-        // if(obj!=null){
         Struct sct = null;
         if (obj == null)
             obj = CommonUtil.createStruct();
@@ -889,9 +885,9 @@ public class HBMCreator {
 
         if (CommonUtil.isStruct(obj))
             sct = CommonUtil.toStruct(obj);
-        else
-            throw ExceptionUtil.createException(data, cfc, "invalid value for attribute [params] of tag [property]",
-                    null);
+        else{
+            throw ExceptionUtil.createException(data, cfc, "invalid value for attribute [params] of tag [property]", null);
+        }
         className = className.trim().toLowerCase();
 
         // special classes
@@ -1604,8 +1600,8 @@ public class HBMCreator {
                 return str;
 
         }
-        throw ExceptionUtil.createException(data, null, "Persistent property " + prop.getName() + " on component "
-                + cfc.getName() + " is missing `fkcolumn` definition for relationship identification", null);
+        String message = String.format("Persistent property [%s] on component [%s] is missing `fkcolumn` definition for relationship identification", prop.getName(), cfc.getName() );
+        throw ExceptionUtil.createException(data, null, message, null);
     }
 
     private static String createM2MFKColumnName(Component cfc, Property prop, PropertyCollection propColl,
@@ -1620,11 +1616,10 @@ public class HBMCreator {
                     str = ids[0].getName();
             } else if (prop != null)
                 str = toString(cfc, prop, prop.getDynamicAttributes(), "fkcolumn", true, data);
-            else
-                throw ExceptionUtil.createException(data, null,
-                        "Persistent property " + prop.getName() + " on component " + cfc.getName()
-                                + " is missing `fkcolumn` definition for relationship identification",
-                        null);
+            else{
+                String message = String.format( "Persistent property [%s] on component [%s] is missing `fkcolumn` definition for relationship identification", prop.getName(), cfc.getName() );
+                throw ExceptionUtil.createException(data, null, message, null);
+            }
 
             str = HibernateCaster.getEntityName(cfc) + "_" + str;
         }
@@ -1666,10 +1661,9 @@ public class HBMCreator {
                 if (!Util.isEmpty(name, true)) {
                     cache.setAttribute("region", name);
                 }
-            } else
-                throw ExceptionUtil.createException(data, cfc, "invalid value [" + strategy
-                        + "] for attribute [cacheuse], valid values are [read-only,nonstrict-read-write,read-write,transactional]",
-                        null);
+            } else{
+                String message = String.format("invalid value [%s] for attribute [cacheuse], valid values are [read-only,nonstrict-read-write,read-write,transactional]", strategy);
+                throw ExceptionUtil.createException(data, cfc, message, null);}
         }
 
     }
@@ -2027,23 +2021,28 @@ public class HBMCreator {
         Object value = sct.get(key, null);
         if (value == null) {
             if (throwErrorWhenNotExist) {
-                if (prop == null)
-                    throw ExceptionUtil.createException(data, cfc, "attribute [" + key + "] is required", null);
-                throw ExceptionUtil.createException(data, cfc, "attribute [" + key + "] of property [" + prop.getName()
-                        + "] of Component [" + _getCFCName(prop) + "] is required", null);
+                if (prop == null){
+                    String message = String.format( "attribute [%s] is required", key);
+                    throw ExceptionUtil.createException(data, cfc, message, null);
+                } else {
+                    String message = String.format("attribute [%s] of property [%s] of Component [%s] is required", key, prop.getName(), _getCFCName(prop));
+                    throw ExceptionUtil.createException(data, cfc, message, null);
+                }
             }
             return null;
         }
 
         String str = CommonUtil.toString(value, null);
         if (str == null) {
-            if (prop == null)
-                throw ExceptionUtil.createException(data, cfc, "invalid type [" + CommonUtil.toTypeName(value)
-                        + "] for attribute [" + key + "], value must be a string", null);
-            throw ExceptionUtil.createException(data, cfc,
-                    "invalid type [" + CommonUtil.toTypeName(value) + "] for attribute [" + key + "] of property ["
-                            + prop.getName() + "] of Component [" + _getCFCName(prop) + "], value must be a string",
+            if (prop == null){
+                String message = String.format("invalid type [%s] for attribute [%s], value must be a string", CommonUtil.toTypeName(value), key );
+                throw ExceptionUtil.createException(data, cfc, message, null);
+            } else {
+                String message = String.format("invalid type [%s] for attribute [%s] of property [%s] of Component [%s], value must be a string", CommonUtil.toTypeName(value), key, prop.getName(), _getCFCName(prop) );
+                throw ExceptionUtil.createException(data, cfc,
+                    message,
                     null);
+            }
         }
         return str;
     }
@@ -2060,9 +2059,10 @@ public class HBMCreator {
             return null;
 
         Boolean b = CommonUtil.toBoolean(value, null);
-        if (b == null)
-            throw ExceptionUtil.createException(data, cfc, "invalid type [" + CommonUtil.toTypeName(value)
-                    + "] for attribute [" + key + "], value must be a boolean", null);
+        if (b == null){
+            String message = String.format("invalid type [%s] for attribute [%s], value must be a boolean", CommonUtil.toTypeName(value), key);
+            throw ExceptionUtil.createException(data, cfc, message, null);
+        }
         return b;
     }
 
@@ -2073,9 +2073,10 @@ public class HBMCreator {
             return null;
 
         Integer i = CommonUtil.toInteger(value, null);
-        if (i == null)
-            throw ExceptionUtil.createException(data, cfc, "invalid type [" + CommonUtil.toTypeName(value)
-                    + "] for attribute [" + key + "], value must be a numeric value", null);
+        if (i == null){
+            String message = String.format("invalid type [%s] for attribute [%s], value must be a numeric value", CommonUtil.toTypeName(value), key);
+            throw ExceptionUtil.createException(data, cfc, message, null);
+        }
         return i;
     }
 
@@ -2125,8 +2126,10 @@ public class HBMCreator {
     public static String loadMapping(Component cfc) throws PageException, IOException {
 
         Resource resource = getMappingResource(cfc);
-        if (resource == null)
-            throw ExceptionUtil.createException("Hibernate mapping not found for entity: " + cfc.getName());
+        if (resource == null){
+            String message = String.format("Hibernate mapping not found for entity [%s]", cfc.getName());
+            throw ExceptionUtil.createException(message);
+        }
 
         String xml = CommonUtil.toString(resource, CommonUtil.getUTF8Charset());
         return xml;

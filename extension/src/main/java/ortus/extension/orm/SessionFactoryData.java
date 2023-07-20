@@ -128,8 +128,8 @@ public class SessionFactoryData {
         if (info != null)
             return info;
 
-        throw ExceptionUtil.createException(this, null,
-                "there is no mapping definition for component [" + cfc.getAbsName() + "]", "");
+        String message = String.format("there is no mapping definition for component [%s]", cfc.getAbsName());
+        throw ExceptionUtil.createException(this, null, message, null);
     }
 
     public List<String> getEntityNames() {
@@ -159,7 +159,8 @@ public class SessionFactoryData {
                     return unique ? (Component) entityType.duplicate(false) : entityType;
             }
         }
-        throw ExceptionUtil.createException((ORMSession) null, null, "entity [" + entityName + "] does not exist", "");
+        String message = String.format("entity [%s] does not exist", entityName);
+        throw ExceptionUtil.createException((ORMSession) null, null, message, null);
     }
 
     public Component getEntityByCFCName(String cfcName, boolean unique) throws PageException {
@@ -201,11 +202,14 @@ public class SessionFactoryData {
             return unique ? (Component) cfc.duplicate(false) : cfc;
         }
 
-        throw ExceptionUtil.createException((ORMSession) null, null,
-                "entity [" + name + "] " + (Util.isEmpty(cfcName) ? "" : "with cfc name [" + cfcName + "] ")
-                        + "does not exist, existing  entities are ["
-                        + CFMLEngineFactory.getInstance().getListUtil().toList(names, ", ") + "]",
-                "");
+        String cfcNameClause = Util.isEmpty(cfcName) ? "" : String.format("with cfc name [%s]", cfcName );
+        String message = String.format(
+            "entity [%s] %s does not exist, existing  entities are [%s]",
+            name,
+            cfcNameClause,
+            CFMLEngineFactory.getInstance().getListUtil().toList(names, ", ")
+        );
+        throw ExceptionUtil.createException(message);
 
     }
 

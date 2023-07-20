@@ -200,12 +200,15 @@ public class HibernateORMEngine implements ORMEngine {
                         Map<String, String> names = new HashMap<>();
                         for (Component cfc : data.tmpList) {
                             String name = HibernateCaster.getEntityName(cfc);
-                            if (names.containsKey(name.toLowerCase()))
-                                throw ExceptionUtil.createException(data, null,
-                                        "Entity Name [" + name + "] is ambigous, [" + names.get(name.toLowerCase())
-                                                + "] and [" + cfc.getPageSource().getDisplayPath()
-                                                + "] use the same entity name.",
-                                        "");
+                            if (names.containsKey(name.toLowerCase())){
+                                String message = String.format(
+                                    "Entity Name [%s] is ambigous, [%s] and [%s] use the same entity name.",
+                                    name,
+                                    names.get(name.toLowerCase()),
+                                    cfc.getPageSource().getDisplayPath()
+                                );
+                                throw ExceptionUtil.createException(data, null, message, null);
+                            }
                             names.put(name.toLowerCase(), cfc.getPageSource().getDisplayPath());
                         }
                     }
@@ -378,10 +381,13 @@ public class HibernateORMEngine implements ORMEngine {
         ORMConfiguration ormConf = pc.getApplicationContext().getORMConfiguration();
         Resource[] locations = ormConf.getCfcLocations();
 
-        throw ExceptionUtil.createException(data, null,
-                "No entity (persistent component) with name [" + entityName + "] found, available entities are ["
-                        + CFMLEngineFactory.getInstance().getListUtil().toList(data.getEntityNames(), ", ") + "] ",
-                "component are searched in the following directories [" + toString(locations) + "]");
+        String detail = String.format("component are searched in the following directories [%s]", toString(locations));
+        String message = String.format(
+            "No entity (persistent component) with name [%s] found, available entities are [%s]",
+            entityName,
+            CFMLEngineFactory.getInstance().getListUtil().toList(data.getEntityNames(), ", ")
+        );
+        throw ExceptionUtil.createException(data, null, message, detail);
 
     }
 

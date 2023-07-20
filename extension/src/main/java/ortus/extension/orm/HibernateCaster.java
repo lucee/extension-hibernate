@@ -231,8 +231,10 @@ public class HibernateCaster {
 
     public static String toHibernateType(ORMSession session, String type) throws PageException {
         String res = toHibernateType(type, null);
-        if (res == null)
-            throw ExceptionUtil.createException(session, null, "the type [" + type + "] is not supported", null);
+        if (res == null){
+            String message = String.format("the type [%s] is not supported", type);
+            throw ExceptionUtil.createException(session, null, message, null);
+        }
         return res;
     }
 
@@ -586,10 +588,12 @@ public class HibernateCaster {
         }
 
         if (qry == null) {
-            if (!Util.isEmpty(name))
-                throw ExceptionUtil.createException(session, null,
-                        "there is no entity inheritance that match the name [" + name + "]", null);
-            throw ExceptionUtil.createException(session, null, "cannot create query", null);
+            if (!Util.isEmpty(name)){
+                String message = String.format("there is no entity inheritance that match the name [%s]", name);
+                throw ExceptionUtil.createException(session, null, message, null);
+            } else {
+                throw ExceptionUtil.createException(session, null, "cannot create query", null);
+            }
         }
         return qry;
     }
@@ -651,9 +655,10 @@ public class HibernateCaster {
         }
         // check
         else if (engine.getMode() == ORMEngine.MODE_STRICT) {
-            if (!qry.getName().equals(getEntityName(cfc)))
+            if (!qry.getName().equals(getEntityName(cfc))){
                 throw ExceptionUtil.createException(session, null,
                         "can only merge entities of the same kind to a query", null);
+            }
         }
 
         // populate

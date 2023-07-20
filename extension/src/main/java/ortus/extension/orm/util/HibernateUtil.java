@@ -163,10 +163,9 @@ public class HibernateUtil {
         String res = validateColumnName(metaData, name, null);
         if (res != null)
             return res;
-        throw ExceptionUtil.createException((ORMSession) null, null,
-                "invalid name, there is no property with name [" + name + "] in the entity [" + metaData.getEntityName()
-                        + "]",
-                "valid properties names are [" + CommonUtil.toList(metaData.getPropertyNames(), ", ") + "]");
+        String message = String.format("invalid name, there is no property with name [%s] in the entity [%s]", name, metaData.getEntityName());
+        String detail = String.format("valid properties names are [%s]", CommonUtil.toList(metaData.getPropertyNames(), ", "));
+        throw ExceptionUtil.createException(message, detail);
 
     }
 
