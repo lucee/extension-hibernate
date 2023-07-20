@@ -8,7 +8,7 @@ component extends="testbox.system.BaseSpec" {
 	variables.isLucee6 = left( server.lucee.version, 1 ) == 6;
 
 	function run( testResults, testBox ){
-		debug( server.lucee.version );
+		// debug( server.lucee.version );
 
 		describe( "LDEV-0374 - usage of date member functions on ORM properties", function(){
 			beforeEach( () => {

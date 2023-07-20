@@ -14,7 +14,7 @@ component extends="testbox.system.BaseSpec" {
 					var xmlString = fileRead( variables.testXMLFile );
 					expect( isValid( "xml", xmlString ) ).tobeTrue();
 					variables.testXML = xmlParse( xmlString );
-					debug( variables.testXML );
+					// debug( variables.testXML );
 				} );
 				it( "matches the expected format", () => {
 					expect( variables.testXML.xmlRoot.xmlName ).toBe( "hibernate-mapping" );
@@ -37,7 +37,7 @@ component extends="testbox.system.BaseSpec" {
 					var actualPropNames   = props
 						.filter( ( prop ) => prop.xmlName == "property" )
 						.map( ( prop ) => prop.xmlAttributes.name );
-					debug( actualPropNames );
+					// debug( actualPropNames );
 					expectedPropNames.each( ( expectedProp ) => {
 						expect( arrayContains( actualPropNames, expectedProp ) != 0 ).toBeTrue()
 					} );
