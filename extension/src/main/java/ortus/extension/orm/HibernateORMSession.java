@@ -52,6 +52,20 @@ import lucee.runtime.util.Cast;
 
 public class HibernateORMSession implements ORMSession {
 
+    /**
+     * A limited set of constants mapping to ORM-supported Lucee query options
+     * 
+     * TODO: For 7.0, Migrate to Map.of() or Map.ofEntries in Java 9+
+     */
+    private static final class QUERYOPTS {
+        public static final Key MAXRESULTS = CommonUtil.createKey("maxresults");
+        public static final Key OFFSET     = CommonUtil.createKey("offset");
+        public static final Key READONLY   = CommonUtil.createKey("readonly");
+        public static final Key TIMEOUT    = CommonUtil.createKey("timeout");
+        public static final Key IGNORECASE = CommonUtil.createKey("ignorecase");
+        public static final Key CACHEABLE  = CommonUtil.createKey("cacheable");
+    }
+
     public class SessionAndConn {
 
         private Session s;
@@ -323,7 +337,7 @@ public class HibernateORMSession implements ORMSession {
 
                 try {
                     for (Component entity : components) {
-                        _delete(pc, entity, datasourceName);
+                        deleteEntityFromSession(pc, entity, datasourceName);
                     }
                 } catch (Throwable t) {
                     if (trans != null)
@@ -334,10 +348,18 @@ public class HibernateORMSession implements ORMSession {
                     trans.commit();
             }
         } else
-            _delete(pc, HibernateCaster.toComponent(obj), null);
+            deleteEntityFromSession(pc, HibernateCaster.toComponent(obj), null);
     }
 
-    private void _delete(PageContext pc, Component cfc, Key dsn) throws PageException {
+    /**
+     * Drop the entity (Lucee Component) from the current DSN session.
+     * 
+     * @param pc Lucee PageContext
+     * @param cfc The entity Component to delete from the session
+     * @param dsn Key name of the datasource we're deleting from
+     * @throws PageException
+     */
+    private void deleteEntityFromSession(PageContext pc, Component cfc, Key dsn) throws PageException {
         if (dsn == null)
             dsn = CommonUtil.toKey(CommonUtil.getDataSourceName(pc, cfc));
         data.checkExistent(pc, cfc);
@@ -494,16 +516,16 @@ public class HibernateORMSession implements ORMSession {
     @Override
     public Object executeQuery(PageContext pc, String dataSourceName, String hql, Array params, boolean unique,
             Struct queryOptions) throws PageException {
-        return _executeQuery(pc, dataSourceName, hql, params, unique, queryOptions);
+        return wrapQueryExecute(pc, dataSourceName, hql, params, unique, queryOptions);
     }
 
     @Override
     public Object executeQuery(PageContext pc, String dataSourceName, String hql, Struct params, boolean unique,
             Struct queryOptions) throws PageException {
-        return _executeQuery(pc, dataSourceName, hql, params, unique, queryOptions);
+        return wrapQueryExecute(pc, dataSourceName, hql, params, unique, queryOptions);
     }
 
-    private Object _executeQuery(PageContext pc, String dataSourceName, String hql, Object params, boolean unique,
+    private Object wrapQueryExecute(PageContext pc, String dataSourceName, String hql, Object params, boolean unique,
             Struct queryOptions) throws PageException {
         Key dsn;
         if (dataSourceName == null)
@@ -513,14 +535,14 @@ public class HibernateORMSession implements ORMSession {
 
         Session s = getSession(pc, dsn);
         try {
-            return __executeQuery(pc, s, dsn, hql, params, unique, queryOptions);
+            return doQueryExecute(pc, s, dsn, hql, params, unique, queryOptions);
         } catch (QueryException qe) {
             // argument scope is array and struct at the same time, by default it is handled
             // as struct, if this
             // fails try it as array
             if (params instanceof Argument) {
                 try {
-                    return __executeQuery(pc, s, dsn, hql, CommonUtil.toArray((Argument) params), unique, queryOptions);
+                    return doQueryExecute(pc, s, dsn, hql, CommonUtil.toArray((Argument) params), unique, queryOptions);
                 } catch (Throwable t) {
                     if (t instanceof ThreadDeath)
                         throw (ThreadDeath) t;
@@ -531,7 +553,7 @@ public class HibernateORMSession implements ORMSession {
 
     }
 
-    private Object __executeQuery(PageContext pc, Session session, Key dsn, String hql, Object params, boolean unique,
+    private Object doQueryExecute(PageContext pc, Session session, Key dsn, String hql, Object params, boolean unique,
             Struct options) throws PageException {
         hql = hql.trim();
         boolean isParamArray = params != null && CommonUtil.isArray(params);
@@ -541,35 +563,39 @@ public class HibernateORMSession implements ORMSession {
         // options
         if (options != null) {
             // maxresults
-            Object obj = options.get("maxresults", null);
+            Object obj = options.get(QUERYOPTS.MAXRESULTS, null);
             if (obj != null) {
                 int max = CommonUtil.toIntValue(obj, -1);
-                if (max < 0)
-                    throw ExceptionUtil.createException(this, null, "option [maxresults] has an invalid value [" + obj
-                            + "], value should be a number bigger or equal to 0", null);
+                if (max < 0){
+                    String message = getInvalidNumericQueryOpt( QUERYOPTS.MAXRESULTS, obj );
+                    throw ExceptionUtil.createException(this, null, message, null);
+                }
                 query.setMaxResults(max);
             }
             // offset
-            obj = options.get("offset", null);
+            obj = options.get(QUERYOPTS.OFFSET, null);
             if (obj != null) {
                 int off = CommonUtil.toIntValue(obj, -1);
-                if (off < 0)
-                    throw ExceptionUtil.createException(this, null, "option [offset] has an invalid value [" + obj
-                            + "], value should be a number bigger or equal to 0", null);
+                if (off < 0){
+                    String message = getInvalidNumericQueryOpt( QUERYOPTS.OFFSET, obj );
+                    throw ExceptionUtil.createException(this, null, message, null);
+                }
                 query.setFirstResult(off);
             }
             // readonly
-            obj = options.get("readonly", null);
+            obj = options.get(QUERYOPTS.READONLY, null);
             if (obj != null) {
                 Boolean ro = CommonUtil.toBoolean(obj, null);
-                if (ro == null)
+                if (ro == null){
+                    String message = String.format( "option [%s] has an invalid value [%s], value should be a boolean value", QUERYOPTS.READONLY.getString(), obj);
                     throw ExceptionUtil.createException(this, null,
-                            "option [readonly] has an invalid value [" + obj + "], value should be a boolean value",
+                            message,
                             null);
+                }
                 query.setReadOnly(ro.booleanValue());
             }
             // timeout
-            obj = options.get("timeout", null);
+            obj = options.get(QUERYOPTS.TIMEOUT, null);
             if (obj != null) {
                 int to;
                 if (obj instanceof TimeSpan)
@@ -577,9 +603,10 @@ public class HibernateORMSession implements ORMSession {
                 else
                     to = CommonUtil.toIntValue(obj, -1);
 
-                if (to < 0)
-                    throw ExceptionUtil.createException(this, null, "option [timeout] has an invalid value [" + obj
-                            + "], value should be a number bigger or equal to 0", null);
+                if (to < 0){
+                    String message = getInvalidNumericQueryOpt( QUERYOPTS.TIMEOUT, obj );
+                    throw ExceptionUtil.createException(this, null, message, null);
+                }
                 query.setTimeout(to);
             }
         }
@@ -680,6 +707,10 @@ public class HibernateORMSession implements ORMSession {
         }
         // update
         return Double.valueOf(query.executeUpdate());
+    }
+
+    private String getInvalidNumericQueryOpt( Key queryOpt, Object obj ) {
+        return String.format("option [%s] has an invalid value [%s], value should be a number bigger or equal to 0", queryOpt.getString(), obj);
     }
 
     private Object uniqueResult(Query<?> query) throws PageException {
@@ -892,29 +923,29 @@ public class HibernateORMSession implements ORMSession {
             boolean ignoreCase = false;
             if (options != null && !options.isEmpty()) {
                 // ignorecase
-                Boolean ignorecase = CommonUtil.toBoolean(options.get("ignorecase", null), null);
+                Boolean ignorecase = CommonUtil.toBoolean(options.get(QUERYOPTS.IGNORECASE, null), null);
                 if (ignorecase != null)
                     ignoreCase = ignorecase.booleanValue();
 
                 // offset
-                int offset = CommonUtil.toIntValue(options.get("offset", null), 0);
+                int offset = CommonUtil.toIntValue(options.get(QUERYOPTS.OFFSET, null), 0);
                 if (offset > 0)
                     criteria.setFirstResult(offset);
 
                 // maxResults
-                int max = CommonUtil.toIntValue(options.get("maxresults", null), -1);
+                int max = CommonUtil.toIntValue(options.get(QUERYOPTS.MAXRESULTS, null), -1);
                 if (max > -1)
                     criteria.setMaxResults(max);
 
                 // cacheable
-                Boolean cacheable = CommonUtil.toBoolean(options.get("cacheable", null), null);
+                Boolean cacheable = CommonUtil.toBoolean(options.get(QUERYOPTS.CACHEABLE, null), null);
                 if (cacheable != null)
                     criteria.setCacheable(cacheable.booleanValue());
 
                 // MUST cacheName ?
 
                 // maxResults
-                int timeout = CommonUtil.toIntValue(options.get("timeout", null), -1);
+                int timeout = CommonUtil.toIntValue(options.get(QUERYOPTS.TIMEOUT, null), -1);
                 if (timeout > -1)
                     criteria.setTimeout(timeout);
             }

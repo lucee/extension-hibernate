@@ -618,7 +618,6 @@ public class HibernateCaster {
             Array names = CommonUtil.createArray();
             Array types = CommonUtil.createArray();
             String name;
-            // ColumnInfo ci;
             int t;
             Object obj;
             Struct sct;
@@ -635,8 +634,6 @@ public class HibernateCaster {
                 }
 
                 name = HibernateUtil.validateColumnName(md, properties[i].getName(), null);
-                // if(columnsInfo!=null)ci=(ColumnInfo) columnsInfo.get(name,null);
-                // else ci=null;
                 names.append(name);
                 if (name != null) {
 
