@@ -8,12 +8,13 @@ import lucee.loader.engine.CFMLEngineFactory;
 import lucee.loader.util.Util;
 import lucee.runtime.Component;
 import lucee.runtime.db.DataSource;
-// import lucee.runtime.exp.NativeException;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMSession;
 import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
 
+import org.hibernate.JDBCException;
+import org.hibernate.exception.ConstraintViolationException;
 /**
  * Contains many exception helper methods. Mostly wraps Lucee's own ExceptionUtil.
  *

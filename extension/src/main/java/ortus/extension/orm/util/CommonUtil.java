@@ -15,7 +15,6 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.nio.charset.Charset;
-import java.sql.ResultSet;
 import java.sql.Clob;
 import java.util.Map;
 import java.util.ArrayList;
@@ -25,8 +24,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.hibernate.JDBCException;
-import org.hibernate.exception.ConstraintViolationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
