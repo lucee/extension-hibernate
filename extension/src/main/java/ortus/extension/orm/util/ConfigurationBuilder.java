@@ -1,8 +1,14 @@
 package ortus.extension.orm.util;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Properties;
@@ -23,8 +29,6 @@ import org.w3c.dom.Element;
 
 import lucee.commons.io.log.Log;
 import lucee.commons.io.res.Resource;
-import lucee.loader.engine.CFMLEngine;
-import lucee.loader.engine.CFMLEngineFactory;
 import lucee.loader.util.Util;
 import lucee.runtime.db.DataSource;
 import lucee.runtime.exp.PageException;
@@ -158,7 +162,7 @@ public class ConfigurationBuilder {
 
             if ( cacheProvider != null ) {
                 if ( cacheProvider.equalsIgnoreCase( "ehcache" ) ) {
-                    Resource cacheConfig = buildEHCacheConfig();
+                    File cacheConfig = buildEHCacheConfig();
                     configuration.setProperty( AvailableSettings.CACHE_PROVIDER_CONFIG, cacheConfig.getAbsolutePath() );
                 }
 
@@ -191,32 +195,46 @@ public class ConfigurationBuilder {
         }
     }
 
-    private Resource buildEHCacheConfig() throws IOException, PageException {
-        Resource cacheConfig;
-        Resource cc = ormConf.getCacheConfig();
-        CFMLEngine eng = CFMLEngineFactory.getInstance();
-        String varName = eng.getCastUtil().toVariableName( applicationName, applicationName );
+    private File buildEHCacheConfig() throws IOException, PageException {
+        File cacheConfig = File.createTempFile( "ehcache", ".xml" );
+        String xml = getCacheConfig( ormConf.getCacheConfig(), applicationName );
+        copyToTempFile( cacheConfig, xml );
+        return cacheConfig;
+    }
+
+    /**
+     * Get an XML string containing EITHER the existing config XML OR the default ehcache config XML.
+     * 
+     * @param cc      A Resource containing the configured path of the preconfigured EHCache config XML file
+     * @param varName
+     * 
+     * @return The XML string to use for ehCache configuration. May return the default - {@see getDefaultEHCacheConfig(String cacheName)}
+     * 
+     * @throws IOException
+     * @throws PageException
+     */
+    private String getCacheConfig( Resource cc, String varName ) throws IOException, PageException {
         String xml;
         if ( cc == null || !cc.isFile() ) {
-            cacheConfig = eng.getResourceUtil().getTempDirectory().getRealResource( "ehcache/" + varName + ".xml" );
-            xml         = createEHConfigXML( varName );
+            xml = getDefaultEHCacheConfig( varName );
         }
         // we need to change or set the name
         else {
-            String b64 = varName + eng.getSystemUtil().hash64b( CommonUtil.toString( cc, ( Charset ) null ) );
-            cacheConfig = eng.getResourceUtil().getTempDirectory().getRealResource( "ehcache/" + b64 + ".xml" );
+            String xmlHash = Integer.toString( CommonUtil.toString( cc, ( Charset ) null ).hashCode() );
             Document doc = CommonUtil.toDocument( cc, null );
             Element root = doc.getDocumentElement();
-            root.setAttribute( "name", b64 );
+            root.setAttribute( "name", xmlHash );
 
             xml = XMLUtil.toString( root );
         }
-        if ( !cacheConfig.isFile() ) {
-            Boolean alsoCreateParents = true;
-            cacheConfig.getParentResource().createDirectory( alsoCreateParents );
-            eng.getIOUtil().write( cacheConfig, xml, false, null );
+        return xml;
+    }
+
+    private void copyToTempFile( File cacheConfig, String xml ) throws IOException {
+        try ( Writer writer = new BufferedWriter(
+                new OutputStreamWriter( new FileOutputStream( cacheConfig.toPath().toString() ), StandardCharsets.UTF_8 ) ) ) {
+            writer.write( xml );
         }
-        return cacheConfig;
     }
 
     public ConfigurationBuilder withSessionFactoryData( SessionFactoryData data ) {
@@ -282,16 +300,14 @@ public class ConfigurationBuilder {
     }
 
     /**
-     * Generate an XML-format ehcache config file for the given cache name
-     * <p>
-     * TODO: Add support for diskSpoolBufferSizeMB and clearOnFlush, added in ACF 9.0.1
+     * Generate an XML-format ehcache config file for the given cache name.
      *
      * @param cacheName
      *                  Name of the cache
      *
      * @return XML string with formatting and line breaks
      */
-    private String createEHConfigXML( String cacheName ) {
+    private String getDefaultEHCacheConfig( String cacheName ) {
         return new StringBuilder().append( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" ).append( "<ehcache" )
                 .append( "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" )
                 .append( "    xsi:noNamespaceSchemaLocation=\"ehcache.xsd\"" )
@@ -299,6 +315,7 @@ public class ConfigurationBuilder {
                 .append( "    <diskStore path=\"java.io.tmpdir\"/>" ).append( "    <defaultCache" )
                 .append( "            maxElementsInMemory=\"10000\"" ).append( "            eternal=\"false\"" )
                 .append( "            timeToIdleSeconds=\"120\"" ).append( "            timeToLiveSeconds=\"120\"" )
+                .append( "            diskSpoolBufferSizeMB=\"30\"" ).append( "            clearOnFlush=\"true\"" )
                 .append( "            maxElementsOnDisk=\"10000000\"" )
                 .append( "            diskExpiryThreadIntervalSeconds=\"120\"" )
                 .append( "            memoryStoreEvictionPolicy=\"LRU\">" )
