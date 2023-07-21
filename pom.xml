@@ -5,7 +5,7 @@
 
    <groupId>ortus.extension</groupId>
    <artifactId>orm-extension</artifactId>
-   <version>6.2.0</version>
+   <version>7.0.0</version>
    <packaging>bundle</packaging>
 
    <name>Ortus ORM Extension</name>
@@ -21,13 +21,10 @@
 
       <!-- Dependency versions -->
       <minLuceeVersion>5.3.9.73</minLuceeVersion>
-      <lucee.version>5.4.0.80</lucee.version>
-      <hibernate.version>5.4.29.Final</hibernate.version>
 
       <!-- What version of the JDK should we compile against? -->
-      <jdk.version>1.8</jdk.version>
-      <maven.compiler.target>${jdk.version}</maven.compiler.target>
-      <maven.compiler.source>${jdk.version}</maven.compiler.source>
+      <maven.compiler.target>11</maven.compiler.target>
+      <maven.compiler.source>11</maven.compiler.source>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>
 
@@ -71,7 +68,6 @@
          <organization>Lucee Association Switzerland</organization>
          <organizationUrl>http://lucee.org</organizationUrl>
          <roles>
-            <role>Project-Administrator</role>
             <role>Developer</role>
          </roles>
          <timezone>+1</timezone>
@@ -136,7 +132,7 @@
                   <Specification-Version>${project.version}</Specification-Version>
 
                   <!-- The Hibernate version, used in org.hibernate.Version  -->
-                  <Implementation-Version>${hibernate.version}</Implementation-Version>
+                  <Implementation-Version>5.6.15.Final</Implementation-Version>
                   <!-- 
                         See:
                         https://liferay.dev/blogs/-/blogs/osgi-and-java-package-imports
@@ -302,7 +298,7 @@ lucee-core-version: ${minLuceeVersion}
       <dependency>
          <groupId>org.lucee</groupId>
          <artifactId>lucee</artifactId>
-         <version>${lucee.version}</version>
+         <version>5.4.1.8</version>
          <!-- https://www.baeldung.com/maven-dependency-scopes#2-provided -->
          <scope>provided</scope>
       </dependency>
@@ -311,20 +307,20 @@ lucee-core-version: ${minLuceeVersion}
       <dependency>
          <groupId>org.hibernate</groupId>
          <artifactId>hibernate-core</artifactId>
-         <version>${hibernate.version}</version>
+         <version>5.6.15.Final</version>
       </dependency>
       <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-jcache -->
       <!-- <dependency>
          <groupId>org.hibernate</groupId>
          <artifactId>hibernate-jcache</artifactId>
-         <version>${hibernate.version}</version>
+         <version>5.6.15.Final</version>
       </dependency> -->
 
       <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-ehcache -->
       <dependency>
          <groupId>org.hibernate</groupId>
          <artifactId>hibernate-ehcache</artifactId>
-         <version>${hibernate.version}</version>
+         <version>5.6.15.Final</version>
 
          <!--
          https://maven.apache.org/guides/introduction/introduction-to-optional-and-excludes-dependencies.html#how-to-use-dependency-exclusions -->
