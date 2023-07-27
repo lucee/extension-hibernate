@@ -869,8 +869,15 @@ public class CommonUtil {
         return caster().toLocale( strLocale );
     }
 
-    public static TimeZone toTimeZone( Object value, Object obj ) throws PageException {
-        return caster().toTimeZone( obj );
+    /**
+     * Convert the given value to a java.util.TimeZone.
+     * 
+     * @param value Value (likely a string value) to be parsed as a timezone.
+     * @param defaultValue Default value (default TimeZone) to use if value is not convertable.
+     * @throws PageException
+     */
+    public static TimeZone toTimeZone( Object value, TimeZone defaultValue ) throws PageException {
+        return caster().toTimeZone( value, defaultValue );
     }
 
     public static Character toCharacter( Object value ) throws PageException {

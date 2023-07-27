@@ -26,13 +26,17 @@ Due to the Hibernate 5.6 upgrade, if you are using the `PostgreSQL81` dialect an
 
 The default `ehcache.xml` for EHCache changed to include [`clearOnFlush="true"`](https://www.ehcache.org/apidocs/2.10.1/net/sf/ehcache/config/CacheConfiguration.html#clearOnFlush) and [`diskSpoolBufferSizeMB="30MB"`](https://www.ehcache.org/apidocs/2.10.1/net/sf/ehcache/config/CacheConfiguration.html#diskSpoolBufferSizeMB) properties to match [Adobe ColdFusion 9's  default `ehCache.xml` config](https://helpx.adobe.com/coldfusion/developing-applications/coldfusion-orm/performance-optimization/caching.html). Both these values represent default settings in EHCache itself.
 
+### 🐛 Fixed
+
+Fixes handling of `"timezone"`-typed column values. Previously, fields defined with `ormtype="timezone"` would neither use the `default` value nor allow new values to be set.
+
 ## [6.1.0] - 2023-07-14
 
 ### ♻️ Changed
 
 -   Lots of java source code cleanup that won't affect the CFML experience, but will aid in faster development and fewer bugs. 
 
-### 🐛Fixed
+### 🐛 Fixed
 
 -   Any hibernate exceptions returned during schema generation are once again logged to the Lucee ORM log file.
 
