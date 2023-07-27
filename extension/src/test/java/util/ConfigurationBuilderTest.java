@@ -23,7 +23,7 @@ import lucee.runtime.db.DataSource;
 public class ConfigurationBuilderTest {
     @Test
     public void canInitialize() {
-        ConfigurationBuilder builder = new ConfigurationBuilder();
+        new ConfigurationBuilder();
     }
 
     @Test

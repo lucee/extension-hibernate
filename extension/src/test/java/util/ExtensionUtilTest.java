@@ -1,8 +1,6 @@
-package ortus.extension.orm.util;
+package util;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
