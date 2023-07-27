@@ -248,8 +248,6 @@ lucee-core-version: ${minLuceeVersion}
                      <classifier>sources</classifier>
                      <overWrite>true</overWrite>
                      <includeScope>compile</includeScope>
-                     <!-- We can possibly use this setting to save sources with a custom filename which would please Lucee's OSGI bundle resolver. 🤔 -->
-                     <!-- <destFileName>[ filename ]</destFileName> -->
                   </configuration>
                </execution>
             </executions>

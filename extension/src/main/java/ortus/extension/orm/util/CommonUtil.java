@@ -497,7 +497,7 @@ public class CommonUtil {
         else if ( o instanceof Date )
             return true;
         else if ( o instanceof Castable ) {
-            return ( ( Castable ) o ).castToString( "this is a unique string" ) != "this is a unique string";
+            return !( ( Castable ) o ).castToString( "this is a unique string" ).equals("this is a unique string");
 
         } else if ( o instanceof Clob )
             return true;

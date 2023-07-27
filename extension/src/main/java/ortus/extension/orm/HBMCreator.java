@@ -983,7 +983,7 @@ public class HBMCreator {
             // sql-type
             str = toString( cfc, prop, meta, "sqltype", data );
             if ( !Util.isEmpty( str, true ) ) {
-                if ( ( str == "varchar" || str == "nvarchar" ) && length != null ) {
+                if ( ( str.equals( "varchar" ) || str.equals( "nvarchar" ) ) && length != null ) {
                     str += "(" + length + ")";
                 }
                 column.setAttribute( "sql-type", str );

@@ -236,9 +236,9 @@ public class HibernateCaster {
     // calendar: A type mapping for a Calendar object that represents a datetime.
     public static String toHibernateType( String type, String defaultValue ) {
         type = type.trim().toLowerCase();
-        type = Util.replace( type, "java.lang.", "", true );
-        type = Util.replace( type, "java.util.", "", true );
-        type = Util.replace( type, "java.sql.", "", true );
+        type = type.replace( "java.lang.", "" );
+        type = type.replace( "java.util.", "" );
+        type = type.replace( "java.sql.", "" );
 
         // return same value
         if ( "long".equals( type ) )
@@ -469,7 +469,7 @@ public class HibernateCaster {
         Object value = entity.getComponentScope().get( CommonUtil.createKey( property.getName() ), property.getDefault() );
         Struct meta = ( Struct ) property.getMetaData();
         String ormType = CommonUtil.toString( meta.get( CommonUtil.createKey( "ormtype" ), "" ) );
-        String fieldType = ormType != "" ? ormType : property.getType();
+        String fieldType = !ormType.isBlank() ? ormType : property.getType();
         return toHibernateValue( pc, value, fieldType );
     }
 
