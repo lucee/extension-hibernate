@@ -107,9 +107,6 @@ public class HBMCreator {
         String extend = cfc.getExtends();
         boolean isClass = Util.isEmpty( extend );
 
-        // MZ: Fetches all inherited persistent properties
-        // Property[] _props=getAllPersistentProperties(pc,cfc,dc,meta,isClass);
-
         Property[] _props = getProperties( pc, cfc, dc, meta, isClass, true, data );
 
         Map<String, PropertyCollection> joins = new HashMap<>();
@@ -124,7 +121,6 @@ public class HBMCreator {
 
         hibernateMapping.appendChild( doc.createComment( comment.toString() ) );
 
-        // print.e(cfc.getAbsName()+";"+isClass+" -> "+cfci.getBaseAbsName()+":"+cfci.isBasePeristent());
         if ( !isClass && !cfc.isBasePeristent() ) {
             isClass = true;
         }
@@ -153,7 +149,6 @@ public class HBMCreator {
                 doTable = false;
                 clazz   = doc.createElement( "subclass" );
                 hibernateMapping.appendChild( clazz );
-                // addClassAttributes(classNode);
                 clazz.setAttribute( "extends", ext );
                 clazz.setAttribute( "discriminator-value", discriminatorValue );
 
@@ -187,8 +182,6 @@ public class HBMCreator {
 
             }
         }
-
-        // createXMLMappingTuplizer(clazz,pc);
 
         addGeneralClassAttributes( pc, cfc, meta, clazz, data );
         String tableName = getTableName( pc, meta, cfc, data );
@@ -433,7 +426,6 @@ public class HBMCreator {
         clazz.appendChild( join );
 
         join.setAttribute( "table", escape( HibernateUtil.convertTableName( data, coll.getTableName() ) ) );
-        // addTableInfo(joinNode, table, schema, catalog);
 
         Property first = properties[ 0 ];
         String schema = null, catalog = null, mappedBy = null, columns = null;
@@ -642,8 +634,6 @@ public class HBMCreator {
         Element cid = doc.createElement( "composite-id" );
         clazz.appendChild( cid );
 
-        // cid.setAttribute("mapped","true");
-
         Property prop;
         String fieldType;
         // ids
@@ -746,7 +736,6 @@ public class HBMCreator {
 
         // type
         String type = getType( info, cfc, prop, meta, getDefaultTypeForGenerator( generator, foreignCFC, data ), data );
-        // print.o(prop.getName()+":"+type+"::"+getDefaultTypeForGenerator(generator,foreignCFC));
         if ( !Util.isEmpty( type ) )
             id.setAttribute( "type", type );
 
@@ -821,25 +810,21 @@ public class HBMCreator {
             SessionFactoryData data ) throws PageException {
         // ormType
         String type = toString( cfc, prop, meta, "ormType", data );
-        // type=HibernateCaster.toHibernateType(info,type,null);
 
         // dataType
         if ( Util.isEmpty( type, true ) ) {
             type = toString( cfc, prop, meta, "dataType", data );
-            // type=HibernateCaster.toHibernateType(info,type,null);
         }
 
         // type
         if ( Util.isEmpty( type, true ) ) {
             type = prop.getType();
-            // type=HibernateCaster.toHibernateType(info,type,null);
         }
 
         // type from db info
         if ( Util.isEmpty( type, true ) ) {
             if ( info != null ) {
                 type = info.getTypeName();
-                // type=HibernateCaster.toHibernateType(info,type,defaultValue);
             } else
                 return defaultValue;
         }
@@ -898,7 +883,6 @@ public class HBMCreator {
             }
 
         } else if ( "select".equals( className ) ) {
-            // print.e("select:"+toString(meta, "selectKey",true));
             if ( !sct.containsKey( KEY ) )
                 sct.setEL( KEY, toString( cfc, prop, meta, "selectKey", true, data ) );
         } else if ( "sequence".equals( className ) ) {
@@ -906,7 +890,6 @@ public class HBMCreator {
                 sct.setEL( SEQUENCE, toString( cfc, prop, meta, "sequence", true, data ) );
         }
 
-        // Key[] keys = sct.keys();
         Iterator<Entry<Key, Object>> it = sct.entryIterator();
         Entry<Key, Object> e;
         Element param;
@@ -919,7 +902,6 @@ public class HBMCreator {
             param.appendChild( doc.createTextNode( CommonUtil.toString( e.getValue() ) ) );
 
         }
-        // }
         return className;
     }
 
@@ -952,7 +934,6 @@ public class HBMCreator {
             property.setAttribute( "formula", "(" + str + ")" );
         } else {
             String length = null;
-            // property.setAttribute("column",columnName);
 
             Element column = doc.createElement( "column" );
             property.appendChild( column );
@@ -1027,8 +1008,6 @@ public class HBMCreator {
                 property.setAttribute( "generated", str );
             else
                 throw invalidValue( cfc, prop, "generated", str, "always,insert,never", data );
-            // throw new ORMException("invalid value ["+str+"] for attribute [generated] of column
-            // ["+columnName+"], valid values are [always,insert,never]");
         }
 
         // update
@@ -1073,7 +1052,6 @@ public class HBMCreator {
             clazz = getJoin( clazz );
 
             x2o   = doc.createElement( "many-to-one" );
-            // x2o.setAttribute("column", fkcolumn);
             x2o.setAttribute( "unique", "true" );
 
             if ( !Util.isEmpty( linkTable, true ) ) {
@@ -1106,10 +1084,6 @@ public class HBMCreator {
             b = toBoolean( cfc, meta, "missingRowIgnored", data );
             if ( b != null && b.booleanValue() )
                 x2o.setAttribute( "not-found", "ignore" );
-
-            /*
-             * / index str=toString(meta,"index"); if(!Util.isEmpty(str,true)) x2o.setAttribute("index", str);
-             */
 
         } else {
             x2o = doc.createElement( "one-to-one" );
@@ -1209,8 +1183,6 @@ public class HBMCreator {
             }
         } else
             throw invalidValue( cfc, prop, "collectiontype", str, "array,struct", data );
-        // throw new ORMException("invalid value ["+str+"] for attribute [collectiontype], valid values are
-        // [array,struct]");
 
         setBeforeJoin( clazz, el );
 
@@ -1268,7 +1240,6 @@ public class HBMCreator {
         if ( !Util.isEmpty( str, true ) ) {
             Element key = doc.createElement( "key" );
             CommonUtil.setFirst( el, key );
-            // el.appendChild(key);
 
             // column
             key.setAttribute( "column", formatColumn( str, data ) );
@@ -1475,7 +1446,6 @@ public class HBMCreator {
 
             // map-key
             mapKey = doc.createElement( "map-key" );
-            // el.appendChild(mapKey);
 
             // column
             str    = toString( cfc, prop, meta, "structKeyColumn", true, data );
@@ -1489,8 +1459,6 @@ public class HBMCreator {
                 mapKey.setAttribute( "type", "string" );// MUST get type dynamicly
         } else
             throw invalidValue( cfc, prop, "collectiontype", str, "array,struct", data );
-        // throw new ORMException("invalid value ["+str+"] for attribute [collectiontype], valid values are
-        // [array,struct]");
 
         setBeforeJoin( clazz, el );
 
@@ -1633,9 +1601,6 @@ public class HBMCreator {
         if ( !Util.isEmpty( str, true ) ) {
             el.setAttribute( "entity-name", str );
         } else {
-            // cfc
-            // createFKColumnName( cfc, prop, propColl);
-
             str = toString( cfc, prop, meta, "cfc", cfcRequired, data );
             if ( !Util.isEmpty( str, true ) ) {
                 Component _cfc = data.getEntityByCFCName( str, false );
@@ -1705,15 +1670,13 @@ public class HBMCreator {
         if ( !Util.isEmpty( linktable, true ) )
             _columns = toString( cfc, prop, meta, "inversejoincolumn", data );
         else
-            _columns = createFKColumnName( cfc, prop, propColl, data );// toString(cfc,prop,meta,"fkcolumn");
+            _columns = createFKColumnName( cfc, prop, propColl, data );
         setColumn( doc, m2o, _columns, data );
 
         // cfc
         setForeignEntityName( cfc, prop, meta, m2o, true, data );
 
         // column
-        // String str=toString(prop,meta,"column",true);
-        // m2o.setAttribute("column", str);
 
         // insert
         b = toBoolean( cfc, meta, "insert", data );
@@ -1811,8 +1774,6 @@ public class HBMCreator {
                 x2x.setAttribute( "fetch", str );
             else
                 throw invalidValue( cfc, prop, "fetch", str, "join,select", data );
-            // throw new ORMException("invalid value ["+str+"] for attribute [fetch], valid values are
-            // [join,select]");
         }
 
         // lazy
@@ -1909,8 +1870,6 @@ public class HBMCreator {
                 timestamp.setAttribute( "unsaved-value", str );
             else
                 throw invalidValue( cfc, prop, "unsavedValue", str, "null, undefined", data );
-            // throw new ORMException("invalid value ["+str+"] for attribute [unsavedValue], valid values are
-            // [null, undefined]");
         }
     }
 
@@ -1964,8 +1923,6 @@ public class HBMCreator {
                     str = "never";
                 else
                     throw invalidValue( cfc, prop, "generated", o.toString(), "true,false,always,never", data );
-                // throw new ORMException("invalid value ["+o+"] for attribute [generated] of property
-                // ["+prop.getName()+"], valid values are [true,false,always,never]");
             }
             version.setAttribute( "generated", str );
         }
@@ -1992,8 +1949,6 @@ public class HBMCreator {
                 version.setAttribute( "type", "short" );
             else
                 throw invalidValue( cfc, prop, typeName, str, "int,integer,long,short", data );
-            // throw new ORMException("invalid value ["+str+"] for attribute ["+typeName+"], valid values are
-            // [int,integer,long,short]");
         } else
             version.setAttribute( "type", "integer" );
 
@@ -2005,8 +1960,6 @@ public class HBMCreator {
                 version.setAttribute( "unsaved-value", str );
             else
                 throw invalidValue( cfc, prop, "unsavedValue", str, "null, negative, undefined", data );
-            // throw new ORMException("invalid value ["+str+"] for attribute [unsavedValue], valid values are
-            // [null, negative, undefined]");
         }
     }
 

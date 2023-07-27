@@ -1,4 +1,4 @@
-package event;
+package junit.event;
 
 import org.junit.jupiter.api.Disabled;
 

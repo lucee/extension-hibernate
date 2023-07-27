@@ -1,3 +1,5 @@
+package junit.util;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -12,7 +14,6 @@ import ortus.extension.orm.event.EventListenerIntegrator;
 import ortus.extension.orm.jdbc.ConnectionProviderImpl;
 import ortus.extension.orm.util.ConfigurationBuilder;
 
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import lucee.runtime.exp.PageException;

@@ -1,3 +1,5 @@
+package junit;
+
 import org.hibernate.Session;
 import org.hibernate.engine.spi.SessionDelegatorBaseImpl;
 import ortus.extension.orm.HibernateORMTransaction;
@@ -13,7 +15,7 @@ public class HibernateORMTransactionTest {
     private Session MockSession;
 
     public HibernateORMTransactionTest() {
-        MockSession = Mockito.mock(org.hibernate.engine.spi.SessionDelegatorBaseImpl.class);
+        MockSession = Mockito.mock(SessionDelegatorBaseImpl.class);
     }
 
     @Test

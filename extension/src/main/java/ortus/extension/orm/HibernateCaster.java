@@ -160,13 +160,13 @@ public class HibernateCaster {
         if ( info == null )
             return defaultValue;
 
-        String rtn = toHibernateType( info.getType(), info.getSize(), null );
+        String rtn = toHibernateType( info.getType(), null );
         if ( rtn != null )
             return rtn;
         return toHibernateType( info.getTypeName(), defaultValue );
     }
 
-    public static String toHibernateType( int type, int size, String defaultValue ) {
+    public static String toHibernateType( int type, String defaultValue ) {
         // MUST do better
         switch ( type ) {
             case Types.ARRAY :
@@ -183,36 +183,26 @@ public class HibernateCaster {
                 return "boolean";
             case Types.CHAR :
                 return "string";
-            // if(size>1) return "string";
-            // return "character";
             case Types.CLOB :
                 return "clob";
-            // case Types.DATALINK: return "";
             case Types.DATE :
                 return "date";
             case Types.DECIMAL :
                 return "big_decimal";
-            // case Types.DISTINCT: return "";
             case Types.DOUBLE :
                 return "double";
             case Types.FLOAT :
                 return "float";
             case Types.INTEGER :
                 return "integer";
-            // case Types.JAVA_OBJECT: return "";
             case Types.LONGVARBINARY :
                 return "binary";
             case Types.LONGVARCHAR :
                 return "string";
-            // case Types.NULL: return "";
             case Types.NUMERIC :
                 return "big_decimal";
-            // case Types.OTHER: return "";
-            // case Types.REAL: return "";
-            // case Types.REF: return "";
             case Types.SMALLINT :
                 return "short";
-            // case Types.STRUCT: return "";
             case Types.TIME :
                 return "time";
             case Types.TIMESTAMP :
@@ -503,7 +493,6 @@ public class HibernateCaster {
      */
     public static Object toSQL( Type type, Object value, RefBoolean isArray ) throws PageException {
         int t = toSQLType( type.getName(), Types.OTHER );
-        // if(t==Types.OTHER) return value;
         return toSQL( t, value, isArray );
     }
 
@@ -602,7 +591,6 @@ public class HibernateCaster {
             int rowcount, int row ) throws PageException {
         // inheritance mapping
         if ( !Util.isEmpty( entityName ) ) {
-            // String cfcName = toComponentName(HibernateCaster.toComponent(pc, entityName));
             return inheritance( pc, session, cfc, qry, entityName );
         }
         return populateQuery( pc, session, cfc, qry );
