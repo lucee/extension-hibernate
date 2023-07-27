@@ -492,7 +492,7 @@ public class HibernateCaster {
         Object value = entity.getComponentScope().get( CommonUtil.createKey( property.getName() ), property.getDefault() );
         Struct meta = ( Struct ) property.getMetaData();
         String ormType = CommonUtil.toString( meta.get( CommonUtil.createKey( "ormtype" ), "" ) );
-        String fieldType = !ormType.isBlank() ? ormType : property.getType();
+        String fieldType = !ormType.trim().isEmpty() ? ormType : property.getType();
         return toHibernateValue( pc, value, fieldType );
     }
 
