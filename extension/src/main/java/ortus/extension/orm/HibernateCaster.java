@@ -557,9 +557,8 @@ public class HibernateCaster {
         // already a hibernate type
 
         // can only be null if type is other
-        if ( _isArray == null ) {
-            if ( !CommonUtil.isArray( value ) )
-                return value;
+        if ( _isArray == null && !CommonUtil.isArray( value )) {
+            return value;
         }
 
         // at this point it is for sure that the value is an array
@@ -669,10 +668,8 @@ public class HibernateCaster {
 
         }
         // check
-        else if ( engine.getMode() == ORMEngine.MODE_STRICT ) {
-            if ( !qry.getName().equals( getEntityName( cfc ) ) ) {
-                throw ExceptionUtil.createException( session, null, "can only merge entities of the same kind to a query", null );
-            }
+        else if ( engine.getMode() == ORMEngine.MODE_STRICT && !qry.getName().equals( getEntityName( cfc ) ) ) {
+            throw ExceptionUtil.createException( session, null, "can only merge entities of the same kind to a query", null );
         }
 
         // populate

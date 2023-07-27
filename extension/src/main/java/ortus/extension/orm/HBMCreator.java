@@ -885,9 +885,8 @@ public class HBMCreator {
         } else if ( "select".equals( className ) ) {
             if ( !sct.containsKey( KEY ) )
                 sct.setEL( KEY, toString( cfc, prop, meta, "selectKey", true, data ) );
-        } else if ( "sequence".equals( className ) ) {
-            if ( !sct.containsKey( SEQUENCE ) )
-                sct.setEL( SEQUENCE, toString( cfc, prop, meta, "sequence", true, data ) );
+        } else if ( "sequence".equals( className ) && !sct.containsKey( SEQUENCE ) ) {
+            sct.setEL( SEQUENCE, toString( cfc, prop, meta, "sequence", true, data ) );
         }
 
         Iterator<Entry<Key, Object>> it = sct.entryIterator();
@@ -1464,9 +1463,8 @@ public class HBMCreator {
 
         // batch-size
         Integer i = toInteger( cfc, meta, "batchsize", data );
-        if ( i != null ) {
-            if ( i.intValue() > 1 )
-                el.setAttribute( "batch-size", CommonUtil.toString( i.intValue() ) );
+        if ( i != null && i.intValue() > 1 ) {
+            el.setAttribute( "batch-size", CommonUtil.toString( i.intValue() ) );
         }
 
         // cacheUse
