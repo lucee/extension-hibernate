@@ -95,7 +95,7 @@ public class ConfigurationBuilder {
      * @throws IOException
      * @throws PageException
      */
-    public Configuration build() throws SQLException, IOException, PageException {
+    public Configuration build() throws IOException, PageException {
         BootstrapServiceRegistry bootstrapRegistry = new BootstrapServiceRegistryBuilder().applyIntegrator( this.eventListener )
                 .build();
         this.configuration = new Configuration( bootstrapRegistry );
