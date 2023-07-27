@@ -30,8 +30,8 @@ component {
 
 	// https://luceeserver.atlassian.net/browse/LDEV-1676
 	this.xmlFeatures = {
-		externalGeneralEntities : true,
-		secure                  : false,
+		externalGeneralEntities                                : true,
+		secure                                                 : false,
 		// The disallowDoctypeDecl alias is broken in Lucee, so we need to use the full feature string name
 		// https://luceeserver.atlassian.net/browse/LDEV-4651
 		// disallowDoctypeDecl     : false,
