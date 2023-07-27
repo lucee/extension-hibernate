@@ -38,6 +38,10 @@ import lucee.commons.io.res.Resource;
  */
 public class HBMCreator {
 
+    private HBMCreator() {
+        throw new IllegalStateException( "Utility class; please don't instantiate!" );
+    }
+
     /**
      * Hibernate DOCTYPE mapping ID
      *

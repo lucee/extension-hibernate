@@ -34,6 +34,10 @@ import lucee.runtime.type.Struct;
 
 public class HibernateCaster {
 
+    private HibernateCaster() {
+        throw new IllegalStateException( "Utility class; please don't instantiate!" );
+    }
+
     private static final int NULL = -178696;
 
     public static Object toCFML( Object src ) {

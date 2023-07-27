@@ -142,6 +142,10 @@ public class Dialect {
 
     }
 
+    private Dialect() {
+        throw new IllegalStateException( "Utility class; please don't instantiate!" );
+    }
+
     /**
      * Get the Hibernate dialect for the given Datasource
      *
