@@ -95,6 +95,15 @@ public class HibernateCaster {
         return name;
     }
 
+    /**
+     * Try to retrieve a Hibernate type for this column by checking both the {@link ColumnInfo} or the string sql type,
+     * whichever is populated and returns a result first.
+     * 
+     * @param info a {@link ortus.extension.orm.ColumnInfo} object containing a known Java SQL type.
+     * @param type The string name of a SQL type.
+     * @param defaultValue Default to return if SQL type not detected.
+     * @return
+     */
     public static String toHibernateType( ColumnInfo info, String type, String defaultValue ) {
 
         // no type defined
@@ -160,6 +169,14 @@ public class HibernateCaster {
         return defaultValue;
     }
 
+    /**
+     * Translate the given `java.sql.Types` SQL type from an {@link ColumnInfo} to its Hibernate counterpart.
+     * 
+     * Might be utilized after pulling ORM mapping data from an existing database layout.
+     * 
+     * @param info a {@link ortus.extension.orm.ColumnInfo} object containing a known Java SQL type.
+     * @param defaultValue Default to return if SQL type not detected.
+     */
     public static String toHibernateType( ColumnInfo info, String defaultValue ) {
         if ( info == null )
             return defaultValue;
@@ -170,6 +187,12 @@ public class HibernateCaster {
         return toHibernateType( info.getTypeName(), defaultValue );
     }
 
+    /**
+     * Translate the given `java.sql.Types` SQL type for a column or field to its Hibernate counterpart.
+     * 
+     * @param type One of the SQL types. {@link java.sql.Types}
+     * @param defaultValue Default to return if SQL type not detected.
+     */
     public static String toHibernateType( int type, String defaultValue ) {
         // MUST do better
         switch ( type ) {

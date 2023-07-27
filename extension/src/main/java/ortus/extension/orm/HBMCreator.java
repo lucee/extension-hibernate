@@ -187,17 +187,16 @@ public class HBMCreator {
             }
         }
 
-        addGeneralClassAttributes( pc, cfc, meta, clazz, data );
-        String tableName = getTableName( pc, meta, cfc, data );
+        addGeneralClassAttributes( cfc, meta, clazz, data );
 
         if ( join != null )
             clazz = join;
         if ( doTable )
-            addGeneralTableAttributes( pc, dc, cfc, meta, clazz, data );
+            addGeneralTableAttributes( dc, cfc, meta, clazz, data );
 
         Struct columnsInfo = null;
         if ( data.getORMConfiguration().useDBForMapping() ) {
-            columnsInfo = data.getTableInfo( dc, getTableName( pc, meta, cfc, data ) );
+            columnsInfo = data.getTableInfo( dc, getTableName( meta, cfc, data ) );
         }
 
         if ( isClass )
@@ -205,33 +204,33 @@ public class HBMCreator {
 
         // id
         if ( isClass )
-            addId( cfc, doc, clazz, meta, propColl, columnsInfo, tableName, data );
+            addId( cfc, clazz, propColl, columnsInfo, data );
 
         // discriminator
         if ( isClass )
-            addDiscriminator( cfc, doc, clazz, pc, meta, data );
+            addDiscriminator( cfc, doc, clazz, meta, data );
 
         // version
         if ( isClass )
-            addVersion( cfc, clazz, pc, propColl, columnsInfo, tableName, data );
+            addVersion( cfc, clazz, propColl, data );
 
         // property
-        addProperty( cfc, clazz, pc, propColl, columnsInfo, tableName, data );
+        addProperty( cfc, clazz, propColl, columnsInfo, data );
 
         // relations
-        addRelation( cfc, clazz, pc, propColl, columnsInfo, tableName, dc, data );
+        addRelation( cfc, clazz, pc, propColl, dc, data );
 
         // collection
-        addCollection( cfc, clazz, pc, propColl, columnsInfo, tableName, data );
+        addCollection( cfc, clazz, propColl, data );
 
         // join
-        addJoin( cfc, clazz, pc, joins, columnsInfo, tableName, dc, data );
+        addJoin( cfc, clazz, pc, joins, columnsInfo, dc, data );
 
         return hibernateMapping;
     }
 
     private static Property[] getProperties( PageContext pc, Component cfc, DatasourceConnection dc, Struct meta, boolean isClass,
-            boolean recursivePersistentMappedSuperclass, SessionFactoryData data ) throws PageException, PageException {
+            boolean recursivePersistentMappedSuperclass, SessionFactoryData data ) throws PageException {
         Property[] _props;
         if ( recursivePersistentMappedSuperclass ) {
             _props = CommonUtil.getProperties( cfc, true, true, true, true );
@@ -242,19 +241,19 @@ public class HBMCreator {
         if ( isClass && _props.length == 0 && data.getORMConfiguration().useDBForMapping() ) {
             if ( meta == null )
                 meta = cfc.getMetaData( pc );
-            _props = HibernateUtil.createPropertiesFromTable( dc, getTableName( pc, meta, cfc, data ) );
+            _props = HibernateUtil.createPropertiesFromTable( dc, getTableName( meta, cfc, data ) );
         }
         return _props;
     }
 
-    private static void addId( Component cfc, Document doc, Element clazz, Struct meta, PropertyCollection propColl,
-            Struct columnsInfo, String tableName, SessionFactoryData data ) throws PageException {
+    private static void addId( Component cfc, Element clazz, PropertyCollection propColl,
+            Struct columnsInfo, SessionFactoryData data ) throws PageException {
         Property[] _ids = getIds( cfc, propColl, data );
 
         if ( _ids.length == 1 )
-            createXMLMappingId( cfc, clazz, _ids[ 0 ], columnsInfo, tableName, data );
+            createXMLMappingId( cfc, clazz, _ids[ 0 ], columnsInfo, data );
         else if ( _ids.length > 1 )
-            createXMLMappingCompositeId( cfc, clazz, _ids, columnsInfo, tableName, data );
+            createXMLMappingCompositeId( cfc, clazz, _ids, columnsInfo, data );
         else {
             String message = String.format( "missing id property for entity [%s]", HibernateCaster.getEntityName( cfc ) );
             throw ExceptionUtil.createException( data, cfc, message, null );
@@ -383,30 +382,28 @@ public class HBMCreator {
         return ids.toArray( new Property[ ids.size() ] );
     }
 
-    private static void addVersion( Component cfc, Element clazz, PageContext pc, PropertyCollection propColl, Struct columnsInfo,
-            String tableName, SessionFactoryData data ) throws PageException {
+    private static void addVersion( Component cfc, Element clazz, PropertyCollection propColl, SessionFactoryData data ) throws PageException {
         Property[] props = propColl.getProperties();
         for ( int y = 0; y < props.length; y++ ) {
             String fieldType = CommonUtil.toString( props[ y ].getDynamicAttributes().get( FIELDTYPE, null ), null );
             if ( "version".equalsIgnoreCase( fieldType ) )
-                createXMLMappingVersion( clazz, pc, cfc, props[ y ], data );
+                createXMLMappingVersion( clazz, cfc, props[ y ], data );
             else if ( "timestamp".equalsIgnoreCase( fieldType ) )
-                createXMLMappingTimestamp( clazz, pc, cfc, props[ y ], data );
+                createXMLMappingTimestamp( clazz, cfc, props[ y ], data );
         }
     }
 
-    private static void addCollection( Component cfc, Element clazz, PageContext pc, PropertyCollection propColl,
-            Struct columnsInfo, String tableName, SessionFactoryData data ) throws PageException {
+    private static void addCollection( Component cfc, Element clazz, PropertyCollection propColl, SessionFactoryData data ) throws PageException {
         Property[] props = propColl.getProperties();
         for ( int y = 0; y < props.length; y++ ) {
             String fieldType = CommonUtil.toString( props[ y ].getDynamicAttributes().get( FIELDTYPE, "column" ), "column" );
             if ( "collection".equalsIgnoreCase( fieldType ) )
-                createXMLMappingCollection( clazz, pc, cfc, props[ y ], data );
+                createXMLMappingCollection( clazz, cfc, props[ y ], data );
         }
     }
 
     private static void addJoin( Component cfc, Element clazz, PageContext pc, Map<String, PropertyCollection> joins,
-            Struct columnsInfo, String tableName, DatasourceConnection dc, SessionFactoryData data ) throws PageException {
+            Struct columnsInfo, DatasourceConnection dc, SessionFactoryData data ) throws PageException {
 
         Iterator<Entry<String, PropertyCollection>> it = joins.entrySet().iterator();
         Entry<String, PropertyCollection> entry;
@@ -456,28 +453,27 @@ public class HBMCreator {
             key.setAttribute( "property-ref", mappedBy );
         setColumn( doc, key, columns, data );
 
-        addProperty( cfc, join, pc, coll, columnsInfo, table, data );
-        int count = addRelation( cfc, join, pc, coll, columnsInfo, table, dc, data );
+        addProperty( cfc, join, coll, columnsInfo, data );
+        int count = addRelation( cfc, join, pc, coll, dc, data );
 
         if ( count > 0 )
             join.setAttribute( "inverse", "true" );
 
     }
 
-    private static int addRelation( Component cfc, Element clazz, PageContext pc, PropertyCollection propColl, Struct columnsInfo,
-            String tableName, DatasourceConnection dc, SessionFactoryData data ) throws PageException {
+    private static int addRelation( Component cfc, Element clazz, PageContext pc, PropertyCollection propColl, DatasourceConnection dc, SessionFactoryData data ) throws PageException {
         Property[] props = propColl.getProperties();
         int count = 0;
         for ( int y = 0; y < props.length; y++ ) {
             String fieldType = CommonUtil.toString( props[ y ].getDynamicAttributes().get( FIELDTYPE, "column" ), "column" );
             if ( "one-to-one".equalsIgnoreCase( fieldType ) ) {
-                createXMLMappingOneToOne( clazz, pc, cfc, props[ y ], data );
+                createXMLMappingOneToOne( clazz, cfc, props[ y ], data );
                 count++;
             } else if ( "many-to-one".equalsIgnoreCase( fieldType ) ) {
-                createXMLMappingManyToOne( clazz, pc, cfc, props[ y ], propColl, data );
+                createXMLMappingManyToOne( clazz, cfc, props[ y ], propColl, data );
                 count++;
             } else if ( "one-to-many".equalsIgnoreCase( fieldType ) ) {
-                createXMLMappingOneToMany( dc, cfc, propColl, clazz, pc, props[ y ], data );
+                createXMLMappingOneToMany( dc, cfc, propColl, clazz, props[ y ], data );
                 count++;
             } else if ( "many-to-many".equalsIgnoreCase( fieldType ) ) {
                 createXMLMappingManyToMany( dc, cfc, propColl, clazz, pc, props[ y ], data );
@@ -487,17 +483,17 @@ public class HBMCreator {
         return count;
     }
 
-    private static void addProperty( Component cfc, Element clazz, PageContext pc, PropertyCollection propColl,
-            Struct columnsInfo, String tableName, SessionFactoryData data ) throws PageException {
+    private static void addProperty( Component cfc, Element clazz, PropertyCollection propColl,
+            Struct columnsInfo, SessionFactoryData data ) throws PageException {
         Property[] props = propColl.getProperties();
         for ( int y = 0; y < props.length; y++ ) {
             String fieldType = CommonUtil.toString( props[ y ].getDynamicAttributes().get( FIELDTYPE, "column" ), "column" );
             if ( "column".equalsIgnoreCase( fieldType ) )
-                createXMLMappingProperty( clazz, pc, cfc, props[ y ], columnsInfo, tableName, data );
+                createXMLMappingProperty( clazz, cfc, props[ y ], columnsInfo, data );
         }
     }
 
-    private static void addDiscriminator( Component cfc, Document doc, Element clazz, PageContext pc, Struct meta,
+    private static void addDiscriminator( Component cfc, Document doc, Element clazz,Struct meta,
             SessionFactoryData data ) throws DOMException, PageException {
 
         String str = toString( cfc, null, meta, "discriminatorColumn", data );
@@ -509,7 +505,7 @@ public class HBMCreator {
 
     }
 
-    private static void addGeneralClassAttributes( PageContext pc, Component cfc, Struct meta, Element clazz,
+    private static void addGeneralClassAttributes( Component cfc, Struct meta, Element clazz,
             SessionFactoryData data ) throws PageException {
 
         // entity-name
@@ -575,10 +571,10 @@ public class HBMCreator {
 
     }
 
-    private static void addGeneralTableAttributes( PageContext pc, DatasourceConnection dc, Component cfc, Struct meta,
+    private static void addGeneralTableAttributes( DatasourceConnection dc, Component cfc, Struct meta,
             Element clazz, SessionFactoryData data ) throws PageException {
         // table
-        clazz.setAttribute( "table", escape( getTableName( pc, meta, cfc, data ) ) );
+        clazz.setAttribute( "table", escape( getTableName( meta, cfc, data ) ) );
 
         // catalog
         String str = toString( cfc, null, meta, "catalog", data );
@@ -603,7 +599,7 @@ public class HBMCreator {
         return str;
     }
 
-    private static String getTableName( PageContext pc, Struct meta, Component cfc, SessionFactoryData data )
+    private static String getTableName( Struct meta, Component cfc, SessionFactoryData data )
             throws PageException {
         String tableName = toString( cfc, null, meta, "table", data );
         if ( Util.isEmpty( tableName, true ) )
@@ -631,7 +627,7 @@ public class HBMCreator {
     }
 
     private static void createXMLMappingCompositeId( Component cfc, Element clazz, Property[] props, Struct columnsInfo,
-            String tableName, SessionFactoryData data ) throws PageException {
+            SessionFactoryData data ) throws PageException {
         Struct meta;
 
         Document doc = XMLUtil.getDocument( clazz );
@@ -664,7 +660,7 @@ public class HBMCreator {
             if ( Util.isEmpty( str, true ) )
                 str = prop.getName();
             column.setAttribute( "name", formatColumn( str, data ) );
-            ColumnInfo info = getColumnInfo( columnsInfo, tableName, str, null );
+            ColumnInfo info = getColumnInfo( columnsInfo, str, null );
 
             str = toString( cfc, prop, meta, "sqltype", data );
             if ( !Util.isEmpty( str, true ) )
@@ -705,7 +701,7 @@ public class HBMCreator {
         }
     }
 
-    private static void createXMLMappingId( Component cfc, Element clazz, Property prop, Struct columnsInfo, String tableName,
+    private static void createXMLMappingId( Component cfc, Element clazz, Property prop, Struct columnsInfo,
             SessionFactoryData data ) throws PageException {
         Struct meta = prop.getDynamicAttributes();
         String str;
@@ -730,7 +726,7 @@ public class HBMCreator {
         if ( Util.isEmpty( str, true ) )
             str = prop.getName();
         column.setAttribute( "name", formatColumn( str, data ) );
-        ColumnInfo info = getColumnInfo( columnsInfo, tableName, str, null );
+        ColumnInfo info = getColumnInfo( columnsInfo, str, null );
         StringBuilder foreignCFC = new StringBuilder();
         String generator = createXMLMappingGenerator( id, cfc, prop, foreignCFC, data );
 
@@ -835,7 +831,7 @@ public class HBMCreator {
         return HibernateCaster.toHibernateType( info, type, defaultValue );
     }
 
-    private static ColumnInfo getColumnInfo( Struct columnsInfo, String tableName, String columnName, ColumnInfo defaultValue ) {
+    private static ColumnInfo getColumnInfo( Struct columnsInfo, String columnName, ColumnInfo defaultValue ) {
         if ( columnsInfo != null ) {
             ColumnInfo info = ( ColumnInfo ) columnsInfo.get( CommonUtil.createKey( columnName ), null );
             if ( info == null )
@@ -909,8 +905,8 @@ public class HBMCreator {
         return className;
     }
 
-    private static void createXMLMappingProperty( Element clazz, PageContext pc, Component cfc, Property prop, Struct columnsInfo,
-            String tableName, SessionFactoryData data ) throws PageException {
+    private static void createXMLMappingProperty( Element clazz, Component cfc, Property prop, Struct columnsInfo,
+            SessionFactoryData data ) throws PageException {
         Struct meta = prop.getDynamicAttributes();
 
         // get table name
@@ -918,7 +914,7 @@ public class HBMCreator {
         if ( Util.isEmpty( columnName, true ) )
             columnName = prop.getName();
 
-        ColumnInfo info = getColumnInfo( columnsInfo, tableName, columnName, null );
+        ColumnInfo info = getColumnInfo( columnsInfo, columnName, null );
 
         Document doc = XMLUtil.getDocument( clazz );
         final Element property = doc.createElement( "property" );
@@ -1039,7 +1035,7 @@ public class HBMCreator {
     /*
      * MUST dies kommt aber nicht hier sondern in verarbeitung in component <cfproperty persistent="true|false" >
      */
-    private static void createXMLMappingOneToOne( Element clazz, PageContext pc, Component cfc, Property prop,
+    private static void createXMLMappingOneToOne( Element clazz, Component cfc, Property prop,
             SessionFactoryData data ) throws PageException {
         Struct meta = prop.getDynamicAttributes();
 
@@ -1128,10 +1124,10 @@ public class HBMCreator {
 
         setForeignEntityName( cfc, prop, meta, x2o, true, data );
 
-        createXMLMappingXToX( x2o, pc, cfc, prop, meta, data );
+        createXMLMappingXToX( x2o, cfc, prop, meta, data );
     }
 
-    private static Component loadForeignCFC( PageContext pc, Component cfc, Property prop, Struct meta, SessionFactoryData data )
+    private static Component loadForeignCFC( Component cfc, Property prop, Struct meta, SessionFactoryData data )
             throws PageException {
         // entity
         String str = toString( cfc, prop, meta, "entityName", data );
@@ -1150,7 +1146,7 @@ public class HBMCreator {
         return null;
     }
 
-    private static void createXMLMappingCollection( Element clazz, PageContext pc, Component cfc, Property prop,
+    private static void createXMLMappingCollection( Element clazz, Component cfc, Property prop,
             SessionFactoryData data ) throws PageException {
         Struct meta = prop.getDynamicAttributes();
         Document doc = XMLUtil.getDocument( clazz );
@@ -1298,7 +1294,7 @@ public class HBMCreator {
 
     private static void createXMLMappingManyToMany( DatasourceConnection dc, Component cfc, PropertyCollection propColl,
             Element clazz, PageContext pc, Property prop, SessionFactoryData data ) throws PageException {
-        Element el = createXMLMappingXToMany( propColl, clazz, pc, cfc, prop, data );
+        Element el = createXMLMappingXToMany( propColl, clazz, cfc, prop, data );
         Struct meta = prop.getDynamicAttributes();
         Document doc = XMLUtil.getDocument( clazz );
         Element m2m = doc.createElement( "many-to-many" );
@@ -1319,7 +1315,7 @@ public class HBMCreator {
 
         // build fkcolumn name
         if ( Util.isEmpty( str, true ) ) {
-            Component other = loadForeignCFC( pc, cfc, prop, meta, data );
+            Component other = loadForeignCFC( cfc, prop, meta, data );
             if ( other != null ) {
                 boolean isClass = Util.isEmpty( other.getExtends() );
                 // MZ: Recursive search for persistent mappedSuperclass properties
@@ -1396,8 +1392,8 @@ public class HBMCreator {
     }
 
     private static void createXMLMappingOneToMany( DatasourceConnection dc, Component cfc, PropertyCollection propColl,
-            Element clazz, PageContext pc, Property prop, SessionFactoryData data ) throws PageException {
-        Element el = createXMLMappingXToMany( propColl, clazz, pc, cfc, prop, data );
+            Element clazz, Property prop, SessionFactoryData data ) throws PageException {
+        Element el = createXMLMappingXToMany( propColl, clazz, cfc, prop, data );
         Struct meta = prop.getDynamicAttributes();
         Document doc = XMLUtil.getDocument( clazz );
         Element x2m;
@@ -1425,7 +1421,7 @@ public class HBMCreator {
 
     }
 
-    private static Element createXMLMappingXToMany( PropertyCollection propColl, Element clazz, PageContext pc, Component cfc,
+    private static Element createXMLMappingXToMany( PropertyCollection propColl, Element clazz, Component cfc,
             Property prop, SessionFactoryData data ) throws PageException {
         final Struct meta = prop.getDynamicAttributes();
         Document doc = XMLUtil.getDocument( clazz );
@@ -1516,7 +1512,7 @@ public class HBMCreator {
         if ( mapKey != null )
             el.appendChild( mapKey );
 
-        createXMLMappingXToX( el, pc, cfc, prop, meta, data );
+        createXMLMappingXToX( el, cfc, prop, meta, data );
 
         return el;
     }
@@ -1657,7 +1653,7 @@ public class HBMCreator {
         }
     }
 
-    private static void createXMLMappingManyToOne( Element clazz, PageContext pc, Component cfc, Property prop,
+    private static void createXMLMappingManyToOne( Element clazz, Component cfc, Property prop,
             PropertyCollection propColl, SessionFactoryData data ) throws PageException {
         Struct meta = prop.getDynamicAttributes();
         Boolean b;
@@ -1741,7 +1737,7 @@ public class HBMCreator {
         if ( !Util.isEmpty( str, true ) )
             m2o.setAttribute( "access", str );
 
-        createXMLMappingXToX( m2o, pc, cfc, prop, meta, data );
+        createXMLMappingXToX( m2o, cfc, prop, meta, data );
 
     }
 
@@ -1761,7 +1757,7 @@ public class HBMCreator {
      * >
      *
      */
-    private static void createXMLMappingXToX( Element x2x, PageContext pc, Component cfc, Property prop, Struct meta,
+    private static void createXMLMappingXToX( Element x2x, Component cfc, Property prop, Struct meta,
             SessionFactoryData data ) throws PageException {
         x2x.setAttribute( "name", prop.getName() );
 
@@ -1828,7 +1824,7 @@ public class HBMCreator {
         }
     }
 
-    private static void createXMLMappingTimestamp( Element clazz, PageContext pc, Component cfc, Property prop,
+    private static void createXMLMappingTimestamp( Element clazz, Component cfc, Property prop,
             SessionFactoryData data ) throws PageException {
         Struct meta = prop.getDynamicAttributes();
         String str;
@@ -1891,7 +1887,7 @@ public class HBMCreator {
         return ExceptionUtil.createException( data, cfc, message, null );
     }
 
-    private static void createXMLMappingVersion( Element clazz, PageContext pc, Component cfc, Property prop,
+    private static void createXMLMappingVersion( Element clazz, Component cfc, Property prop,
             SessionFactoryData data ) throws PageException {
         Struct meta = prop.getDynamicAttributes();
 

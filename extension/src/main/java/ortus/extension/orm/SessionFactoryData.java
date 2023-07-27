@@ -350,7 +350,7 @@ public class SessionFactoryData {
         if ( columnsInfo != null )
             return columnsInfo;
 
-        columnsInfo = HibernateUtil.checkTable( dc, tableName, this );
+        columnsInfo = HibernateUtil.checkTable( dc, tableName );
         tableInfo.setEL( keyTableName, columnsInfo );
         return columnsInfo;
     }

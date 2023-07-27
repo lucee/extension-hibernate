@@ -321,7 +321,7 @@ public class HibernateUtil {
         return entityName.toLowerCase().trim();
     }
 
-    public static Struct checkTable( DatasourceConnection dc, String tableName, SessionFactoryData data ) throws PageException {
+    public static Struct checkTable( DatasourceConnection dc, String tableName ) throws PageException {
 
         try {
             String dbName = CFMLEngineFactory.getInstance().getDBUtil().getDatabaseName( dc );
