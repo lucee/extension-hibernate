@@ -1045,7 +1045,6 @@ public class HibernateORMSession implements ORMSession {
         int sqlLen = sql.length();
         char c, quoteType = 0;
         boolean inQuotes = false;
-        int qm = 0, _qm = 0;
         int index = 1;
         for ( int i = 0; i < sqlLen; i++ ) {
             c = sql.charAt( i );

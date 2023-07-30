@@ -791,7 +791,7 @@ public class CommonUtil {
     public static Writer getWriter( OutputStream os, Charset cs ) {
         // TODO: This is a very bad pattern - setting and using class state on a util class from a static method.
         if ( cs == null ) {
-            cs = getCharset();
+            getCharset();
         }
         return new BufferedWriter( new OutputStreamWriter( os, getCharset() ) );
     }

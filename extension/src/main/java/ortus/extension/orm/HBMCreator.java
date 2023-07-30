@@ -416,7 +416,6 @@ public class HBMCreator {
 
     private static void addJoin( Component cfc, PageContext pc, Struct columnsInfo, Element clazz, PropertyCollection coll,
             DatasourceConnection dc, SessionFactoryData data ) throws PageException {
-        String table = coll.getTableName();
         Property[] properties = coll.getProperties();
         if ( properties.length == 0 )
             return;
@@ -1910,7 +1909,6 @@ public class HBMCreator {
         Object o = meta.get( GENERATED, null );
         if ( o != null ) {
             Boolean b = CommonUtil.toBoolean( o, null );
-            str = null;
             if ( b != null ) {
                 str = b.booleanValue() ? "always" : "never";
             } else {
