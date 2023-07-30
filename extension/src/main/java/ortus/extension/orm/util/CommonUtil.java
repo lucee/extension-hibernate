@@ -125,6 +125,7 @@ public class CommonUtil {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     public static Object castTo( PageContext pc, Class trgClass, Object obj ) throws PageException {
         return caster().castTo( pc, trgClass, obj );
     }

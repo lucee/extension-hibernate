@@ -241,6 +241,7 @@ public class EventListenerIntegrator
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public void onDelete( DeleteEvent event, Set transientEntities ) throws HibernateException {
         Object entity = event.getObject();
         // TODO: handle transientEntities

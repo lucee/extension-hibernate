@@ -65,6 +65,7 @@ public class CFCGetter implements Getter {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public Object getForInsert( Object trg, Map map, SharedSessionContractImplementor ssci ) {
         return get( trg );// MUST better solution? this is from MapGetter
     }
@@ -85,6 +86,7 @@ public class CFCGetter implements Getter {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public Class getReturnType() {
         return Object.class;// MUST more concrete?
     }

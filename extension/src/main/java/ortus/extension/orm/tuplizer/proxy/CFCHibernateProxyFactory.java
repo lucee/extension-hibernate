@@ -17,6 +17,7 @@ public class CFCHibernateProxyFactory implements ProxyFactory {
     private String nodeName;
 
     @Override
+    @SuppressWarnings("rawtypes")
     public void postInstantiate( final String entityName, final Class persistentClass, final Set interfaces,
             final Method getIdentifierMethod, final Method setIdentifierMethod, CompositeType componentIdType ) {
         int index = entityName.indexOf( '.' );

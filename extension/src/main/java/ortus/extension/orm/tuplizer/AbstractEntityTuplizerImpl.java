@@ -141,11 +141,13 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public Class getConcreteProxyClass() {
         return Component.class;// ????
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public Class getMappedClass() {
         return Component.class; // ????
     }

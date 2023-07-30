@@ -25,6 +25,7 @@ import lucee.runtime.type.dt.DateTime;
 import lucee.runtime.type.scope.Scope;
 import lucee.runtime.type.scope.Variables;
 
+@SuppressWarnings("rawtypes")
 public abstract class ComponentProxy implements Component {
 
     private static final long serialVersionUID = -8709126025976358501L;

@@ -40,6 +40,7 @@ public class HibernateCaster {
 
     private static final int NULL = -178696;
 
+    @SuppressWarnings("rawtypes")
     public static Object toCFML( Object src ) {
         if ( src == null )
             return null;
@@ -52,6 +53,7 @@ public class HibernateCaster {
         return src;
     }
 
+    @SuppressWarnings("rawtypes")
     public static Array toCFML( List src ) {
         int size = src.size();
 

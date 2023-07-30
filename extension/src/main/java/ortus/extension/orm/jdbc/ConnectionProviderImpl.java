@@ -62,6 +62,7 @@ public class ConnectionProviderImpl implements ConnectionProvider {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public boolean isUnwrappableAs( Class unwrapType ) {
         // TODO Auto-generated method stub
         return false;

@@ -555,6 +555,7 @@ public class HibernateORMSession implements ORMSession {
 
     }
 
+    @SuppressWarnings("rawtypes")
     private Object doQueryExecute( PageContext pc, Session session, Key dsn, String hql, Object params, boolean unique,
             Struct options ) throws PageException {
         hql = hql.trim();
@@ -717,6 +718,7 @@ public class HibernateORMSession implements ORMSession {
                 queryOpt.getString(), obj );
     }
 
+    @SuppressWarnings("rawtypes")
     private Object uniqueResult( Query<?> query ) throws PageException {
         try {
             return query.uniqueResult();

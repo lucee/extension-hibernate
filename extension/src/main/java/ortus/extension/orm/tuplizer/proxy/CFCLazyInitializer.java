@@ -28,6 +28,7 @@ public class CFCLazyInitializer extends AbstractLazyInitializer implements Seria
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public Class getPersistentClass() {
         throw new UnsupportedOperationException( "dynamic-map entity representation" );
     }
