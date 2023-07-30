@@ -17,7 +17,6 @@ public final class CFCSetter implements Setter {
 
     private Key key;
     private Type type;
-    private Object entityName;
 
     /**
      * Constructor of the class
@@ -32,7 +31,6 @@ public final class CFCSetter implements Setter {
     public CFCSetter( String key, Type type, String entityName ) {
         this.key        = CommonUtil.createKey( key );
         this.type       = type;
-        this.entityName = entityName;
     }
 
     @Override
