@@ -137,8 +137,6 @@ public class HibernateCaster {
             return Types.BIT;
         if ( "blob".equals( type ) )
             return Types.BLOB;
-        if ( "boolean".equals( type ) )
-            return Types.BOOLEAN;
         if ( "character".equals( type ) )
             return Types.CHAR;
         if ( "clob".equals( type ) )
@@ -155,8 +153,6 @@ public class HibernateCaster {
             return Types.FLOAT;
         if ( "integer".equals( type ) )
             return Types.INTEGER;
-        if ( "binary".equals( type ) )
-            return Types.VARBINARY;
         if ( "string".equals( type ) )
             return Types.VARCHAR;
         if ( "short".equals( type ) )
@@ -274,8 +270,6 @@ public class HibernateCaster {
             return type;
         if ( "blob".equals( type ) )
             return "binary";
-        if ( "boolean".equals( type ) )
-            return type;
         if ( "character".equals( type ) )
             return type;
         if ( "clob".equals( type ) )
@@ -290,8 +284,6 @@ public class HibernateCaster {
             return type;
         if ( "integer".equals( type ) )
             return type;
-        if ( "binary".equals( type ) )
-            return type;
         if ( "string".equals( type ) )
             return type;
         if ( "big_integer".equals( type ) )
@@ -303,8 +295,6 @@ public class HibernateCaster {
         if ( "timestamp".equals( type ) )
             return type;
         if ( "byte".equals( type ) )
-            return type;
-        if ( "binary".equals( type ) )
             return type;
         if ( "string".equals( type ) )
             return type;
