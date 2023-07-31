@@ -25,7 +25,6 @@ import lucee.runtime.PageContext;
 import lucee.runtime.component.Property;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMEngine;
-import lucee.runtime.orm.ORMSession;
 import lucee.runtime.type.Array;
 import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
@@ -244,15 +243,6 @@ public class HibernateCaster {
         return defaultValue;
     }
 
-    public static String toHibernateType( ORMSession session, String type ) throws PageException {
-        String res = toHibernateType( type, null );
-        if ( res == null ) {
-            String message = String.format( "the type [%s] is not supported", type );
-            throw ExceptionUtil.createException( session, null, message, null );
-        }
-        return res;
-    }
-
     // calendar_date: A type mapping for a Calendar object that represents a date
     // calendar: A type mapping for a Calendar object that represents a datetime.
     public static String toHibernateType( String type, String defaultValue ) {
@@ -398,17 +388,6 @@ public class HibernateCaster {
             return "string";
 
         return defaultValue;
-
-        // FUTURE
-        /*
-         *
-         * add support for - any, object,other
-         *
-         * add support for custom types https://issues.jboss.org/browse/RAILO-1341 - array - base64 - guid - memory -
-         * node, xml - query - struct - uuid - variablename, variable_name - variablestring, variable_string
-         *
-         */
-
     }
 
     public static Object toHibernateValue( PageContext pc, Object value, String type ) throws PageException {
