@@ -125,7 +125,7 @@ public class HibernateCaster {
 
     }
 
-    public static int toSQLType( String type, int defaultValue ) {
+    private static int toSQLType( String type, int defaultValue ) {
         type = type.trim().toLowerCase();
         type = toHibernateType( type, type );
         if ( "long".equals( type ) )
@@ -174,7 +174,7 @@ public class HibernateCaster {
      * @param info a {@link ortus.extension.orm.ColumnInfo} object containing a known Java SQL type.
      * @param defaultValue Default to return if SQL type not detected.
      */
-    public static String toHibernateType( ColumnInfo info, String defaultValue ) {
+    private static String toHibernateType( ColumnInfo info, String defaultValue ) {
         if ( info == null )
             return defaultValue;
 
@@ -190,8 +190,7 @@ public class HibernateCaster {
      * @param type One of the SQL types. {@link java.sql.Types}
      * @param defaultValue Default to return if SQL type not detected.
      */
-    public static String toHibernateType( int type, String defaultValue ) {
-        // MUST do better
+    private static String toHibernateType( int type, String defaultValue ) {
         switch ( type ) {
             case Types.ARRAY :
                 return "";
@@ -239,13 +238,14 @@ public class HibernateCaster {
                 return "string";
             case Types.VARCHAR :
                 return "string";
+            default:
+                return defaultValue;
         }
-        return defaultValue;
     }
 
     // calendar_date: A type mapping for a Calendar object that represents a date
     // calendar: A type mapping for a Calendar object that represents a datetime.
-    public static String toHibernateType( String type, String defaultValue ) {
+    private static String toHibernateType( String type, String defaultValue ) {
         type = type.trim().toLowerCase();
         type = type.replace( "java.lang.", "" );
         type = type.replace( "java.util.", "" );
@@ -470,19 +470,6 @@ public class HibernateCaster {
     /**
      * translate CFMl specific types to Hibernate/SQL specific types
      *
-     * @param ci
-     * @param value
-     * @param isArray
-     *
-     * @throws PageException
-     */
-    public static Object toSQL( ColumnInfo ci, Object value, RefBoolean isArray ) throws PageException {
-        return toSQL( ci.getType(), value, isArray );
-    }
-
-    /**
-     * translate CFMl specific types to Hibernate/SQL specific types
-     *
      * @param type
      * @param value
      * @param isArray
@@ -682,17 +669,6 @@ public class HibernateCaster {
         if ( getEntityName( child ).equalsIgnoreCase( entityName ) )
             return populateQuery( pc, session, child, qry );
         return inheritance( pc, session, child, qry, entityName );// MUST geh ACF auch so tief?
-    }
-
-    /**
-     * return the full name (package and name) of a component
-     *
-     * @param cfc
-     *
-     * @return Full name of a component.
-     */
-    public static String toComponentName( Component cfc ) {
-        return cfc.getPageSource().getComponentName();
     }
 
     public static Component toComponent( Object obj ) throws PageException {
