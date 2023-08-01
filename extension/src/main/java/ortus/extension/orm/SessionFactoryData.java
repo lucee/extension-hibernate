@@ -12,6 +12,9 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.SessionFactory;
 import org.hibernate.engine.query.spi.QueryPlanCache;
 import org.hibernate.internal.SessionFactoryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ortus.extension.orm.event.EventListenerIntegrator;
 import ortus.extension.orm.jdbc.DataSourceConfig;
 import ortus.extension.orm.naming.CFCNamingStrategy;
@@ -38,6 +41,8 @@ import lucee.runtime.type.Collection.Key;
 import lucee.runtime.type.Struct;
 
 public class SessionFactoryData {
+
+    private static final Logger logger = LoggerFactory.getLogger(SessionFactoryData.class);
 
     /**
      * Use during ORM initialization for tracking the in-progress list of Component entities.
@@ -257,6 +262,7 @@ public class SessionFactoryData {
     public void setConfiguration( Log log, String mappings, DataSource ds, String user, String pass,
             String applicationContextName ) throws PageException, SQLException, IOException {
 
+        logger.atDebug().log( String.format("Building Hibernate configuration for dsn %s in application %s", ds.getName(), applicationContextName ) );
         Configuration configuration = new ConfigurationBuilder().withDatasource( ds ).withDatasourceCreds( user, pass )
                 .withORMConfig( getORMConfiguration() ).withEventListener( getEventListenerIntegrator() )
                 .withApplicationName( applicationContextName ).withXMLMappings( mappings ).withLog( log ).build();
@@ -287,6 +293,7 @@ public class SessionFactoryData {
         ClassLoader old = thread.getContextClassLoader();
         SessionFactory sf;
         try {
+            logger.atDebug().log( String.format( "Building Hibernate SessionFactory for dsn %s", datasSourceName ) );
             // use the core classloader
             thread.setContextClassLoader( CFMLEngineFactory.getInstance().getClass().getClassLoader() );
             sf = dsc.config.buildSessionFactory();

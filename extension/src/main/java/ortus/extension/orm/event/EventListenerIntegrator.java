@@ -41,6 +41,8 @@ import org.hibernate.event.spi.PreLoadEventListener;
 import org.hibernate.integrator.spi.Integrator;
 import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ortus.extension.orm.HibernateCaster;
 import ortus.extension.orm.util.CommonUtil;
@@ -68,6 +70,8 @@ public class EventListenerIntegrator
         FlushEventListener, AutoFlushEventListener, ClearEventListener, DirtyCheckEventListener, EvictEventListener {
 
     private static final long serialVersionUID = -5954121166467541422L;
+
+    private static final Logger logger = LoggerFactory.getLogger(EventListenerIntegrator.class);
 
     /**
      * The EventHandler CFC defined in the application's `this.ormSettings.eventHandler`.
@@ -292,6 +296,7 @@ public class EventListenerIntegrator
             return;
         }
 
+        logger.atInfo().log( String.format("Firing event %s listener method on global listener %s", name, globalEventListener.getName() ) );
         fireOnComponent( getGlobalEventListener(), name, entity, data, event );
     }
 
@@ -310,6 +315,7 @@ public class EventListenerIntegrator
     public void fireOnEntity( Object entity, Key name, AbstractEvent event, Struct data ) {
         Component listener = CommonUtil.toComponent( entity, null );
         if ( listener != null ) {
+            logger.atInfo().log( String.format("Firing event %s listener method on entity %s", name, listener.getName() ) );
             fireOnComponent( listener, name, data, event );
         }
     }

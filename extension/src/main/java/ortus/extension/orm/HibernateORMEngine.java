@@ -7,6 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.EntityMode;
 import org.hibernate.tuple.entity.EntityTuplizerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ortus.extension.orm.event.EventListenerIntegrator;
 import ortus.extension.orm.tuplizer.AbstractEntityTuplizerImpl;
 import ortus.extension.orm.util.CommonUtil;
@@ -33,6 +36,7 @@ import ch.qos.logback.classic.Level;
 public class HibernateORMEngine implements ORMEngine {
 
     private Map<String, SessionFactoryData> factories = new ConcurrentHashMap<>();
+    private static final Logger logger = LoggerFactory.getLogger(HibernateORMEngine.class);
 
     static {
         /**
@@ -80,6 +84,7 @@ public class HibernateORMEngine implements ORMEngine {
     public boolean reload( PageContext pc, boolean force ) throws PageException {
         String applicationName = pc.getApplicationContext().getName();
         if ( force || !isInitializedForApplication( applicationName ) ) {
+            logger.atInfo().log("Reloading ORM");
             clearSessionFactory( applicationName );
             buildSessionFactoryData( pc );
             return false;
@@ -302,6 +307,7 @@ public class HibernateORMEngine implements ORMEngine {
                  */
                 DatasourceConnection dc = CommonUtil.getDatasourceConnection( pc, ds, null, null, false );
                 try {
+                    logger.atInfo().log( String.format("Creating XML mapping for entity %s", entityName) );
                     xml = HBMCreator.toMappingString( HBMCreator.createXMLMapping( pc, dc, cfc, data ) );
                     if ( ormConf.saveMapping() ) {
                         HBMCreator.saveMapping( cfc, xml );
@@ -316,6 +322,7 @@ public class HibernateORMEngine implements ORMEngine {
             // load
             else {
                 try {
+                    logger.atInfo().log( String.format("Loading XML mapping for entity %s", entityName) );
                     xml = HBMCreator.loadMapping( cfc );
                 } catch ( Exception e ) {
                     throw ExceptionUtil.toPageException( e );
