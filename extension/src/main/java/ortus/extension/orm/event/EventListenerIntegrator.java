@@ -45,6 +45,7 @@ import org.hibernate.service.spi.SessionFactoryServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ortus.extension.orm.HBMCreator;
 import ortus.extension.orm.HibernateCaster;
 import ortus.extension.orm.util.CommonUtil;
 
@@ -405,10 +406,15 @@ public class EventListenerIntegrator
             for ( int n = 0; n < stateProperties.length; ++n ) {
                 final String currentProperty = stateProperties[ n ];
                 Optional<Property> property = Arrays.stream( properties )
-                        .filter( prop -> prop.getName().equals( currentProperty ) ).findFirst();
+                        .filter( prop -> prop.getName().equals( currentProperty ) )
+                        .filter( prop -> {
+                            return !isRelationshipField( prop );
+                        })
+                        .findFirst();
                 if ( property.isPresent() ) {
                     Property theprop = property.get();
                     Object value = entity.getComponentScope().get( CommonUtil.createKey( theprop.getName() ), null );
+                    // Object value = theprop.getValue();
                     if ( value != null ) {
                         state[ n ] = HibernateCaster.toHibernateValue( entity, theprop );
                     }
@@ -418,5 +424,11 @@ public class EventListenerIntegrator
             throw new RuntimeException(
                     "Error populating event state for persistance in pre-event listener method: " + e.getMessage(), e );
         }
+    }
+
+    private boolean isRelationshipField( Property prop ){
+        Struct meta = (Struct) prop.getMetaData();
+        String fieldType = CommonUtil.toString( meta.get( CommonUtil.FIELDTYPE, null ), null );
+        return fieldType != null && HBMCreator.Relationships.isRelationshipType(fieldType);
     }
 }

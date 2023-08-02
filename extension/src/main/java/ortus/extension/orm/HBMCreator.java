@@ -83,6 +83,25 @@ public class HBMCreator {
     private static final Collection.Key TYPE = CommonUtil.createKey( "type" );
 
     /**
+     *  @TODO: Move this into some CFConstants class, or somewhere that both HBMCreator and HibernateCaster can reference it.
+     * @TODO: For 7.0, Migrate to Map.of() or Map.ofEntries in Java 9+
+     */
+    public static final class Relationships {
+        public static final String ONE_TO_MANY = "one-to-many";
+        public static final String MANY_TO_MANY = "many-to-many";
+        public static final String MANY_TO_ONE = "many-to-one";
+        public static final String ONE_TO_ONE = "one-to-one";
+
+        public static boolean isRelationshipType( String fieldType ){
+            return 
+                ONE_TO_MANY.equalsIgnoreCase(fieldType) ||
+                MANY_TO_MANY.equalsIgnoreCase(fieldType) ||
+                MANY_TO_ONE.equalsIgnoreCase(fieldType) ||
+                ONE_TO_ONE.equalsIgnoreCase(fieldType);
+        }
+    }
+
+    /**
      * Generate an XML node tree defining a Hibernate mapping for the given Component
      *
      * @param pc
