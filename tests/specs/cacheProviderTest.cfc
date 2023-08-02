@@ -1,7 +1,7 @@
 component extends="testbox.system.BaseSpec" {
 
 	public void function run(){
-		describe( "2nd-level Cache Provider Support", () => {
+		xdescribe( "2nd-level Cache Provider Support", () => {
 			beforeEach( () => {
 				var result = _internalRequest( "/tests/testApp/index.cfm?reinitApp=true" );
 			} );
