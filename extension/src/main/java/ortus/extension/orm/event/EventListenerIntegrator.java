@@ -396,9 +396,9 @@ public class EventListenerIntegrator
                         .filter( prop -> prop.getName().equals( currentProperty ) ).findFirst();
                 if ( property.isPresent() ) {
                     Property theprop = property.get();
-                    if ( theprop.getValue() != null ) {
-                        Object value = HibernateCaster.toHibernateValue( entity, theprop );
-                        state[ n ] = value;
+                    Object value = entity.getComponentScope().get( CommonUtil.createKey( theprop.getName() ), null );
+                    if ( value != null ) {
+                        state[ n ] = HibernateCaster.toHibernateValue( entity, theprop );
                     }
                 }
             }

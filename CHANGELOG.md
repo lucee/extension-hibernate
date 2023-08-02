@@ -28,7 +28,8 @@ The default `ehcache.xml` for EHCache changed to include [`clearOnFlush="true"`]
 
 ### 🐛 Fixed
 
-Fixes handling of `"timezone"`-typed column values. Previously, fields defined with `ormtype="timezone"` would neither use the `default` value nor allow new values to be set.
+* Fixes handling of `"timezone"`-typed column values. Previously, fields defined with `ormtype="timezone"` would neither use the `default` value nor allow new values to be set. [OOE-10](https://ortussolutions.atlassian.net/browse/OOE-10)
+* Fixes entity state changes in `preInsert()`/`preUpdate()` listeners for properties with no `default` defined. [OOE-9](https://ortussolutions.atlassian.net/browse/OOE-9)
 
 ## [6.1.0] - 2023-07-14
 
