@@ -3,6 +3,7 @@ component extends="testbox.system.BaseSpec" {
 	public void function run(){
 		describe( "Global event listener (EventHandler.cfc)", () => {
 			beforeEach( () => {
+				ormClearSession();
 				variables.testAuto = entityNew( "Auto", { id : createUUID(), make : "Lexus" } );
 				entitySave( variables.testAuto );
 				ormFlush();
