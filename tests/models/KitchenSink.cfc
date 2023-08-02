@@ -58,6 +58,12 @@ component persistent="true" {
 		ormtype="string"
 		default="thedefault"
 		update =false;
+
+	property
+		name   ="timestamp"
+		ormtype="timestamp"
+		default="2023-07-29T04:56";
+
 	this.name = "KitchenSink";
 
 }

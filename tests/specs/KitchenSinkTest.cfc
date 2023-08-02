@@ -127,6 +127,22 @@ component extends="testbox.system.BaseSpec" {
 					expect( sink.getInt() ).toBe( 88808 );
 				} );
 			} );
+			describe( "+timestamp", () => {
+				it( "Can get the default value", () => {
+					var sink = entityNew( "KitchenSink", { id : createUUID() } );
+					expect( dateFormat( sink.getTimestamp(), "yyyy-mm-dd" ) ).toBe( "2023-07-29" );
+				} );
+				it( "can set value", () => {
+					var sink = entityNew( "KitchenSink", { id : createUUID() } );
+					sink.setTimestamp( createDate( 2023, 08, 02 ) );
+					expect( dateFormat( sink.getTimestamp(), "yyyy-mm-dd" ) ).toBe( "2023-08-02" );
+					entitySave( sink );
+					ormFlush();
+					entityReload( sink );
+					expect( dateFormat( sink.getTimestamp(), "yyyy-mm-dd" ) ).toBe( "2023-08-02" );
+					expect( dateCompare( sink.getTimestamp(), createDate( 2020, 08, 02 ) ) ).toBe( 1 );
+				} );
+			} );
 
 			/**
 			 * @TODO: Implement these (list from https://cfdocs.org/cfproperty):
