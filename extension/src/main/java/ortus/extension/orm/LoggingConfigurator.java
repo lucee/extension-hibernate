@@ -45,6 +45,12 @@ public class LoggingConfigurator {
 
     public void configure() {
 
+        /**
+         * @TODO: Come up with a sensible way to enable additional logging from a CFML app... not just for development.
+         */
+        Logger extensionLogger = loggerContext.getLogger( "ortus.extension.orm" );
+        extensionLogger.setLevel( Level.OFF );
+
         Logger hibernateLogger = loggerContext.getLogger( "org.hibernate" );
         hibernateLogger.setLevel( defaultLogLevel );
 

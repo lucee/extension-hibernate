@@ -26,6 +26,9 @@ import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.query.Query;
 import org.hibernate.query.internal.ParameterMetadataImpl;
 import org.hibernate.type.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ortus.extension.orm.util.CommonUtil;
 import ortus.extension.orm.util.ExceptionUtil;
 import ortus.extension.orm.util.HibernateUtil;
@@ -52,6 +55,8 @@ import lucee.runtime.util.Cast;
 
 public class HibernateORMSession implements ORMSession {
 
+    private static final Logger logger = LoggerFactory.getLogger(HibernateORMSession.class);
+
     /**
      * A limited set of constants mapping to ORM-supported Lucee query options
      * 
@@ -73,6 +78,7 @@ public class HibernateORMSession implements ORMSession {
         private DatasourceConnection dc;
         private final DataSource d;
         private SessionFactory factory;
+        private final Logger logger = LoggerFactory.getLogger(SessionAndConn.class);
 
         public SessionAndConn( PageContext pc, SessionFactory factory, DataSource ds ) {
             this.d       = ds;
@@ -91,8 +97,10 @@ public class HibernateORMSession implements ORMSession {
          * @throws PageException
          */
         public Session getSession( PageContext pc ) {
-            if ( s == null || !s.isOpen() )
+            if ( s == null || !s.isOpen() ){
+                if ( logger.isDebugEnabled() ) logger.atDebug().log( "Opening new session" );
                 s = factory.openSession();
+            }
             return s;
         }
 
@@ -114,6 +122,7 @@ public class HibernateORMSession implements ORMSession {
         }
 
         public void close( PageContext pc ) throws PageException {
+            if ( logger.isDebugEnabled() ) logger.atDebug().log( "closing session" );
             if ( s != null && s.isOpen() ) {
                 s.close();
                 s = null;
@@ -178,6 +187,7 @@ public class HibernateORMSession implements ORMSession {
         }
         Session s = sac.getSession( pc );
         if ( !s.isOpen() || !s.isConnected() || isClosed( s ) ) {
+            if ( logger.isWarnEnabled() ) logger.atWarn().log( "session is open or not connected or closed; reconnecting" );
             if ( pc == null )
                 pc = CFMLEngineFactory.getInstance().getThreadPageContext();
 

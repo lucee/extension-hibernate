@@ -3,6 +3,7 @@ package ortus.extension.orm.event;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.HibernateException;
 import org.hibernate.boot.Metadata;
@@ -296,7 +297,9 @@ public class EventListenerIntegrator
             return;
         }
 
-        logger.atInfo().log( String.format("Firing event %s listener method on global listener %s", name, globalEventListener.getName() ) );
+        if ( logger.isInfoEnabled() ){
+            logger.atInfo().log( String.format("Firing event %s listener method on global listener %s", name, globalEventListener.getName() ) );
+        }
         fireOnComponent( getGlobalEventListener(), name, entity, data, event );
     }
 
@@ -315,7 +318,9 @@ public class EventListenerIntegrator
     public void fireOnEntity( Object entity, Key name, AbstractEvent event, Struct data ) {
         Component listener = CommonUtil.toComponent( entity, null );
         if ( listener != null ) {
-            logger.atInfo().log( String.format("Firing event %s listener method on entity %s", name, listener.getName() ) );
+            if ( logger.isInfoEnabled() ){
+                logger.atInfo().log( String.format("Firing event %s listener method on entity %s", name, listener.getName() ) );
+            }
             fireOnComponent( listener, name, data, event );
         }
     }
@@ -388,8 +393,15 @@ public class EventListenerIntegrator
      *                        The entity to pull a potentially altered value from.
      */
     private void persistEntityChangesToState( Object[] state, String[] stateProperties, Component entity ) {
+        if ( logger.isDebugEnabled() ){
+            logger.atDebug().log( String.format( "persisting entity state changes on state properties %s", Arrays.toString(stateProperties) ) );
+        }
         try {
             Property[] properties = entity.getProperties( true, false, false, false );
+            if ( logger.isDebugEnabled() ){
+                String propNames = Arrays.stream(properties).map( el -> el.getName()).collect(Collectors.joining(","));
+                logger.atDebug().log( String.format( "persisting entity state changes for entity properties %s", propNames ) );
+            }
             for ( int n = 0; n < stateProperties.length; ++n ) {
                 final String currentProperty = stateProperties[ n ];
                 Optional<Property> property = Arrays.stream( properties )
