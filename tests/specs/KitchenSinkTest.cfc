@@ -19,9 +19,8 @@ component extends="testbox.system.BaseSpec" {
 					expect( sink.getTimeZone() ).toBe( "Pacific/Midway" );
 					entitySave( sink );
 					ormFlush();
-					ormClearSession();
-					var loadedSink = entityLoadByPK( "KitchenSink", sink.getId() );
-					expect( loadedSink.getTimeZone() ).toBe( "Pacific/Midway" );
+					entityReload( sink );
+					expect( sink.getTimeZone() ).toBe( "Pacific/Midway" );
 				} );
 			} );
 			describe( "+string", () => {
@@ -35,9 +34,8 @@ component extends="testbox.system.BaseSpec" {
 					expect( sink.getString() ).toBe( "new" );
 					entitySave( sink );
 					ormFlush();
-					ormClearSession();
-					var loadedSink = entityLoadByPK( "KitchenSink", sink.getId() );
-					expect( loadedSink.getString() ).toBe( "new" );
+					entityReload( sink );
+					expect( sink.getString() ).toBe( "new" );
 				} );
 				it( "truncates past length", () => {
 					var sink = entityNew( "KitchenSink", { id : createUUID() } );
@@ -60,9 +58,8 @@ component extends="testbox.system.BaseSpec" {
 					expect( sink.getBoolean() ).toBe( true );
 					entitySave( sink );
 					ormFlush();
-					ormClearSession();
-					var loadedSink = entityLoadByPK( "KitchenSink", sink.getId() );
-					expect( loadedSink.getBoolean() ).toBe( true );
+					entityReload( sink );
+					expect( sink.getBoolean() ).toBe( true );
 				} );
 			} );
 			describe( "+date", () => {
@@ -78,10 +75,9 @@ component extends="testbox.system.BaseSpec" {
 					expect( sink.getDate() ).toBe( currentTime );
 					entitySave( sink );
 					ormFlush();
-					ormClearSession();
-					var loadedSink = entityLoadByPK( "KitchenSink", sink.getId() );
-					expect( loadedSink.getDate() ).toBe( dateFormat( currentTime, "YYYY-mm-dd" ) );
-					expect( dateCompare( loadedSink.getDate(), currentTime ) ).toBe( -1 );
+					entityReload( sink );
+					expect( sink.getDate() ).toBe( dateFormat( currentTime, "YYYY-mm-dd" ) );
+					expect( dateCompare( sink.getDate(), currentTime ) ).toBe( -1 );
 				} );
 			} );
 			describe( "+datetime", () => {
@@ -97,9 +93,8 @@ component extends="testbox.system.BaseSpec" {
 					expect( sink.getDatetime() ).toBe( theVal );
 					entitySave( sink );
 					ormFlush();
-					ormClearSession();
-					var loadedSink = entityLoadByPK( "KitchenSink", sink.getId() );
-					expect( loadedSink.getDatetime() ).toBe( theVal );
+					entityReload( sink );
+					expect( sink.getDatetime() ).toBe( theVal );
 				} );
 			} );
 			describe( "+integer", () => {
@@ -113,9 +108,8 @@ component extends="testbox.system.BaseSpec" {
 					expect( sink.getInteger() ).toBe( 99901 );
 					entitySave( sink );
 					ormFlush();
-					ormClearSession();
-					var loadedSink = entityLoadByPK( "KitchenSink", sink.getId() );
-					expect( loadedSink.getInteger() ).toBe( 99901 );
+					entityReload( sink );
+					expect( sink.getInteger() ).toBe( 99901 );
 				} );
 			} );
 			describe( "+int", () => {
@@ -129,9 +123,8 @@ component extends="testbox.system.BaseSpec" {
 					expect( sink.getInt() ).toBe( 88808 );
 					entitySave( sink );
 					ormFlush();
-					ormClearSession();
-					var loadedSink = entityLoadByPK( "KitchenSink", sink.getId() );
-					expect( loadedSink.getInt() ).toBe( 88808 );
+					entityReload( sink );
+					expect( sink.getInt() ).toBe( 88808 );
 				} );
 			} );
 
@@ -139,36 +132,20 @@ component extends="testbox.system.BaseSpec" {
 			 * @TODO: Implement these (list from https://cfdocs.org/cfproperty):
 			 * @TODO: Identify any missing types from the above list, based on HibernateCaster.java.
 			 */
-			xdescribe( "+character", () => {
-			} );
-			xdescribe( "+char", () => {
-			} );
-			xdescribe( "+short", () => {
-			} );
-			xdescribe( "+long", () => {
-			} );
-			xdescribe( "+big_decimal", () => {
-			} );
-			xdescribe( "+float", () => {
-			} );
-			xdescribe( "+double", () => {
-			} );
-			xdescribe( "+yes_no", () => {
-			} );
-			xdescribe( "+true_false", () => {
-			} );
-			xdescribe( "+text", () => {
-			} );
-			xdescribe( "+timestamp", () => {
-			} );
-			xdescribe( "+binary", () => {
-			} );
-			xdescribe( "+serializable", () => {
-			} );
-			xdescribe( "+blob", () => {
-			} );
-			xdescribe( "+clob", () => {
-			} );
+			xdescribe( "+character", () => {} );
+			xdescribe( "+char", () => {} );
+			xdescribe( "+short", () => {} );
+			xdescribe( "+long", () => {} );
+			xdescribe( "+big_decimal", () => {} );
+			xdescribe( "+float", () => {} );
+			xdescribe( "+double", () => {} );
+			xdescribe( "+yes_no", () => {} );
+			xdescribe( "+true_false", () => {} );
+			xdescribe( "+text", () => {} );
+			xdescribe( "+binary", () => {} );
+			xdescribe( "+serializable", () => {} );
+			xdescribe( "+blob", () => {} );
+			xdescribe( "+clob", () => {} );
 		} );
 
 		describe( "insert/update constraints", () => {
@@ -178,9 +155,8 @@ component extends="testbox.system.BaseSpec" {
 					expect( sink.getNoInsert() ).toBe( "thedefault" );
 					entitySave( sink );
 					ormFlush();
-					ormClearSession();
-					var loadedSink = entityLoadByPK( "KitchenSink", sink.getId() );
-					expect( loadedSink.getNoInsert() ).toBeNull();
+					entityReload( sink );
+					expect( sink.getNoInsert() ).toBeNull();
 				} );
 				it( "can update", () => {
 					var sink = entityNew( "KitchenSink", { id : createUUID() } );
@@ -190,9 +166,8 @@ component extends="testbox.system.BaseSpec" {
 					sink.setNoInsert( "valuetoinsert" );
 					entitySave( sink );
 					ormFlush();
-					ormClearSession();
-					var loadedSink = entityLoadByPK( "KitchenSink", sink.getId() );
-					expect( loadedSink.getNoInsert() ).toBe( "valuetoinsert" );
+					entityReload( sink );
+					expect( sink.getNoInsert() ).toBe( "valuetoinsert" );
 				} );
 			} );
 			describe( "update=false", () => {
@@ -202,9 +177,8 @@ component extends="testbox.system.BaseSpec" {
 					sink.setNoUpdate( "valuetoinsert" );
 					entitySave( sink );
 					ormFlush();
-					ormClearSession();
-					var loadedSink = entityLoadByPK( "KitchenSink", sink.getId() );
-					expect( loadedSink.getNoUpdate() ).toBe( "valuetoinsert" );
+					entityReload( sink );
+					expect( sink.getNoUpdate() ).toBe( "valuetoinsert" );
 				} );
 				it( "will not update", () => {
 					var sink = entityNew( "KitchenSink", { id : createUUID() } );
@@ -214,9 +188,8 @@ component extends="testbox.system.BaseSpec" {
 					sink.setNoUpdate( "valuetoupdate" );
 					entitySave( sink );
 					ormFlush();
-					ormClearSession();
-					var loadedSink = entityLoadByPK( "KitchenSink", sink.getId() );
-					expect( loadedSink.getNoUpdate() ).toBe( "thedefault" );
+					entityReload( sink );
+					expect( sink.getNoUpdate() ).toBe( "thedefault" );
 				} );
 			} );
 		} );
