@@ -20,8 +20,8 @@ component extends="testbox.system.BaseSpec" {
 				/**
 				 * See https://ortussolutions.atlassian.net/browse/OOE-9
 				 */
-				xit( "OOE-9 - runs preInsert on ormFlush and persists date value state changes", () => {
-					var theUser = entityNew( "User", { id : createUUID(), name : "Jullian" } );
+				it( "OOE-9 - runs preInsert on ormFlush and persists date value state changes", () => {
+					var theUser = entityNew( "User", { id : createUUID(), name : "Julian" } );
 					expect( theUser.getDateCreated() ).toBeNull();
 					entitySave( theUser );
 					expect( theUser.getDateCreated() ).toBeNull();
@@ -56,8 +56,8 @@ component extends="testbox.system.BaseSpec" {
 				/**
 				 * See https://ortussolutions.atlassian.net/browse/OOE-9
 				 */
-				xit( "OOE-9 - runs preUpdate on ormFlush and persists date value state changes", () => {
-					var theUser = entityNew( "User", { id : createUUID(), name : "Jullian" } );
+				it( "OOE-9 - runs preUpdate on ormFlush and persists date value state changes", () => {
+					var theUser = entityNew( "User", { id : createUUID(), name : "Julian" } );
 					entitySave( theUser );
 					ormFlush();
 					entityReload( theUser );
