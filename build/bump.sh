@@ -7,7 +7,7 @@
 ###
 
 NEW_VERSION=$1
-OLD_VERSION=`mvn help:evaluate -f ../pom.xml -Dexpression=project.version -q -DforceStdout`
+OLD_VERSION=`mvn help:evaluate -f pom.xml -Dexpression=project.version -q -DforceStdout`
 
 # Bump version number
 echo "Setting version=${NEW_VERSION} in pom.xml..."
