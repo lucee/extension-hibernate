@@ -22,7 +22,7 @@ jobs:
       - name: Check changelog for this version
         id: changelog_check
         run: |
-          if grep -q "6.1.0" CHANGELOG.md;then
+          if grep -q "${{ env.EXTENSION_VERSION }}" CHANGELOG.md;then
             echo "HAS_VERSION=true" >> $GITHUB_OUTPUT
           else
             echo "HAS_VERSION=false" >> $GITHUB_OUTPUT
@@ -35,7 +35,7 @@ jobs:
           changelogPath: ./CHANGELOG.md
           tag: ${{ env.EXTENSION_VERSION }}
 
-      - name: Commit Changelog To Master
+      - name: Commit Changelog
         uses: EndBug/add-and-commit@v9.1.1
         if: "steps.changelog_check.outputs.HAS_VERSION == 'false' && !env.SNAPSHOT"
         with:

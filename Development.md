@@ -33,7 +33,9 @@ You will need to install the following for extension development:
 To run CFML tests against the extension:
 
 1. Start the test server using `box server start`
-2. Build and deploy the extension source via `box run-script deploy.local`
+   1. For testing on Lucee 6, run `box server start server-lucee6.json`
+2. Build and deploy the extension source via `box run-script deploy.lucee5`
+   1. For testing on Lucee 6, run `box run-script deploy.lucee6`
 3. Restart the server to pick up the new extension - `box server restart`
 4. Run tests from the extension root with `box testbox run`
 

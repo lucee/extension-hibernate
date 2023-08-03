@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.2.0] - 2023-08-03
+
 ### ♻️ Changed
 
 #### Hibernate Upgraded from 5.4 to 5.6
@@ -168,8 +170,9 @@ See [OOE-3](https://ortussolutions.atlassian.net/browse/OOE-3).
 -   Better build/test documentation
 -   Improved maintenance and build docs
 
-[6.0.0]: https://github.com/Ortus-Solutions/extension-hibernate/compare/b86f26e383ead941d18791e2e008cb62b2598cdc...6.0.0
+[6.0.0]: https://github.com/Ortus-Solutions/extension-hibernate/compare/b86f26e383ead941d18791e2e008cb62b2598cdc...v6.0.0
 
-[Unreleased]: https://github.com/Ortus-Solutions/extension-hibernate/compare/6.1.0...HEAD
+[Unreleased]: https://github.com/Ortus-Solutions/extension-hibernate/compare/v6.1.0...HEAD
 
-[6.1.0]: https://github.com/Ortus-Solutions/extension-hibernate/compare/2c540a96f2a87145fda2f651a000f041b166b543...6.1.0
+[6.1.0]: https://github.com/Ortus-Solutions/extension-hibernate/compare/v6.1.0...v6.2.0
+[6.1.0]: https://github.com/Ortus-Solutions/extension-hibernate/compare/2c540a96f2a87145fda2f651a000f041b166b543...v6.1.0
