@@ -28,6 +28,7 @@ import lucee.runtime.orm.ORMEngine;
 import lucee.runtime.db.DataSource;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.type.Collection.Key;
+import ortus.extension.orm.HBMCreator;
 import lucee.runtime.type.Struct;
 import lucee.loader.util.Util;
 
@@ -131,17 +132,8 @@ public class ORMUtil {
         String fieldType = CommonUtil.toString( prop.getDynamicAttributes().get( PROPS_FIELDTYPE, "column" ), "column" );
         if ( Util.isEmpty( fieldType, true ) )
             return false;
-        fieldType = fieldType.toLowerCase().trim();
 
-        if ( "one-to-one".equals( fieldType ) )
-            return true;
-        if ( "many-to-one".equals( fieldType ) )
-            return true;
-        if ( "one-to-many".equals( fieldType ) )
-            return true;
-        if ( "many-to-many".equals( fieldType ) )
-            return true;
-        return false;
+        return HBMCreator.Relationships.isRelationshipType(fieldType.toLowerCase().trim());
     }
 
     public static Struct convertToSimpleMap( String paramsStr ) {

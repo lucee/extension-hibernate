@@ -603,9 +603,9 @@ public class HibernateCaster {
                 if ( obj instanceof Struct ) {
                     sct       = ( Struct ) obj;
                     fieldType = CommonUtil.toString( sct.get( CommonUtil.FIELDTYPE, null ), null );
-                    if ( "one-to-many".equalsIgnoreCase( fieldType ) || "many-to-many".equalsIgnoreCase( fieldType )
-                            || "many-to-one".equalsIgnoreCase( fieldType ) || "one-to-one".equalsIgnoreCase( fieldType ) )
+                    if ( HBMCreator.Relationships.isRelationshipType(fieldType)){
                         continue;
+                    }
 
                 }
 
