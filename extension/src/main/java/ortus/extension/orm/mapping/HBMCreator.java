@@ -572,15 +572,18 @@ public class HBMCreator {
             clazz.setAttribute( "select-before-update", "true" );
 
         // optimistic-lock
-        str = toString( cfc, null, meta, "optimisticLock", data );
+        str = toString( cfc, null, meta, CFConstants.OptimisticLock.ATTRIBUTE_NAME, data );
         if ( !Util.isEmpty( str, true ) ) {
-            str = str.trim().toLowerCase();
-            if ( "all".equals( str ) || "dirty".equals( str ) || "none".equals( str ) || "version".equals( str ) )
+            str = str.trim();
+            if ( CFConstants.OptimisticLock.isValidValue( str ) )
                 clazz.setAttribute( "optimistic-lock", str );
             else {
                 String message = String.format(
-                        "invalid value [%s] for attribute [optimisticlock] of tag [component], valid values are [all,dirty,none,version]",
-                        str );
+                        "invalid value [%s] for attribute [%s] of tag [component], valid values are [%s]",
+                        str,
+                        CFConstants.OptimisticLock.ATTRIBUTE_NAME,
+                        CFConstants.OptimisticLock.getPossibleValues().toString()
+                );
                 throw ExceptionUtil.createException( data, cfc, message, null );
             }
         }
@@ -624,6 +627,12 @@ public class HBMCreator {
 
     }
 
+    /**
+     * Detect and escape reserved words. Uses backticks for escaping reserved values.
+     * 
+     * @param str
+     * @return The value, potentially wrapped with SQL escape characters.
+     */
     private static String escape( String str ) {
         if ( HibernateUtil.isKeyword( str ) )
             return "`" + str + "`";
@@ -1042,10 +1051,10 @@ public class HBMCreator {
         if ( !Util.isEmpty( str, true ) ) {
             str = str.trim().toLowerCase();
 
-            if ( "always".equals( str ) || "insert".equals( str ) || "never".equals( str ) )
+            if ( CFConstants.Generated.isValidValue(str) )
                 property.setAttribute( "generated", str );
             else
-                throw invalidValue( cfc, prop, "generated", str, "always,insert,never", data );
+                throw invalidValue( cfc, prop, CFConstants.Generated.ATTRIBUTE_NAME, str, CFConstants.Generated.getPossibleValues().toString(), data );
         }
 
         // update
@@ -1474,12 +1483,12 @@ public class HBMCreator {
 
         Element mapKey = null;
         // bag
-        if ( "array".equals( str ) || "bag".equals( str ) ) {
+        if ( CFConstants.CollectionType.isBagType(str) ) {
             el = doc.createElement( "bag" );
 
         }
         // map
-        else if ( "struct".equals( str ) || "map".equals( str ) ) {
+        else if ( CFConstants.CollectionType.isMapType(str) ) {
             el     = doc.createElement( "map" );
 
             // map-key
@@ -1496,7 +1505,7 @@ public class HBMCreator {
             else
                 mapKey.setAttribute( "type", "string" );// MUST get type dynamicly
         } else
-            throw invalidValue( cfc, prop, "collectiontype", str, "array,struct", data );
+            throw invalidValue( cfc, prop, CFConstants.CollectionType.ATTRIBUTE_NAME, str, CFConstants.CollectionType.getPossibleValues().toString(), data );
 
         setBeforeJoin( clazz, el );
 
@@ -1653,20 +1662,22 @@ public class HBMCreator {
 
         if ( !Util.isEmpty( strategy, true ) ) {
             strategy = strategy.trim().toLowerCase();
-            if ( "read-only".equals( strategy ) || "nonstrict-read-write".equals( strategy ) || "read-write".equals( strategy )
-                    || "transactional".equals( strategy ) ) {
+            if ( CFConstants.CacheUse.isValidValue(strategy) ) {
                 Element cache = doc.createElement( "cache" );
                 CommonUtil.setFirst( el, cache );
                 el.appendChild( cache );
-                cache.setAttribute( "usage", strategy );
+                cache.setAttribute( CFConstants.CacheUse.HBM_KEY, strategy );
                 String name = toString( cfc, prop, meta, "cacheName", data );
                 if ( !Util.isEmpty( name, true ) ) {
                     cache.setAttribute( "region", name );
                 }
             } else {
                 String message = String.format(
-                        "invalid value [%s] for attribute [cacheuse], valid values are [read-only,nonstrict-read-write,read-write,transactional]",
-                        strategy );
+                        "invalid value [%s] for attribute [%s], valid values are [%s]",
+                        strategy,
+                        CFConstants.CacheUse.ATTRIBUTE_NAME,
+                        CFConstants.CacheUse.getPossibleValues().toString()
+                    );
                 throw ExceptionUtil.createException( data, cfc, message, null );
             }
         }
@@ -1804,13 +1815,13 @@ public class HBMCreator {
             x2x.setAttribute( "cascade", str );
 
         // fetch
-        str = toString( cfc, prop, meta, "fetch", data );
+        str = toString( cfc, prop, meta, CFConstants.Fetch.ATTRIBUTE_NAME, data );
         if ( !Util.isEmpty( str, true ) ) {
             str = str.trim().toLowerCase();
-            if ( "join".equals( str ) || "select".equals( str ) )
-                x2x.setAttribute( "fetch", str );
+            if ( CFConstants.Fetch.isValidValue(str) )
+                x2x.setAttribute( CFConstants.Fetch.HBM_KEY, str );
             else
-                throw invalidValue( cfc, prop, "fetch", str, "join,select", data );
+                throw invalidValue( cfc, prop, CFConstants.Fetch.ATTRIBUTE_NAME, str, CFConstants.Fetch.getPossibleValues().toString(), data );
         }
 
         // lazy
@@ -1820,43 +1831,24 @@ public class HBMCreator {
 
     private static void setLazy( Component cfc, Property prop, Struct meta, Element x2x, SessionFactoryData data )
             throws PageException {
-        String str = toString( cfc, prop, meta, "lazy", data );
+        String str = toString( cfc, prop, meta, CFConstants.Lazy.ATTRIBUTE_NAME, data );
         if ( !Util.isEmpty( str, true ) ) {
-            str = str.trim();
+            str = str.trim().toLowerCase();
             String name = x2x.getNodeName();
-            Boolean b = CommonUtil.toBoolean( str, null );
 
-            // <!ATTLIST many-to-one lazy (false|proxy|no-proxy) #IMPLIED>
-            // <!ATTLIST one-to-one lazy (false|proxy|no-proxy) #IMPLIED>
-            if ( CFConstants.Relationships.MANY_TO_ONE.equals( name ) || CFConstants.Relationships.ONE_TO_ONE.equals( name ) ) {
-                if ( b != null )
-                    x2x.setAttribute( "lazy", b.booleanValue() ? "proxy" : "false" );
-                else if ( "proxy".equalsIgnoreCase( str ) )
-                    x2x.setAttribute( "lazy", "proxy" );
-                else if ( "no-proxy".equalsIgnoreCase( str ) )
-                    x2x.setAttribute( "lazy", "no-proxy" );
-                else
-                    throw invalidValue( cfc, prop, "lazy", str, "true,false,proxy,no-proxy", data );
-            }
-
-            // <!ATTLIST many-to-many lazy (false|proxy) #IMPLIED>
-            // <!ATTLIST key-many-to-one lazy (false|proxy) #IMPLIED>
-            else if ( CFConstants.Relationships.MANY_TO_MANY.equals( name ) || "key-many-to-one".equals( name ) ) {
-                if ( b != null )
-                    x2x.setAttribute( "lazy", b.booleanValue() ? "proxy" : "false" );
-                else if ( "proxy".equalsIgnoreCase( str ) )
-                    x2x.setAttribute( "lazy", "proxy" );
-                throw invalidValue( cfc, prop, "lazy", str, "true,false,proxy", data );
-
+            if ( CFConstants.Relationships.isRelationshipType( name ) ) {
+                if ( CFConstants.Lazy.isValidForRelationship(str)){
+                    if ( CFConstants.Lazy.TRUE.equals(str) ){ str = CFConstants.Lazy.PROXY; }
+                    x2x.setAttribute( CFConstants.Lazy.HBM_KEY, str );
+                } else
+                    throw invalidValue( cfc, prop, CFConstants.Lazy.ATTRIBUTE_NAME, str, CFConstants.Lazy.getPossibleForRelationship().toString(), data );
             }
 
             else {
-                if ( b != null )
-                    x2x.setAttribute( "lazy", b.booleanValue() ? "true" : "false" );
-                else if ( "extra".equalsIgnoreCase( str ) )
-                    x2x.setAttribute( "lazy", "extra" );
+                if ( CFConstants.Lazy.isValidForSimple(str) )
+                    x2x.setAttribute( CFConstants.Lazy.HBM_KEY, str );
                 else
-                    throw invalidValue( cfc, prop, "lazy", str, "true,false,extra", data );
+                    throw invalidValue( cfc, prop, CFConstants.Lazy.ATTRIBUTE_NAME, str, CFConstants.Lazy.getPossibleForSimple().toString(), data );
             }
         }
     }
@@ -1890,23 +1882,23 @@ public class HBMCreator {
             timestamp.setAttribute( "generated", b.booleanValue() ? "always" : "never" );
 
         // source
-        str = toString( cfc, prop, meta, "source", data );
+        str = toString( cfc, prop, meta, CFConstants.Source.ATTRIBUTE_NAME, data );
         if ( !Util.isEmpty( str, true ) ) {
             str = str.trim().toLowerCase();
-            if ( "db".equals( str ) || "vm".equals( str ) )
-                timestamp.setAttribute( "source", str );
+            if ( CFConstants.Source.isValidValue(str) )
+                timestamp.setAttribute( CFConstants.Source.HBM_KEY, str );
             else
-                throw invalidValue( cfc, prop, "source", str, "db,vm", data );
+                throw invalidValue( cfc, prop, CFConstants.Source.ATTRIBUTE_NAME, str, CFConstants.Source.getPossibleValues().toString(), data );
         }
 
         // unsavedValue
-        str = toString( cfc, prop, meta, "unsavedValue", data );
+        str = toString( cfc, prop, meta, CFConstants.UnsavedValue.ATTRIBUTE_NAME, data );
         if ( !Util.isEmpty( str, true ) ) {
             str = str.trim().toLowerCase();
-            if ( "null".equals( str ) || "undefined".equals( str ) )
-                timestamp.setAttribute( "unsaved-value", str );
+            if ( CFConstants.UnsavedValue.isValidValue(str) )
+                timestamp.setAttribute( CFConstants.UnsavedValue.HBM_KEY, str );
             else
-                throw invalidValue( cfc, prop, "unsavedValue", str, "null, undefined", data );
+                throw invalidValue( cfc, prop, CFConstants.UnsavedValue.ATTRIBUTE_NAME, str, CFConstants.UnsavedValue.getPossibleValues().toString(), data );
         }
     }
 
@@ -1960,7 +1952,7 @@ public class HBMCreator {
                 else
                     throw invalidValue( cfc, prop, "generated", o.toString(), "true,false,always,never", data );
             }
-            version.setAttribute( "generated", str );
+            version.setAttribute( CFConstants.Generated.HBM_KEY, str );
         }
 
         // insert
@@ -1969,7 +1961,7 @@ public class HBMCreator {
             version.setAttribute( "insert", "false" );
 
         // type
-        String typeName = "dataType";
+        String typeName = CFConstants.VersionDataType.HBM_KEY;
         str = toString( cfc, prop, meta, typeName, data );
         if ( Util.isEmpty( str, true ) ) {
             typeName = "ormType";
@@ -1977,25 +1969,21 @@ public class HBMCreator {
         }
         if ( !Util.isEmpty( str, true ) ) {
             str = str.trim().toLowerCase();
-            if ( "int".equals( str ) || "integer".equals( str ) )
-                version.setAttribute( "type", "integer" );
-            else if ( "long".equals( str ) )
-                version.setAttribute( "type", "long" );
-            else if ( "short".equals( str ) )
-                version.setAttribute( "type", "short" );
+            if ( CFConstants.VersionDataType.isValidValue(str) )
+                version.setAttribute( CFConstants.VersionDataType.HBM_KEY, "integer" );
             else
-                throw invalidValue( cfc, prop, typeName, str, "int,integer,long,short", data );
+                throw invalidValue( cfc, prop, typeName, str, CFConstants.VersionDataType.getPossibleValues().toString(), data );
         } else
-            version.setAttribute( "type", "integer" );
+            version.setAttribute( CFConstants.VersionDataType.HBM_KEY, CFConstants.VersionDataType.INTEGER );
 
         // unsavedValue
-        str = toString( cfc, prop, meta, "unsavedValue", data );
+        str = toString( cfc, prop, meta, CFConstants.VersionUnsavedValue.ATTRIBUTE_NAME, data );
         if ( !Util.isEmpty( str, true ) ) {
             str = str.trim().toLowerCase();
-            if ( "null".equals( str ) || "negative".equals( str ) || "undefined".equals( str ) )
-                version.setAttribute( "unsaved-value", str );
+            if ( CFConstants.VersionUnsavedValue.isValidValue(str) )
+                version.setAttribute( CFConstants.VersionUnsavedValue.HBM_KEY, str );
             else
-                throw invalidValue( cfc, prop, "unsavedValue", str, "null, negative, undefined", data );
+                throw invalidValue( cfc, prop, CFConstants.VersionUnsavedValue.ATTRIBUTE_NAME, str, CFConstants.VersionUnsavedValue.getPossibleValues().toString(), data );
         }
     }
 
