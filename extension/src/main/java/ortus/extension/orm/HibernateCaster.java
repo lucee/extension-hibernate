@@ -14,6 +14,7 @@ import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
 import ortus.extension.orm.mapping.HBMCreator;
+import ortus.extension.orm.mapping.CFConstants;
 import ortus.extension.orm.util.CommonUtil;
 import ortus.extension.orm.util.ExceptionUtil;
 import ortus.extension.orm.util.HibernateUtil;
@@ -605,7 +606,7 @@ public class HibernateCaster {
                 if ( obj instanceof Struct ) {
                     sct       = ( Struct ) obj;
                     fieldType = CommonUtil.toString( sct.get( CommonUtil.FIELDTYPE, null ), null );
-                    if ( HBMCreator.Relationships.isRelationshipType(fieldType)){
+                    if ( CFConstants.Relationships.isRelationshipType(fieldType)){
                         continue;
                     }
 

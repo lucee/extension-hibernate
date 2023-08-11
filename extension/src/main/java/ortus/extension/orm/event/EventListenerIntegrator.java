@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 
 import ortus.extension.orm.HibernateCaster;
 import ortus.extension.orm.mapping.HBMCreator;
+import ortus.extension.orm.mapping.CFConstants;
 import ortus.extension.orm.util.CommonUtil;
 
 import lucee.loader.engine.CFMLEngine;
@@ -429,6 +430,6 @@ public class EventListenerIntegrator
     private boolean isRelationshipField( Property prop ){
         Struct meta = (Struct) prop.getMetaData();
         String fieldType = CommonUtil.toString( meta.get( CommonUtil.FIELDTYPE, null ), null );
-        return fieldType != null && HBMCreator.Relationships.isRelationshipType(fieldType);
+        return fieldType != null && CFConstants.Relationships.isRelationshipType(fieldType);
     }
 }

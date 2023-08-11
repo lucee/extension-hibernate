@@ -29,6 +29,7 @@ import ortus.extension.orm.util.ExceptionUtil;
 import ortus.extension.orm.util.HibernateUtil;
 import ortus.extension.orm.util.ORMConfigurationUtil;
 import ortus.extension.orm.util.XMLUtil;
+
 import lucee.runtime.type.Struct;
 import lucee.commons.io.res.Resource;
 
@@ -496,16 +497,16 @@ public class HBMCreator {
         int count = 0;
         for ( int y = 0; y < props.length; y++ ) {
             String fieldType = CommonUtil.toString( props[ y ].getDynamicAttributes().get( FIELDTYPE, "column" ), "column" );
-            if ( Relationships.ONE_TO_ONE.equalsIgnoreCase( fieldType ) ) {
+            if ( CFConstants.Relationships.ONE_TO_ONE.equalsIgnoreCase( fieldType ) ) {
                 createXMLMappingOneToOne( clazz, cfc, props[ y ], data );
                 count++;
-            } else if ( Relationships.MANY_TO_ONE.equalsIgnoreCase( fieldType ) ) {
+            } else if ( CFConstants.Relationships.MANY_TO_ONE.equalsIgnoreCase( fieldType ) ) {
                 createXMLMappingManyToOne( clazz, cfc, props[ y ], propColl, data );
                 count++;
-            } else if ( Relationships.ONE_TO_MANY.equalsIgnoreCase( fieldType ) ) {
+            } else if ( CFConstants.Relationships.ONE_TO_MANY.equalsIgnoreCase( fieldType ) ) {
                 createXMLMappingOneToMany( dc, cfc, propColl, clazz, props[ y ], data );
                 count++;
-            } else if ( Relationships.MANY_TO_MANY.equalsIgnoreCase( fieldType ) ) {
+            } else if ( CFConstants.Relationships.MANY_TO_MANY.equalsIgnoreCase( fieldType ) ) {
                 createXMLMappingManyToMany( dc, cfc, propColl, clazz, pc, props[ y ], data );
                 count++;
             }
@@ -673,7 +674,7 @@ public class HBMCreator {
             // do not add "key-property" for many-to-one
             meta      = prop.getDynamicAttributes();
             fieldType = toString( cfc, prop, meta, "fieldType", data );
-            if ( CommonUtil.listFindNoCaseIgnoreEmpty( fieldType, Relationships.MANY_TO_ONE, ',' ) != -1 )
+            if ( CommonUtil.listFindNoCaseIgnoreEmpty( fieldType, CFConstants.Relationships.MANY_TO_ONE, ',' ) != -1 )
                 continue;
 
             Element key = doc.createElement( "key-property" );
@@ -710,7 +711,7 @@ public class HBMCreator {
             prop      = props[ y ];
             meta      = prop.getDynamicAttributes();
             fieldType = toString( cfc, prop, meta, "fieldType", data );
-            if ( CommonUtil.listFindNoCaseIgnoreEmpty( fieldType, Relationships.MANY_TO_ONE, ',' ) == -1 )
+            if ( CommonUtil.listFindNoCaseIgnoreEmpty( fieldType, CFConstants.Relationships.MANY_TO_ONE, ',' ) == -1 )
                 continue;
 
             Element key = doc.createElement( "key-many-to-one" );
@@ -1088,7 +1089,7 @@ public class HBMCreator {
         if ( !Util.isEmpty( linkTable, true ) || !Util.isEmpty( fkcolumn, true ) ) {
             clazz = getJoin( clazz );
 
-            x2o   = doc.createElement( Relationships.MANY_TO_ONE );
+            x2o   = doc.createElement( CFConstants.Relationships.MANY_TO_ONE );
             x2o.setAttribute( "unique", "true" );
 
             if ( !Util.isEmpty( linkTable, true ) ) {
@@ -1123,7 +1124,7 @@ public class HBMCreator {
                 x2o.setAttribute( "not-found", "ignore" );
 
         } else {
-            x2o = doc.createElement( Relationships.ONE_TO_ONE );
+            x2o = doc.createElement( CFConstants.Relationships.ONE_TO_ONE );
         }
         clazz.appendChild( x2o );
 
@@ -1334,7 +1335,7 @@ public class HBMCreator {
         Element el = createXMLMappingXToMany( propColl, clazz, cfc, prop, data );
         Struct meta = prop.getDynamicAttributes();
         Document doc = XMLUtil.getDocument( clazz );
-        Element m2m = doc.createElement( Relationships.MANY_TO_MANY );
+        Element m2m = doc.createElement( CFConstants.Relationships.MANY_TO_MANY );
         el.appendChild( m2m );
 
         // link
@@ -1366,7 +1367,7 @@ public class HBMCreator {
                     m = _props[ i ].getDynamicAttributes();
                     // fieldtype
                     String fieldtype = CommonUtil.toString( m.get( FIELDTYPE, null ), null );
-                    if ( Relationships.MANY_TO_MANY.equalsIgnoreCase( fieldtype ) ) {
+                    if ( CFConstants.Relationships.MANY_TO_MANY.equalsIgnoreCase( fieldtype ) ) {
                         // linktable
                         String currLinkTable = CommonUtil.toString( meta.get( LINK_TABLE, null ), null );
                         String othLinkTable = CommonUtil.toString( m.get( LINK_TABLE, null ), null );
@@ -1442,13 +1443,13 @@ public class HBMCreator {
 
         // link
         if ( setLink( dc, cfc, prop, el, meta, false, data ) ) {
-            x2m = doc.createElement( Relationships.MANY_TO_MANY );
+            x2m = doc.createElement( CFConstants.Relationships.MANY_TO_MANY );
             x2m.setAttribute( "unique", "true" );
 
             str = toString( cfc, prop, meta, "inversejoincolumn", data );
             setColumn( doc, x2m, str, data );
         } else {
-            x2m = doc.createElement( Relationships.ONE_TO_MANY );
+            x2m = doc.createElement( CFConstants.Relationships.ONE_TO_MANY );
         }
         el.appendChild( x2m );
 
@@ -1565,10 +1566,10 @@ public class HBMCreator {
         Struct meta = prop.getDynamicAttributes();
         String type = toString( cfc, prop, meta, "fieldtype", false, data );
         String otherType;
-        if ( Relationships.MANY_TO_ONE.equalsIgnoreCase( type ) )
-            otherType = Relationships.ONE_TO_MANY;
-        else if ( Relationships.ONE_TO_MANY.equalsIgnoreCase( type ) )
-            otherType = Relationships.MANY_TO_ONE;
+        if ( CFConstants.Relationships.MANY_TO_ONE.equalsIgnoreCase( type ) )
+            otherType = CFConstants.Relationships.ONE_TO_MANY;
+        else if ( CFConstants.Relationships.ONE_TO_MANY.equalsIgnoreCase( type ) )
+            otherType = CFConstants.Relationships.MANY_TO_ONE;
         else
             return createM2MFKColumnName( cfc, prop, propColl, data );
 
@@ -1697,7 +1698,7 @@ public class HBMCreator {
         Document doc = XMLUtil.getDocument( clazz );
         clazz = getJoin( clazz );
 
-        Element m2o = doc.createElement( Relationships.MANY_TO_ONE );
+        Element m2o = doc.createElement( CFConstants.Relationships.MANY_TO_ONE );
         clazz.appendChild( m2o );
 
         // columns
@@ -1827,7 +1828,7 @@ public class HBMCreator {
 
             // <!ATTLIST many-to-one lazy (false|proxy|no-proxy) #IMPLIED>
             // <!ATTLIST one-to-one lazy (false|proxy|no-proxy) #IMPLIED>
-            if ( Relationships.MANY_TO_ONE.equals( name ) || Relationships.ONE_TO_ONE.equals( name ) ) {
+            if ( CFConstants.Relationships.MANY_TO_ONE.equals( name ) || CFConstants.Relationships.ONE_TO_ONE.equals( name ) ) {
                 if ( b != null )
                     x2x.setAttribute( "lazy", b.booleanValue() ? "proxy" : "false" );
                 else if ( "proxy".equalsIgnoreCase( str ) )
@@ -1840,7 +1841,7 @@ public class HBMCreator {
 
             // <!ATTLIST many-to-many lazy (false|proxy) #IMPLIED>
             // <!ATTLIST key-many-to-one lazy (false|proxy) #IMPLIED>
-            else if ( Relationships.MANY_TO_MANY.equals( name ) || "key-many-to-one".equals( name ) ) {
+            else if ( CFConstants.Relationships.MANY_TO_MANY.equals( name ) || "key-many-to-one".equals( name ) ) {
                 if ( b != null )
                     x2x.setAttribute( "lazy", b.booleanValue() ? "proxy" : "false" );
                 else if ( "proxy".equalsIgnoreCase( str ) )

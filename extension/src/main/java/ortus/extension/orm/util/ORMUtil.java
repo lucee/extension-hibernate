@@ -29,6 +29,7 @@ import lucee.runtime.db.DataSource;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.type.Collection.Key;
 import ortus.extension.orm.mapping.HBMCreator;
+import ortus.extension.orm.mapping.CFConstants;
 import lucee.runtime.type.Struct;
 import lucee.loader.util.Util;
 
@@ -133,7 +134,7 @@ public class ORMUtil {
         if ( Util.isEmpty( fieldType, true ) )
             return false;
 
-        return HBMCreator.Relationships.isRelationshipType(fieldType.toLowerCase().trim());
+        return CFConstants.Relationships.isRelationshipType(fieldType.toLowerCase().trim());
     }
 
     public static Struct convertToSimpleMap( String paramsStr ) {
