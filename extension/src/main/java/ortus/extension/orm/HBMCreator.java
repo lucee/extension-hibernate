@@ -916,6 +916,14 @@ public class HBMCreator {
         } else if ( "sequence".equals( className ) && !sct.containsKey( SEQUENCE ) ) {
             sct.setEL( SEQUENCE, toString( cfc, prop, meta, "sequence", true, data ) );
         }
+        /**
+         * @TODO: Add `sequence-indentity` support
+         * ```
+         *  else if ( "sequence-indentity".equals( className ) && !sct.containsKey( SEQUENCE_IDENTITY ) ) {
+                sct.setEL( SEQUENCE_IDENTITY, toString( cfc, prop, meta, "sequence-indentity", true, data ) );
+            }
+         * ```
+         */
 
         Iterator<Entry<Key, Object>> it = sct.entryIterator();
         Entry<Key, Object> e;
