@@ -1,4 +1,4 @@
-package ortus.extension.orm;
+package ortus.extension.orm.mapping;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +21,9 @@ import lucee.runtime.db.DatasourceConnection;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
-
+import ortus.extension.orm.ColumnInfo;
+import ortus.extension.orm.HibernateCaster;
+import ortus.extension.orm.SessionFactoryData;
 import ortus.extension.orm.util.CommonUtil;
 import ortus.extension.orm.util.ExceptionUtil;
 import ortus.extension.orm.util.HibernateUtil;

@@ -45,8 +45,8 @@ import org.hibernate.service.spi.SessionFactoryServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ortus.extension.orm.HBMCreator;
 import ortus.extension.orm.HibernateCaster;
+import ortus.extension.orm.mapping.HBMCreator;
 import ortus.extension.orm.util.CommonUtil;
 
 import lucee.loader.engine.CFMLEngine;
