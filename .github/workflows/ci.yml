@@ -35,6 +35,9 @@ jobs:
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
     steps:
       - uses: actions/checkout@v3
+        with:
+          # We need a Personal Access Token (configured in repo secrets) in order to trigger actions downstream
+          token: $${{ secrets.GH_TOKEN }}
 
       - name: Set up JDK
         uses: actions/setup-java@v3
