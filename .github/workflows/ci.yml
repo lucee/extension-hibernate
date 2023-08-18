@@ -72,7 +72,6 @@ jobs:
           tag: ${{ env.EXTENSION_VERSION }}
 
       - name: Commit Changelog
-        if: env.SNAPSHOT == 'false'
         uses: EndBug/add-and-commit@v9.1.1
         if: "steps.changelog_check.outputs.HAS_VERSION == 'false' && !env.SNAPSHOT"
         with:
