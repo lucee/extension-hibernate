@@ -7,13 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.3.0] - 2023-08-18
+
 ### 🔐 Security
 
-Switched the [EHCache](https://mvnrepository.com/artifact/net.sf.ehcache/ehcache/2.10.6) library to use [net.sf.ehcache.internal:ehcache-core](https://mvnrepository.com/artifact/net.sf.ehcache.internal/ehcache-core/2.10.9.2), version `2.10.9.2`. This removes the `rest-management-private-classpath` directory, which embedded a number of (unused) vulnerable libraries such as jackson-core.
+Switched the [EHCache](https://mvnrepository.com/artifact/net.sf.ehcache/ehcache/2.10.6) library to use [net.sf.ehcache.internal:ehcache-core](https://mvnrepository.com/artifact/net.sf.ehcache.internal/ehcache-core/2.10.9.2).
 
-As an added bonus, this reduces the final `.lex` extension file size by over 6 MB. 🎉
+* Upgrades EHCache version from `2.10.6` to `2.10.9.2`.
+* Drops an embedded `rest-management-private-classpath` directory
+* Drops a number of (unused) vulnerable jackson and jetty libraries such as jackson-core.
+* As an added bonus, this reduces the final `.lex` extension file size by over 6 MB. 🎉
 
-**Note:** While it is not 100% clear, [these vulnerabilities may be false positives](https://github.com/jeremylong/DependencyCheck/issues/517).
+**Note:** While it is not 100% clear, [some of these CVEs may have been false positives](https://github.com/jeremylong/DependencyCheck/issues/517).
 
 ## [6.2.0] - 2023-08-03
 
