@@ -44,7 +44,10 @@ public class CFCGetter implements Getter {
             Object rtn = cfc.getComponentScope().get( key, null );
             return HibernateCaster.toSQL( type, rtn, null );
         } catch ( PageException pe ) {
-            throw new HibernatePageException( pe );
+            throw new HibernatePageException(
+                String.format( "Unable to cast to SQL type for property [%s] on CFC [%s]", this.key.getString(), trg.getClass().getName() ),
+                 pe
+            );
         }
     }
 
