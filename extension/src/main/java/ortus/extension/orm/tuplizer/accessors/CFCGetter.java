@@ -45,7 +45,7 @@ public class CFCGetter implements Getter {
             return HibernateCaster.toSQL( type, rtn, null );
         } catch ( PageException pe ) {
             throw new HibernatePageException(
-                String.format( "Unable to cast to SQL type for property [%s] on CFC [%s]", this.key.getString(), trg.getClass().getName() ),
+                String.format( "Unable to cast to SQL type for property [%s] on CFC [%s]: %s", this.key.getString(), trg.getClass().getName(), pe.getMessage() ),
                  pe
             );
         }
