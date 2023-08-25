@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### ⭐ Added
+
+Added context to the error message in `CFCGetter`, which handles retrieving entity values from Hibernate code. This improves odd error messages in some edge cases with the Hibernate tuplizer.
+
 ## [6.3.0] - 2023-08-18
 
 ### 🔐 Security
