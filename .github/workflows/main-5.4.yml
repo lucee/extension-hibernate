@@ -30,13 +30,13 @@ jobs:
       with:
         path: ~/.m2
         key: lucee-script-runner-maven-cache
+        enableCrossOsArchive: true
     - name: Cache Lucee files
       uses: actions/cache@v3
       with:
-        path: _actions/lucee/script-runner/main/lucee-download-cache
-        key: lucee-downloads-${{ env.luceeVersion }}
-        restore-keys: |
-          lucee-downloads
+        path: ~/work/_actions/lucee/script-runner/main/lucee-download-cache
+        key: lucee-downloads
+        enableCrossOsArchive: true
     - name: Build with Ant
       run: ant -noinput -verbose -buildfile build.xml
     - name: Upload Artifact
@@ -55,6 +55,7 @@ jobs:
         webroot: ${{ github.workspace }}/lucee/test
         execute: /bootstrap-tests.cfm
         luceeVersion: ${{ env.luceeVersion }}
+        luceeVersionQuery: ${{ env.luceeVersionQuery }}
         extensionDir: ${{ github.workspace }}/dist
         extensions:
       env:
