@@ -37,7 +37,7 @@ public class ORMReload extends BIF {
 
         // flush and close session
         ORMSession session = ORMUtil.getSession( pc, false );
-        if ( session != null ) {// MUST do the same with all sesson using the same engine
+        if ( session != null ) {// @TODO: do the same with all sesson using the same engine
             ORMConfiguration config = session.getEngine().getConfiguration( pc );
             if ( config.autoManageSession() ) {
                 session.flushAll( pc );

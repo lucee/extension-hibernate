@@ -54,7 +54,7 @@ public class CFCGetter implements Getter {
     @Override
     @SuppressWarnings("rawtypes")
     public Object getForInsert( Object trg, Map map, SharedSessionContractImplementor ssci ) {
-        return get( trg );// MUST better solution? this is from MapGetter
+        return get( trg );// @TODO: better solution? this is from MapGetter
     }
 
     @Override
@@ -69,13 +69,13 @@ public class CFCGetter implements Getter {
 
     @Override
     public String getMethodName() {
-        return null;// MUST macht es sinn den namen zurueck zu geben?
+        return null;// @TODO: macht es sinn den namen zurueck zu geben?
     }
 
     @Override
     @SuppressWarnings("rawtypes")
     public Class getReturnType() {
-        return Object.class;// MUST more concrete?
+        return Object.class;// @TODO: more concrete?
     }
 
 }

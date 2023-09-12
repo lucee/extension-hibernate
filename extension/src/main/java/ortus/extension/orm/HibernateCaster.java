@@ -91,7 +91,7 @@ public class HibernateCaster {
 
     private static String getName( Component cfc ) {
         String name = null;
-        // MUSTMUST cfc.getName() should return the real case, this should not be needed
+        // @TODO: cfc.getName() should return the real case, this should not be needed
         name = cfc.getPageSource().getDisplayPath();
         name = CommonUtil.last( name, "\\/" );
         int index = name.lastIndexOf( '.' );
@@ -671,7 +671,7 @@ public class HibernateCaster {
             String entityName ) throws PageException {
         if ( getEntityName( child ).equalsIgnoreCase( entityName ) )
             return populateQuery( pc, session, child, qry );
-        return inheritance( pc, session, child, qry, entityName );// MUST geh ACF auch so tief?
+        return inheritance( pc, session, child, qry, entityName );// @TODO: geh ACF auch so tief?
     }
 
     public static Component toComponent( Object obj ) throws PageException {

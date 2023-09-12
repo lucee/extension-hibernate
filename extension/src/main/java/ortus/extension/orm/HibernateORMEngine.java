@@ -337,7 +337,7 @@ public class HibernateORMEngine implements ORMEngine {
 
     @Override
     public int getMode() {
-        // MUST impl
+        // @TODO: implement
         return MODE_LAZY;
     }
 

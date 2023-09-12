@@ -230,7 +230,7 @@ public class HibernateUtil {
                     p.getDynamicAttributes().setEL( CommonUtil.FIELDTYPE, "id" );
             }
 
-            // MUST foreign-key relation
+            // @TODO: foreign-key relation
 
         } catch ( Throwable t ) {
             if ( t instanceof ThreadDeath )

@@ -137,7 +137,7 @@ public class HBMCreator {
         Element hibernateMapping = doc.createElement( "hibernate-mapping" );
         doc.appendChild( hibernateMapping );
 
-        // MUST Support for embeded objects
+        // @TODO: Support for embeded objects
         Struct meta = cfc.getMetaData( pc );
 
         String extend = cfc.getExtends();
@@ -1080,7 +1080,7 @@ public class HBMCreator {
     }
 
     /*
-     * MUST dies kommt aber nicht hier sondern in verarbeitung in component <cfproperty persistent="true|false" >
+     * @TODO: dies kommt aber nicht hier sondern in verarbeitung in component <cfproperty persistent="true|false" >
      */
     private static void createXMLMappingOneToOne( Element clazz, Component cfc, Property prop,
             SessionFactoryData data ) throws PageException {
@@ -1503,7 +1503,7 @@ public class HBMCreator {
             if ( !Util.isEmpty( str, true ) )
                 mapKey.setAttribute( "type", str );
             else
-                mapKey.setAttribute( "type", "string" );// MUST get type dynamicly
+                mapKey.setAttribute( "type", "string" );// @TODO: get type dynamicly
         } else
             throw invalidValue( cfc, prop, CFConstants.CollectionType.ATTRIBUTE_NAME, str, CFConstants.CollectionType.getPossibleValues().toString(), data );
 
