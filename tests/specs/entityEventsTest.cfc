@@ -4,7 +4,10 @@ component extends="testbox.system.BaseSpec" {
 		describe( "entity event listeners()", () => {
 			describe( "preInsert", () => {
 				it( "runs preInsert on ORMFlush to change and persist entity state", () => {
-					var newCar = entityNew( "Auto", { id : createUUID(), make : "BMW" } );
+					var newCar = entityNew( "Auto", {
+						id : createUUID(),
+						make : "BMW"
+					} );
 					expect( newCar.getInserted() ).toBeFalse();
 					entitySave( newCar );
 					expect( newCar.getInserted() ).toBeFalse();
@@ -21,7 +24,12 @@ component extends="testbox.system.BaseSpec" {
 				 * See https://ortussolutions.atlassian.net/browse/OOE-9
 				 */
 				it( "OOE-9 - runs preInsert on ormFlush and persists date value state changes", () => {
-					var theUser = entityNew( "User", { id : createUUID(), name : "Julian" } );
+					var theUser = entityNew( "User", {
+						id : createUUID(),
+						name : "Julian",
+						username: "jwell",
+						password: "CF4Life"
+					} );
 					expect( theUser.getDateCreated() ).toBeNull();
 					entitySave( theUser );
 					expect( theUser.getDateCreated() ).toBeNull();
@@ -32,10 +40,30 @@ component extends="testbox.system.BaseSpec" {
 					entityReload( theUser );
 					expect( theUser.getDateCreated() ).notToBeNull( "persisted value should be todays date" );
 				});
+
+				it( "OOE-12 - still does nullability validation", () => {
+					var theUser = entityNew( "User", {
+						id : createUUID(),
+						name : "Julian",
+						// omit username field
+						// and pass an explicit null
+						password: nullValue()
+					} );
+					expect( () => {
+						entitySave( theUser );
+						ormFlush();
+					}).toThrow(); // Sadly, we can't catch "org.hibernate.exception.ConstraintViolationException"
+					ormEvictEntity( "User" );
+					ormClearSession();
+				});
 			});
+
 			describe( "preUpdate", () => {
 				it( "runs preUpdate on ORMFlush to change and persist entity state", () => {
-					var newCar = entityNew( "Auto", { id : createUUID(), make : "Audi" } );
+					var newCar = entityNew( "Auto", {
+						id : createUUID(),
+						make : "Audi"
+					} );
 					expect( newCar.getUpdated() ).toBeFalse();
 					entitySave( newCar );
 					ormFlush();
@@ -57,7 +85,12 @@ component extends="testbox.system.BaseSpec" {
 				 * See https://ortussolutions.atlassian.net/browse/OOE-9
 				 */
 				it( "OOE-9 - runs preUpdate on ormFlush and persists date value state changes", () => {
-					var theUser = entityNew( "User", { id : createUUID(), name : "Julian" } );
+					var theUser = entityNew( "User", {
+						id : createUUID(),
+						name    : "Julian",
+						username: "jwell",
+						password: "CF4Life"
+					} );
 					entitySave( theUser );
 					ormFlush();
 					entityReload( theUser );
@@ -73,6 +106,27 @@ component extends="testbox.system.BaseSpec" {
 	
 					entityReload( theUser );
 					expect( theUser.getDateUpdated() ).notToBeNull( "persisted value should be todays date" );
+				});
+
+				it( "OOE-12 - still does nullability validation", () => {
+					var theUser = entityNew( "User", {
+						id : createUUID(),
+						name    : "Julian",
+						username: "jwell",
+						password: "CF4Life"
+					} );
+					entitySave( theUser );
+					ormFlush();
+					entityReload( theUser );
+					expect( theUser.getDateUpdated() ).toBeNull();
+					theUser.setUsername( nullValue() );
+					
+					expect( () => {
+						entitySave( theUser );
+						ormFlush();
+					}).toThrow(); // Sadly, we can't catch "org.hibernate.exception.ConstraintViolationException"
+					ormEvictEntity( "User" );
+					ormClearSession();
 				});
 			});
 		} );
