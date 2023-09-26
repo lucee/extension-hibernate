@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.3.1] - 2023-09-26
+
 ### 🐛 Fixed
 
-Refactored nullability checks to occur *after* pre-event listener methods fire. Resolves [OOE-12](https://ortussolutions.atlassian.net/browse/OOE-12)
+Refactored nullability checks to occur _after_ pre-event listener methods fire. Resolves [OOE-12](https://ortussolutions.atlassian.net/browse/OOE-12)
 
 ### ⭐ Added
 
@@ -21,10 +23,10 @@ Added context to the error message in `CFCGetter`, which handles retrieving enti
 
 Switched the [EHCache](https://mvnrepository.com/artifact/net.sf.ehcache/ehcache/2.10.6) library to use [net.sf.ehcache.internal:ehcache-core](https://mvnrepository.com/artifact/net.sf.ehcache.internal/ehcache-core/2.10.9.2).
 
-* Upgrades EHCache version from `2.10.6` to `2.10.9.2`.
-* Drops an embedded `rest-management-private-classpath` directory
-* Drops a number of (unused) vulnerable jackson and jetty libraries such as jackson-core.
-* As an added bonus, this reduces the final `.lex` extension file size by over 6 MB. 🎉
+-   Upgrades EHCache version from `2.10.6` to `2.10.9.2`.
+-   Drops an embedded `rest-management-private-classpath` directory
+-   Drops a number of (unused) vulnerable jackson and jetty libraries such as jackson-core.
+-   As an added bonus, this reduces the final `.lex` extension file size by over 6 MB. 🎉
 
 **Note:** While it is not 100% clear, [some of these CVEs may have been false positives](https://github.com/jeremylong/DependencyCheck/issues/517).
 
@@ -34,12 +36,12 @@ Switched the [EHCache](https://mvnrepository.com/artifact/net.sf.ehcache/ehcache
 
 #### Hibernate Upgraded from 5.4 to 5.6
 
-This brings the Hibernate dependencies up to date (released Feb. 2023), and should not change any CFML-facing features for *most* users. (See [CLOB columns in Postgres81](#clob-columns-in-postgres81))
+This brings the Hibernate dependencies up to date (released Feb. 2023), and should not change any CFML-facing features for _most_ users. (See [CLOB columns in Postgres81](#clob-columns-in-postgres81))
 
 See the migration guides for more info:
 
-* [Hibernate 5.4 -> 5.4 migration guide](https://github.com/hibernate/hibernate-orm/blob/5.5/migration-guide.adoc)
-* [Hibernate 5.5 -> 5.6 migration guide](https://github.com/hibernate/hibernate-orm/blob/5.6/migration-guide.adoc)
+-   [Hibernate 5.4 -> 5.4 migration guide](https://github.com/hibernate/hibernate-orm/blob/5.5/migration-guide.adoc)
+-   [Hibernate 5.5 -> 5.6 migration guide](https://github.com/hibernate/hibernate-orm/blob/5.6/migration-guide.adoc)
 
 #### CLOB columns in Postgres81
 
@@ -51,8 +53,8 @@ The default `ehcache.xml` for EHCache changed to include [`clearOnFlush="true"`]
 
 ### 🐛 Fixed
 
-* Fixes handling of `"timezone"`-typed column values. Previously, fields defined with `ormtype="timezone"` would neither use the `default` value nor allow new values to be set. [OOE-10](https://ortussolutions.atlassian.net/browse/OOE-10)
-* Fixes entity state changes in `preInsert()`/`preUpdate()` listeners for properties with no `default` defined. [OOE-9](https://ortussolutions.atlassian.net/browse/OOE-9)
+-   Fixes handling of `"timezone"`-typed column values. Previously, fields defined with `ormtype="timezone"` would neither use the `default` value nor allow new values to be set. [OOE-10](https://ortussolutions.atlassian.net/browse/OOE-10)
+-   Fixes entity state changes in `preInsert()`/`preUpdate()` listeners for properties with no `default` defined. [OOE-9](https://ortussolutions.atlassian.net/browse/OOE-9)
 
 ## [6.1.0] - 2023-07-14
 
@@ -193,7 +195,10 @@ See [OOE-3](https://ortussolutions.atlassian.net/browse/OOE-3).
 
 [6.0.0]: https://github.com/Ortus-Solutions/extension-hibernate/compare/b86f26e383ead941d18791e2e008cb62b2598cdc...v6.0.0
 
-[Unreleased]: https://github.com/Ortus-Solutions/extension-hibernate/compare/v6.1.0...HEAD
+[Unreleased]: https://github.com/Ortus-Solutions/extension-hibernate/compare/6.3.1...HEAD
+
+[6.3.1]: https://github.com/Ortus-Solutions/extension-hibernate/compare/HEAD...6.3.1
 
 [6.1.0]: https://github.com/Ortus-Solutions/extension-hibernate/compare/v6.1.0...v6.2.0
+
 [6.1.0]: https://github.com/Ortus-Solutions/extension-hibernate/compare/2c540a96f2a87145fda2f651a000f041b166b543...v6.1.0
