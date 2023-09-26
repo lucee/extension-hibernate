@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import org.hibernate.HibernateException;
 import org.hibernate.boot.Metadata;
+import org.hibernate.engine.internal.Nullability;
+import org.hibernate.engine.internal.Nullability.NullabilityCheckType;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.AbstractEvent;
@@ -153,8 +155,13 @@ public class EventListenerIntegrator
         fireOnEntity( event.getEntity(), EventListenerIntegrator.PRE_INSERT, event, null );
 
         Component entity = CommonUtil.toComponent( event.getEntity(), null );
+        Object[] stateValues = event.getState();
         if ( entity != null )
-            persistEntityChangesToState( event.getState(), propertyNames, entity );
+            persistEntityChangesToState( stateValues, propertyNames, entity );
+
+        new Nullability(event.getSession())
+            .checkNullability(stateValues, event.getPersister(), NullabilityCheckType.CREATE);
+        
         return false;
     }
 
@@ -191,8 +198,11 @@ public class EventListenerIntegrator
 
         fireOnEntity( event.getEntity(), EventListenerIntegrator.PRE_UPDATE, event, oldState );
         Component entity = CommonUtil.toComponent( event.getEntity(), null );
+        Object[] stateValues = event.getState();
         if ( entity != null )
-            persistEntityChangesToState( event.getState(), propertyNames, entity );
+            persistEntityChangesToState( stateValues, propertyNames, entity );
+        new Nullability(event.getSession())
+            .checkNullability(stateValues, event.getPersister(), NullabilityCheckType.CREATE);
         return false;
     }
 

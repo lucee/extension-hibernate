@@ -124,6 +124,12 @@ public class ConfigurationBuilder {
                         datasourceCreds.get( "PASSWORD" ) ) );
             }
 
+            /**
+             * Disable Hibernate's nullability check which prevents the onPreInsert() from firing...
+             * then manually run a nullability check from the event handler.
+             */
+            configuration.setProperty( AvailableSettings.CHECK_NULLABILITY, "false" );
+
             addProperty( AvailableSettings.CONNECTION_PROVIDER, this.connectionProvider );
         }
 
