@@ -20,8 +20,14 @@ component persistent="true" cacheUse="read-write" {
 
 	function preInsert(){
 		setDateCreated( now() );
+		if ( isNull( getPassword() ) ){
+			setPassword( createUUID() );
+		}
 	}
 	function preUpdate(){
 		setDateUpdated( now() );
+		if ( isNull( getPassword() ) ){
+			setPassword( createUUID() );
+		}
 	}
 }

@@ -41,16 +41,37 @@ component extends="testbox.system.BaseSpec" {
 					expect( theUser.getDateCreated() ).notToBeNull( "persisted value should be todays date" );
 				});
 
-				it( "OOE-12 - still does nullability validation", () => {
+				it( "OOE-12 - can auto-update notnull password from preInsert", () => {
 					var theUser = entityNew( "User", {
 						id : createUUID(),
 						name : "Julian",
-						// omit username field
-						// and pass an explicit null
-						password: nullValue()
+						username: "jwell"
 					} );
 					expect( () => {
 						entitySave( theUser );
+						/**
+						 * here's where the preInsert() should execute,
+						 * detect a null password,
+						 * update the password,
+						 * and NOT throw a null constraint violation.
+						 */
+						ormFlush();
+					}).notToThrow(); // Sadly, we can't catch "org.hibernate.exception.ConstraintViolationException"
+					ormEvictEntity( "User" );
+					ormClearSession();
+				});
+				it( "OOE-12 - still throws on null username", () => {
+					var theUser = entityNew( "User", {
+						id : createUUID(),
+						name : "Julian"
+					} );
+					expect( () => {
+						entitySave( theUser );
+						/**
+						 * here's where the preInsert() should execute,
+						 * complete normally without touching the username,
+						 * and throw a null constraint violation because a notnull field is null.
+						 */
 						ormFlush();
 					}).toThrow(); // Sadly, we can't catch "org.hibernate.exception.ConstraintViolationException"
 					ormEvictEntity( "User" );
@@ -108,7 +129,33 @@ component extends="testbox.system.BaseSpec" {
 					expect( theUser.getDateUpdated() ).notToBeNull( "persisted value should be todays date" );
 				});
 
-				it( "OOE-12 - still does nullability validation", () => {
+				it( "OOE-12 - can auto-update notnull password from preUpdate", () => {
+					var theUser = entityNew( "User", {
+						id : createUUID(),
+						name    : "Julian",
+						username: "jwell",
+						password: "CF4Life"
+					} );
+					entitySave( theUser );
+					ormFlush();
+					entityReload( theUser );
+					expect( theUser.getDateUpdated() ).toBeNull();
+					theUser.setPassword( nullValue() );
+					
+					expect( () => {
+						entitySave( theUser );
+						/**
+						 * here's where the preUpdate() should execute,
+						 * detect a null password,
+						 * update the password,
+						 * and NOT throw a null constraint violation.
+						 */
+						ormFlush();
+					}).notToThrow(); // Sadly, we can't catch "org.hibernate.exception.ConstraintViolationException"
+					ormEvictEntity( "User" );
+					ormClearSession();
+				});
+				it( "OOE-12 - still throws on null username", () => {
 					var theUser = entityNew( "User", {
 						id : createUUID(),
 						name    : "Julian",
@@ -122,6 +169,11 @@ component extends="testbox.system.BaseSpec" {
 					theUser.setUsername( nullValue() );
 					
 					expect( () => {
+						/**
+						 * here's where the preUpdate() should execute,
+						 * complete normally without touching the username,
+						 * and throw a null constraint violation because a notnull field is null.
+						 */
 						entitySave( theUser );
 						ormFlush();
 					}).toThrow(); // Sadly, we can't catch "org.hibernate.exception.ConstraintViolationException"
