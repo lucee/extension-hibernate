@@ -193,12 +193,12 @@ See [OOE-3](https://ortussolutions.atlassian.net/browse/OOE-3).
 -   Better build/test documentation
 -   Improved maintenance and build docs
 
-[6.0.0]: https://github.com/Ortus-Solutions/extension-hibernate/compare/b86f26e383ead941d18791e2e008cb62b2598cdc...v6.0.0
+[Unreleased]: https://github.com/Ortus-Solutions/extension-hibernate/compare/v6.3.1...HEAD
 
-[Unreleased]: https://github.com/Ortus-Solutions/extension-hibernate/compare/6.3.1...HEAD
+[6.3.1]: https://github.com/Ortus-Solutions/extension-hibernate/compare/v6.3.0...v6.3.1
 
-[6.3.1]: https://github.com/Ortus-Solutions/extension-hibernate/compare/HEAD...6.3.1
+[6.3.0]: https://github.com/Ortus-Solutions/extension-hibernate/compare/v6.2.0...v6.3.0
 
-[6.1.0]: https://github.com/Ortus-Solutions/extension-hibernate/compare/v6.1.0...v6.2.0
+[6.2.0]: https://github.com/Ortus-Solutions/extension-hibernate/compare/v6.1.0...v6.2.0
 
-[6.1.0]: https://github.com/Ortus-Solutions/extension-hibernate/compare/2c540a96f2a87145fda2f651a000f041b166b543...v6.1.0
+[6.1.0]: https://github.com/Ortus-Solutions/extension-hibernate/compare/v6.0.0...v6.1.0
