@@ -409,7 +409,7 @@ public class EventListenerIntegrator
             logger.atDebug().log( String.format( "persisting entity state changes on state properties %s", Arrays.toString(stateProperties) ) );
         }
         try {
-            Property[] properties = entity.getProperties( true, false, false, false );
+            Property[] properties = entity.getProperties( true, true, false, false );
             if ( logger.isDebugEnabled() ){
                 String propNames = Arrays.stream(properties).map( el -> el.getName()).collect(Collectors.joining(","));
                 logger.atDebug().log( String.format( "persisting entity state changes for entity properties %s", propNames ) );
