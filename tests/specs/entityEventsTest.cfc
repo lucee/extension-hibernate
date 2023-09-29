@@ -42,12 +42,12 @@ component extends="testbox.system.BaseSpec" {
 				});
 
 				it( "OOE-12 - can auto-update notnull password from preInsert", () => {
-					var theUser = entityNew( "User", {
-						id : createUUID(),
-						name : "Julian",
-						username: "jwell"
-					} );
 					expect( () => {
+						var theUser = entityNew( "User", {
+							id : createUUID(),
+							name : "Julian",
+							username: "jwell"
+						} );
 						entitySave( theUser );
 						/**
 						 * here's where the preInsert() should execute,
@@ -56,10 +56,11 @@ component extends="testbox.system.BaseSpec" {
 						 * and NOT throw a null constraint violation.
 						 */
 						ormFlush();
-					}).notToThrow(); // Sadly, we can't catch "org.hibernate.exception.ConstraintViolationException"
+					}).notToThrow();
 					ormEvictEntity( "User" );
 					ormClearSession();
 				});
+
 				it( "OOE-12 - still throws on null username", () => {
 					var theUser = entityNew( "User", {
 						id : createUUID(),
@@ -75,6 +76,30 @@ component extends="testbox.system.BaseSpec" {
 						ormFlush();
 					}).toThrow(); // Sadly, we can't catch "org.hibernate.exception.ConstraintViolationException"
 					ormEvictEntity( "User" );
+					ormClearSession();
+				});
+
+				/**
+				 * This tests that the EventsListenerIntegrator
+				 * is properly copying entity mutations to the event.getState() object.
+				 */
+				it( "OOE-14 - can preInsert mutate property on parent entity", () => {
+					expect( () => {
+						var theAdmin = entityNew( "Admin", {
+							id : createUUID(),
+							name : "Julian",
+							username: "jwell"
+						} );
+						entitySave( theAdmin );
+						/**
+						 * here's where the preInsert() should execute on the parent entity,
+						 * detect a null password,
+						 * update the password,
+						 * and NOT throw a null constraint violation.
+						 */
+						ormFlush();
+					}).notToThrow();
+					ormEvictEntity( "Admin" );
 					ormClearSession();
 				});
 			});
@@ -178,6 +203,36 @@ component extends="testbox.system.BaseSpec" {
 						ormFlush();
 					}).toThrow(); // Sadly, we can't catch "org.hibernate.exception.ConstraintViolationException"
 					ormEvictEntity( "User" );
+					ormClearSession();
+				});
+
+				/**
+				 * This tests that the EventsListenerIntegrator
+				 * is properly copying entity mutations to the event.getState() object.
+				 */
+				it( "OOE-14 - can preUpdate mutate property on parent entity", () => {
+					var theAdmin = entityNew( "Admin", {
+						id : createUUID(),
+						name    : "Julian",
+						username: "jwell",
+						password: "CF4Life"
+					} );
+					entitySave( theAdmin );
+					ormFlush();
+					entityReload( theAdmin );
+					expect( theAdmin.getDateUpdated() ).toBeNull();
+					theAdmin.setPassword( nullValue() );
+					expect( () => {
+						entitySave( theAdmin );
+						/**
+						 * here's where the preUpdate() should execute,
+						 * detect a null password,
+						 * update the password,
+						 * and NOT throw a null constraint violation.
+						 */
+						ormFlush();
+					}).notToThrow(); // Sadly, we can't catch "org.hibernate.exception.ConstraintViolationException"
+					ormEvictEntity( "Admin" );
 					ormClearSession();
 				});
 			});
