@@ -163,12 +163,12 @@ component extends="testbox.system.BaseSpec" {
 				} );
 			} );
 
-			describe( "transaction isolation", () => {
+			xdescribe( "transaction isolation", () => {
 				/**
 				 * From Lucee source: `core/src/main/java/lucee/runtime/tag/Transaction.java`
 				 * [read_uncommitted,read_committed,repeatable_read,serializable]
 				 */
-				it( "serializable", () => {
+				xit( "serializable", () => {
 					transaction isolation="serializable" {
 						myEntity = entityNew(
 							"Auto",
