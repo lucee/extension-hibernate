@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.3.2] - 2023-09-29
+
 ### 🐛 Fixed
 
 Fixed pre-event listeners to include parent component properties when checking for entity mutations to persist back to the event entity state. This resolves issues with changes made in `preInsert()`/`preUpdate()` not persisting if the changes are made on a persistent property from a parent component. Resolves [OOE-14](https://ortussolutions.atlassian.net/browse/OOE-14).
@@ -197,7 +199,9 @@ See [OOE-3](https://ortussolutions.atlassian.net/browse/OOE-3).
 -   Better build/test documentation
 -   Improved maintenance and build docs
 
-[Unreleased]: https://github.com/Ortus-Solutions/extension-hibernate/compare/v6.3.1...HEAD
+[Unreleased]: https://github.com/Ortus-Solutions/extension-hibernate/compare/6.3.2...HEAD
+
+[6.3.2]: https://github.com/Ortus-Solutions/extension-hibernate/compare/v6.3.1...6.3.2
 
 [6.3.1]: https://github.com/Ortus-Solutions/extension-hibernate/compare/v6.3.0...v6.3.1
 
