@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 🐛 Fixed
+
+Fixes custom configuration support via `this.ormSettings.ormConfig`.
+
 ## [6.3.2] - 2023-09-29
 
 ### 🐛 Fixed
