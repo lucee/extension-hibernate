@@ -32,6 +32,8 @@ import lucee.loader.engine.CFMLEngine;
  * CFML built-in function to flush the current session.
  */
 public class ORMReload extends BIF {
+    private static final int MIN_ARGUMENTS = 0;
+    private static final int MAX_ARGUMENTS = 0;
 
     public static String call( PageContext pc ) throws PageException {
 
@@ -56,6 +58,6 @@ public class ORMReload extends BIF {
         if ( args.length == 0 )
             return call( pc );
 
-        throw engine.getExceptionUtil().createFunctionException( pc, "ORMReload", 0, 0, args.length );
+        throw engine.getExceptionUtil().createFunctionException( pc, "ORMReload", MIN_ARGUMENTS, MAX_ARGUMENTS, args.length );
     }
 }
