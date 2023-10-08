@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### ⭐ Added
+
+New `ORMQueryExecute()` alias for the `ORMExecuteQuery`. This new alias will behave identically to the `ORMExecuteQuery()` method, but is named consistently with the `queryExecute()` method.
+
 ### 🐛 Fixed
 
 Fixes custom configuration support via `this.ormSettings.ormConfig`.

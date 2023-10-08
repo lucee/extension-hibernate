@@ -42,6 +42,11 @@ import lucee.loader.engine.CFMLEngine;
  */
 public class ORMExecuteQuery extends BIF {
 
+    /**
+     * Used in `ORMQueryExecute()` to ensure that "too many args" error messages have the correct method name.
+     */
+    protected String functionName = "ORMExecuteQuery";
+
     public static Object call( PageContext pc, String hql ) throws PageException {
         return _call( pc, hql, null, false, null );
     }
@@ -121,6 +126,6 @@ public class ORMExecuteQuery extends BIF {
             return call( pc, cast.toString( args[ 0 ] ), args[ 1 ], cast.toBoolean( args[ 2 ], false ), queryOptions );
         }
 
-        throw engine.getExceptionUtil().createFunctionException( pc, "ORMExecuteQuery", 1, 4, args.length );
+        throw engine.getExceptionUtil().createFunctionException( pc, this.functionName, 1, 4, args.length );
     }
 }

@@ -316,6 +316,42 @@ EntitySave(entity, [forceInsert])</description>
 			<type>any</type>
 		</return>
 	</function>
+
+	<!-- ORMQueryExecute -->
+	<function>
+		<name>ORMQueryExecute</name>
+		<class bundle-name="orm-extension">ortus.extension.orm.functions.ORMExecuteQuery</class>
+		<description>Modern alias to ORMExecuteQuery(). Run an HQL query on the default ORM datasource.</description>
+		<argument>
+			<name>hql</name>
+			<type>string</type>
+			<required>yes</required>
+			<description></description>
+		</argument>
+		<argument>
+			<name>paramsOrUnique</name>
+			<alias>params</alias>
+			<type>any</type>
+			<required>no</required>
+			<description></description>
+		</argument>
+		<argument>
+			<name>uniqueOrQueryOptions</name>
+			<alias>unique</alias>
+			<type>any</type>
+			<required>no</required>
+			<description></description>
+		</argument>
+		<argument>
+			<name>queryOptions</name>
+			<type>any</type>
+			<required>no</required>
+			<description></description>
+		</argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
 	<!-- ORMClearSession -->
 	<function>
 		<name>ORMClearSession</name>
