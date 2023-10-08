@@ -48,7 +48,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ortus.extension.orm.HibernateCaster;
-import ortus.extension.orm.mapping.HBMCreator;
 import ortus.extension.orm.mapping.CFConstants;
 import ortus.extension.orm.util.CommonUtil;
 
@@ -425,7 +424,6 @@ public class EventListenerIntegrator
                 if ( property.isPresent() ) {
                     Property theprop = property.get();
                     Object value = entity.getComponentScope().get( CommonUtil.createKey( theprop.getName() ), null );
-                    // Object value = theprop.getValue();
                     if ( value != null ) {
                         state[ n ] = HibernateCaster.toHibernateValue( entity, theprop );
                     }
