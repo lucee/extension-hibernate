@@ -151,6 +151,15 @@ public class HibernateORMSession implements ORMSession {
      */
     private Cast castUtil;
 
+    /**
+     * Constructor
+     * 
+     * Initializes and stores a new Hibernate {@link org.hibernate.Session} for each known datasource.
+     * 
+     * @param pc
+     * @param data
+     * @throws PageException
+     */
     public HibernateORMSession( PageContext pc, SessionFactoryData data ) throws PageException {
         this.data     = data;
         this.castUtil = CFMLEngineFactory.getInstance().getCastUtil();
@@ -177,6 +186,13 @@ public class HibernateORMSession implements ORMSession {
         return getSessionAndConn( pc, datasSourceName ).getSession( pc );
     }
 
+    /**
+     * Get the Session/Connection wrapper for the provided datasource name on this page context
+     * 
+     * @param pc Lucee PageContext object
+     * @param datasSourceName Datasource to retrieve the session wrapper on
+     * @throws PageException
+     */
     private SessionAndConn getSessionAndConn( PageContext pc, Key datasSourceName ) throws PageException {
         SessionAndConn sac = sessions.get( datasSourceName );
         if ( sac == null ) {
@@ -198,6 +214,10 @@ public class HibernateORMSession implements ORMSession {
         return sac;
     }
 
+    /**
+     * Check if the session is disconnected.
+     * @param s Hibernate session
+     */
     private boolean isClosed( Session s ) {
         return !s.isConnected();
     }
@@ -211,11 +231,27 @@ public class HibernateORMSession implements ORMSession {
         return data;
     }
 
+    /**
+     * Get the raw Hibernate SessionFactory for this datasource
+     * @param datasSourceName Datasource to pull the session for
+     * @throws PageException
+     */
     SessionFactory getSessionFactory( Key datasSourceName ) throws PageException {
         Session s = getSession( null, datasSourceName );
         return s.getSessionFactory();
     }
 
+    /**
+     * Close the current session for this datasource and open a new one.
+     * 
+     * @Deprecated Unused within the extension.
+     * 
+     * @param pc Lucee PageContext object
+     * @param factory Hibernate's session factory
+     * @param dataSourceName Datasource to refresh sessions on
+     * @param data The extension's SessionFactory wrapper.
+     * @throws PageException
+     */
     void resetSession( PageContext pc, SessionFactory factory, Key dataSourceName, SessionFactoryData data )
             throws PageException {
 
@@ -253,11 +289,18 @@ public class HibernateORMSession implements ORMSession {
         return sac.getSession( pc );
     }
 
+    /**
+     * Get this extension's main class: {@link HibernateORMEngine} 
+     */
     @Override
     public ORMEngine getEngine() {
         return data.getEngine();
     }
 
+    /**
+     * Flush all open sessions for the current page context.
+     * @param pc Lucee PageContext object.
+     */
     @Override
     public void flushAll( PageContext pc ) {
         for ( SessionAndConn sessionConn : sessions.values() ) {
@@ -423,6 +466,13 @@ public class HibernateORMSession implements ORMSession {
         getSession( pc, dsn ).refresh( cfc );
     }
 
+    /**
+     * Create a new entity instance for the given entity name.
+     * 
+     * @param pc Lucee PageContext object.
+     * @param entityName Entity name to initialize
+     * @throws PageException
+     */
     @Override
     public Component create( PageContext pc, String entityName ) throws PageException {
         return data.getEngine().create( pc, this, entityName, true );
@@ -747,11 +797,24 @@ public class HibernateORMSession implements ORMSession {
         return HibernateCaster.toQuery( pc, this, obj, name );
     }
 
+    /**
+     * Close all open sessions for this page context.
+     * Likely only used at request end.
+     * 
+     * @param pc Lucee PageContext object.
+     * @throws PageException
+     */
     @Override
     public void close( PageContext pc ) throws PageException {
         close( pc, null );
     }
 
+    /**
+     * Close all open sessions for this pagecontext associated with the provided datasource name.
+     * @param pc Lucee PageContext object.
+     * @param datasource Datasource to close sessions for. Can pass `null` to close ALL sessions.
+     * @throws PageException
+     */
     @Override
     public void close( PageContext pc, String datasource ) throws PageException {
         DataSource ds = CommonUtil.getDataSource( pc, datasource );
@@ -766,6 +829,8 @@ public class HibernateORMSession implements ORMSession {
 
     /**
      * Close all open sessions and release all open datasource connections.
+     * 
+     * There's some duplication with the {@link #close(PageContext)} and {@link #close(PageContext, String)} methods here... May merge `close()` with `closeAll()` in the future.
      *
      * @param pc
      *           Lucee PageContext object.
@@ -1015,47 +1080,90 @@ public class HibernateORMSession implements ORMSession {
         return rtn;
     }
 
+    /**
+     * Retrieve Hibernate's Session object (not the extension wrapper) for the provided datasource name.
+     * @param dsn Datasource name.
+     * @throws PageException
+     */
     @Override
     public Session getRawSession( String dsn ) throws PageException {
         return getSession( null, CommonUtil.toKey( dsn ) );
     }
 
+    /**
+     * Retrieve Hibernate's SessionFactory object (not the extension wrapper) for the provided datasource name.
+     * @param dsn Datasource name.
+     * @throws PageException
+     */
     @Override
     public SessionFactory getRawSessionFactory( String dsn ) throws PageException {
         return getSession( null, CommonUtil.toKey( dsn ) ).getSessionFactory();
     }
 
+    /**
+     * Check that the given datasource exists in the known sessions and the session is open.
+     * 
+     * @param ds Datasource to check on
+     */
     @Override
     public boolean isValid( DataSource ds ) {
         SessionAndConn sac = sessions.get( CommonUtil.toKey( ds.getName() ) );
         return sac != null && sac.isOpen();
     }
 
+    /**
+     * Check that ALL known sessions are currently open.
+     */
     @Override
     public boolean isValid() {
-        return sessions.isEmpty() ? false : sessions.values().stream().allMatch( sac -> sac.isOpen() );
+        return !sessions.isEmpty() && sessions.values().stream().allMatch( sac -> sac.isOpen() );
     }
 
+    /**
+     * Get a transaction for the specified datasource
+     * 
+     * @param dsn Datasource this transaction will act on.
+     * @param autoManage Should this be an automanaged transaction? @see {lucee.runtime.orm.ORMConfiguration#autoManageSession}
+     * @return an instance of HibernateORMTransaction.
+     * @throws PageException
+     */
     @Override
     public ORMTransaction getTransaction( String dsn, boolean autoManage ) throws PageException {
         return new HibernateORMTransaction( getSession( null, CommonUtil.toKey( dsn ) ), autoManage );
     }
 
+    /**
+     * Get a string array of all known entity names
+     */
     @Override
     public String[] getEntityNames() {
         List<String> names = data.getEntityNames();
         return names.toArray( new String[ names.size() ] );
     }
 
+    /**
+     * Get all known / configured datasources.
+     */
     @Override
     public DataSource[] getDataSources() {
         return data.getDataSources();
     }
 
+    /**
+     * Massage the provided SQL to use JPA-style positional parameters.
+     * 
+     * Hibernate v5.3+ requires JPA syntax for positional parameters in HQL queries. (i.e. `?1, ?2, ?3` parameter instead of `?, ?, ?`.) This conversion method will ensure each positional parameter has an index number to match.
+     * 
+     * @url https://luceeserver.atlassian.net/browse/LDEV-3641
+     * 
+     * @param sql SQL to modify - `SELECT * FROM category WHERE id IN (?)`
+     * @return JPA-compatible SQL - `SELECT * FROM category WHERE id IN (?1)`
+     */
     private String addIndexIfNecessary( String sql ) {
         StringBuilder sb = new StringBuilder();
         int sqlLen = sql.length();
-        char c, quoteType = 0;
+        char c;
+        char quoteType = 0;
         boolean inQuotes = false;
         int index = 1;
         for ( int i = 0; i < sqlLen; i++ ) {
