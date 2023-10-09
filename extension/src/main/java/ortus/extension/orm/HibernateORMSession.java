@@ -532,6 +532,14 @@ public class HibernateORMSession implements ORMSession {
         evictEntity( pc, entityName, null );
     }
 
+    /**
+     * Evict entity/entities of this type from the session cache.
+     * 
+     * @pc Lucee PageContext object.
+     * @entityName Entity name to evict. If no id provided, will evict all instances of this entity found in the session.
+     * @id If provided the identifier of a single entity to evict.
+     * @throws PageException
+     */
     @Override
     public void evictEntity( PageContext pc, String entityName, String id ) throws PageException {
         entityName = correctCaseEntityName( entityName );
@@ -545,6 +553,13 @@ public class HibernateORMSession implements ORMSession {
         }
     }
 
+    /**
+     * Get the correctly cased entity name for this entity
+     * Useful for case-sensitive applications, such as Hibernate's cache manager.
+     * 
+     * @param entityName Entity name in wrong casing, like `USER`
+     * @return entity name in correct casing, like `User`.
+     */
     private String correctCaseEntityName( String entityName ) {
         Iterator<String> it = data.getEntityNames().iterator();
         String n;
@@ -557,11 +572,28 @@ public class HibernateORMSession implements ORMSession {
         return entityName;
     }
 
+    /**
+     * Evict all data for this collection name from the session cache.
+     * 
+     * @pc Lucee PageContext object.
+     * @entityName Entity name the collection exists on.
+     * @collectionName Name of the collection to evict.
+     * @throws PageException
+     */
     @Override
     public void evictCollection( PageContext pc, String entityName, String collectionName ) throws PageException {
         evictCollection( pc, entityName, collectionName, null );
     }
 
+    /**
+     * Evict all data for this collection name (and, optionally, instance ID) from the session cache.
+     * 
+     * @pc Lucee PageContext object.
+     * @entityName Entity name the collection exists on.
+     * @collectionName Name of the collection to evict.
+     * @id If provided, only evict the collection row associated with this identifier.
+     * @throws PageException
+     */
     @Override
     public void evictCollection( PageContext pc, String entityName, String collectionName, String id ) throws PageException {
         String role = entityName + "." + collectionName;
@@ -692,7 +724,7 @@ public class HibernateORMSession implements ORMSession {
                     Iterator<String> it = meta.getNamedParameterNames().iterator();
                     while ( it.hasNext() ) {
                         name = it.next();
-                        names.setEL( name, name );
+                        names.setEL( CommonUtil.toKey( name ), name );
                     }
                 }
 

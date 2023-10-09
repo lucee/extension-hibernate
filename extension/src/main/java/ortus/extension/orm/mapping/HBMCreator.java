@@ -337,7 +337,7 @@ public class HBMCreator {
 
                 if ( isJoin ) {
                     table = table.trim();
-                    list  = ( List<Property> ) sct.get( table, null );
+                    list  = ( List<Property> ) sct.get( CommonUtil.toKey( table ), null );
                     if ( list == null ) {
                         list = new ArrayList<>();
                         sct.setEL( CommonUtil.createKey( table ), list );

@@ -156,7 +156,7 @@ public abstract class ComponentProxy implements Component {
 
     @Override
     public Object get( String key, Object defaultValue ) {
-        return getComponent().get( key, defaultValue );
+        return getComponent().get( CommonUtil.toKey( key ), defaultValue );
     }
 
     @Override
@@ -166,7 +166,7 @@ public abstract class ComponentProxy implements Component {
 
     @Override
     public Object set( String key, Object value ) throws PageException {
-        return getComponent().set( key, value );
+        return getComponent().set( CommonUtil.toKey( key ), value );
     }
 
     @Override
@@ -176,7 +176,7 @@ public abstract class ComponentProxy implements Component {
 
     @Override
     public Object setEL( String key, Object value ) {
-        return getComponent().setEL( key, value );
+        return getComponent().setEL( CommonUtil.toKey( key ), value );
     }
 
     @Override
@@ -186,7 +186,7 @@ public abstract class ComponentProxy implements Component {
 
     @Override
     public boolean containsKey( String key ) {
-        return getComponent().containsKey( key );
+        return getComponent().containsKey( CommonUtil.toKey( key ) );
     }
 
     @Override

@@ -70,7 +70,7 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
                 Struct meta = o instanceof Struct ? ( Struct ) o : null;
                 // ormtype
                 if ( meta != null ) {
-                    String tmp = CommonUtil.toString( meta.get( "ormtype", null ), null );
+                    String tmp = CommonUtil.toString( meta.get( CommonUtil.toKey( "ormtype" ), null ), null );
                     if ( !Util.isEmpty( tmp ) )
                         type = tmp;
                 }
@@ -79,7 +79,7 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
                 if ( meta != null && CommonUtil.isAnyType( type ) ) {
                     type = "string";
                     try {
-                        String gen = CommonUtil.toString( meta.get( "generator", null ), null );
+                        String gen = CommonUtil.toString( meta.get( CommonUtil.toKey( "generator" ), null ), null );
                         if ( !Util.isEmpty( gen ) ) {
                             type = HBMCreator.getDefaultTypeForGenerator( gen, "string" );
                         }
