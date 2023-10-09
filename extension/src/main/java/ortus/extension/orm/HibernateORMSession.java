@@ -539,9 +539,9 @@ public class HibernateORMSession implements ORMSession {
         for ( SessionAndConn sac : sessions.values() ) {
             SessionFactory f = sac.getSession( pc ).getSessionFactory();
             if ( id == null )
-                f.getCache().evictEntityRegion( entityName );
+                f.getCache().evictEntityData( entityName );
             else
-                f.getCache().evictEntity( entityName, CommonUtil.toSerializable( id ) );
+                f.getCache().evictEntityData( entityName, CommonUtil.toSerializable( id ) );
         }
     }
 
@@ -569,9 +569,9 @@ public class HibernateORMSession implements ORMSession {
         for ( SessionAndConn sac : sessions.values() ) {
             SessionFactory f = sac.getSession( pc ).getSessionFactory();
             if ( id == null )
-                f.getCache().evictCollectionRegion( role );
+                f.getCache().evictCollectionData( role );
             else
-                f.getCache().evictCollection( role, CommonUtil.toSerializable( id ) );
+                f.getCache().evictCollectionData( role, CommonUtil.toSerializable( id ) );
         }
     }
 
