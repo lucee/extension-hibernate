@@ -3,10 +3,6 @@ component extends="testbox.system.BaseSpec" {
 	public void function run(){
 		describe( "entityLoad()", () => {
 
-            /**
-             * TODO: Skip until fixed.
-             * https://luceeserver.atlassian.net/browse/LDEV-4285
-             */
             describe( "LDEV-4285 - Positional and named arguments testcase", function(){
                 it( "entityLoad() with positional argument(name)", () =>{
                         expect( isArray( entityLoad("Auto") ) ).toBe( true );

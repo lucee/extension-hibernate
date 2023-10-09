@@ -89,13 +89,13 @@ public class EntityLoad extends BIF {
 
     public static Object call( PageContext pc, String name, Object filter, Object order, Object options ) throws PageException {
         ORMSession session = ORMUtil.getSession( pc );
-        String orderClause = CommonUtil.toString(order);
+        String orderClause = CommonUtil.toString(order).trim();
 
         if (options==null){
             if (CommonUtil.isSimpleValue(filter) || filter == null){
-                String id = CommonUtil.toString(filter);
-                if (orderClause.isBlank()){
-                    if (id.isBlank())
+                String id = CommonUtil.toString(filter).trim();
+                if (orderClause.isEmpty()){
+                    if (id.isEmpty())
                         return session.loadAsArray(pc, name, CommonUtil.createStruct());
                     else
                         return session.loadAsArray(pc, name, id);
