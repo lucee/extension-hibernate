@@ -51,7 +51,7 @@ component extends="testbox.system.BaseSpec" {
              * TODO: Skip until fixed.
              * https://luceeserver.atlassian.net/browse/LDEV-4461
              */
-			xdescribe( "LDEV-4461 - positional and named arguments testcase", () => {
+			describe( "LDEV-4461 - positional and named arguments testcase", () => {
 				it( "checking positional arguments on ORM EntityLoadByPk", ( currentSpec ) => {
 					var result = EntityLoadByPk("Dealership", variables.testDealerID);
 					expect(result.getName()).tobe( "Funky Auto" );

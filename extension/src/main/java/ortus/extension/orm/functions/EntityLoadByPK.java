@@ -16,9 +16,13 @@ import lucee.loader.engine.CFMLEngine;
  */
 public class EntityLoadByPK extends BIF {
     private static final int MIN_ARGUMENTS = 2;
-    private static final int MAX_ARGUMENTS = 2;
+    private static final int MAX_ARGUMENTS = 3;
 
-    public static Object call( PageContext pc, String name, Object oID ) throws PageException {
+	public static Object call(PageContext pc, String name, Object oID) throws PageException {
+		return call(pc, name, oID, false);
+	}
+
+	public static Object call(PageContext pc, String name, Object oID, boolean unique) throws PageException {
         ORMSession session = ORMUtil.getSession( pc );
         String id;
         if ( CommonUtil.isBinary( oID ) )
@@ -36,6 +40,8 @@ public class EntityLoadByPK extends BIF {
 
         if ( args.length == 2 )
             return call( pc, cast.toString( args[ 0 ] ), args[ 1 ] );
+        if ( args.length == 3 )
+            return call( pc, cast.toString( args[ 0 ] ), args[ 1 ], cast.toBoolean( args[ 2 ] ) );
 
         throw engine.getExceptionUtil().createFunctionException( pc, "EntityLoadByPK", MIN_ARGUMENTS, MAX_ARGUMENTS, args.length );
     }
