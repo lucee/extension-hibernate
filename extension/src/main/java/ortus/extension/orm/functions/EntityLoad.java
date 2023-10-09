@@ -29,6 +29,7 @@ import lucee.runtime.type.Struct;
 import lucee.runtime.util.Cast;
 import lucee.runtime.ext.function.BIF;
 import lucee.loader.engine.CFMLEngineFactory;
+import lucee.loader.util.Util;
 import lucee.loader.engine.CFMLEngine;
 
 /**
@@ -53,41 +54,61 @@ public class EntityLoad extends BIF {
 
         // id
         if ( CommonUtil.isSimpleValue( idOrFilter ) ) {
+            String id = CommonUtil.toString( idOrFilter );
             // id,unique
             if ( CommonUtil.isCastableToBoolean( uniqueOrOptions ) ) {
                 // id,unique=true
                 if ( CommonUtil.toBooleanValue( uniqueOrOptions ) )
-                    return session.load( pc, name, CommonUtil.toString( idOrFilter ) );
+                    return session.load( pc, name, id );
                 // id,unique=false
-                return session.loadAsArray( pc, name, CommonUtil.toString( idOrFilter ) );
+                return session.loadAsArray( pc, name, id );
             } else if ( CommonUtil.isString( uniqueOrOptions ) ) {
-                return session.loadAsArray( pc, name, CommonUtil.toString( idOrFilter ), CommonUtil.toString( uniqueOrOptions ) );
+                return session.loadAsArray( pc, name, id, CommonUtil.toString( uniqueOrOptions ) );
             }
 
             // id,options
-            return session.loadAsArray( pc, name, CommonUtil.toString( idOrFilter ) );
+            return session.loadAsArray( pc, name, id );
         }
+        Struct filter = idOrFilter == null ? null : CommonUtil.toStruct( idOrFilter );
 
         // filter,[unique|sortorder]
         if ( CommonUtil.isSimpleValue( uniqueOrOptions ) ) {
             // filter,unique
             if ( CommonUtil.isBoolean( uniqueOrOptions ) ) {
                 if ( CommonUtil.toBooleanValue( uniqueOrOptions ) )
-                    return session.load( pc, name, CommonUtil.toStruct( idOrFilter ) );
-                return session.loadAsArray( pc, name, CommonUtil.toStruct( idOrFilter ) );
+                    return session.load( pc, name, filter );
+                return session.loadAsArray( pc, name, filter );
             }
             // filter,sortorder
-            return session.loadAsArray( pc, name, CommonUtil.toStruct( idOrFilter ), ( Struct ) null,
+            return session.loadAsArray( pc, name, filter, ( Struct ) null,
                     CommonUtil.toString( uniqueOrOptions ) );
         }
         // filter,options
-        return session.loadAsArray( pc, name, CommonUtil.toStruct( idOrFilter ), CommonUtil.toStruct( uniqueOrOptions ) );
+        return session.loadAsArray( pc, name, filter, CommonUtil.toStruct( uniqueOrOptions ) );
     }
 
     public static Object call( PageContext pc, String name, Object filter, Object order, Object options ) throws PageException {
         ORMSession session = ORMUtil.getSession( pc );
-        return session.loadAsArray( pc, name, CommonUtil.toStruct( filter ), CommonUtil.toStruct( options ),
-                CommonUtil.toString( order ) );
+        String orderClause = CommonUtil.toString(order);
+
+        if (options==null){
+            if (CommonUtil.isSimpleValue(filter) || filter == null){
+                String id = CommonUtil.toString(filter);
+                if (orderClause.isBlank()){
+                    if (id.isBlank())
+                        return session.loadAsArray(pc, name, CommonUtil.createStruct());
+                    else
+                        return session.loadAsArray(pc, name, id);
+                } else {
+                    return session.loadAsArray(pc, name, id, orderClause);
+                }
+            } else {
+                return session.loadAsArray(pc, name, CommonUtil.toStruct(filter), CommonUtil.createStruct(), orderClause);
+            }
+        } else if (filter==null){
+            return session.loadAsArray(pc, name, CommonUtil.createStruct(), CommonUtil.toStruct(options), orderClause);
+        }
+        return session.loadAsArray(pc, name, CommonUtil.toStruct(filter), CommonUtil.toStruct(options), orderClause);
     }
 
     @Override

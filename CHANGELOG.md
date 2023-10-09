@@ -9,11 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### ⭐ Added
 
-New `ORMQueryExecute()` alias for the `ORMExecuteQuery`. This new alias will behave identically to the `ORMExecuteQuery()` method, but is named consistently with the `queryExecute()` method.
+New `ORMQueryExecute()` alias for the `ORMExecuteQuery`. This new alias behaves identically to the `ORMExecuteQuery()` method, but is named consistently with the `queryExecute()` method.
 
 ### 🐛 Fixed
 
-Fixes custom configuration support via `this.ormSettings.ormConfig`.
+* Fixes custom configuration support via `this.ormSettings.ormConfig`.
+* Fixes named argument support for `entityLoad()` - [LDEV-4285](https://luceeserver.atlassian.net/browse/LDEV-4285)
+* Fixes named argument support for `entityLoadByPK()` - [LDEV-4461](https://luceeserver.atlassian.net/browse/LDEV-4461)
 
 ## [6.3.2] - 2023-09-29
 

@@ -29,10 +29,10 @@ component extends="testbox.system.BaseSpec" {
                 it( "entityLoad() with named arguments(name, idOrFilter)", () =>{
                         expect( isArray(entityLoad(name="Auto", id={})) ).toBe( true );
                 } );
-                xit( "entityLoad() with named arguments(name, options)", () =>{
+                it( "entityLoad() with named arguments(name, options)", () =>{
                         expect( isArray(entityLoad(name="Auto", options={})) ).toBe( true );
                 } );
-                xit( "entityLoad() with named arguments(name, uniqueOrOrder)", () =>{
+                it( "entityLoad() with named arguments(name, uniqueOrOrder)", () =>{
                         expect( isArray(entityLoad(name="Auto", unique="")) ).toBe( true );
                 } );
                 it( "entityLoad() with named arguments(name, idOrFilter, uniqueOrOrder)", () =>{
