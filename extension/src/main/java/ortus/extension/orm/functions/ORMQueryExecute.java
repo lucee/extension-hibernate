@@ -18,8 +18,6 @@
  **/
 package ortus.extension.orm.functions;
 
-import ortus.extension.orm.functions.ORMExecuteQuery;
-
 /**
  * Modern alias to ORMExecuteQuery(). Run an HQL query on the default ORM datasource.
  */

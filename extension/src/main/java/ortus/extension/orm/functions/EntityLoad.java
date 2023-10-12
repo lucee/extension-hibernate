@@ -29,7 +29,6 @@ import lucee.runtime.type.Struct;
 import lucee.runtime.util.Cast;
 import lucee.runtime.ext.function.BIF;
 import lucee.loader.engine.CFMLEngineFactory;
-import lucee.loader.util.Util;
 import lucee.loader.engine.CFMLEngine;
 
 /**
