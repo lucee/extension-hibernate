@@ -320,6 +320,7 @@ public class HBMCreator {
                     else if ( "timestamp".equalsIgnoreCase( fieldType ) )
                         isJoin = false;
                 } catch ( PageException e ) {
+                    // @TODO: @nextMajorRelease either drop this catch and let errors out, or handle it properly with a log and fall back.
                 }
 
                 // missing column
@@ -330,7 +331,8 @@ public class HBMCreator {
                     } else {
                         columns = toString( cfc, props[ i ], prop.getDynamicAttributes(), "joincolumn", data );
                     }
-                } catch ( PageException e ) {
+                } catch ( PageException e ) 
+                    // @TODO: @nextMajorRelease either drop this catch and let errors out, or handle it properly with a log and fall back.
                 }
                 if ( Util.isEmpty( columns ) )
                     isJoin = false;
@@ -651,6 +653,7 @@ public class HBMCreator {
         try {
             return HibernateUtil.convertTableName( data, toString( cfc, prop, prop.getDynamicAttributes(), "table", data ) );
         } catch ( PageException e ) {
+            // @TODO: @nextMajorRelease either drop this catch and let errors out, or handle it properly with a log and fall back.
             return null;
         }
     }

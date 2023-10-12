@@ -96,6 +96,7 @@ public class HibernateCaster {
                 name = CommonUtil.toString( md.get( CommonUtil.ENTITY_NAME ), null );
 
             } catch ( PageException e ) {
+                // @TODO: @nextMajorRelease either drop this catch and let errors out, or handle it properly with a log and fall back.
             }
         }
 

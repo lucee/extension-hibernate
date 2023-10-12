@@ -313,6 +313,7 @@ public class ORMUtil {
                 return datasourceName.trim();
             }
         } catch ( PageException e ) {
+            // @TODO: @nextMajorRelease either drop this catch and let errors out, or handle it properly with a log and fall back.
         }
 
         DataSource ds = getDefaultDataSource( pc, null );

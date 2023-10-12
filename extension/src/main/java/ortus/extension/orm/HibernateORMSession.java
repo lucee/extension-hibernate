@@ -308,7 +308,7 @@ public class HibernateORMSession implements ORMSession {
                 try {
                     sessionConn.getSession( pc ).flush();
                 } catch ( Exception e ) {
-                    // @TODO: @nextMajorRelease, Add logging
+                    // @TODO: @nextMajorRelease either drop this catch and let errors out, or handle it properly with a log and fall back.
                 } // we do this because of a Bug in Lucee that keeps session object in case of an exception for future
                   // request, this session then fail to flush, because the underlaying datasource is not defined in
                   // the current application.cfc.
@@ -641,7 +641,7 @@ public class HibernateORMSession implements ORMSession {
                 try {
                     return doQueryExecute( pc, s, dsn, hql, CommonUtil.toArray( ( Argument ) params ), unique, queryOptions );
                 } catch ( Exception t ) {
-                    // @TODO: @nextMajorRelease consider dropping this catch block
+                    // @TODO: @nextMajorRelease either drop this catch and let errors out, or handle it properly with a log and fall back.
                 }
             }
             throw qe;

@@ -23,6 +23,7 @@ public class IsValidDatasource extends BIF {
             manager.releaseConnection( pc, conn );
             return true;
         } catch ( PageException e ) {
+            // @TODO: @nextMajorRelease either drop this catch and let errors out, or handle it properly with a log and fall back.
             return false;
         }
     }

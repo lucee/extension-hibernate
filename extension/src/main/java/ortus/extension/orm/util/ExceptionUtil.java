@@ -118,7 +118,14 @@ public class ExceptionUtil {
             }
             setAdditional.invoke( pe, name, value );
         } catch ( Exception t ) {
-            // @TODO: @nextMajorRelease consider dropping this catch block
+            /**
+             * We purposely swallow exceptions, since this very class is an exception handler.
+             * We can't have exceptions prevent our exceptions from being shown and logged!
+             * 
+             * With that said... we should definitely log a failure here.
+             * 
+             * @TODO: Log.log( Level.ERROR, "Unable to set additional context on an exception", t ) 
+             */
         }
     }
 

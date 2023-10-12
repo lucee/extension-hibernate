@@ -166,6 +166,7 @@ public class EntityFinder {
                         }
                     }
                 } catch ( PageException e ) {
+                    // @TODO: Regardless of the failOnError setting, log those errors.
                     if ( this.failOnError )
                         throw e;
                     // e.printStackTrace();
