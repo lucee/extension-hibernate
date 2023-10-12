@@ -86,7 +86,7 @@ public class HBMCreator {
     private static final Collection.Key TYPE = CommonUtil.createKey( "type" );
 
     /**
-     *  @TODO: Move this into some CFConstants class, or somewhere that both HBMCreator and HibernateCaster can reference it.
+     * @TODO: Move this into some CFConstants class, or somewhere that both HBMCreator and HibernateCaster can reference it.
      * @TODO: For 7.0, Migrate to Map.of() or Map.ofEntries in Java 9+
      */
     public static final class Relationships {
@@ -313,11 +313,11 @@ public class HBMCreator {
 
                     if ( "collection".equalsIgnoreCase( fieldType ) )
                         isJoin = false;
-                    else if ( "primary".equals( fieldType ) )
+                    else if ( "primary".equalsIgnoreCase( fieldType ) )
                         isJoin = false;
-                    else if ( "version".equals( fieldType ) )
+                    else if ( "version".equalsIgnoreCase( fieldType ) )
                         isJoin = false;
-                    else if ( "timestamp".equals( fieldType ) )
+                    else if ( "timestamp".equalsIgnoreCase( fieldType ) )
                         isJoin = false;
                 } catch ( PageException e ) {
                 }
