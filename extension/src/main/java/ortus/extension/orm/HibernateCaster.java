@@ -41,6 +41,12 @@ public class HibernateCaster {
 
     private static final int NULL = -178696;
 
+    /**
+     * Convert a Java object (such as a Lucee Collection or java List) to a CFML-compatible value.
+     * 
+     * @param src Java object.
+     * @return CFML-compatible List object or Collection object or the original unmodified value.
+     */
     @SuppressWarnings("rawtypes")
     public static Object toCFML( Object src ) {
         if ( src == null )
@@ -54,6 +60,12 @@ public class HibernateCaster {
         return src;
     }
 
+    /**
+     * Convert a Java list to a CFML list.
+     * 
+     * @param src Java List of objects.
+     * @return CFML-compatible List object.
+     */
     @SuppressWarnings("rawtypes")
     public static Array toCFML( List src ) {
         int size = src.size();
@@ -65,6 +77,14 @@ public class HibernateCaster {
         return trg;
     }
 
+    /**
+     * Get the persistent entity name for the given Component.
+     * 
+     * Entity name is either derived  from the `entityname` attribute, or the component name itself.
+     * 
+     * @param cfc A persistent Component.
+     * @return
+     */
     public static String getEntityName( Component cfc ) {
 
         String name = null;
@@ -88,14 +108,17 @@ public class HibernateCaster {
 
     }
 
+    /**
+     * Get the component name from the file path.
+     * 
+     * @param cfc A Lucee component.
+     * @return Last item in the dot-notation component path
+     */
     private static String getName( Component cfc ) {
-        String name = null;
         // @TODO: cfc.getName() should return the real case, this should not be needed
-        name = cfc.getPageSource().getDisplayPath();
-        name = CommonUtil.last( name, "\\/" );
+        String name = CommonUtil.last( cfc.getPageSource().getDisplayPath(), "\\/" );
         int index = name.lastIndexOf( '.' );
-        name = name.substring( 0, index );
-        return name;
+        return name.substring( 0, index );
     }
 
     /**

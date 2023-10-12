@@ -2007,7 +2007,7 @@ public class HBMCreator {
                     throw ExceptionUtil.createException( data, cfc, message, null );
                 } else {
                     String message = String.format( "attribute [%s] of property [%s] of Component [%s] is required", key,
-                            prop.getName(), _getCFCName( prop ) );
+                            prop.getName(), getCFCName( prop ) );
                     throw ExceptionUtil.createException( data, cfc, message, null );
                 }
             }
@@ -2023,16 +2023,21 @@ public class HBMCreator {
             } else {
                 String message = String.format(
                         "invalid type [%s] for attribute [%s] of property [%s] of Component [%s], value must be a string",
-                        CommonUtil.toTypeName( value ), key, prop.getName(), _getCFCName( prop ) );
+                        CommonUtil.toTypeName( value ), key, prop.getName(), getCFCName( prop ) );
                 throw ExceptionUtil.createException( data, cfc, message, null );
             }
         }
         return str;
     }
 
-    private static String _getCFCName( Property prop ) {
-        String owner = prop.getOwnerName();
-        return CommonUtil.last( owner, "." );
+    /**
+     * Get the CFC name from a persistent property's "Owner name".
+     * 
+     * @param prop Lucee component property.
+     * @return
+     */
+    private static String getCFCName( Property prop ) {
+        return CommonUtil.last( prop.getOwnerName(), "." );
     }
 
     private static Boolean toBoolean( Component cfc, Struct sct, String key, SessionFactoryData data ) throws PageException {
