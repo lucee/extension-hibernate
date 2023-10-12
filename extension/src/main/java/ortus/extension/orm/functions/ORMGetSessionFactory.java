@@ -45,5 +45,7 @@ public class ORMGetSessionFactory extends BIF {
         if ( args.length == 0 )
             return call( pc );
         return call( pc, CommonUtil.toString( args[ 0 ] ) );
+        // @TODO: Enable this throw in the next major version
+        // throw CFMLEngineFactory.getInstance().getExceptionUtil().createFunctionException( pc, "ORMGetSessionFactory", MIN_ARGUMENTS, MAX_ARGUMENTS, args.length );
     }
 }

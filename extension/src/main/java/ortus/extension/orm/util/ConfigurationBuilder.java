@@ -138,6 +138,11 @@ public class ConfigurationBuilder {
         Resource conf = ormConf.getOrmConfig();
         if ( conf != null ) {
             try {
+                /**
+                * Should we considering using the `CFG_XML_FILE` setting instead?
+                * 
+                * https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/cfg/AvailableSettings.html?is-external=true#CFG_XML_FILE
+                */
                 configuration.configure( (File) conf );
             } catch ( HibernateException e ) {
                 log.log( Log.LEVEL_ERROR, "hibernate", e );
