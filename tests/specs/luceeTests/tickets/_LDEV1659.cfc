@@ -1,13 +1,7 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	function run( testResults, testBox ){
-		// TODO: Fix Me!
-		// https://luceeserver.atlassian.net/browse/LDEV-0305
-		var isResolved = FALSE;
-
-		describe(
-			title = "Test suite for LDEV-1659",
-			body  = function(){
+		describe( "Test suite for LDEV-1659", () => {
 				it( "Initialize ORM Secondary cache", function( currentSpec ){
 					var result = _InternalRequest(
 						template: server.helpers.getTestPath( "tickets/LDEV1659/index.cfm" ),
@@ -30,8 +24,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 					);
 					assertEquals( "1234", result4.filecontent.trim() );
 				} );
-			},
-			skip = !isResolved
+			}
 		);
 	}
 
