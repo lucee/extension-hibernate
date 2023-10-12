@@ -341,6 +341,7 @@ public class HibernateORMSession implements ORMSession {
 
         try {
             getSession( pc, dsn ).flush();
+        // @TODO: @nextMajorRelease - switch to catch Exception.
         } catch ( Throwable t ) {
             throw ExceptionUtil.toPageException( t );
         }
@@ -393,6 +394,7 @@ public class HibernateORMSession implements ORMSession {
                     for ( Component entity : components ) {
                         deleteEntityFromSession( pc, entity, datasourceName );
                     }
+                // @TODO: @nextMajorRelease - switch to catch Exception.
                 } catch ( Throwable t ) {
                     if ( trans != null )
                         trans.rollback();
@@ -420,6 +422,7 @@ public class HibernateORMSession implements ORMSession {
         data.checkExistent( pc, cfc );
         try {
             getSession( pc, dsn ).delete( HibernateCaster.getEntityName( cfc ), cfc );
+        // @TODO: @nextMajorRelease - switch to catch Exception.
         } catch ( Throwable t ) {
             throw ExceptionUtil.toPageException( t );
         }
@@ -637,9 +640,8 @@ public class HibernateORMSession implements ORMSession {
             if ( params instanceof Argument ) {
                 try {
                     return doQueryExecute( pc, s, dsn, hql, CommonUtil.toArray( ( Argument ) params ), unique, queryOptions );
-                } catch ( Throwable t ) {
-                    if ( t instanceof ThreadDeath )
-                        throw ( ThreadDeath ) t;
+                } catch ( Exception t ) {
+                    // @TODO: @nextMajorRelease consider dropping this catch block
                 }
             }
             throw qe;
@@ -819,6 +821,7 @@ public class HibernateORMSession implements ORMSession {
             if ( !list.isEmpty() )
                 return list.iterator().next();
             throw ExceptionUtil.toPageException( e );
+        // @TODO: @nextMajorRelease - switch to catch Exception.
         } catch ( Throwable t ) {
             throw ExceptionUtil.toPageException( t );
         }
@@ -939,6 +942,7 @@ public class HibernateORMSession implements ORMSession {
             Serializable oId = CommonUtil
                     .toSerializable( CommonUtil.castTo( pc, metaData.getIdentifierType().getReturnedClass(), id ) );
             obj = sess.get( name, oId );
+        // @TODO: @nextMajorRelease - switch to catch Exception.
         } catch ( Throwable t ) {
             throw ExceptionUtil.toPageException( t );
         }
@@ -989,6 +993,7 @@ public class HibernateORMSession implements ORMSession {
             } else {
                 rtn = criteria.uniqueResult();
             }
+        // @TODO: @nextMajorRelease - switch to catch Exception.
         } catch ( Throwable t ) {
             throw ExceptionUtil.toPageException( t );
         }
@@ -1106,6 +1111,7 @@ public class HibernateORMSession implements ORMSession {
                 rtn = HibernateCaster.toCFML( criteria.uniqueResult() );
             }
 
+        // @TODO: @nextMajorRelease - switch to catch Exception.
         } catch ( Throwable t ) {
             throw ExceptionUtil.toPageException( t );
         }

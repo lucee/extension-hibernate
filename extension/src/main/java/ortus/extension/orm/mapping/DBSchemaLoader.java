@@ -71,9 +71,7 @@ public class DBSchemaLoader {
     
             // @TODO: foreign-key relation
     
-        } catch ( Throwable t ) {
-            if ( t instanceof ThreadDeath )
-                throw ( ThreadDeath ) t;
+        } catch ( Exception t ) {
             return new Property[ 0 ];
         }
     
@@ -166,9 +164,8 @@ public class DBSchemaLoader {
                         && tables.getString( "TABLE_TYPE" ).toUpperCase().indexOf( "SYSTEM" ) == -1 )
                     return name;
             }
-        } catch ( Throwable t ) {
-            if ( t instanceof ThreadDeath )
-                throw ( ThreadDeath ) t;
+        } catch ( Exception t ) {
+            // @TODO: @nextMajorRelease consider dropping this catch block
         }
         return null;
     

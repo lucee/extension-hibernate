@@ -83,9 +83,8 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
                         if ( !Util.isEmpty( gen ) ) {
                             type = HBMCreator.getDefaultTypeForGenerator( gen, "string" );
                         }
-                    } catch ( Throwable t ) {
-                        if ( t instanceof ThreadDeath )
-                            throw ( ThreadDeath ) t;
+                    } catch ( Exception t ) {
+                        // @TODO: @nextMajorRelease consider dropping this catch block
                     }
                 }
                 try {

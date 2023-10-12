@@ -262,8 +262,8 @@ public class ORMUtil {
                 if ( ds != null )
                     return ds;
             }
-        } catch ( Throwable t ) {
-            ExceptionUtil.rethrowIfNecessary( t );
+        } catch ( Exception t ) {
+            // @TODO: @nextMajorRelease consider dropping this catch block
         }
 
         return getDefaultDataSource( pc, defaultValue );

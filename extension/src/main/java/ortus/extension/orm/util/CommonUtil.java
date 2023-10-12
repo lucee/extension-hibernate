@@ -817,9 +817,8 @@ public class CommonUtil {
         if ( os != null ) {
             try {
                 os.close();
-            } catch ( Throwable t ) {
-                if ( t instanceof ThreadDeath )
-                    throw ( ThreadDeath ) t;
+            } catch ( Exception t ) {
+                // @TODO: @nextMajorRelease consider dropping this catch block
             }
         }
     }
@@ -828,9 +827,8 @@ public class CommonUtil {
         try {
             if ( is != null )
                 is.close();
-        } catch ( Throwable t ) {
-            if ( t instanceof ThreadDeath )
-                throw ( ThreadDeath ) t;
+        } catch ( Exception t ) {
+            // @TODO: @nextMajorRelease consider dropping this catch block
         }
     }
 

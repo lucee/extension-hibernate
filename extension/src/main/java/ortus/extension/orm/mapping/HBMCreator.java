@@ -817,9 +817,8 @@ public class HBMCreator {
                             }
                         }
                     }
-                } catch ( Throwable t ) {
-                    if ( t instanceof ThreadDeath )
-                        throw ( ThreadDeath ) t;
+                } catch ( Exception t ) {
+                    // @TODO: @nextMajorRelease consider dropping this catch block
                 }
             }
             return "string";

@@ -34,9 +34,7 @@ public class CFCHibernateProxyFactory implements ProxyFactory {
     public HibernateProxy getProxy( final Serializable id, final SharedSessionContractImplementor session ) {
         try {
             return new CFCHibernateProxy( new CFCLazyInitializer( entityName, id, ( SessionImplementor ) session ) );
-        } catch ( Throwable t ) {
-            if ( t instanceof ThreadDeath )
-                throw ( ThreadDeath ) t;
+        } catch ( Exception t ) {
             return new CFCHibernateProxy( new CFCLazyInitializer( nodeName, id, ( SessionImplementor ) session ) );
         }
     }
