@@ -640,7 +640,7 @@ public class CommonUtil {
     /**
      * Integer Type that can be modified
      */
-    public static final class RefBooleanImpl implements RefBoolean {// @TODO: add interface Castable
+    private static final class RefBooleanImpl implements RefBoolean {// @TODO: add interface Castable
 
         private boolean value;
 
