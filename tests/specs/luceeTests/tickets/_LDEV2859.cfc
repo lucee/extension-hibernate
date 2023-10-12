@@ -1,7 +1,9 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	function beforeAll(){
-		variables.uri = server.helpers.getTestPath( "tickets/LDEV2859" );
+		variables.newEntity = entityNew( "Auto", { make : "Ford", id : createUUID() } );
+		entitySave( newEntity );
+		ormFlush();
 	}
 
 	function run( testResults, testBox ){
@@ -12,14 +14,16 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 		describe(
 			title = "test suite for LDEV2859",
 			body  = function(){
-				it( "Orm entitytoquery without name", function( currentSpec ){
-					local.result = _InternalRequest( template: "#uri#/LDEV2859.cfm", forms: { scene : 1 } );
-					expect( trim( result.filecontent ) ).toBe( "lucee" );
+				it( "Orm entitytoquery without name", () => {
+					var entity = entityLoad( "Auto", variables.newEntity.getId() );
+					var entityAsQuery = entitytoquery(entity);
+					expect( entityAsQuery.make[1] ).toBe( "Ford" );
 				} );
 
-				it( "Orm entitytoquery with entityName", function( currentSpec ){
-					local.result = _InternalRequest( template: "#uri#/LDEV2859.cfm", forms: { scene : 2 } );
-					expect( trim( result.filecontent ) ).toBe( "Lucee" );
+				it( "Orm entitytoquery with entityName", () => {
+					var entity = entityLoad( "Auto", variables.newEntity.getId() );
+					var entityAsQuery = entitytoquery(entity, "Auto");
+					expect( entityOut.make[1] ).toBe( "Ford" );
 				} );
 			},
 			skip = !isResolved
