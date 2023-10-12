@@ -273,7 +273,7 @@ public class HBMCreator {
         if ( isClass && _props.length == 0 && data.getORMConfiguration().useDBForMapping() ) {
             if ( meta == null )
                 meta = cfc.getMetaData( pc );
-            _props = HibernateUtil.createPropertiesFromTable( dc, getTableName( meta, cfc, data ) );
+            _props = new DBSchemaLoader( dc, getTableName( meta, cfc, data ) ).createPropertiesFromTable();
         }
         return _props;
     }

@@ -1,12 +1,8 @@
 package ortus.extension.orm.util;
 
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +11,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.ComponentType;
 import org.hibernate.type.Type;
-import ortus.extension.orm.ColumnInfo;
+
 import ortus.extension.orm.HibernateCaster;
 import ortus.extension.orm.HibernateORMEngine;
 import ortus.extension.orm.HibernateORMSession;
@@ -29,11 +25,8 @@ import lucee.runtime.PageContext;
 import lucee.runtime.PageSource;
 import lucee.runtime.component.Property;
 import lucee.runtime.config.Config;
-import lucee.runtime.db.DatasourceConnection;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMConfiguration;
-import lucee.runtime.type.Collection;
-import lucee.runtime.type.Struct;
 
 public class HibernateUtil {
 
@@ -204,49 +197,6 @@ public class HibernateUtil {
         return Arrays.stream( names ).filter( name::equalsIgnoreCase ).findFirst();
     }
 
-    //
-
-    public static Property[] createPropertiesFromTable( DatasourceConnection dc, String tableName ) {
-        Struct properties = CommonUtil.createStruct();
-        try {
-            DatabaseMetaData md = dc.getConnection().getMetaData();
-            String dbName = CFMLEngineFactory.getInstance().getDBUtil().getDatabaseName( dc );
-            Collection.Key name;
-
-            // get all columns
-            ResultSet res = md.getColumns( dbName, null, tableName, null );
-            while ( res.next() ) {
-                name = CommonUtil.createKey( res.getString( "COLUMN_NAME" ) );
-                properties.setEL( name, CommonUtil.createProperty( name.getString(), res.getString( "TYPE_NAME" ) ) );
-            }
-
-            // ids
-            res = md.getPrimaryKeys( null, null, tableName );
-            Property p;
-            while ( res.next() ) {
-                name = CommonUtil.createKey( res.getString( "COLUMN_NAME" ) );
-                p    = ( Property ) properties.get( name, null );
-                if ( p != null )
-                    p.getDynamicAttributes().setEL( CommonUtil.FIELDTYPE, "id" );
-            }
-
-            // @TODO: foreign-key relation
-
-        } catch ( Throwable t ) {
-            if ( t instanceof ThreadDeath )
-                throw ( ThreadDeath ) t;
-            return new Property[ 0 ];
-        }
-
-        Iterator<Object> it = properties.valueIterator();
-        Property[] rtn = new Property[ properties.size() ];
-        for ( int i = 0; i < rtn.length; i++ ) {
-            rtn[ i ] = ( Property ) it.next();
-        }
-
-        return rtn;
-    }
-
     public static String convertTableName( SessionFactoryData data, String tableName ) throws PageException {
         if ( tableName == null )
             return null;
@@ -291,69 +241,6 @@ public class HibernateUtil {
      */
     public static String sanitizeEntityName( String entityName ) {
         return entityName.toLowerCase().trim();
-    }
-
-    public static Struct checkTable( DatasourceConnection dc, String tableName ) throws PageException {
-
-        try {
-            String dbName = CFMLEngineFactory.getInstance().getDBUtil().getDatabaseName( dc );
-            DatabaseMetaData md = dc.getConnection().getMetaData();
-            Struct rows = checkTableFill( md, dbName, tableName );
-            if ( rows.isEmpty() ) {
-                String tableName2 = checkTableValidate( md, dbName, tableName );
-                if ( tableName2 != null )
-                    rows = checkTableFill( md, dbName, tableName2 );
-            }
-
-            if ( rows.isEmpty() ) {
-                return null;
-            }
-            return rows;
-        } catch ( SQLException e ) {
-            throw ExceptionUtil.toPageException( e );
-        }
-    }
-
-    private static Struct checkTableFill( DatabaseMetaData md, String dbName, String tableName )
-            throws SQLException, PageException {
-        Struct rows = CFMLEngineFactory.getInstance().getCreationUtil().createCastableStruct( tableName, Struct.TYPE_LINKED );
-
-        try ( ResultSet columns = md.getColumns( dbName, null, tableName, null ); ) {
-            String name;
-            Object nullable;
-            while ( columns.next() ) {
-                name     = columns.getString( "COLUMN_NAME" );
-
-                nullable = columns.getObject( "IS_NULLABLE" );
-                rows.setEL( CommonUtil.createKey( name ),
-                        new ColumnInfo( name, columns.getInt( "DATA_TYPE" ), columns.getString( "TYPE_NAME" ),
-                                columns.getInt( "COLUMN_SIZE" ), CommonUtil.toBooleanValue( nullable ) ) );
-            }
-        }
-
-        return rows;
-    }
-
-    private static String checkTableValidate( DatabaseMetaData md, String dbName, String tableName ) {
-
-        try ( ResultSet tables = md.getTables( dbName, null, null, null ); ) {
-            String name;
-            while ( tables.next() ) {
-                name = tables.getString( "TABLE_NAME" );
-                if ( name.equalsIgnoreCase( tableName )
-                        && tables.getString( "TABLE_TYPE" ).toUpperCase().indexOf( "SYSTEM" ) == -1 )
-                    return name;
-            }
-        } catch ( Throwable t ) {
-            if ( t instanceof ThreadDeath )
-                throw ( ThreadDeath ) t;
-        }
-        return null;
-
-    }
-
-    public static HibernateORMSession getORMSession( PageContext pc, boolean create ) throws PageException {
-        return ( HibernateORMSession ) pc.getORMSession( create );// TODO add this method to the public interface
     }
 
     public static Property[] getIDProperties( Component c, boolean onlyPeristent, boolean includeBaseProperties ) {

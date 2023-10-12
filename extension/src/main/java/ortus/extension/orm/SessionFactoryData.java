@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import ortus.extension.orm.event.EventListenerIntegrator;
 import ortus.extension.orm.jdbc.DataSourceConfig;
+import ortus.extension.orm.mapping.DBSchemaLoader;
 import ortus.extension.orm.naming.CFCNamingStrategy;
 import ortus.extension.orm.naming.DefaultNamingStrategy;
 import ortus.extension.orm.naming.SmartNamingStrategy;
@@ -357,7 +358,7 @@ public class SessionFactoryData {
         if ( columnsInfo != null )
             return columnsInfo;
 
-        columnsInfo = HibernateUtil.checkTable( dc, tableName );
+        columnsInfo = new DBSchemaLoader( dc, tableName ).getTableSchema();
         tableInfo.setEL( keyTableName, columnsInfo );
         return columnsInfo;
     }
