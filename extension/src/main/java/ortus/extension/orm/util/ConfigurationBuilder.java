@@ -147,7 +147,7 @@ public class ConfigurationBuilder {
             } catch ( HibernateException e ) {
                 log.log( Log.LEVEL_ERROR, "hibernate", e );
                 /**
-                 * @TODO: Next major bump, enable this throw
+                 * @TODO: @nextMajorRelease, enable this throw
                  * 
                  * String configError = String.format( "Failure loading custom Hibernate config file: '%s'", conf.getName() );
                  * throw new RuntimeException( configError, e );

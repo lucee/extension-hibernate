@@ -120,7 +120,7 @@ public class HibernateSessionFactory {
                 throw new IllegalStateException( "Unrecognized dbCreate configuration setting; could not export schema." );
         }
         /**
-         * TODO: For 7.0, pass throwException: ormConf.skipCFCWithError()
+         * @TODO: @nextMajorRelease, pass throwException: ormConf.skipCFCWithError()
          */
         HibernateSessionFactory.printError( log, data, exportExceptions, false );
         if ( ormConf.getDbCreate() != ORMConfiguration.DBCREATE_NONE
@@ -269,7 +269,7 @@ public class HibernateSessionFactory {
                 Component parent = data.getEntityByCFCName( ext, false );
                 ext = HibernateCaster.getEntityName( parent );
             } catch ( Exception t ) {
-                // TODO: for 7.0, Throw 'entity name not found' exception!
+                // @TODO: @nextMajorRelease, Throw 'entity name not found' exception!
             }
 
             ext = HibernateUtil.sanitizeEntityName( CommonUtil.last( ext, "." ).trim() );

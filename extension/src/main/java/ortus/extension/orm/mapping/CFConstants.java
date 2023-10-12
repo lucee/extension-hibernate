@@ -182,7 +182,7 @@ public final class CFConstants {
     
     /**
      *  @TODO: Move this into some CFConstants class, or somewhere that both HBMCreator and HibernateCaster can reference it.
-     * @TODO: For 7.0, Migrate to Map.of() or Map.ofEntries in Java 9+
+     * @TODO: @nextMajorRelease, Migrate to Map.of() or Map.ofEntries in Java 9+
      */
     public static class Relationships {
         public static final String ONE_TO_MANY     = "one-to-many";

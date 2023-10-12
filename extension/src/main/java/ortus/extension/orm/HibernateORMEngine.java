@@ -190,7 +190,7 @@ public class HibernateORMEngine implements ORMEngine {
 
                 // load entities
                 if ( data.hasTempCFCs() ) {
-                    // TODO: Set naming strategy in constructor based on ORM config
+                    // @TODO: Set naming strategy in constructor based on ORM config
                     data.getNamingStrategy();// called here to make sure, it is called in the right context the
                                              // first one
 
@@ -302,7 +302,7 @@ public class HibernateORMEngine implements ORMEngine {
                 pc.addPageSource( cfc.getPageSource(), true );
 
                 /**
-                 * TODO: Create a map of connections per datasource. Then we can grab and reuse existing connections
+                 * @TODO: Create a map of connections per datasource. Then we can grab and reuse existing connections
                  * based on the component's datasource annotation. This should save a good bit of time from opening and
                  * releasing connections hundreds of times for a single ORM reload.
                  */

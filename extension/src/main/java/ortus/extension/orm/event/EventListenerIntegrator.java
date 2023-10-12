@@ -260,7 +260,7 @@ public class EventListenerIntegrator
     @SuppressWarnings("rawtypes")
     public void onDelete( DeleteEvent event, Set transientEntities ) throws HibernateException {
         Object entity = event.getObject();
-        // TODO: handle transientEntities
+        // @TODO: handle transientEntities
         fireEventOnGlobalListener( EventListenerIntegrator.ON_DELETE, entity, event, null );
     }
 

@@ -54,7 +54,7 @@ public class LoggingConfigurator {
         Logger hibernateLogger = loggerContext.getLogger( "org.hibernate" );
         hibernateLogger.setLevel( defaultLogLevel );
 
-        // TODO: In Hibernate 6, this will be `org.hibernate.orm.jdbc.bind`
+        // @TODO: In Hibernate 6, this will be `org.hibernate.orm.jdbc.bind`
         Logger sqlLogger = loggerContext.getLogger( "org.hibernate.type.descriptor.sql" );
         sqlLogger.setLevel( getSQLLogLevel() );
 

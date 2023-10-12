@@ -87,7 +87,7 @@ public class HBMCreator {
 
     /**
      * @TODO: Move this into some CFConstants class, or somewhere that both HBMCreator and HibernateCaster can reference it.
-     * @TODO: For 7.0, Migrate to Map.of() or Map.ofEntries in Java 9+
+     * @TODO: @nextMajorRelease, Migrate to Map.of() or Map.ofEntries in Java 9+
      */
     public static final class Relationships {
         public static final String ONE_TO_MANY = "one-to-many";
@@ -2098,7 +2098,7 @@ public class HBMCreator {
             try {
                 CommonUtil.write( res, xml, CommonUtil.getUTF8Charset(), false );
             } catch ( Exception e ) {
-                // TODO: For 7.0, throw "Unable to save XML mapping to disk"
+                // @TODO: @nextMajorRelease, throw "Unable to save XML mapping to disk"
             }
         }
     }

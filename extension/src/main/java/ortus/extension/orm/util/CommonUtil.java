@@ -293,7 +293,7 @@ public class CommonUtil {
     }
 
     private static Reader getReaderForInputStream( InputStream is, Charset cs ) {
-        // TODO: This is a very bad pattern - setting and using class state on a util class from a static method.
+        // @TODO: This is a very bad pattern - setting and using class state on a util class from a static method.
         if ( cs == null ) {
             cs = getCharset();
         }
@@ -790,7 +790,7 @@ public class CommonUtil {
     }
 
     public static Writer getWriter( OutputStream os, Charset cs ) {
-        // TODO: This is a very bad pattern - setting and using class state on a util class from a static method.
+        // @TODO: This is a very bad pattern - setting and using class state on a util class from a static method.
         if ( cs == null ) {
             getCharset();
         }

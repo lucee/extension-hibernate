@@ -97,7 +97,7 @@ public class SessionFactoryData {
      * Retrieve the configured naming strategy. Will introspect and check this.ormConf property to determine the naming
      * strategy.
      *
-     * TODO: Convert this to set at constructor time! There's no point in checking and initializing the naming strategy
+     * @TODO: Convert this to set at constructor time! There's no point in checking and initializing the naming strategy
      * upon calling the getter.
      *
      * @return one of CFCNamingStrategy|SmartNamingStrategy|DefaultNamingStrategy
@@ -287,7 +287,7 @@ public class SessionFactoryData {
                                                                                                     // happen
 
         /**
-         * TODO: Investigate OSGISessionFactoryService
+         * @TODO: Investigate OSGISessionFactoryService
          * https://docs.jboss.org/hibernate/orm/5.4/javadocs/org/hibernate/osgi/OsgiSessionFactoryService.html
          */
         Thread thread = Thread.currentThread();

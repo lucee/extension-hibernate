@@ -60,7 +60,7 @@ public class HibernateORMSession implements ORMSession {
     /**
      * A limited set of constants mapping to ORM-supported Lucee query options
      * 
-     * TODO: For 7.0, Migrate to Map.of() or Map.ofEntries in Java 9+
+     * @TODO: @nextMajorRelease, Migrate to Map.of() or Map.ofEntries in Java 9+
      */
     private static final class QUERYOPTS {
 
@@ -308,7 +308,7 @@ public class HibernateORMSession implements ORMSession {
                 try {
                     sessionConn.getSession( pc ).flush();
                 } catch ( Exception e ) {
-                    // TODO: for 7.0, Add logging
+                    // @TODO: @nextMajorRelease, Add logging
                 } // we do this because of a Bug in Lucee that keeps session object in case of an exception for future
                   // request, this session then fail to flush, because the underlaying datasource is not defined in
                   // the current application.cfc.
