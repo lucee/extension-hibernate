@@ -37,7 +37,7 @@ component extends="testbox.system.BaseSpec" {
                 expect( exists.COLUMN_SIZE[1] ).toBe( randomVarcharLen );
                 expect( exists.COLUMN_DEFAULT_VALUE[1] ).toBe( randomDefault );
 
-			}, skip= !!server.helpers.canUseDatasource( "mysql" ) );
+			}, skip= !server.helpers.canUseDatasource( "mysql" ) );
 		} )
 	}
 

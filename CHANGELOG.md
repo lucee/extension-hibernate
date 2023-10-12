@@ -17,6 +17,10 @@ New `ORMQueryExecute()` alias for the `ORMExecuteQuery`. This new alias behaves 
 * Fixes named argument support for `entityLoad()` - [LDEV-4285](https://luceeserver.atlassian.net/browse/LDEV-4285)
 * Fixes named argument support for `entityLoadByPK()` - [LDEV-4461](https://luceeserver.atlassian.net/browse/LDEV-4461)
 
+### ♻️ Changed
+
+While not technically a change in ORM functionality, the `useDBforMapping` implementation has been greatly improved "under the hood", with tests to boot.
+
 ## [6.3.2] - 2023-09-29
 
 ### 🐛 Fixed
