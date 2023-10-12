@@ -247,45 +247,6 @@ public class HibernateUtil {
         return rtn;
     }
 
-    public static Property[] getProperties( Component component, int fieldType, Property[] defaultValue ) {
-        Property[] props = component.getProperties( true, false, false, false );
-        List<Property> rtn = new ArrayList<>();
-
-        if ( props != null ) {
-            for ( int i = 0; i < props.length; i++ ) {
-                if ( fieldType == getFieldType( props[ i ], FIELDTYPE_COLUMN ) )
-                    rtn.add( props[ i ] );
-            }
-        }
-        return rtn.toArray( new Property[ rtn.size() ] );
-    }
-
-    private static int getFieldType( Property property, int defaultValue ) {
-        return getFieldType( CommonUtil.toString( property.getDynamicAttributes().get( CommonUtil.FIELDTYPE, null ), null ),
-                defaultValue );
-
-    }
-
-    private static int getFieldType( String fieldType, int defaultValue ) {
-        if ( Util.isEmpty( fieldType, true ) )
-            return defaultValue;
-        fieldType = fieldType.trim().toLowerCase();
-
-        if ( "id".equals( fieldType ) )
-            return FIELDTYPE_ID;
-        if ( "column".equals( fieldType ) )
-            return FIELDTYPE_COLUMN;
-        if ( "timestamp".equals( fieldType ) )
-            return FIELDTYPE_TIMESTAMP;
-        if ( "relation".equals( fieldType ) )
-            return FIELDTYPE_RELATION;
-        if ( "version".equals( fieldType ) )
-            return FIELDTYPE_VERSION;
-        if ( "collection".equals( fieldType ) )
-            return FIELDTYPE_COLLECTION;
-        return defaultValue;
-    }
-
     public static String convertTableName( SessionFactoryData data, String tableName ) throws PageException {
         if ( tableName == null )
             return null;
@@ -391,13 +352,6 @@ public class HibernateUtil {
 
     }
 
-    public static HibernateORMEngine getORMEngine( PageContext pc ) throws PageException {
-        if ( pc == null )
-            pc = CommonUtil.pc();
-        Config config = pc.getConfig();
-        return ( HibernateORMEngine ) config.getORMEngine( pc );// TODO add this method to the public interface
-    }
-
     public static HibernateORMSession getORMSession( PageContext pc, boolean create ) throws PageException {
         return ( HibernateORMSession ) pc.getORMSession( create );// TODO add this method to the public interface
     }
@@ -415,17 +369,6 @@ public class HibernateUtil {
 
     public static long getCompileTime( PageContext pc, PageSource ps ) throws PageException {
         return CFMLEngineFactory.getInstance().getTemplateUtil().getCompileTime( pc, ps );
-    }
-
-    public static String[] merge( String[] arr1, String[] arr2 ) {
-        String[] ret = new String[ arr1.length + arr2.length ];
-        for ( int i = 0; i < arr1.length; i++ ) {
-            ret[ i ] = arr1[ i ];
-        }
-        for ( int i = 0; i < arr2.length; i++ ) {
-            ret[ arr1.length + i ] = arr2[ i ];
-        }
-        return ret;
     }
 
     /**
