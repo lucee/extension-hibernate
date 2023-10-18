@@ -59,6 +59,17 @@ public class EntityNew extends BIF {
 
     }
 
+    /**
+     * 
+     * @TODO: Move this to a reusable EntityPopulator? Do we populate entities anywhere else?
+     * @TODO: Either drop ignoreNotExisting argument, or implement a 'true' condition. This is always `false`, currently.
+     * 
+     * @param pc Lucee PageContext
+     * @param c The new entity Component
+     * @param properties Struct of properties to persist into the entity
+     * @param ignoreNotExisting Should non-existing property key names be ignored? If true, will ignore. If false, will throw error.
+     * @throws PageException
+     */
     public static void setPropeties( PageContext pc, Component c, Struct properties, boolean ignoreNotExisting )
             throws PageException {
         if ( properties == null )
