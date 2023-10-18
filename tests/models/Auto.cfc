@@ -1,4 +1,4 @@
-component persistent="true" {
+component accessors="true" persistent="true" {
 
 	property
 		name     ="id"
@@ -13,6 +13,7 @@ component persistent="true" {
 		fkcolumn="dealerID";
 	property name="inserted" type="boolean" default="false";
 	property name="updated" type="boolean" default="false";
+	property name="nonPersistentProp" type="string" persistent="false";
 
 	this.name = "Auto";
 
