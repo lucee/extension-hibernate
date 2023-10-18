@@ -1,7 +1,14 @@
 component extends="testbox.system.BaseSpec" {
 
 	function beforeAll(){
-		variables.testEntity = entityNew( "Auto", { make : "Lamborghini", model : "Aventador", id : createUUID() } );
+		variables.testEntity = entityNew(
+			"Auto",
+			{
+				make  : "Lamborghini",
+				model : "Aventador",
+				id    : createUUID()
+			}
+		);
 		entitySave( variables.testEntity );
 		ormFlush();
 	}

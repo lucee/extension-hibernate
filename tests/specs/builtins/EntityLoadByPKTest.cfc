@@ -1,19 +1,22 @@
 component extends="testbox.system.BaseSpec" {
 
 	function beforeAll(){
-		transaction{
+		transaction {
 			variables.testDealerID = createUUID();
-			queryExecute( "
+			queryExecute(
+				"
 				INSERT INTO Dealership( id, name, address, phone )
 				VALUES (
 					:id, :name, :address, :phone
 				)
-			", {
+			",
+				{
 					"id"      : variables.testDealerID,
 					"name"    : "Funky Auto",
 					"address" : "456 Motor Drive",
 					"phone"   : "123-456-7890"
-			} );
+				}
+			);
 		}
 	}
 
@@ -29,7 +32,7 @@ component extends="testbox.system.BaseSpec" {
 			} );
 
 			/**
-			 * Commented, since Lucee actually throws this error AT COMPILE TIME 
+			 * Commented, since Lucee actually throws this error AT COMPILE TIME
 			 * based on the method signature defined in `ormFunctions.fld`. 😢
 			 */
 			// xit( "Throws FunctionException if arguments invalid", () => {
@@ -47,31 +50,35 @@ component extends="testbox.system.BaseSpec" {
 			// 	}).toThrow( "FunctionException" );
 			// } );
 
-            /**
-             * TODO: Skip until fixed.
-             * https://luceeserver.atlassian.net/browse/LDEV-4461
-             */
+			/**
+			 * TODO: Skip until fixed.
+			 * https://luceeserver.atlassian.net/browse/LDEV-4461
+			 */
 			describe( "LDEV-4461 - positional and named arguments testcase", () => {
 				it( "checking positional arguments on ORM EntityLoadByPk", ( currentSpec ) => {
-					var result = EntityLoadByPk("Dealership", variables.testDealerID);
-					expect(result.getName()).tobe( "Funky Auto" );
-				});
+					var result = entityLoadByPK( "Dealership", variables.testDealerID );
+					expect( result.getName() ).tobe( "Funky Auto" );
+				} );
 
 				it( "checking named arguments on ORM EntityLoadByPk", ( currentSpec ) => {
-					var result = EntityLoadByPk(name = "Dealership", id = variables.testDealerID );
-					expect(result.getName()).tobe( "Funky Auto" );
-				});
+					var result = entityLoadByPK( name = "Dealership", id = variables.testDealerID );
+					expect( result.getName() ).tobe( "Funky Auto" );
+				} );
 
 				it( "checking positional arguments on ORM EntityLoadByPk with unique", ( currentSpec ) => {
-					var result = EntityLoadByPk("Dealership", variables.testDealerID, true );
-					expect(result.getName()).tobe( "Funky Auto" );
-				});
+					var result = entityLoadByPK( "Dealership", variables.testDealerID, true );
+					expect( result.getName() ).tobe( "Funky Auto" );
+				} );
 
 				it( "checking named arguments on ORM EntityLoadByPk with unique", ( currentSpec ) => {
-					var result = EntityLoadByPk(name="Dealership", id=variables.testDealerID, unique=true );
-					expect(result.getName()).tobe( "Funky Auto" );
-				});
-			})
+					var result = entityLoadByPK(
+						name   = "Dealership",
+						id     = variables.testDealerID,
+						unique = true
+					);
+					expect( result.getName() ).tobe( "Funky Auto" );
+				} );
+			} )
 		} );
 	}
 
