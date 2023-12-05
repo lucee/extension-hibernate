@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 🔐 Security
+
+Resolve an [Uncontrolled Resource Consumption](https://security.snyk.io/vuln/SNYK-JAVA-CHQOSLOGBACK-6097493) vulnerability disclosed on 12/4/2023 by upgrading `logback-core` to `1.3.14`. [See vulnerability details](https://security.snyk.io/vuln/SNYK-JAVA-CHQOSLOGBACK-6097493). 
+
 ### ⭐ Added
 
 New `ORMQueryExecute()` alias for the `ORMExecuteQuery`. This new alias behaves identically to the `ORMExecuteQuery()` method, but is named consistently with the `queryExecute()` method.
