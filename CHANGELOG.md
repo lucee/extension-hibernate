@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.4.0] - 2023-12-05
+
 ### 🔐 Security
 
 Resolve an [Uncontrolled Resource Consumption](https://security.snyk.io/vuln/SNYK-JAVA-CHQOSLOGBACK-6097493) vulnerability disclosed on 12/4/2023 by upgrading `logback-core` to `1.3.14`. [See vulnerability details](https://security.snyk.io/vuln/SNYK-JAVA-CHQOSLOGBACK-6097493). 
@@ -17,9 +19,9 @@ New `ORMQueryExecute()` alias for the `ORMExecuteQuery`. This new alias behaves 
 
 ### 🐛 Fixed
 
-* Fixes custom configuration support via `this.ormSettings.ormConfig`.
-* Fixes named argument support for `entityLoad()` - [LDEV-4285](https://luceeserver.atlassian.net/browse/LDEV-4285)
-* Fixes named argument support for `entityLoadByPK()` - [LDEV-4461](https://luceeserver.atlassian.net/browse/LDEV-4461)
+-   Fixes custom configuration support via `this.ormSettings.ormConfig`.
+-   Fixes named argument support for `entityLoad()` - [LDEV-4285](https://luceeserver.atlassian.net/browse/LDEV-4285)
+-   Fixes named argument support for `entityLoadByPK()` - [LDEV-4461](https://luceeserver.atlassian.net/browse/LDEV-4461)
 
 ### ♻️ Changed
 
@@ -217,7 +219,9 @@ See [OOE-3](https://ortussolutions.atlassian.net/browse/OOE-3).
 -   Better build/test documentation
 -   Improved maintenance and build docs
 
-[Unreleased]: https://github.com/Ortus-Solutions/extension-hibernate/compare/6.3.2...HEAD
+[Unreleased]: https://github.com/Ortus-Solutions/extension-hibernate/compare/6.4.0...HEAD
+
+[6.4.0]: https://github.com/Ortus-Solutions/extension-hibernate/compare/6.3.2...6.4.0
 
 [6.3.2]: https://github.com/Ortus-Solutions/extension-hibernate/compare/v6.3.1...6.3.2
 
