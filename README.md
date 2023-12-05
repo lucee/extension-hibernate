@@ -1,8 +1,8 @@
 # Lucee Hibernate Extension (ORM)
 
-![the Ortus ORM Extension logo](logo.png)
+![the Ortus ORM Extension logo](https://github.com/Ortus-Solutions/extension-hibernate/blob/development/logo.png)
 
-[![Java CI](https://github.com/ortus-solutions/extension-hibernate/actions/workflows/release.yml/badge.svg)](https://github.com/ortus-solutions/extension-hibernate/actions/workflows/release.yml) Latest
+[![Java CI](https://github.com/ortus-solutions/extension-hibernate/actions/workflows/ci.yml/badge.svg)](https://github.com/ortus-solutions/extension-hibernate/actions/workflows/ci.yml) Latest
 
 * A [Hibernate ORM](https://hibernate.org/orm/) wrapper for the [Lucee CFML language](https://www.lucee.org/)
 
