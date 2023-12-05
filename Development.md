@@ -50,15 +50,13 @@ To build and test on Lucee 6, use the `server-lucee6.json` file and `deploy.luce
 * `box server restart name=lucee6`
 * `box testbox run`
 
-## Publishing a Release
+## Publishing a (Stable) Release
 
 Releasing is *mostly* automated. To publish a release:
 
 1. Check out the `master` branch - `git checkout master`
 2. Merge in `development` changes - `git merge development`
 3. Push to github: `git push`
-4. Check out `development` branch for further work - `git checkout development`
-5. Bump the major, minor, or patch version so you don't push snapshots on a released version: `box bump --minor`
 
 Once you push, the `release` GitHub workflow will kick in and:
 
@@ -67,9 +65,18 @@ Once you push, the `release` GitHub workflow will kick in and:
 3. push up the built artifact, javadocs, and the logo to S3
 4. publish the extension to Forgebox
 5. create a git tag
-6. create a GitHub release with changelog release notes
+6. ~~CREATE a GitHub release with changelog release notes~~ ** _Currently broken and requires manual creation using the `CHANGELOG.md as the release notes`_
 
-If you push to `development`, steps 5 and 6 will be ignored and the release pushed to ForgeBox will be a `-SNAPSHOT` release version.
+After pushing a stable release:
+
+1. Check out `development` branch for further work - `git checkout development`
+2. Bump the major, minor, or patch version number so you don't push snapshots on a released version: `box bump --minor`
+
+## Publishing a Snapshot Release
+
+Every push to `development` will create a `-snapshot` release on ForgeBox. [See snapshot versions on ForgeBox](https://forgebox.io/view/D062D72F-F8A2-46F0-8CBC91325B2F067B?filter=snapshot#versions).
+
+To skip pushing a release, add `[ci skip]` to your commit message.
 
 ## Branching Strategy
 
