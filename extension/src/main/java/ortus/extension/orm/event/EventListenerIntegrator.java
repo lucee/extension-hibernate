@@ -431,7 +431,7 @@ public class EventListenerIntegrator
             }
         } catch ( Exception e ) {
             throw new RuntimeException(
-                    "Error populating event state for persistance in pre-event listener method: " + e.getMessage(), e );
+                    String.format( "Error populating event state for persistance in [%s] entity pre-event listener method: %s", entity.getName(), e.getMessage() ), e );
         }
     }
 

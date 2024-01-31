@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### ♻️ Changed
+
+Add the entity name to the exception message when attempting to persist changes from `preInsert` or `preUpdate` event listeners. The updated exception message is now:
+
+> Error populating event state for persistance in [&lt;entity name&gt;] entity pre-event listener method: &lt;error message from Hibernate&gt;
+
 ## [6.4.0] - 2023-12-05
 
 ### 🔐 Security
