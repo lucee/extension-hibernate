@@ -13,6 +13,10 @@ Add the entity name to the exception message when attempting to persist changes 
 
 > Error populating event state for persistance in [&lt;entity name&gt;] entity pre-event listener method: &lt;error message from Hibernate&gt;
 
+### 🔐 Security
+
+Bump Lucee build dependency to `5.4.4.38` to avoid [vulnerable dependencies in the build process](https://mvnrepository.com/artifact/org.lucee/lucee/5.4.1.8).
+
 ## [6.4.0] - 2023-12-05
 
 ### 🔐 Security
