@@ -1,7 +1,7 @@
 # This workflow will build a Java project with Ant
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-ant
 
-name: Java CI
+name: Java CI - Lucee latest
 
 on: [push, pull_request,workflow_dispatch]
 
@@ -12,19 +12,19 @@ jobs:
     env:
       luceeVersionQuery: 0/all/light
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up JDK 11
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: '11'
         distribution: 'adopt'
     - name: Cache Maven packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.m2
         key: lucee-script-runner-maven-cache
     - name: Cache Lucee files
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: _actions/zspitzer/lucee-script-engine-runner/main/lucee-download-cache
         key: lucee-downloads-${{ env.luceeVersion }}
@@ -33,12 +33,12 @@ jobs:
     - name: Build with Ant
       run: ant -noinput -verbose -buildfile build.xml
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: hibernate-lex
         path: dist/*.lex
     - name: Checkout Lucee
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: lucee/lucee
         path: lucee
@@ -48,6 +48,7 @@ jobs:
         webroot: ${{ github.workspace }}/lucee/test
         execute: /bootstrap-tests.cfm
         luceeVersion: ${{ env.luceeVersion }}
+        luceeVersionQuery: ${{ env.luceeVersionQuery }}
         extensionDir: ${{ github.workspace }}/dist
       env:
         testLabels: orm
