@@ -110,7 +110,7 @@ jobs:
           luceeVersionQuery: ${{ matrix.lucee.query }}
           extensionDir: ${{ github.workspace }}/target
         env:
-          testLabels: s3
+          testLabels: hibernate
           testAdditional: ${{ github.workspace }}/tests
 
   deploy:
