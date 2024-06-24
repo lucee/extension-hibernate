@@ -90,7 +90,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: hibernate-lex-${{ matrix.lucee.version }}
+          name: orm-lex-${{ matrix.lucee.version }}
           path: target/*.lex
 
       - name: Checkout Lucee
