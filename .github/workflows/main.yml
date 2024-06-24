@@ -64,10 +64,10 @@ jobs:
       MYSQL_PASSWORD: lucee
       MYSQL_PORT: 3306
       MYSQL_DATABASE: lucee
-      LUCEE_VERSIONS: ${{ vars.LUCEE_VERSIONS }}
+      LUCEE_TEST_VERSIONS: ${{ vars.LUCEE_TEST_VERSIONS }}
     strategy:
       matrix:
-        lucee: ${{ fromJSON(vars.LUCEE_VERSIONS) }}
+        lucee: ${{ fromJSON(vars.LUCEE_TEST_VERSIONS) }}
     services:
       minio:
         image: fclairamb/minio-github-actions
