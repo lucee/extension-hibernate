@@ -4,7 +4,6 @@ Import-Package: net.sf.ehcache.hibernate
 Require-Bundle: org.lucee.hibernate;bundle-version="[5.4.33.Final,6)",
  org.lucee.antlr;bundle-version="[2.7.7,3)",
  org.lucee.dom4j;bundle-version=2.1.4,
- org.lucee.javassist;bundle-version=3.9.0.GA,
  org.lucee.jta;bundle-version=1.1.0,
  slf4j.api;bundle-version=1.7.36,
  org.apache.commons.commons-collections4;bundle-version=4.4.0,

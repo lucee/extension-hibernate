@@ -1,6 +1,5 @@
 package org.lucee.extension.orm.hibernate;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -8,24 +7,13 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.EntityMode;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 import org.hibernate.tuple.entity.EntityTuplizerFactory;
 import org.lucee.extension.orm.hibernate.event.EventListenerIntegrator;
-import org.lucee.extension.orm.hibernate.event.InterceptorImpl;
 import org.lucee.extension.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
-import org.lucee.extension.orm.hibernate.util.XMLUtil;
-import org.lucee.extension.orm.hibernate.ExceptionUtil;
-import org.lucee.extension.orm.hibernate.HibernateUtil;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import lucee.commons.io.log.Log;
 import lucee.commons.io.res.Resource;
-import lucee.loader.engine.CFMLEngine;
 import lucee.loader.engine.CFMLEngineFactory;
-import lucee.loader.util.Util;
 import lucee.runtime.Component;
 import lucee.runtime.PageContext;
 import lucee.runtime.db.DataSource;
@@ -46,6 +34,7 @@ public class HibernateORMEngine implements ORMEngine {
 		// reason
 		// Class clazz = ContextFactory.class;
 		// System.setProperty("javax.xml.bind.context.factory", "com.sun.xml.bind.v2.ContextFactory");
+		System.setProperty("javax.xml.bind.context.factory", "com.sun.xml.bind.v2.ContextFactory");
 	}
 
 	public HibernateORMEngine() {
@@ -54,8 +43,7 @@ public class HibernateORMEngine implements ORMEngine {
 	/**
 	 * Instantiate the Hibernate session and factory data.
 	 *
-	 * @param pc
-	 *            PageContext
+	 * @param pc PageContext
 	 */
 	@Override
 	public void init(PageContext pc) throws PageException {
@@ -77,10 +65,8 @@ public class HibernateORMEngine implements ORMEngine {
 	 *
 	 * Will NOT reload if force is false and the given pageContext already has a session factory.
 	 *
-	 * @param pc
-	 *            The current page context object
-	 * @param force
-	 *            Force reload all session factory data.
+	 * @param pc The current page context object
+	 * @param force Force reload all session factory data.
 	 */
 
 	@Override
@@ -94,22 +80,23 @@ public class HibernateORMEngine implements ORMEngine {
 
 	private boolean isInitializedForApplication(String applicationName) {
 		return factories.containsKey(applicationName);
-		}
+	}
+
 	/**
 	 * Get the SessionFactoryData by application name.
 	 *
-	 * @param applicationName
-	 *            Lucee application name, retrieve from {@link lucee.runtime.listener.ApplicationContext#getName()}
+	 * @param applicationName Lucee application name, retrieve from
+	 *            {@link lucee.runtime.listener.ApplicationContext#getName()}
 	 */
 	private SessionFactoryData getSessionFactory(String applicationName) {
 		return factories.get(applicationName);
 	}
 
 	/**
-	 * Retrieve a SessionFactoryData() if configured for this application. If not, build one and retrieve that.
+	 * Retrieve a SessionFactoryData() if configured for this application. If not, build one and
+	 * retrieve that.
 	 *
-	 * @param pc
-	 *            Lucee PageContext object.
+	 * @param pc Lucee PageContext object.
 	 *
 	 * @return extension SessionFactoryData object.
 	 *
@@ -126,10 +113,10 @@ public class HibernateORMEngine implements ORMEngine {
 	/**
 	 * Add a new session factory specific to this application.
 	 *
-	 * @param applicationName
-	 *            Lucee application name, retrieve from {@link lucee.runtime.listener.ApplicationContext#getName()}
-	 * @param factory
-	 *            the SessionFactoryData object which houses the application-level Hibernate session factory
+	 * @param applicationName Lucee application name, retrieve from
+	 *            {@link lucee.runtime.listener.ApplicationContext#getName()}
+	 * @param factory the SessionFactoryData object which houses the application-level Hibernate session
+	 *            factory
 	 */
 	private void setSessionFactory(String applicationName, SessionFactoryData factory) {
 		factories.put(applicationName, factory);
@@ -138,8 +125,7 @@ public class HibernateORMEngine implements ORMEngine {
 	/**
 	 * Wipe the SessionFactoryData object for this Lucee application name from memory.
 	 *
-	 * @param applicationName
-	 *            The Lucee application name.
+	 * @param applicationName The Lucee application name.
 	 */
 	private void clearSessionFactory(String applicationName) {
 		SessionFactoryData data = getSessionFactory(applicationName);
@@ -152,8 +138,7 @@ public class HibernateORMEngine implements ORMEngine {
 	/**
 	 * Reload all ORM configuration and entities and reload the HIbernate ORM session factory.
 	 *
-	 * @param pc
-	 *            Lucee PageContext
+	 * @param pc Lucee PageContext
 	 *
 	 * @return SessionFactoryData
 	 *
@@ -161,8 +146,7 @@ public class HibernateORMEngine implements ORMEngine {
 	 */
 	private SessionFactoryData buildSessionFactoryData(PageContext pc) throws PageException {
 		ApplicationContext appContext = pc.getApplicationContext();
-		if (!appContext.isORMEnabled())
-			throw ExceptionUtil.createException((ORMSession) null, null, "ORM is not enabled", "");
+		if (!appContext.isORMEnabled()) throw ExceptionUtil.createException((ORMSession) null, null, "ORM is not enabled", "");
 		String applicationName = pc.getApplicationContext().getName();
 		clearSessionFactory(applicationName);
 
@@ -180,35 +164,36 @@ public class HibernateORMEngine implements ORMEngine {
 				data.tmpList = HibernateSessionFactory.loadComponents(pc, this, ormConf);
 				data.clearCFCs();
 
-					// load entities
+				// load entities
 				if (data.hasTempCFCs()) {
-						data.getNamingStrategy();// called here to make sure, it is called in the right context the
-													// first one
+					data.getNamingStrategy();// called here to make sure, it is called in the right context the
+												// first one
 
-						// creates CFCInfo objects
-						{
-							Iterator<Component> it = data.tmpList.iterator();
-							while (it.hasNext()) {
-								createMapping(pc, it.next(), ormConf, data);
-							}
-						}
-						if (data.tmpList.size() != data.sizeCFCs()) {
-							Component cfc;
-							String name, lcName;
-							Map<String, String> names = new HashMap<String, String>();
-							Iterator<Component> it = data.tmpList.iterator();
-							while (it.hasNext()) {
-								cfc = it.next();
-								name = HibernateCaster.getEntityName(cfc);
-								lcName = name.toLowerCase();
-								if (names.containsKey(lcName)) throw ExceptionUtil.createException(data, null, "Entity Name [" + name + "] is ambigous, [" + names.get(lcName)
-										+ "] and [" + cfc.getPageSource().getDisplayPath() + "] use the same entity name.", "");
-								names.put(lcName, cfc.getPageSource().getDisplayPath());
-							}
+					// creates CFCInfo objects
+					{
+						Iterator<Component> it = data.tmpList.iterator();
+						while (it.hasNext()) {
+							createMapping(pc, it.next(), ormConf, data);
 						}
 					}
+					if (data.tmpList.size() != data.sizeCFCs()) {
+						Component cfc;
+						String name, lcName;
+						Map<String, String> names = new HashMap<String, String>();
+						Iterator<Component> it = data.tmpList.iterator();
+						while (it.hasNext()) {
+							cfc = it.next();
+							name = HibernateCaster.getEntityName(cfc);
+							lcName = name.toLowerCase();
+							if (names.containsKey(lcName)) throw ExceptionUtil.createException(data, null, "Entity Name [" + name + "] is ambigous, [" + names.get(lcName)
+									+ "] and [" + cfc.getPageSource().getDisplayPath() + "] use the same entity name.", "");
+							names.put(lcName, cfc.getPageSource().getDisplayPath());
+						}
+					}
+				}
 			}
-		} finally {
+		}
+		finally {
 			data.tmpList = null;
 		}
 
@@ -221,8 +206,7 @@ public class HibernateORMEngine implements ORMEngine {
 
 		Log log = pc.getConfig().getLog("orm");
 
-		Iterator<Entry<Key, String>> it = HibernateSessionFactory.assembleMappingsByDatasource(data).entrySet()
-				.iterator();
+		Iterator<Entry<Key, String>> it = HibernateSessionFactory.assembleMappingsByDatasource(data).entrySet().iterator();
 		Entry<Key, String> e;
 		while (it.hasNext()) {
 			e = it.next();
@@ -278,11 +262,11 @@ public class HibernateORMEngine implements ORMEngine {
 			if (ormConf.autogenmap()) {
 				data.reset();
 				pc.addPageSource(cfc.getPageSource(), true);
-				// 
+				//
 				/**
-				 * TODO: Create a map of connections per datasource.
-				 * Then we can grab and reuse existing connections based on the component's datasource annotation.
-				 * This should save a good bit of time from opening and releasing connections hundreds of times for a single ORM reload.
+				 * TODO: Create a map of connections per datasource. Then we can grab and reuse existing connections
+				 * based on the component's datasource annotation. This should save a good bit of time from opening
+				 * and releasing connections hundreds of times for a single ORM reload.
 				 */
 				DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds, null, null, false);
 				try {
@@ -290,9 +274,11 @@ public class HibernateORMEngine implements ORMEngine {
 					if (ormConf.saveMapping()) {
 						HBMCreator.saveMapping(cfc, xml);
 					}
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
-				} finally {
+				}
+				finally {
 					pc.removeLastPageSource(true);
 					CommonUtil.releaseDatasourceConnection(pc, dc, false);
 				}
@@ -301,7 +287,8 @@ public class HibernateORMEngine implements ORMEngine {
 			else {
 				try {
 					xml = HBMCreator.loadMapping(cfc);
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
 				}
 
@@ -325,8 +312,7 @@ public class HibernateORMEngine implements ORMEngine {
 	/**
 	 * Get the ORM configuration for the given PageContext
 	 *
-	 * @param pc
-	 *            PageContext object
+	 * @param pc PageContext object
 	 *
 	 * @return ORMConfiguration
 	 */

@@ -4,17 +4,14 @@
         Build Hibernate Extension
     </description>
     <!-- set global properties for this build -->
-  <property file="build.properties"/>
-
+  
   
   <property name="lib" location="source/java/libs"/>
   <property name="temp" location="temp"/>
   <property name="build" location="build"/>
-  <property name="dist"  location="dist"/>
+  <property name="dist"  location="target"/>
   <property name="src" location="source/java/src"/>
   <property name="srcImg" location="source/images"/>
-  
-  <buildnumber file="build.number"/>
   
 
   <path id="classpath">
@@ -55,13 +52,13 @@
 
     <echo file="${dist}/extension/META-INF/MANIFEST.MF">Manifest-Version: 1.0
 Built-Date: ${NOW}
-version: "${bundleversion}${build.number}${versionAppendix}"
+version: "${bundleversion}"
 id: "FAD1E8CB-4F45-4184-86359145767C29DE"
 name: ${label}
 description: ${description}
 start-bundles: false
 release-type: ${releaseType}
-orm: "[{'class':'${class}','name':'${bundlename}','version':'${bundleversion}${build.number}${versionAppendix}'}]"
+orm: "[{'class':'${class}','name':'${bundlename}','version':'${bundleversion}'}]"
 lucee-core-version: "${luceeCoreVersion}"
 </echo>
 
@@ -74,7 +71,7 @@ lucee-core-version: "${luceeCoreVersion}"
   <target name="compile" depends="copy"
         description="compile the source " >
     <!-- Compile ACF-Infinspan source -->
-    <javac srcdir="${temp}" target="1.8" destdir="${build}" debug="true" debuglevel="lines,vars,source">
+    <javac srcdir="${temp}" target="11" destdir="${build}" debug="true" debuglevel="lines,vars,source">
       <classpath refid="classpath" />
     </javac>
   </target>
@@ -85,9 +82,9 @@ lucee-core-version: "${luceeCoreVersion}"
  
     <!-- Put everything in ${build} into .jar file -->
     <jar 
-    	jarfile="${dist}/extension/jars/lucee-hibernate-${bundleversion}${build.number}${versionAppendix}.jar" basedir="${build}"  manifest="${src}/META-INF/MANIFEST.MF">
+    	jarfile="${dist}/extension/jars/${bundlename}-${bundleversion}.jar" basedir="${build}"  manifest="${src}/META-INF/MANIFEST.MF">
       <manifest>
-        <attribute name="Bundle-Version" value="${bundleversion}${build.number}${versionAppendix}"/>
+        <attribute name="Bundle-Version" value="${bundleversion}"/>
         <attribute name="Built-Date" value="${NOW}"/>
         <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
       </manifest>
@@ -115,7 +112,7 @@ lucee-core-version: "${luceeCoreVersion}"
     </copy>
 
     <!-- Zip everything  -->
-     <zip destfile="${dist}/hibernate-orm-${bundleversion}${build.number}${versionAppendix}.lex">
+     <zip destfile="${dist}/${filename}-${bundleversion}.lex">
         <zipfileset dir="${dist}/extension"/>
     </zip>
 		
