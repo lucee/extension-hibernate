@@ -180,7 +180,7 @@ lucee-core-version: ${minLuceeVersion}
                      The best workaround appears to be not using those properties, and hardcoding a RELATIVE path
                      instead.-->
 							<toFile>target/META-INF/MANIFEST.MF</toFile>
-							<append>true</append>
+							<append>false</append>
 						</configuration>
 					</execution>
 				</executions>
