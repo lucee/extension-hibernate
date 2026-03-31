@@ -19,6 +19,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "rollback reverts all flushed changes", function() {
+				var result = _InternalRequest( template: "#uri()#/nestedRollback.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}

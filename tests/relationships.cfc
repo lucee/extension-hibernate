@@ -24,6 +24,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "cascade delete-orphan: deleting parent removes children", function() {
+				var result = _InternalRequest( template: "#uri()#/cascadeDelete.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}
