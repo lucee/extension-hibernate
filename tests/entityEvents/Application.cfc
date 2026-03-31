@@ -1,6 +1,6 @@
 component {
 	this.name = "test-entityEvents-#hash( getCurrentTemplatePath() )#";
-	this.datasource = server.getDatasource( "h2", "#getDirectoryFromPath( getCurrentTemplatePath() )#/db" );
+	this.datasource = server.getDatasource( "h2", server._getTempDir( "orm-entityEvents" ) );
 	this.ormEnabled = true;
 	this.ormSettings = {
 		dbcreate: "dropcreate",
