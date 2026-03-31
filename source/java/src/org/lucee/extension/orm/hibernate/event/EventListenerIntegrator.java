@@ -1,10 +1,8 @@
 package org.lucee.extension.orm.hibernate.event;
 
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.HibernateException;
 import org.hibernate.boot.Metadata;
@@ -92,7 +90,6 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 	 * The EventHandler CFC defined in the application's `this.ormSettings.eventHandler`.
 	 */
 	private Component GlobalEventListener;
-	private Map<String, Component> eventListeners = new ConcurrentHashMap<>();
 
 	@Override
 	public void integrate(Metadata metadata, SessionFactoryImplementor sessionFactory, SessionFactoryServiceRegistry serviceRegistry) {
@@ -135,18 +132,6 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 		this.GlobalEventListener = GlobalEventListener;
 	}
 
-	/**
-	 * Add this component to the list of listeners to be notified for an entity event.
-	 * <p>
-	 * Note this listener will ONLY fire for events related to itself. i.e. Car.preInsert will be run for Car entity
-	 * preInsert events - not for User entity preInsert events.
-	 *
-	 * @param cfc
-	 *            Instantiated Lucee Component object.
-	 */
-	public void appendEventListenerCFC(Component cfc) {
-		this.eventListeners.put(cfc.getAbsName(), cfc);
-	}
 
 	@Override
 	public boolean requiresPostCommitHanding(EntityPersister arg0) {
@@ -179,36 +164,23 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 
 	@Override
 	public void onPostInsert(PostInsertEvent event) {
-		// fire on entity
-		Component listener = getEventListener(event.getEntity());
-		if (listener != null) {
-			fireEventOnEntityListener(listener, POST_INSERT, event, null);
-		}
+		fireOnEntity(event.getEntity(), POST_INSERT, event, null);
 		fireEventOnGlobalListener(POST_INSERT, event.getEntity(), event, null);
 	}
 
-	// PreDeleteEventListener
 	@Override
 	public boolean onPreDelete(PreDeleteEvent event) {
-		Component listener = getEventListener(event.getEntity());
-		if (listener != null) {
-			fireEventOnEntityListener(listener, PRE_DELETE, event, null);
-		}
+		fireOnEntity(event.getEntity(), PRE_DELETE, event, null);
 		fireEventOnGlobalListener(PRE_DELETE, event.getEntity(), event, null);
 		return false;
 	}
 
-	// PostDeleteEventListener
 	@Override
 	public void onPostDelete(PostDeleteEvent event) {
-		Component listener = getEventListener(event.getEntity());
-		if (listener != null) {
-			fireEventOnEntityListener(listener, POST_DELETE, event, null);
-		}
+		fireOnEntity(event.getEntity(), POST_DELETE, event, null);
 		fireEventOnGlobalListener(POST_DELETE, event.getEntity(), event, null);
 	}
 
-	// PreUpdateEventListener
 	@Override
 	public boolean onPreUpdate(PreUpdateEvent event) {
 		String[] propertyNames = event.getPersister().getEntityMetamodel().getPropertyNames();
@@ -232,34 +204,21 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 		return false;
 	}
 
-	// PostUpdateEventListener
 	@Override
 	public void onPostUpdate(PostUpdateEvent event) {
-		Component listener = getEventListener(event.getEntity());
-		if (listener != null) {
-			fireEventOnEntityListener(listener, POST_UPDATE, event, null);
-		}
+		fireOnEntity(event.getEntity(), POST_UPDATE, event, null);
 		fireEventOnGlobalListener(POST_UPDATE, event.getEntity(), event, null);
 	}
 
-	// PreLoadEventListener
 	@Override
 	public void onPreLoad(PreLoadEvent event) {
+		fireOnEntity(event.getEntity(), PRE_LOAD, event, null);
 		fireEventOnGlobalListener(PRE_LOAD, event.getEntity(), event, null);
-
-		Component listener = getEventListener(event.getEntity());
-		if (listener != null) {
-			fireEventOnEntityListener(listener, PRE_LOAD, event, null);
-		}
 	}
 
-	// PostLoadEventListener
 	@Override
 	public void onPostLoad(PostLoadEvent event) {
-		Component listener = getEventListener(event.getEntity());
-		if (listener != null) {
-			fireEventOnEntityListener(listener, POST_LOAD, event, null);
-		}
+		fireOnEntity(event.getEntity(), POST_LOAD, event, null);
 		fireEventOnGlobalListener(POST_LOAD, event.getEntity(), event, null);
 	}
 
@@ -345,19 +304,13 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 	}
 
 	/**
-	 * Fire the event listener UDF, if found, on the entity component
-	 *
-	 * @param listener
-	 *            the Lucee Component on which to fire this listener method
-	 * @param name
-	 *            event type name to fire, for example "preInsert" or "preDelete"
-	 * @param event
-	 *            the Hibernate event object.
-	 * @param data
-	 *            A struct of data to pass to the event
+	 * Fire the event listener UDF, if found, on the entity component.
 	 */
-	public void fireEventOnEntityListener(Component listener, Key name, AbstractEvent event, Struct data) {
-		_fireOnComponent(listener, name, data, event);
+	public void fireOnEntity(Object entity, Key name, AbstractEvent event, Struct data) {
+		Component listener = (entity instanceof Component) ? (Component) entity : CommonUtil.toComponent(entity, null);
+		if (listener != null) {
+			_fireOnComponent(listener, name, data, event);
+		}
 	}
 
 	/**
@@ -387,17 +340,6 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 		}
 	}
 
-	private Component getEventListener(Object entity) {
-		if (eventListeners.size() == 0)
-			return null;
-		Component caller = CommonUtil.toComponent(entity, null);
-		if (caller != null) {
-			Component eventListener = eventListeners.get(caller.getAbsName());
-			if (eventListener != null)
-				return eventListener;
-		}
-		return null;
-	}
 
 	/**
 	 * Merge the provided arrays of properties and values into a CFML-friendly struct.

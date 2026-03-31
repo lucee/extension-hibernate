@@ -261,11 +261,7 @@ public class HibernateORMEngine implements ORMEngine {
 			}
 		}
 
-		Iterator<CFCInfo> it = data.getCFCs(key).values().iterator();
-		while (it.hasNext()) {
-			CFCInfo info = it.next();
-			integrator.appendEventListenerCFC(info.getCFC());
-		}
+		// Entity event listeners fire directly on the entity CFC — no separate registration needed
 	}
 
 	public void createMapping(PageContext pc, Component cfc, ORMConfiguration ormConf, SessionFactoryData data) throws PageException {
