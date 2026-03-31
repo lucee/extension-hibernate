@@ -56,6 +56,8 @@ import lucee.runtime.util.TemplateUtil;
 
 public class HibernateSessionFactory {
 
+	private HibernateSessionFactory() {}
+
 	/**
 	 * Generate the database schema based on the configured settings (dropcreate, update, etc.)
 	 *
@@ -207,8 +209,7 @@ public class HibernateSessionFactory {
 				Component parent = data.getEntityByCFCName(ext, false);
 				ext = HibernateCaster.getEntityName(parent);
 			}
-			catch (Throwable t) {
-				if (t instanceof ThreadDeath) throw (ThreadDeath) t;
+			catch (Exception e) {
 			}
 
 			ext = HibernateUtil.id(CommonUtil.last(ext, ".").trim());

@@ -19,6 +19,9 @@ import lucee.runtime.util.ListUtil;
  * Hibernate Dialect manager
  */
 public class Dialect {
+
+	private Dialect() {}
+
 	private static Struct dialects = CommonUtil.createStruct();
 
 	static {

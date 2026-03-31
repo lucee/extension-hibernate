@@ -33,8 +33,7 @@ public class CFCHibernateProxyFactory implements ProxyFactory {
 		try {
 			return new CFCHibernateProxy(new CFCLazyInitializer(entityName, id, (SessionImplementor) session));
 		}
-		catch (Throwable t) {
-			if (t instanceof ThreadDeath) throw (ThreadDeath) t;
+		catch (Exception e) {
 			return new CFCHibernateProxy(new CFCLazyInitializer(nodeName, id, (SessionImplementor) session));
 		}
 	}

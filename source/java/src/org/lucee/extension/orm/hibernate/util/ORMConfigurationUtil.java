@@ -12,6 +12,8 @@ import lucee.runtime.orm.ORMConfiguration;
 // FUTURE update ORMConfiguration interface
 public class ORMConfigurationUtil {
 
+	private ORMConfigurationUtil() {}
+
 	private static final Class[] CLASS_STRING = new Class[] { String.class };
 	private static Method getDbCreate;
 	private static Method getCatalog;

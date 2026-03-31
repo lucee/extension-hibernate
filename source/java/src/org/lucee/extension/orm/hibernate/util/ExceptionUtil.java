@@ -13,6 +13,8 @@ import lucee.runtime.type.Collection.Key;
 
 public class ExceptionUtil {
 
+	private ExceptionUtil() {}
+
 	private static Method setAdditional;
 
 	/**
@@ -84,19 +86,8 @@ public class ExceptionUtil {
 			}
 			setAdditional.invoke(pe, new Object[] { name, value });
 		}
-		catch (Throwable t) {
-			if (t instanceof ThreadDeath) throw (ThreadDeath) t;
+		catch (Exception e) {
 		}
-	}
-
-	/**
-	 * A java.lang.ThreadDeath must never be caught, so any catch(Throwable t) must go through this
-	 * method in order to ensure that the throwable is not of type ThreadDeath
-	 *
-	 * @param t the thrown Throwable
-	 */
-	public static void rethrowIfNecessary(Throwable t) {
-		if (unwrap(t) instanceof ThreadDeath) throw (ThreadDeath) t; // never catch a ThreadDeath
 	}
 
 	public static PageException toPageException( Throwable t ) {
@@ -122,11 +113,4 @@ public class ExceptionUtil {
 		return pe;
 	}
 
-	private static Throwable unwrap(Throwable t) {
-		if (t == null) return t;
-		// if (t instanceof NativeException) return unwrap(((NativeException) t).getException());
-		Throwable cause = t.getCause();
-		if (cause != null && cause != t) return unwrap(cause);
-		return t;
-	}
 }

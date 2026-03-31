@@ -22,6 +22,8 @@ import lucee.runtime.exp.PageException;
 
 public class XMLUtil {
 
+	private XMLUtil() {}
+
 	public static InputSource toInputSource(Object obj) throws PageException {
 		// FUTURE use interface from loader
 		try {

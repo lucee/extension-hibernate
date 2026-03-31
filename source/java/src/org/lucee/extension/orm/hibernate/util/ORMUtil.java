@@ -35,6 +35,8 @@ import lucee.runtime.type.Struct;
 
 public class ORMUtil {
 
+	private ORMUtil() {}
+
 	public static final Key PROPS_FIELDTYPE = CommonUtil.createKey("fieldtype");
 	public static final Key PROPS_DATASOURCE = CommonUtil.createKey("datasource");
 
@@ -317,8 +319,7 @@ public class ORMUtil {
 				if (ds != null) return ds;
 			}
 		}
-		catch (Throwable t) {
-			ExceptionUtil.rethrowIfNecessary(t);
+		catch (Exception e) {
 		}
 
 		return getDefaultDataSource(pc, defaultValue);

@@ -36,6 +36,8 @@ import lucee.runtime.type.Struct;
 
 public class HibernateCaster {
 
+	private HibernateCaster() {}
+
 	private static final int NULL = -178696;
 
 	public static Object toCFML(Object src) {
@@ -80,14 +82,13 @@ public class HibernateCaster {
 		try {
 			name = CommonUtil.toString(cfc.getMetaStructItem(CommonUtil.ENTITY_NAME), null);
 		}
-		catch (Throwable t) {
-			if (t instanceof ThreadDeath) throw (ThreadDeath) t;
+		catch (Exception e) {
 			try {
 				Struct md = cfc.getMetaData(CommonUtil.pc());
 				name = CommonUtil.toString(md.get(CommonUtil.ENTITY_NAME), null);
 
 			}
-			catch (PageException e) {}
+			catch (PageException pe) {}
 		}
 
 		if (!Util.isEmpty(name)) {

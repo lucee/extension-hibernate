@@ -231,8 +231,8 @@ public class HibernateORMSession implements ORMSession {
 		try {
 			getSession(pc, dsn).flush();
 		}
-		catch (Throwable t) {
-			throw CommonUtil.toPageException(t);
+		catch (Exception e) {
+			throw CommonUtil.toPageException(e);
 		}
 
 	}
@@ -280,9 +280,9 @@ public class HibernateORMSession implements ORMSession {
 						_delete(pc, _it.next(), e.getKey());
 					}
 				}
-				catch (Throwable t) {
+				catch (Exception ex) {
 					if (trans != null) trans.rollback();
-					throw CommonUtil.toPageException(t);
+					throw CommonUtil.toPageException(ex);
 				}
 				if (trans != null) trans.commit();
 			}
@@ -296,8 +296,8 @@ public class HibernateORMSession implements ORMSession {
 		try {
 			getSession(pc, dsn).delete(HibernateCaster.getEntityName(cfc), cfc);
 		}
-		catch (Throwable t) {
-			throw CommonUtil.toPageException(t);
+		catch (Exception e) {
+			throw CommonUtil.toPageException(e);
 		}
 	}
 
@@ -491,8 +491,7 @@ public class HibernateORMSession implements ORMSession {
 				try {
 					return __executeQuery(pc, s, dsn, hql, CommonUtil.toArray((Argument) params), unique, queryOptions);
 				}
-				catch (Throwable t) {
-					if (t instanceof ThreadDeath) throw (ThreadDeath) t;
+				catch (Exception e) {
 				}
 			}
 			throw qe;
@@ -645,8 +644,8 @@ public class HibernateORMSession implements ORMSession {
 			if (list.size() > 0) return list.iterator().next();
 			throw CommonUtil.toPageException(e);
 		}
-		catch (Throwable t) {
-			throw CommonUtil.toPageException(t);
+		catch (Exception e) {
+			throw CommonUtil.toPageException(e);
 		}
 	}
 
@@ -746,8 +745,8 @@ public class HibernateORMSession implements ORMSession {
 			Serializable oId = CommonUtil.toSerializable(CommonUtil.castTo(pc, metaData.getIdentifierType().getReturnedClass(), id));
 			obj = sess.get(name, oId);
 		}
-		catch (Throwable t) {
-			throw CommonUtil.toPageException(t);
+		catch (Exception e) {
+			throw CommonUtil.toPageException(e);
 		}
 
 		return (Component) obj;
@@ -799,9 +798,9 @@ public class HibernateORMSession implements ORMSession {
 				rtn = criteria.uniqueResult();
 			}
 		}
-		catch (Throwable t) {
+		catch (Exception e) {
 			// trans.rollback();
-			throw CommonUtil.toPageException(t);
+			throw CommonUtil.toPageException(e);
 		}
 		// trans.commit();
 
@@ -907,8 +906,8 @@ public class HibernateORMSession implements ORMSession {
 			}
 
 		}
-		catch (Throwable t) {
-			throw CommonUtil.toPageException(t);
+		catch (Exception e) {
+			throw CommonUtil.toPageException(e);
 		}
 		return rtn;
 	}

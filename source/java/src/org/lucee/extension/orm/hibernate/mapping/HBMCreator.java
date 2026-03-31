@@ -39,6 +39,8 @@ import lucee.commons.io.res.Resource;
 
 public class HBMCreator {
 
+	private HBMCreator() {}
+
 	/**
 	 * Hibernate DOCTYPE mapping ID
 	 *
@@ -52,7 +54,7 @@ public class HBMCreator {
 	 * @see https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects
 	 */
 	// public static final String HIBERNATE_3_SYSTEM_ID = "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd";
-	public static final String HIBERNATE_3_SYSTEM_ID = "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd";
+	public static final String HIBERNATE_3_SYSTEM_ID = "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd";
 
 	/**
 	 * Full XML doctype for Hibernate mappings
@@ -729,8 +731,7 @@ public class HBMCreator {
 						}
 					}
 				}
-				catch (Throwable t) {
-					if (t instanceof ThreadDeath) throw (ThreadDeath) t;
+				catch (Exception e) {
 				}
 			}
 			return "string";

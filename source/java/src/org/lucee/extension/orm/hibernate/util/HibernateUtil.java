@@ -38,6 +38,8 @@ import lucee.runtime.type.Struct;
 
 public class HibernateUtil {
 
+	private HibernateUtil() {}
+
 	public static final short FIELDTYPE_ID = 0;
 	public static final short FIELDTYPE_COLUMN = 1;
 	public static final short FIELDTYPE_TIMESTAMP = 2;
@@ -189,8 +191,7 @@ public class HibernateUtil {
 			// MUST foreign-key relation
 
 		}
-		catch (Throwable t) {
-			if (t instanceof ThreadDeath) throw (ThreadDeath) t;
+		catch (Exception e) {
 			return new Property[0];
 		}
 
@@ -324,8 +325,7 @@ public class HibernateUtil {
 				if (name.equalsIgnoreCase(tableName) && tables.getString("TABLE_TYPE").toUpperCase().indexOf("SYSTEM") == -1) return name;
 			}
 		}
-		catch (Throwable t) {
-			if (t instanceof ThreadDeath) throw (ThreadDeath) t;
+		catch (Exception e) {
 		}
 		finally {
 			CommonUtil.closeEL(tables);

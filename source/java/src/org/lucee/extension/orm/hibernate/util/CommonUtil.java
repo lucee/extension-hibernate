@@ -909,8 +909,7 @@ public class CommonUtil {
 			try {
 				os.close();
 			}
-			catch (Throwable t) {
-				if (t instanceof ThreadDeath) throw (ThreadDeath) t;
+			catch (Exception e) {
 			}
 		}
 	}
@@ -920,8 +919,7 @@ public class CommonUtil {
 			try {
 				w.close();
 			}
-			catch (Throwable t) {
-				if (t instanceof ThreadDeath) throw (ThreadDeath) t;
+			catch (Exception e) {
 			}
 		}
 	}
@@ -931,8 +929,7 @@ public class CommonUtil {
 			try {
 				rs.close();
 			}
-			catch (Throwable t) {
-				if (t instanceof ThreadDeath) throw (ThreadDeath) t;
+			catch (Exception e) {
 			}
 		}
 	}
@@ -941,8 +938,7 @@ public class CommonUtil {
 		try {
 			if (is != null) is.close();
 		}
-		catch (Throwable t) {
-			if (t instanceof ThreadDeath) throw (ThreadDeath) t;
+		catch (Exception e) {
 		}
 	}
 
@@ -950,8 +946,7 @@ public class CommonUtil {
 		try {
 			if (r != null) r.close();
 		}
-		catch (Throwable t) {
-			if (t instanceof ThreadDeath) throw (ThreadDeath) t;
+		catch (Exception e) {
 		}
 	}
 
