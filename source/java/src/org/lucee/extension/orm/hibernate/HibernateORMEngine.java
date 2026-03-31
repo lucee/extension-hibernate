@@ -1,6 +1,8 @@
 package org.lucee.extension.orm.hibernate;
 import org.lucee.extension.orm.hibernate.mapping.HBMCreator;
 
+import org.lucee.extension.orm.hibernate.logging.LoggerLevelManager;
+import org.lucee.extension.orm.hibernate.logging.OrmLoggingSettings;
 import org.lucee.extension.orm.hibernate.util.CommonUtil;
 import org.lucee.extension.orm.hibernate.util.ExceptionUtil;
 import org.lucee.extension.orm.hibernate.util.HibernateUtil;
@@ -40,6 +42,9 @@ public class HibernateORMEngine implements ORMEngine {
 		// Class clazz = ContextFactory.class;
 		// System.setProperty("javax.xml.bind.context.factory", "com.sun.xml.bind.v2.ContextFactory");
 		System.setProperty("javax.xml.bind.context.factory", "com.sun.xml.bind.v2.ContextFactory");
+		// Force JBoss Logging to use our Lucee bridge instead of ServiceLoader discovery
+		// (ServiceLoader doesn't work in OSGi)
+		System.setProperty("org.jboss.logging.provider", "org.lucee.extension.orm.hibernate.logging.LuceeJBossLoggerProvider");
 	}
 
 	public HibernateORMEngine() {
@@ -157,6 +162,14 @@ public class HibernateORMEngine implements ORMEngine {
 
 		// datasource
 		ORMConfiguration ormConf = appContext.getORMConfiguration();
+
+		// Configure ORM logging BEFORE Hibernate classes load, so level filtering is active
+		// from the start.
+		Log log = pc.getConfig().getLog( "orm" );
+		OrmLoggingSettings logSettings = OrmLoggingSettings.load( pc, ormConf );
+		LoggerLevelManager.configure( log, logSettings.logSQL, logSettings.logParams,
+		    logSettings.logCache, logSettings.logLevel );
+
 		SessionFactoryData data = new SessionFactoryData(this, ormConf);
 		setSessionFactory(applicationName, data);
 
@@ -208,8 +221,6 @@ public class HibernateORMEngine implements ORMEngine {
 		// cacheconfig
 		// cacheprovider
 		// ...
-
-		Log log = pc.getConfig().getLog("orm");
 
 		Iterator<Entry<Key, String>> it = HibernateSessionFactory.assembleMappingsByDatasource(data).entrySet().iterator();
 		Entry<Key, String> e;
