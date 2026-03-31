@@ -79,6 +79,16 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "entityLoad() with sort order", function() {
+				var result = _InternalRequest( template: "#createURI( 'bifs' )#/entityLoadSort.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "ormFlush() persists to DB", function() {
+				var result = _InternalRequest( template: "#createURI( 'bifs' )#/ormFlush.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}
