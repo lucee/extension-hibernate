@@ -116,23 +116,23 @@ public class HibernateCaster {
 
 	public static int cascade(String cascade, int defaultValue) {
 		cascade = cascade.trim().toLowerCase();
-		if ("all".equals(cascade)) return HibernateConstants.CASCADE_ALL;
+		if ("all".equals(cascade)) return CFConstants.CASCADE_ALL;
 
-		if ("save-update".equals(cascade)) return HibernateConstants.CASCADE_SAVE_UPDATE;
-		if ("save_update".equals(cascade)) return HibernateConstants.CASCADE_SAVE_UPDATE;
-		if ("saveupdate".equals(cascade)) return HibernateConstants.CASCADE_SAVE_UPDATE;
+		if ("save-update".equals(cascade)) return CFConstants.CASCADE_SAVE_UPDATE;
+		if ("save_update".equals(cascade)) return CFConstants.CASCADE_SAVE_UPDATE;
+		if ("saveupdate".equals(cascade)) return CFConstants.CASCADE_SAVE_UPDATE;
 
-		if ("delete".equals(cascade)) return HibernateConstants.CASCADE_DELETE;
+		if ("delete".equals(cascade)) return CFConstants.CASCADE_DELETE;
 
-		if ("delete-orphan".equals(cascade)) return HibernateConstants.CASCADE_DELETE_ORPHAN;
-		if ("delete_orphan".equals(cascade)) return HibernateConstants.CASCADE_DELETE_ORPHAN;
-		if ("deleteorphan".equals(cascade)) return HibernateConstants.CASCADE_DELETE_ORPHAN;
+		if ("delete-orphan".equals(cascade)) return CFConstants.CASCADE_DELETE_ORPHAN;
+		if ("delete_orphan".equals(cascade)) return CFConstants.CASCADE_DELETE_ORPHAN;
+		if ("deleteorphan".equals(cascade)) return CFConstants.CASCADE_DELETE_ORPHAN;
 
-		if ("all-delete-orphan".equals(cascade)) return HibernateConstants.CASCADE_ALL_DELETE_ORPHAN;
-		if ("all_delete_orphan".equals(cascade)) return HibernateConstants.CASCADE_ALL_DELETE_ORPHAN;
-		if ("alldeleteorphan".equals(cascade)) return HibernateConstants.CASCADE_ALL_DELETE_ORPHAN;
+		if ("all-delete-orphan".equals(cascade)) return CFConstants.CASCADE_ALL_DELETE_ORPHAN;
+		if ("all_delete_orphan".equals(cascade)) return CFConstants.CASCADE_ALL_DELETE_ORPHAN;
+		if ("alldeleteorphan".equals(cascade)) return CFConstants.CASCADE_ALL_DELETE_ORPHAN;
 
-		if ("refresh".equals(cascade)) return HibernateConstants.REFRESH;
+		if ("refresh".equals(cascade)) return CFConstants.REFRESH;
 
 		return defaultValue;
 	}
@@ -145,8 +145,8 @@ public class HibernateCaster {
 
 	public static int collectionType(String strCollectionType, int defaultValue) {
 		strCollectionType = strCollectionType.trim().toLowerCase();
-		if ("struct".equals(strCollectionType)) return HibernateConstants.COLLECTION_TYPE_STRUCT;
-		if ("array".equals(strCollectionType)) return HibernateConstants.COLLECTION_TYPE_ARRAY;
+		if ("struct".equals(strCollectionType)) return CFConstants.COLLECTION_TYPE_STRUCT;
+		if ("array".equals(strCollectionType)) return CFConstants.COLLECTION_TYPE_ARRAY;
 
 		return defaultValue;
 	}
