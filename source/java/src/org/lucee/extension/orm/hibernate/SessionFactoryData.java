@@ -1,5 +1,10 @@
 package org.lucee.extension.orm.hibernate;
 
+import org.lucee.extension.orm.hibernate.util.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.ConfigurationBuilder;
+import org.lucee.extension.orm.hibernate.util.ExceptionUtil;
+import org.lucee.extension.orm.hibernate.util.HibernateUtil;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;

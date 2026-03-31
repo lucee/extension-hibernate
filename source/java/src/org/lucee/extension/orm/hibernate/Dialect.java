@@ -6,7 +6,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 import org.apache.felix.framework.BundleWiringImpl.BundleClassLoader;
-import org.lucee.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.CommonUtil;
 import org.osgi.framework.Bundle;
 
 import lucee.loader.engine.CFMLEngineFactory;

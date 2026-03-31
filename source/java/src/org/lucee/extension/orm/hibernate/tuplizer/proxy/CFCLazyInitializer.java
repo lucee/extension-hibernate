@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.proxy.AbstractLazyInitializer;
-import org.lucee.extension.orm.hibernate.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.CommonUtil;
 import org.lucee.extension.orm.hibernate.HibernatePageException;
 
 import lucee.runtime.Component;

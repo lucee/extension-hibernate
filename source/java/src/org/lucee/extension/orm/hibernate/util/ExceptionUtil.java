@@ -1,4 +1,6 @@
-package org.lucee.extension.orm.hibernate;
+package org.lucee.extension.orm.hibernate.util;
+
+import org.lucee.extension.orm.hibernate.SessionFactoryData;
 
 import java.lang.reflect.Method;
 

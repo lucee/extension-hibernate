@@ -1,5 +1,9 @@
 package org.lucee.extension.orm.hibernate;
 
+import org.lucee.extension.orm.hibernate.util.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.ExceptionUtil;
+import org.lucee.extension.orm.hibernate.util.HibernateUtil;
+
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;

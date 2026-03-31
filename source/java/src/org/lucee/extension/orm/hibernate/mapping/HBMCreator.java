@@ -1,4 +1,12 @@
-package org.lucee.extension.orm.hibernate;
+package org.lucee.extension.orm.hibernate.mapping;
+
+import org.lucee.extension.orm.hibernate.ColumnInfo;
+import org.lucee.extension.orm.hibernate.HibernateCaster;
+import org.lucee.extension.orm.hibernate.SessionFactoryData;
+import org.lucee.extension.orm.hibernate.util.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.ExceptionUtil;
+import org.lucee.extension.orm.hibernate.util.HibernateUtil;
+import org.lucee.extension.orm.hibernate.util.ORMConfigurationUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,10 +29,10 @@ import lucee.runtime.exp.PageException;
 import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
 
-import org.lucee.extension.orm.hibernate.CommonUtil;
-import org.lucee.extension.orm.hibernate.ExceptionUtil;
-import org.lucee.extension.orm.hibernate.HibernateUtil;
-import org.lucee.extension.orm.hibernate.ORMConfigurationUtil;
+import org.lucee.extension.orm.hibernate.util.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.ExceptionUtil;
+import org.lucee.extension.orm.hibernate.util.HibernateUtil;
+import org.lucee.extension.orm.hibernate.util.ORMConfigurationUtil;
 import org.lucee.extension.orm.hibernate.util.XMLUtil;
 import lucee.runtime.type.Struct;
 import lucee.commons.io.res.Resource;
