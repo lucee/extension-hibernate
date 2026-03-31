@@ -1,22 +1,35 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
-    public void function testDatasources(){
+	function run( testResults, testBox ) {
 
-        local.uri=createURI("datasources/index.cfm");
-        local.result=_InternalRequest(uri);
-        expect( result.status ).toBe( 200 );
-        // var res = deserializeJson(result.fileContent);
-        // if (len(res.errors)){
-        //     loop array=res.errors, item="local.err"{
-        //         systemOutput("ERROR: " & err.error, true, true);
-        //     }
-        // }
-    }
+		describe( "ORM multiple datasources", function() {
 
-	private string function createURI(string calledName){
-		systemOutput("", true);
-		systemOutput("-------------- #calledName#----------------", true);
-		var baseURI = getDirectoryFromPath( contractPath( getCurrentTemplatePath() ) );
-		return baseURI&""&calledName;
+			it( "saves entities to their respective datasources", function() {
+				var result = _InternalRequest( template: "#uri()#/index.cfm" );
+				expect( result.status ).toBe( 200 );
+			});
+
+			it( "entities are isolated to their configured datasource", function() {
+				var result = _InternalRequest( template: "#uri()#/isolation.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "HQL queries work across different datasources", function() {
+				var result = _InternalRequest( template: "#uri()#/hqlScoped.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "ORMFlushAll() flushes all datasource sessions", function() {
+				var result = _InternalRequest( template: "#uri()#/flushAll.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+		});
+
 	}
+
+	private string function uri() {
+		return getDirectoryFromPath( contractPath( getCurrentTemplatePath() ) ) & "datasources";
+	}
+
 }

@@ -25,6 +25,14 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "validate throws on schema mismatch", function() {
+				var result = _InternalRequest(
+					template: "#uri()#/validate.cfm",
+					url: { dbcreate: "validate" }
+				);
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}

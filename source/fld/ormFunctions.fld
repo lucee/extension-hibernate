@@ -469,6 +469,15 @@ ormEvictQueries([cacheName])</description>
 			<type>void</type>
 		</return>
 	</function>
+	<!-- ORMFlushAll -->
+	<function>
+		<name>ORMFlushAll</name>
+		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMFlushAll</class>
+		<description>Flushes all open ORM sessions across all datasources. All pending CRUD operations in every active ORM session are saved to the database.</description>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
 	<!-- ORMGetSession -->
 	<function>
 		<name>ORMGetSession</name>
