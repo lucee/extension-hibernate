@@ -54,6 +54,16 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "entityDelete()", function() {
+				var result = _InternalRequest( template: "#createURI( 'bifs' )#/entityDelete.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "entityToQuery()", function() {
+				var result = _InternalRequest( template: "#createURI( 'bifs' )#/entityToQuery.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}
