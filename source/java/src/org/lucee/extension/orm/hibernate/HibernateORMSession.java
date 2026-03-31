@@ -5,8 +5,6 @@ import org.lucee.extension.orm.hibernate.util.ExceptionUtil;
 import org.lucee.extension.orm.hibernate.util.HibernateUtil;
 
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,7 +36,6 @@ import lucee.runtime.Component;
 import lucee.runtime.ComponentScope;
 import lucee.runtime.PageContext;
 import lucee.runtime.db.DataSource;
-import lucee.runtime.db.DatasourceConnection;
 import lucee.runtime.db.SQLItem;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMEngine;
@@ -55,64 +52,31 @@ public class HibernateORMSession implements ORMSession {
 	public class SessionAndConn {
 
 		private Session s;
-		private DatasourceConnection dc;
 		private final DataSource d;
 		private SessionFactory factory;
 
-		/*
-		 * public SessionAndConn(Session session, DatasourceConnection dc) { this.session = session; this.dc
-		 * = dc; this.d = dc.getDatasource(); }
-		 * 
-		 * public SessionAndConn(Session session, DataSource d) { this.session = session; this.d = d; }
-		 */
-
-		public SessionAndConn(PageContext pc, SessionFactory factory, DataSource ds) throws PageException {
+		public SessionAndConn(PageContext pc, SessionFactory factory, DataSource ds) {
 			this.d = ds;
 			this.factory = factory;
 			getSession(pc);
 		}
 
-        /**
-         * Retrieve the current session if found, or open a new session if necessary.
-         *
-         * @param pc
-         *            PageContext object. (Unused.)
-         *
-         * @return The open and bound hibernate Session.
-         *
-         * @throws PageException
-         */
-		public Session getSession(PageContext pc) throws PageException {
+		public Session getSession(PageContext pc) {
 			if (s == null || !s.isOpen()) s = factory.openSession();
 			return s;
 		}
 
-		public Connection getConnection(PageContext pc) throws PageException {
+		public void close(PageContext pc) {
 			try {
-				if (dc == null || dc.isClosed()) {
-					connect(pc);
+				if (s != null && s.isOpen()) {
+					s.close();
 				}
 			}
-			catch (SQLException e) {
-				throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
+			catch (Exception e) {
+				// session close failed — log but don't prevent cleanup
 			}
-			return dc.getConnection();
-		}
-
-		public void connect(PageContext pc) throws PageException {
-			if (dc != null) CommonUtil.releaseDatasourceConnection(pc, dc, true);
-			dc = CommonUtil.getDatasourceConnection(pc, d, null, null, true);
-		}
-
-		public void close(PageContext pc) throws PageException {
-			if (s != null && s.isOpen()) {
-				s.close();
+			finally {
 				s = null;
-			}
-
-			if (dc != null) {
-				CommonUtil.releaseDatasourceConnection(pc, dc, true);
-				dc = null;
 			}
 		}
 
@@ -154,18 +118,12 @@ public class HibernateORMSession implements ORMSession {
 			throw ExceptionUtil.createException(data, null, "there is no Session for the datasource [" + datasSourceName + "]", null);
 		}
 		Session s = sac.getSession(pc);
-		if (!s.isOpen() || !s.isConnected() || isClosed(s)) {
-			if (pc == null) pc = CFMLEngineFactory.getInstance().getThreadPageContext();
-
-			sac.connect(pc);
-			s.reconnect(sac.getConnection(pc));
-
+		if (!s.isOpen() || !s.isConnected()) {
+			// session is broken — close it and open a fresh one
+			sac.close(pc);
+			s = sac.getSession(pc);
 		}
 		return sac;
-	}
-
-	private boolean isClosed(Session s) throws PageException {
-		return !s.isConnected();
 	}
 
     /**
@@ -715,12 +673,16 @@ public class HibernateORMSession implements ORMSession {
 
 	@Override
 	public void closeAll(PageContext pc) throws PageException {
-		Iterator<SessionAndConn> it = sessions.values().iterator();
-		SessionAndConn sac;
-		while (it.hasNext()) {
-			sac = it.next();
-			if (sac.isOpen()) sac.close(pc);
+		Exception first = null;
+		for (SessionAndConn sac : sessions.values()) {
+			try {
+				if (sac.isOpen()) sac.close(pc);
+			}
+			catch (Exception e) {
+				if (first == null) first = e;
+			}
 		}
+		if (first != null) throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(first);
 	}
 
 	@Override
