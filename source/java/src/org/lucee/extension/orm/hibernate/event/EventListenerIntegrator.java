@@ -1,11 +1,15 @@
 package org.lucee.extension.orm.hibernate.event;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.HibernateException;
 import org.hibernate.boot.Metadata;
+import org.hibernate.engine.internal.Nullability;
+import org.hibernate.engine.internal.Nullability.NullabilityCheckType;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.AbstractEvent;
@@ -41,12 +45,15 @@ import org.hibernate.event.spi.PreLoadEventListener;
 import org.hibernate.integrator.spi.Integrator;
 import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
+import org.lucee.extension.orm.hibernate.HibernateCaster;
+import org.lucee.extension.orm.hibernate.mapping.CFConstants;
 import org.lucee.extension.orm.hibernate.util.CommonUtil;
 
 import lucee.loader.engine.CFMLEngine;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.runtime.Component;
 import lucee.runtime.PageContext;
+import lucee.runtime.component.Property;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.type.Collection;
 import lucee.runtime.type.Collection.Key;
@@ -134,15 +141,24 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 
 	@Override
 	public boolean onPreInsert(PreInsertEvent event) {
-		Struct state = entityStateToStruct(event.getPersister().getPropertyNames(), event.getState());
+		String[] propertyNames = event.getPersister().getEntityMetamodel().getPropertyNames();
+		Struct state = entityStateToStruct(propertyNames, event.getState());
+		Component entityCFC = CommonUtil.toComponent(event.getEntity(), null);
 
-		// fire on entity
-		Component listener = getEventListener(event.getEntity());
-		if (listener != null) {
-			fireEventOnEntityListener(listener, CommonUtil.PRE_INSERT, event, state);
+		// fire on entity first, then global (LDEV-4561)
+		if (entityCFC != null) {
+			_fireOnComponent(entityCFC, CommonUtil.PRE_INSERT, state, event);
 		}
-
 		fireEventOnGlobalListener(CommonUtil.PRE_INSERT, event.getEntity(), event, state);
+
+		// Sync CFC property changes back to Hibernate state
+		Object[] stateValues = event.getState();
+		persistEntityChangesToState(stateValues, propertyNames, entityCFC);
+
+		// Validate nullability after state sync
+		new Nullability(event.getSession())
+		    .checkNullability(stateValues, event.getPersister(), NullabilityCheckType.CREATE);
+
 		return false;
 	}
 
@@ -180,12 +196,24 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 	// PreUpdateEventListener
 	@Override
 	public boolean onPreUpdate(PreUpdateEvent event) {
-		Struct oldState = entityStateToStruct(event.getPersister().getPropertyNames(), event.getOldState());
-		Component listener = getEventListener(event.getEntity());
-		if (listener != null) {
-			fireEventOnEntityListener(listener, CommonUtil.PRE_UPDATE, event, oldState);
+		String[] propertyNames = event.getPersister().getEntityMetamodel().getPropertyNames();
+		Struct oldState = entityStateToStruct(propertyNames, event.getOldState());
+		Component entityCFC = CommonUtil.toComponent(event.getEntity(), null);
+
+		// fire on entity first, then global (LDEV-4561)
+		if (entityCFC != null) {
+			_fireOnComponent(entityCFC, CommonUtil.PRE_UPDATE, oldState, event);
 		}
 		fireEventOnGlobalListener(CommonUtil.PRE_UPDATE, event.getEntity(), event, oldState);
+
+		// Sync CFC property changes back to Hibernate state
+		Object[] stateValues = event.getState();
+		persistEntityChangesToState(stateValues, propertyNames, entityCFC);
+
+		// Validate nullability after state sync
+		new Nullability(event.getSession())
+		    .checkNullability(stateValues, event.getPersister(), NullabilityCheckType.CREATE);
+
 		return false;
 	}
 
@@ -367,6 +395,36 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 	 *
 	 * @return A struct
 	 */
+	/**
+	 * Loop over the provided state properties and persist any entity changes to the state object.
+	 * Used in onPreInsert and onPreUpdate to sync CFC property mutations back to Hibernate.
+	 */
+	private void persistEntityChangesToState(Object[] state, String[] stateProperties, Component entity) {
+		try {
+			Property[] cfcProperties = entity.getProperties(true, true, false, false);
+			for (int n = 0; n < stateProperties.length; ++n) {
+				final String currentProperty = stateProperties[n];
+				Optional<Property> property = Arrays.stream(cfcProperties)
+				    .filter(prop -> prop.getName().equalsIgnoreCase(currentProperty))
+				    .filter(prop -> !isRelationshipField(prop))
+				    .findFirst();
+				if (property.isPresent()) {
+					state[n] = HibernateCaster.toHibernateValue(entity, property.get());
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(
+			    String.format("Error populating event state for persistence in [%s] entity pre-event listener: %s", entity.getName(), e.getMessage()),
+			    e);
+		}
+	}
+
+	private boolean isRelationshipField(Property prop) {
+		Struct meta = (Struct) prop.getMetaData();
+		String fieldType = CommonUtil.toString(meta.get(CommonUtil.FIELDTYPE, null), null);
+		return fieldType != null && CFConstants.Relationships.isRelationshipType(fieldType);
+	}
+
 	private static Struct entityStateToStruct(String[] properties, Object[] values) {
 		Struct entityState = CommonUtil.createStruct();
 

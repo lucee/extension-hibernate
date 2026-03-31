@@ -168,6 +168,11 @@ public class ConfigurationBuilder {
             throw ExceptionUtil.createException(data, null, me);
         }
 
+        // Disable Hibernate's built-in nullability check — our EventListenerIntegrator
+        // handles it in onPreInsert/onPreUpdate AFTER entity event listeners have had
+        // a chance to set missing values (e.g. preInsert setting a null password).
+        configuration.setProperty(AvailableSettings.CHECK_NULLABILITY, "false");
+
         configuration.setProperty(AvailableSettings.FLUSH_BEFORE_COMPLETION, "false")
 
                 .setProperty(AvailableSettings.ALLOW_UPDATE_OUTSIDE_TRANSACTION, "true")

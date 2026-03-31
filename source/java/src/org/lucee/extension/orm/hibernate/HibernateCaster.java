@@ -1,5 +1,6 @@
 package org.lucee.extension.orm.hibernate;
 
+import org.lucee.extension.orm.hibernate.mapping.CFConstants;
 import org.lucee.extension.orm.hibernate.util.CommonUtil;
 import org.lucee.extension.orm.hibernate.util.ExceptionUtil;
 import org.lucee.extension.orm.hibernate.util.HibernateUtil;
@@ -368,6 +369,26 @@ public class HibernateCaster {
 		 * 
 		 */
 
+	}
+
+	public static Object toHibernateValue( Component entity, Property property ) throws PageException {
+		PageContext pc = CFMLEngineFactory.getInstance().getThreadPageContext();
+		Object value = entity.getComponentScope().get( CommonUtil.createKey( property.getName() ), property.getDefault() );
+
+		if ( value == null )
+			return value;
+
+		Struct meta = ( Struct ) property.getMetaData();
+		String ormType = CommonUtil.toString( meta.get( CommonUtil.ORMTYPE, "" ) );
+		String fieldType = !ormType.trim().isEmpty() ? ormType : property.getType();
+
+		boolean isStringSafeField = ( ormType == null || ormType.trim().isEmpty() || CFConstants.STRINGLIKE_FIELDS.contains( ormType ) );
+
+		// If the value is an empty string and the field type is not string-safe, coerce to null
+		if ( value instanceof String && ( ( String ) value ).trim().isEmpty() && !isStringSafeField )
+			return null;
+
+		return toHibernateValue( pc, value, fieldType );
 	}
 
 	public static Object toHibernateValue(PageContext pc, Object value, String type) throws PageException {

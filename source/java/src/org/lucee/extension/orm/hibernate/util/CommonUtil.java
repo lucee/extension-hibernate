@@ -66,6 +66,7 @@ public class CommonUtil {
 
 	public static final Key ENTITY_NAME = CommonUtil.createKey("entityname");
 	public static final Key FIELDTYPE = CommonUtil.createKey("fieldtype");
+	public static final Key ORMTYPE = CommonUtil.createKey("ormtype");
 	public static final Key POST_INSERT = CommonUtil.createKey("postInsert");
 	public static final Key POST_UPDATE = CommonUtil.createKey("postUpdate");
 	public static final Key PRE_DELETE = CommonUtil.createKey("preDelete");
