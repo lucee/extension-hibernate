@@ -19,6 +19,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "lazy loading: many-to-one and one-to-many load on access", function() {
+				var result = _InternalRequest( template: "#uri()#/lazyLoad.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}

@@ -3,7 +3,7 @@
 <hibernate-mapping>
     <!--
 source:d:\work\lucee-extensions\extension-hibernate\tests\hbmXML\Person.cfc
-compilation-time:{ts '2026-03-31 15:39:18'}
+compilation-time:{ts '2026-03-31 18:14:24'}
 datasource:__default__
 -->
     <class entity-name="Person" lazy="true" node="testAdditional.hbmXML.Person" table="Person">
