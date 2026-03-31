@@ -374,6 +374,10 @@ public class HibernateUtil {
 		return ret;
 	}
 
+	public static boolean isApplicationName( String name ) {
+		return name.toLowerCase().equalsIgnoreCase( "application.cfc" );
+	}
+
 	public static boolean isApplicationName(PageContext pc, String name) {
 		String lcn = name.toLowerCase();
 		if (!lcn.startsWith("application.")) return false;

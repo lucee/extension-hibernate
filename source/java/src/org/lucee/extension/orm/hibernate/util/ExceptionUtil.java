@@ -99,6 +99,29 @@ public class ExceptionUtil {
 		if (unwrap(t) instanceof ThreadDeath) throw (ThreadDeath) t; // never catch a ThreadDeath
 	}
 
+	public static PageException toPageException( Throwable t ) {
+		PageException pe = CFMLEngineFactory.getInstance().getCastUtil().toPageException( t );
+		if ( t instanceof org.hibernate.HibernateException ) {
+			org.hibernate.HibernateException he = ( org.hibernate.HibernateException ) t;
+			Throwable cause = he.getCause();
+			if ( cause != null ) {
+				pe = CFMLEngineFactory.getInstance().getCastUtil().toPageException( cause );
+				setAdditional( pe, CommonUtil.createKey( "hibernate exception" ), t );
+			}
+		}
+		if ( t instanceof org.hibernate.JDBCException ) {
+			org.hibernate.JDBCException je = ( org.hibernate.JDBCException ) t;
+			setAdditional( pe, CommonUtil.createKey( "sql" ), je.getSQL() );
+		}
+		if ( t instanceof org.hibernate.exception.ConstraintViolationException ) {
+			org.hibernate.exception.ConstraintViolationException cve = ( org.hibernate.exception.ConstraintViolationException ) t;
+			if ( cve.getConstraintName() != null && !cve.getConstraintName().isEmpty() ) {
+				setAdditional( pe, CommonUtil.createKey( "constraint name" ), cve.getConstraintName() );
+			}
+		}
+		return pe;
+	}
+
 	private static Throwable unwrap(Throwable t) {
 		if (t == null) return t;
 		// if (t instanceof NativeException) return unwrap(((NativeException) t).getException());
