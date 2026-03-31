@@ -265,8 +265,8 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 
 	@Override
 	public void onEvict(EvictEvent event) throws HibernateException {
-		// Sadly, the EvictEvent does not allow / provide a method to retrieve the entity.
-		Object entity = null;
+		Object entity = event.getObject();
+		fireOnEntity(entity, ON_EVICT, event, null);
 		fireEventOnGlobalListener(ON_EVICT, entity, event, null);
 	}
 
