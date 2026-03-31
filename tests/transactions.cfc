@@ -24,6 +24,16 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "transaction with isolation=serializable", function() {
+				var result = _InternalRequest( template: "#uri()#/isolationSerializable.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "transaction with isolation=read_committed", function() {
+				var result = _InternalRequest( template: "#uri()#/isolationReadCommitted.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}

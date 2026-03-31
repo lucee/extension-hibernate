@@ -9,6 +9,22 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "update creates missing tables without dropping", function() {
+				var result = _InternalRequest(
+					template: "#uri()#/update.cfm",
+					url: { dbcreate: "update" }
+				);
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "none works against pre-existing schema", function() {
+				var result = _InternalRequest(
+					template: "#uri()#/none.cfm",
+					url: { dbcreate: "none" }
+				);
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}

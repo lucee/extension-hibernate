@@ -6,4 +6,8 @@ set testFilter=
 set testAdditional=d:\work\lucee-extensions\extension-hibernate\tests
 set testServices=mysql,mssql
 
-call ant -buildfile "d:\work\script-runner" -DluceeVersion="7.0/snapshot/light" -Dwebroot="d:\work\lucee7" -Dexecute="test\bootstrap-tests.cfm" -DextensionDir="d:\work\lucee-extensions\extension-hibernate\target"
+
+call ant -buildfile "d:\work\script-runner" -DluceeVersion="7.0/snapshot/light" -Dwebroot="d:\work\lucee7" -Dexecute="test\bootstrap-tests.cfm" -DextensionDir="d:\work\lucee-extensions\extension-hibernate\target" -DuniqueWorkingDir="true"
+
+
+call ant -buildfile "d:\work\script-runner" -DluceeVersion="7.1/snapshot/light" -Dwebroot="d:\work\lucee7" -Dexecute="test\bootstrap-tests.cfm" -DextensionDir="d:\work\lucee-extensions\extension-hibernate\target" -DuniqueWorkingDir="true"
