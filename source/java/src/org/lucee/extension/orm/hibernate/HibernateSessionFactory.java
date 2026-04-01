@@ -95,28 +95,33 @@ public class HibernateSessionFactory {
 		else if (ORMConfiguration.DBCREATE_DROP_CREATE == ormConf.getDbCreate()) {
 			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create");
 			SchemaExport export = new SchemaExport();
-			export.setHaltOnError(true);
+			// haltOnError=false: collect all errors rather than throwing on the first.
+			// dropcreate runs DROP then CREATE — DROP failures are expected (objects may not
+			// exist yet) and vary by dialect (e.g. MySQL/MSSQL don't support IF EXISTS on
+			// ALTER TABLE DROP CONSTRAINT). printError filters drop errors and only throws
+			// on serious (CREATE) failures.
+			export.setHaltOnError(false);
 			export.execute(enumSet, Action.BOTH, metadataSources.buildMetadata());
 			printError(log, data, export.getExceptions(), true);
 		}
 		else if (/* ORMConfiguration.DBCREATE_CREATE */3 == ormConf.getDbCreate()) {
 			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create-only");
 			SchemaExport export = new SchemaExport();
-			export.setHaltOnError(true);
+			export.setHaltOnError(false);
 			export.execute(enumSet, Action.CREATE, metadataSources.buildMetadata());
 			printError(log, data, export.getExceptions(), true);
 		}
 		else if (/* ORMConfiguration.DBCREATE_CREATE_DROP */4 == ormConf.getDbCreate()) {
 			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create-drop");
 			SchemaExport export = new SchemaExport();
-			export.setHaltOnError(true);
+			export.setHaltOnError(false);
 			export.execute(enumSet, Action.BOTH, metadataSources.buildMetadata());
 			printError(log, data, export.getExceptions(), true);
 		}
 		else if (ORMConfiguration.DBCREATE_UPDATE == ormConf.getDbCreate()) {
 			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "update");
 			SchemaUpdate update = new SchemaUpdate();
-			update.setHaltOnError(true);
+			update.setHaltOnError(false);
 			update.execute(enumSet, metadataSources.buildMetadata());
 			printError(log, data, update.getExceptions(), true);
 		}
@@ -125,18 +130,24 @@ public class HibernateSessionFactory {
 	private static void printError(Log log, SessionFactoryData data, List<Exception> exceptions, boolean throwException) throws PageException {
 		if (exceptions == null || exceptions.isEmpty()) return;
 
-		// always log all errors
+		// filter out drop-related errors (expected during dropcreate when objects don't exist yet)
+		List<Exception> serious = new ArrayList<>();
 		for (Exception e : exceptions) {
-			log.log(Log.LEVEL_ERROR, "hibernate", e);
+			String msg = e.getMessage();
+			if (msg != null && msg.toLowerCase().contains("drop")) {
+				log.log(Log.LEVEL_DEBUG, "hibernate", "schema export (ignored): " + msg);
+			} else {
+				log.log(Log.LEVEL_ERROR, "hibernate", e);
+				serious.add(e);
+			}
 		}
 
-		if (!throwException) return;
+		if (!throwException || serious.isEmpty()) return;
 
-		// throw a clean exception with the message from the first error
+		// throw a clean exception with the message from the first serious error
 		// (avoid wrapping the deep Hibernate cause chain which can trigger StackOverflow in Lucee's exception serialization)
-		Exception first = exceptions.get(0);
-		String msg = first.getMessage();
-		if (msg == null) msg = first.toString();
+		String msg = serious.get(0).getMessage();
+		if (msg == null) msg = serious.get(0).toString();
 		throw ExceptionUtil.createException(data, null, msg, null);
 	}
 

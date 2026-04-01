@@ -1,18 +1,16 @@
 <cfscript>
-// test extra field types: short, long, float, double, big_decimal, text
-sink = entityNew( "ExtraTypes", {
+// numeric types: short, long, float, double, big_decimal
+sink = entityNew( "ExtraTypesNumeric", {
 	id:             createUUID(),
 	shortVal:       42,
 	longVal:        9999999999,
 	floatVal:       3.14,
 	doubleVal:      2.71828,
-	bigDecimalVal:  123456.789,
-	textVal:        repeatString( "lorem ipsum ", 100 )
+	bigDecimalVal:  123456.789
 } );
 entitySave( sink );
 ormFlush();
 
-// reload and verify
 entityReload( sink );
 
 if ( sink.getShortVal() != 42 )
@@ -26,8 +24,6 @@ if ( numberFormat( sink.getDoubleVal(), "0.00000" ) != "2.71828" )
 // big_decimal defaults to decimal(19,2) so value is truncated to 2 decimal places
 if ( sink.getBigDecimalVal() != 123456.79 )
 	throw( message="big_decimal: expected 123456.79, got #sink.getBigDecimalVal()#" );
-if ( len( sink.getTextVal() ) < 100 )
-	throw( message="text: expected long string, got len=#len( sink.getTextVal() )#" );
 
 echo( "ok" );
 </cfscript>

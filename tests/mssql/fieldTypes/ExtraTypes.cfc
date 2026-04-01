@@ -11,8 +11,8 @@ component persistent="true" accessors="true" {
 	property name="floatVal"      ormtype="float";
 	property name="doubleVal"     ormtype="double";
 	property name="bigDecimalVal" ormtype="big_decimal";
-	// ormtype="text" and "clob" both generate varchar(2147483647) on H2 which fails
-	// this is a Hibernate H2Dialect limitation, not our bug
-	property name="textVal"       ormtype="string" length="4000";
+	property name="textVal"       ormtype="text";
+	property name="yesNoVal"      ormtype="yes_no";
+	property name="trueFalseVal"  ormtype="true_false";
 
 }

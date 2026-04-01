@@ -1,8 +1,13 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
+	function beforeAll() {
+		if ( isEmpty( server.getDatasource( "mssql" ) ) )
+			throw( type="org.lucee.cfml.test.LuceeTestCase.SkipTest", message="mssql not configured" );
+	}
+
 	function run( testResults, testBox ) {
 
-		describe( "ORM field types [h2]", function() {
+		describe( "ORM field types [mssql]", function() {
 
 			it( "default values and persistence", function() {
 				var result = _InternalRequest( template: "#uri()#/types.cfm" );
@@ -21,6 +26,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 			it( "extra numeric types: short, long, float, double, big_decimal", function() {
 				var result = _InternalRequest( template: "#uri()#/extraTypesNumeric.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "text, yes_no, true_false types", function() {
+				var result = _InternalRequest( template: "#uri()#/extraTypes.cfm" );
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
