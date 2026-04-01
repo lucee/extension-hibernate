@@ -75,6 +75,28 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
+      sql-server:
+        image: ghcr.io/lucee/mssql-server:test-mirror
+        env:
+          MSSQL_PID: Express
+          ACCEPT_EULA: Y
+          SA_PASSWORD: Lucee!1433
+        ports:
+          - 1433:1433
+        options: --health-cmd="/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U SA -P ${SA_PASSWORD} -Q 'SELECT 1' || exit 1"  --health-interval 10s --health-timeout 5s --health-retries 5
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: lucee
+          POSTGRES_USER: lucee
+          POSTGRES_PASSWORD: lucee
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U lucee"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
     steps:
       - uses: actions/checkout@v6
 
@@ -119,12 +141,22 @@ jobs:
         env:
           testLabels: orm
           testAdditional: ${{ github.workspace }}/tests
-          testServices: mysql
+          testServices: mysql,mssql,postgres
           MYSQL_SERVER: localhost
           MYSQL_USERNAME: lucee
           MYSQL_PASSWORD: lucee
           MYSQL_PORT: 3306
           MYSQL_DATABASE: lucee
+          MSSQL_SERVER: localhost
+          MSSQL_USERNAME: sa
+          MSSQL_PASSWORD: Lucee!1433
+          MSSQL_PORT: 1433
+          MSSQL_DATABASE: master
+          POSTGRES_SERVER: localhost
+          POSTGRES_USERNAME: lucee
+          POSTGRES_PASSWORD: lucee
+          POSTGRES_PORT: 5432
+          POSTGRES_DATABASE: lucee
 
   deploy:
     runs-on: ubuntu-latest
