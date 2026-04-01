@@ -1,8 +1,7 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
-	variables.ds = server.getDatasource( "mysql" );
-
 	function beforeAll() {
+		variables.ds = server.getDatasource( "mysql" );
 		if ( isEmpty( variables.ds ) )
 			throw( type="org.lucee.cfml.test.LuceeTestCase.SkipTest", message="mysql not configured" );
 		// cleanup stale tables from previous runs

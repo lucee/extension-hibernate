@@ -1,8 +1,7 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
-	variables.ds = server.getDatasource( "mssql" );
-
 	function beforeAll() {
+		variables.ds = server.getDatasource( "mssql" );
 		if ( isEmpty( variables.ds ) )
 			throw( type="org.lucee.cfml.test.LuceeTestCase.SkipTest", message="mssql not configured" );
 		try { queryExecute( "DROP TABLE Item", {}, { datasource: variables.ds } ); } catch( any e ) {}

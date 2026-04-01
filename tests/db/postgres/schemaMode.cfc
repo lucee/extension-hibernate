@@ -1,8 +1,7 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
-	variables.ds = server.getDatasource( "postgres" );
-
 	function beforeAll() {
+		variables.ds = server.getDatasource( "postgres" );
 		if ( isEmpty( variables.ds ) )
 			throw( type="org.lucee.cfml.test.LuceeTestCase.SkipTest", message="postgres not configured" );
 		try { queryExecute( "DROP TABLE IF EXISTS Item", {}, { datasource: variables.ds } ); } catch( any e ) {}
