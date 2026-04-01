@@ -222,7 +222,7 @@ public class SessionFactoryData {
 				.withORMConfig(getORMConfiguration()).withEventListener(getEventListenerIntegrator())
 				.withApplicationName(applicationContextName).withXMLMappings(mappings).withLog(log).build();
 		configurations.put(CommonUtil.toKey(ds.getName()), new DataSourceConfig(ds, configuration));
-		HibernateSessionFactory.schemaExport(log, configuration, ds, user, pass, this);
+		HibernateSessionFactory.schemaExport(log, configuration, mappings, ds, user, pass, this);
 	}
 
 	public SessionFactory buildSessionFactory(Key datasSourceName) {

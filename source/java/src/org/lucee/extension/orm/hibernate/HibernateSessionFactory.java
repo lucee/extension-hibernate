@@ -78,13 +78,14 @@ public class HibernateSessionFactory {
 	 * @throws SQLException
 	 * @throws IOException
 	 */
-	public static void schemaExport(Log log, Configuration configuration, DataSource ds, String user, String pass, SessionFactoryData data)
+	public static void schemaExport(Log log, Configuration configuration, String xmlMappings, DataSource ds, String user, String pass, SessionFactoryData data)
 			throws PageException, SQLException, IOException {
 		ORMConfiguration ormConf = data.getORMConfiguration();
 
 		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 
-		MetadataSources metadata = new MetadataSources(serviceRegistry);
+		MetadataSources metadataSources = new MetadataSources(serviceRegistry);
+		metadataSources.addInputStream(new ByteArrayInputStream(xmlMappings.getBytes("UTF-8")));
 		EnumSet<TargetType> enumSet = EnumSet.of(TargetType.DATABASE);
 
 		if (ORMConfiguration.DBCREATE_NONE == ormConf.getDbCreate()) {
@@ -95,32 +96,32 @@ public class HibernateSessionFactory {
 			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create");
 			SchemaExport export = new SchemaExport();
 			export.setHaltOnError(true);
-			export.execute(enumSet, Action.BOTH, metadata.buildMetadata());
-			printError(log, data, export.getExceptions(), false);
+			export.execute(enumSet, Action.BOTH, metadataSources.buildMetadata());
+			printError(log, data, export.getExceptions(), true);
 			executeSQLScript(ormConf, ds, user, pass);
 		}
 		else if (/* ORMConfiguration.DBCREATE_CREATE */3 == ormConf.getDbCreate()) {
 			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create-only");
 			SchemaExport export = new SchemaExport();
 			export.setHaltOnError(true);
-			export.execute(enumSet, Action.CREATE, metadata.buildMetadata());
-			printError(log, data, export.getExceptions(), false);
+			export.execute(enumSet, Action.CREATE, metadataSources.buildMetadata());
+			printError(log, data, export.getExceptions(), true);
 			executeSQLScript(ormConf, ds, user, pass);
 		}
 		else if (/* ORMConfiguration.DBCREATE_CREATE_DROP */4 == ormConf.getDbCreate()) {
 			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create-drop");
 			SchemaExport export = new SchemaExport();
 			export.setHaltOnError(true);
-			export.execute(enumSet, Action.BOTH, metadata.buildMetadata());
-			printError(log, data, export.getExceptions(), false);
+			export.execute(enumSet, Action.BOTH, metadataSources.buildMetadata());
+			printError(log, data, export.getExceptions(), true);
 			executeSQLScript(ormConf, ds, user, pass);
 		}
 		else if (ORMConfiguration.DBCREATE_UPDATE == ormConf.getDbCreate()) {
 			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "update");
 			SchemaUpdate update = new SchemaUpdate();
 			update.setHaltOnError(true);
-			update.execute(enumSet, metadata.buildMetadata());
-			printError(log, data, update.getExceptions(), false);
+			update.execute(enumSet, metadataSources.buildMetadata());
+			printError(log, data, update.getExceptions(), true);
 		}
 	}
 

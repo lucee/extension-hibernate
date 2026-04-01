@@ -19,6 +19,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "extra types: short, long, float, double, big_decimal, text", function() {
+				var result = _InternalRequest( template: "#uri()#/extraTypes.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}
