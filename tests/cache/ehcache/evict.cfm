@@ -18,7 +18,7 @@ ormEvictEntity( "Auto" );
 ormClearSession();
 
 // entity should still be loadable from DB after eviction
-loaded = entityLoad( "Auto", id );
+loaded = entityLoadByPK( "Auto", id );
 if ( isNull( loaded ) )
 	throw( message="entity should still be loadable from DB after cache eviction" );
 if ( loaded.getMake() != "Toyota" )

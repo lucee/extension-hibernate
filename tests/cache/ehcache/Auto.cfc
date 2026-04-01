@@ -1,4 +1,4 @@
-component persistent="true" cachename="Autos" cacheuse="read-only" {
+component persistent="true" cachename="Autos" cacheuse="read-write" {
 
 	property name="id" type="string" fieldtype="id" ormtype="string";
 	property name="make" type="string";

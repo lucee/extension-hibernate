@@ -11,7 +11,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 			// ormEvictEntity on read-only cache causes "Can't update readonly object"
 			// when the entity is subsequently re-loaded — Hibernate limitation
-			xit( "ormEvictEntity removes entity from L2 cache", function() {
+			it( "ormEvictEntity removes entity from L2 cache", function() {
 				var result = _InternalRequest( template: "#uri()#/evict.cfm" );
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});

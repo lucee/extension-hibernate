@@ -13,7 +13,7 @@ on:
       luceeVersions:
         description: 'JSON array of Lucee versions to test'
         required: false
-        default: '[ "7.0/snapshot/light", "7.1/snapshot/light" ]'
+        default: '[ "6.2/snapshot/light", "7.0/snapshot/light", "7.1/snapshot/light" ]'
 
 jobs:
   build:
@@ -59,7 +59,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lucee: ${{ fromJSON(inputs.luceeVersions || '["7.0/snapshot/light", "7.1/snapshot/light"]') }}
+        lucee: ${{ fromJSON(inputs.luceeVersions || '[ "6.2/snapshot/light", "7.0/snapshot/light", "7.1/snapshot/light"]') }}
     services:
       mysql:
         image: mysql:8.0
