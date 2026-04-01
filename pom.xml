@@ -230,7 +230,7 @@
                             <goal>rename</goal>
                         </goals>
                         <configuration>
-                            <sourceFile>${project.build.directory}/${project.artifactId}-${project.version}-lex.zip</sourceFile>
+                            <sourceFile>${project.build.directory}/${project.artifactId}-${project.version}.zip</sourceFile>
                             <destinationFile>${project.build.directory}/${project.artifactId}-${project.version}.lex</destinationFile>
                         </configuration>
                     </execution>
@@ -321,6 +321,8 @@
                     <descriptors>
                         <descriptor>src/assembly/lex.xml</descriptor>
                     </descriptors>
+                    <finalName>${project.artifactId}-${project.version}</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
             </plugin>
 
