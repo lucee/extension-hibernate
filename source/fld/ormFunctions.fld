@@ -478,6 +478,95 @@ ormEvictQueries([cacheName])</description>
 			<type>void</type>
 		</return>
 	</function>
+	<!-- ORMIndex (stub — Hibernate Search not supported) -->
+	<function>
+		<name>ORMIndex</name>
+		<status>unimplemented</status>
+		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMIndex</class>
+		<status>unimplemented</status>
+		<description>Indexes the given entity for Hibernate Search. Not supported in Lucee — throws an informative error.</description>
+		<argument>
+			<name>entity</name>
+			<type>object</type>
+			<required>yes</required>
+			<description>The entity to index.</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- ORMIndexPurge (stub — Hibernate Search not supported) -->
+	<function>
+		<name>ORMIndexPurge</name>
+		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMIndexPurge</class>
+		<status>unimplemented</status>
+		<description>Purges the Hibernate Search index for the given entity. Not supported in Lucee — throws an informative error.</description>
+		<argument>
+			<name>entity</name>
+			<type>object</type>
+			<required>no</required>
+			<description>The entity whose index should be purged. If omitted, purges all indexes.</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- ORMSearch (stub — Hibernate Search not supported) -->
+	<function>
+		<name>ORMSearch</name>
+		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMSearch</class>
+		<status>unimplemented</status>
+		<description>Performs a full-text search on ORM entities using Hibernate Search. Not supported in Lucee — throws an informative error.</description>
+		<argument>
+			<name>query</name>
+			<type>string</type>
+			<required>yes</required>
+			<description>The search query string.</description>
+		</argument>
+		<argument>
+			<name>entityName</name>
+			<type>string</type>
+			<required>yes</required>
+			<description>The entity to search.</description>
+		</argument>
+		<argument>
+			<name>options</name>
+			<type>struct</type>
+			<required>no</required>
+			<description>Search options (maxResults, offset, etc.).</description>
+		</argument>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
+	<!-- ORMSearchOffline (stub — Hibernate Search not supported) -->
+	<function>
+		<name>ORMSearchOffline</name>
+		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMSearchOffline</class>
+		<status>unimplemented</status>
+		<description>Performs an offline full-text search on ORM entities using Hibernate Search. Not supported in Lucee — throws an informative error.</description>
+		<argument>
+			<name>query</name>
+			<type>string</type>
+			<required>yes</required>
+			<description>The search query string.</description>
+		</argument>
+		<argument>
+			<name>entityName</name>
+			<type>string</type>
+			<required>yes</required>
+			<description>The entity to search.</description>
+		</argument>
+		<argument>
+			<name>options</name>
+			<type>struct</type>
+			<required>no</required>
+			<description>Search options (maxResults, offset, etc.).</description>
+		</argument>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
 	<!-- ORMGetSession -->
 	<function>
 		<name>ORMGetSession</name>
