@@ -1,13 +1,8 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
-	function beforeAll() {
-		if ( isEmpty( server.getDatasource( "mssql" ) ) )
-			throw( type="org.lucee.cfml.test.LuceeTestCase.SkipTest", message="mssql not configured" );
-	}
-
 	function run( testResults, testBox ) {
 
-		describe( "ORM transactions [mssql]", function() {
+		describe( title="ORM transactions [mssql]", skip=notHasMSSQL(), body=function() {
 
 			it( "can roll back entire transaction", function() {
 				var result = _InternalRequest( template: "#uri()#/rollback.cfm" );
@@ -45,6 +40,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	private string function uri() {
 		return getDirectoryFromPath( contractPath( getCurrentTemplatePath() ) ) & "transactions";
+	}
+
+	private boolean function notHasMSSQL() {
+		return isEmpty( server.getDatasource( "mssql" ) );
 	}
 
 }

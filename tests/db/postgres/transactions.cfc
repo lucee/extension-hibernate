@@ -1,13 +1,8 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
-	function beforeAll() {
-		if ( isEmpty( server.getDatasource( "postgres" ) ) )
-			throw( type="org.lucee.cfml.test.LuceeTestCase.SkipTest", message="postgres not configured" );
-	}
-
 	function run( testResults, testBox ) {
 
-		describe( "ORM transactions [postgres]", function() {
+		describe( title="ORM transactions [postgres]", skip=notHasPostgres(), body=function() {
 
 			it( "can roll back entire transaction", function() {
 				var result = _InternalRequest( template: "#uri()#/rollback.cfm" );
@@ -45,6 +40,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	private string function uri() {
 		return getDirectoryFromPath( contractPath( getCurrentTemplatePath() ) ) & "transactions";
+	}
+
+	private boolean function notHasPostgres() {
+		return isEmpty( server.getDatasource( "postgres" ) );
 	}
 
 }

@@ -1,13 +1,8 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
-	function beforeAll() {
-		if ( isEmpty( server.getDatasource( "mysql" ) ) )
-			throw( type="org.lucee.cfml.test.LuceeTestCase.SkipTest", message="mysql not configured" );
-	}
-
 	function run( testResults, testBox ) {
 
-		describe( "ORM relationships [mysql]", function() {
+		describe( title="ORM relationships [mysql]", skip=notHasMySQL(), body=function() {
 
 			it( "many-to-one: entity references parent", function() {
 				var result = _InternalRequest( template: "#uri()#/manyToOne.cfm" );
@@ -40,6 +35,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	private string function uri() {
 		return getDirectoryFromPath( contractPath( getCurrentTemplatePath() ) ) & "relationships";
+	}
+
+	private boolean function notHasMySQL() {
+		return isEmpty( server.getDatasource( "mysql" ) );
 	}
 
 }

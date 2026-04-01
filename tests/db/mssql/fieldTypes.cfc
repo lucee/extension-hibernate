@@ -1,13 +1,8 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
-	function beforeAll() {
-		if ( isEmpty( server.getDatasource( "mssql" ) ) )
-			throw( type="org.lucee.cfml.test.LuceeTestCase.SkipTest", message="mssql not configured" );
-	}
-
 	function run( testResults, testBox ) {
 
-		describe( "ORM field types [mssql]", function() {
+		describe( title="ORM field types [mssql]", skip=notHasMSSQL(), body=function() {
 
 			it( "default values and persistence", function() {
 				var result = _InternalRequest( template: "#uri()#/types.cfm" );
@@ -40,6 +35,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	private string function uri() {
 		return getDirectoryFromPath( contractPath( getCurrentTemplatePath() ) ) & "fieldTypes";
+	}
+
+	private boolean function notHasMSSQL() {
+		return isEmpty( server.getDatasource( "mssql" ) );
 	}
 
 }

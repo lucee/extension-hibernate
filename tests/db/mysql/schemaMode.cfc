@@ -1,16 +1,15 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	function beforeAll() {
+		if ( notHasMySQL() ) return;
 		variables.ds = server.getDatasource( "mysql" );
-		if ( isEmpty( variables.ds ) )
-			throw( type="org.lucee.cfml.test.LuceeTestCase.SkipTest", message="mysql not configured" );
 		// cleanup stale tables from previous runs
 		try { queryExecute( "DROP TABLE IF EXISTS Item", {}, { datasource: variables.ds } ); } catch( any e ) {}
 	}
 
 	function run( testResults, testBox ) {
 
-		describe( "ORM schema modes [mysql]", function() {
+		describe( title="ORM schema modes [mysql]", skip=notHasMySQL(), body=function() {
 
 			it( "dropcreate creates schema and allows CRUD", function() {
 				var result = _InternalRequest( template: "#uri()#/dropcreate.cfm" );
@@ -49,6 +48,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	private string function uri() {
 		return getDirectoryFromPath( contractPath( getCurrentTemplatePath() ) ) & "schemaMode";
+	}
+
+	private boolean function notHasMySQL() {
+		return isEmpty( server.getDatasource( "mysql" ) );
 	}
 
 }

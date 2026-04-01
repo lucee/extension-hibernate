@@ -1,15 +1,14 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	function beforeAll() {
+		if ( notHasMSSQL() ) return;
 		variables.ds = server.getDatasource( "mssql" );
-		if ( isEmpty( variables.ds ) )
-			throw( type="org.lucee.cfml.test.LuceeTestCase.SkipTest", message="mssql not configured" );
 		try { queryExecute( "DROP TABLE Item", {}, { datasource: variables.ds } ); } catch( any e ) {}
 	}
 
 	function run( testResults, testBox ) {
 
-		describe( "ORM schema modes [mssql]", function() {
+		describe( title="ORM schema modes [mssql]", skip=notHasMSSQL(), body=function() {
 
 			it( "dropcreate creates schema and allows CRUD", function() {
 				var result = _InternalRequest( template: "#uri()#/dropcreate.cfm" );
@@ -47,6 +46,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	private string function uri() {
 		return getDirectoryFromPath( contractPath( getCurrentTemplatePath() ) ) & "schemaMode";
+	}
+
+	private boolean function notHasMSSQL() {
+		return isEmpty( server.getDatasource( "mssql" ) );
 	}
 
 }
