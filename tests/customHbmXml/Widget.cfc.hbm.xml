@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="Widget" table="custom_widgets">
+        <id name="id" type="string">
+            <column name="widget_id" length="255"/>
+        </id>
+        <property name="label" type="string">
+            <column name="widget_label" length="255"/>
+        </property>
+        <property name="quantity" type="double">
+            <column name="widget_qty"/>
+        </property>
+    </class>
+</hibernate-mapping>

@@ -1,22 +1,27 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
-    public void function testEHCache(){
+	function run( testResults, testBox ) {
 
-        local.uri=createURI("ehcache/index.cfm");
-        local.result=_InternalRequest(uri);
-        expect( result.status ).toBe( 200 );
-        // var res = deserializeJson(result.fileContent);
-        // if (len(res.errors)){
-        //     loop array=res.errors, item="local.err"{
-        //         systemOutput("ERROR: " & err.error, true, true);
-        //     }
-        // }
-    }
+		describe( "ORM EHCache second-level cache", function() {
 
-	private string function createURI(string calledName){
-		systemOutput("", true);
-		systemOutput("-------------- #calledName#----------------", true);
-		var baseURI = getDirectoryFromPath( contractPath( getCurrentTemplatePath() ) );
-		return baseURI&""&calledName;
+			it( "loads entity from L2 cache after DB delete and session clear", function() {
+				var result = _InternalRequest( template: "#uri()#/index.cfm" );
+				expect( result.status ).toBe( 200 );
+			});
+
+			// ormEvictEntity on read-only cache causes "Can't update readonly object"
+			// when the entity is subsequently re-loaded — Hibernate limitation
+			xit( "ormEvictEntity removes entity from L2 cache", function() {
+				var result = _InternalRequest( template: "#uri()#/evict.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+		});
+
 	}
+
+	private string function uri() {
+		return getDirectoryFromPath( contractPath( getCurrentTemplatePath() ) ) & "ehcache";
+	}
+
 }
