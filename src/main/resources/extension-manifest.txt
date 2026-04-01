@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Built-Date: ${build.timestamp}
+version: "${project.version}"
+id: "${extensionId}"
+name: "${label}"
+description: "${description}"
+start-bundles: false
+release-type: ${releaseType}
+orm: "[{'class':'org.lucee.extension.orm.hibernate.HibernateORMEngine','name':'org.lucee.hibernate.extension','version':'${project.version}'}]"
+lucee-core-version: "${luceeCoreVersion}"

@@ -1,0 +1,34 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 http://maven.apache.org/xsd/assembly-2.2.0.xsd">
+	<id>lex</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+		<!-- Extension manifest -->
+		<fileSet>
+			<directory>${project.build.directory}/extension-resources/META-INF</directory>
+			<outputDirectory>META-INF</outputDirectory>
+		</fileSet>
+		<!-- Logo -->
+		<fileSet>
+			<directory>${project.basedir}/source/images</directory>
+			<outputDirectory>META-INF</outputDirectory>
+			<includes>
+				<include>logo.png</include>
+			</includes>
+		</fileSet>
+		<!-- FLD files -->
+		<fileSet>
+			<directory>${project.build.directory}/extension-resources/flds</directory>
+			<outputDirectory>flds</outputDirectory>
+		</fileSet>
+		<!-- Extension jar (shaded) + dependency jars -->
+		<fileSet>
+			<directory>${project.build.directory}/jars</directory>
+			<outputDirectory>jars</outputDirectory>
+		</fileSet>
+	</fileSets>
+</assembly>

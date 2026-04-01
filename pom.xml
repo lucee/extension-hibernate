@@ -5,19 +5,16 @@
     <groupId>org.lucee</groupId>
     <artifactId>hibernate-extension</artifactId>
     <version>5.6.15.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <name>Hibernate Extension</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <id>FAD1E8CB-4F45-4184-86359145767C29DE</id>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+        <build.timestamp>${maven.build.timestamp}</build.timestamp>
         <bundlename>org.lucee.hibernate.extension</bundlename>
-        <luceeCoreVersion>5.0.0.157</luceeCoreVersion>
-        <releaseType>server</releaseType>
-        <label>Hibernate ORM Engine Extension</label>
-        <class>org.lucee.extension.orm.hibernate.HibernateORMEngine</class>
         <release.url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</release.url>
         <snapshot.url>https://oss.sonatype.org/content/repositories/snapshots/</snapshot.url>
     </properties>
@@ -64,10 +61,333 @@
     </developers>
 
     <description>Hibernate ORM (Hibernate in short) is an object-relational mapping library for the Java language,
- providing a framework for mapping an object-oriented domain model to a traditional relational database. 
- Hibernate solves object-relational impedance mismatch problems by replacing direct persistence-related 
+ providing a framework for mapping an object-oriented domain model to a traditional relational database.
+ Hibernate solves object-relational impedance mismatch problems by replacing direct persistence-related
  database accesses with high-level object handling functions.</description>
     <url>https://github.com/lucee/extension-hibernate</url>
+
+    <!-- ============================== Dependencies ============================== -->
+
+    <dependencies>
+        <!-- Lucee (provided — not bundled) -->
+        <dependency>
+            <groupId>org.lucee</groupId>
+            <artifactId>lucee</artifactId>
+            <version>5.4.6.9</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Hibernate core (pulls antlr, dom4j, hibernate-commons-annotations transitively) -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.6.15.Final</version>
+            <exclusions>
+                <!-- Use simple JTA, not JBoss spec (needs javax.interceptor) -->
+                <exclusion>
+                    <groupId>org.jboss.spec.javax.transaction</groupId>
+                    <artifactId>jboss-transaction-api_1.2_spec</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Simple JTA (no javax.interceptor dependency) -->
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+            <version>1.1</version>
+        </dependency>
+
+        <!-- Hibernate EHCache integration -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-ehcache</artifactId>
+            <version>5.6.15.Final</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.sf.ehcache</groupId>
+                    <artifactId>ehcache</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- EHCache (Lucee repackaged — specific package structure required) -->
+        <dependency>
+            <groupId>net.sf.ehcache.internal</groupId>
+            <artifactId>ehcache-core</artifactId>
+            <version>2.10.9.2</version>
+        </dependency>
+
+        <!-- SLF4J API (Hibernate depends on it) -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.36</version>
+        </dependency>
+
+        <!-- JAXB (needed for Hibernate XML mapping) -->
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>2.3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.4</version>
+        </dependency>
+    </dependencies>
+
+    <!-- ============================== Repositories ============================== -->
+
+    <repositories>
+        <repository>
+            <id>terracotta</id>
+            <url>https://repo.terracotta.org/maven2/</url>
+        </repository>
+    </repositories>
+
+    <!-- ============================== Build ============================== -->
+
+    <build>
+        <sourceDirectory>source/java/src</sourceDirectory>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}/extension-resources</targetPath>
+            </resource>
+            <!-- Include META-INF/services in the compiled jar -->
+            <resource>
+                <directory>source/java/src</directory>
+                <includes>
+                    <include>META-INF/services/*</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <!-- 1. Read build.properties -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>${project.basedir}/build.properties</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 2. Compile -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+            </plugin>
+
+            <!-- 3. Rename manifest, copy FLD -->
+            <plugin>
+                <groupId>com.coderplus.maven.plugins</groupId>
+                <artifactId>copy-rename-maven-plugin</artifactId>
+                <version>1.0.1</version>
+                <executions>
+                    <execution>
+                        <id>rename-manifest</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>rename</goal>
+                        </goals>
+                        <configuration>
+                            <sourceFile>${project.build.directory}/extension-resources/extension-manifest.txt</sourceFile>
+                            <destinationFile>${project.build.directory}/extension-resources/META-INF/MANIFEST.MF</destinationFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-fld</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <sourceFile>${project.basedir}/source/fld/ormFunctions.fld</sourceFile>
+                            <destinationFile>${project.build.directory}/extension-resources/flds/ormFunctions.fld</destinationFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>rename-lex</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>rename</goal>
+                        </goals>
+                        <configuration>
+                            <sourceFile>${project.build.directory}/${project.artifactId}-${project.version}-lex.zip</sourceFile>
+                            <destinationFile>${project.build.directory}/${project.artifactId}-${project.version}.lex</destinationFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 4. Create extension jar with OSGi manifest -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
+                <configuration>
+                    <archive>
+                        <manifestFile>source/java/src/META-INF/MANIFEST.MF</manifestFile>
+                        <manifestEntries>
+                            <Bundle-SymbolicName>${bundlename}</Bundle-SymbolicName>
+                            <Bundle-Version>${project.version}</Bundle-Version>
+                            <Built-Date>${build.timestamp}</Built-Date>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- 5. Shade ALL deps into one fat jar (same approach as Ortus) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Bundle-SymbolicName>${bundlename}</Bundle-SymbolicName>
+                                        <Bundle-Version>${project.version}</Bundle-Version>
+                                        <Built-Date>${build.timestamp}</Built-Date>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 6. Copy fat jar to target/jars/ with bundle name -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-extension-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.directory}/jars"/>
+                                <copy file="${project.build.directory}/${project.artifactId}-${project.version}.jar"
+                                      tofile="${project.build.directory}/jars/${bundlename}-${project.version}.jar"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 6. Assemble .lex -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.7.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/assembly/lex.xml</descriptor>
+                    </descriptors>
+                </configuration>
+            </plugin>
+
+            <!-- 7. Attach .lex as artifact -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-lex</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/${project.artifactId}-${project.version}.lex</file>
+                                    <type>lex</type>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Deploy -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <id>default-deploy</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.build.directory}/${project.artifactId}-${project.version}.lex</file>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>${project.artifactId}</artifactId>
+                            <version>${project.version}</version>
+                            <repositoryId>ossrh</repositoryId>
+                            <url>${snapshot.url}</url>
+                            <packaging>lex</packaging>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.13</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- ============================== Profiles ============================== -->
 
     <profiles>
         <profile>
@@ -80,7 +400,6 @@
             </activation>
             <build>
                 <plugins>
-                    <!-- GPG sign -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -100,158 +419,8 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                      <groupId>org.apache.maven.plugins</groupId>
-                      <artifactId>maven-release-plugin</artifactId>
-                      <version>3.0.0</version>
-                      <configuration>
-                        <autoVersionSubmodules>true</autoVersionSubmodules>
-                        <useReleaseProfile>false</useReleaseProfile>
-                        <releaseProfiles>release</releaseProfiles>
-                        <goals>deploy</goals>
-                      </configuration>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
     </profiles>
-
-    <build>
-        <plugins>
-            <!-- Antrun plugin to execute the Ant build -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <ant antfile="build.xml" target="clean">
-                                    <property name="bundleversion" value="${project.version}"/>
-                                    <property name="bundlename" value="${bundlename}"/>
-                                    <property name="filename" value="${project.artifactId}"/>
-                                    <property name="id" value="${id}"/>
-                                    <property name="luceeCoreVersion" value="${luceeCoreVersion}"/>
-                                    <property name="releaseType" value="${releaseType}"/>
-                                    <property name="label" value="${label}"/>
-                                    <property name="description" value="${project.description}"/>
-                                    <property name="class" value="${class}"/>
-                                </ant>
-                                <condition property="isSnapshot" value="true" else="false">
-                                    <matches string="${project.version}" pattern=".*-SNAPSHOT"/>
-                                </condition>
-                                <condition property="deploy.url" value="${snapshot.url}">
-                                    <istrue value="${isSnapshot}"/>
-                                </condition>
-                                <condition property="deploy.url" value="${release.url}">
-                                    <isfalse value="${isSnapshot}"/>
-                                </condition>
-                                <echo message="Deploying to URL: ${deploy.url}" />
-                            </target>
-                            <exportAntProperties>true</exportAntProperties>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Build Helper Plugin to attach additional artifacts -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>attach-artifacts</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attach-artifact</goal>
-                        </goals>
-                        <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>${project.build.directory}/${project.artifactId}-${project.version}.lex</file>
-                                    <type>lex</type>
-                                </artifact>
-                            </artifacts>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Clean plugin to remove extra folders -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>cleanup</id>
-                        <phase>post-package</phase>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                        <configuration>
-                            <filesets>
-                                <fileset>
-                                    <directory>${project.build.directory}/antrun</directory>
-                                    <includes>
-                                        <include>**/*</include>
-                                    </includes>
-                                </fileset>
-                                <fileset>
-                                    <directory>${project.build.directory}/archive-tmp</directory>
-                                    <includes>
-                                        <include>**/*</include>
-                                    </includes>
-                                </fileset>
-                            </filesets>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Maven Deploy Plugin to deploy the .lex file -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>3.0.0-M1</version>
-                <executions>
-                    <execution>
-                        <id>default-deploy</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>deploy-file</goal>
-                        </goals>
-                        <configuration>
-                            <file>${project.build.directory}/${project.artifactId}-${project.version}.lex</file>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>${project.artifactId}</artifactId>
-                            <version>${project.version}</version>
-                            <repositoryId>ossrh</repositoryId>
-                            <url>${deploy.url}</url>
-                            <packaging>lex</packaging>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Nexus Staging Maven Plugin to automate the release process -->
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.13</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
