@@ -19,13 +19,22 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
-			it( "ORMFlushAll() flushes all datasource sessions", function() {
+			it( title: "ORMFlushAll() flushes all datasource sessions", skip: !hasORMFlushAll(), body: function() {
 				var result = _InternalRequest( template: "#uri()#/flushAll.cfm" );
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
 		});
 
+	}
+
+	private boolean function hasORMFlushAll() {
+		try {
+			getFunctionData( "ormflushall" );
+			return true;
+		} catch( any e ) {
+			return false;
+		}
 	}
 
 	private string function uri() {

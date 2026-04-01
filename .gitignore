@@ -11,3 +11,7 @@ target/*
 *.DS_Store
 /cache
 *.db
+/test-output
+*.hbm.xml
+/.claude
+/.vscode

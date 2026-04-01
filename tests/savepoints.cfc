@@ -2,7 +2,8 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	function run( testResults, testBox ) {
 		describe("ORM Savepoint Support",  function() {
-			it( title="can use transaction savepoint", skip="true",  body=function( currentSpec ) {
+			// LDEV-3657: ORMConnection.setSavepoint() throws "this feature is not supported"
+			it( title="can use transaction savepoint", skip=true, body=function( currentSpec ) {
                 local.uri=createURI("savepoints/index.cfm");
                 local.result=_InternalRequest(uri);
                 expect( result.status ).toBe( 200 );
