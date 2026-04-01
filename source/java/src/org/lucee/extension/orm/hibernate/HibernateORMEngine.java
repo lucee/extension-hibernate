@@ -37,13 +37,13 @@ public class HibernateORMEngine implements ORMEngine {
 	private Map<String, SessionFactoryData> factories = new ConcurrentHashMap<String, SessionFactoryData>();
 
 	static {
-		// Patch because commandbox otherwise uses com.sun.xml.internal.bind.v2.ContextFactory for unknown
-		// reason
+		// LDEV-4276 LDEV-6225
+		// Patch because commandbox otherwise uses com.sun.xml.internal.bind.v2.ContextFactory for unknown reason
 		// Class clazz = ContextFactory.class;
 		// System.setProperty("javax.xml.bind.context.factory", "com.sun.xml.bind.v2.ContextFactory");
 		System.setProperty("javax.xml.bind.context.factory", "com.sun.xml.bind.v2.ContextFactory");
-		// Force JBoss Logging to use our Lucee bridge instead of ServiceLoader discovery
-		// (ServiceLoader doesn't work in OSGi)
+
+		// Force JBoss Logging to use our Lucee bridge (also registered via META-INF/services)
 		System.setProperty("org.jboss.logging.provider", "org.lucee.extension.orm.hibernate.logging.LuceeJBossLoggerProvider");
 	}
 
