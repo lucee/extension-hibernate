@@ -98,7 +98,6 @@ public class HibernateSessionFactory {
 			export.setHaltOnError(true);
 			export.execute(enumSet, Action.BOTH, metadataSources.buildMetadata());
 			printError(log, data, export.getExceptions(), true);
-			executeSQLScript(ormConf, ds, user, pass);
 		}
 		else if (/* ORMConfiguration.DBCREATE_CREATE */3 == ormConf.getDbCreate()) {
 			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create-only");
@@ -106,7 +105,6 @@ public class HibernateSessionFactory {
 			export.setHaltOnError(true);
 			export.execute(enumSet, Action.CREATE, metadataSources.buildMetadata());
 			printError(log, data, export.getExceptions(), true);
-			executeSQLScript(ormConf, ds, user, pass);
 		}
 		else if (/* ORMConfiguration.DBCREATE_CREATE_DROP */4 == ormConf.getDbCreate()) {
 			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create-drop");
@@ -114,7 +112,6 @@ public class HibernateSessionFactory {
 			export.setHaltOnError(true);
 			export.execute(enumSet, Action.BOTH, metadataSources.buildMetadata());
 			printError(log, data, export.getExceptions(), true);
-			executeSQLScript(ormConf, ds, user, pass);
 		}
 		else if (ORMConfiguration.DBCREATE_UPDATE == ormConf.getDbCreate()) {
 			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "update");
@@ -126,40 +123,44 @@ public class HibernateSessionFactory {
 	}
 
 	private static void printError(Log log, SessionFactoryData data, List<Exception> exceptions, boolean throwException) throws PageException {
-		if (exceptions == null || exceptions.size() == 0) return;
-		Iterator<Exception> it = exceptions.iterator();
-		if (!throwException || exceptions.size() > 1) {
-			while (it.hasNext()) {
-				log.log(Log.LEVEL_ERROR, "hibernate", it.next());
-			}
+		if (exceptions == null || exceptions.isEmpty()) return;
+
+		// always log all errors
+		for (Exception e : exceptions) {
+			log.log(Log.LEVEL_ERROR, "hibernate", e);
 		}
+
 		if (!throwException) return;
 
-		it = exceptions.iterator();
-		while (it.hasNext()) {
-			throw ExceptionUtil.createException(data, null, it.next());
-		}
+		// throw a clean exception with the message from the first error
+		// (avoid wrapping the deep Hibernate cause chain which can trigger StackOverflow in Lucee's exception serialization)
+		Exception first = exceptions.get(0);
+		String msg = first.getMessage();
+		if (msg == null) msg = first.toString();
+		throw ExceptionUtil.createException(data, null, msg, null);
 	}
 
-	private static void executeSQLScript(ORMConfiguration ormConf, DataSource ds, String user, String pass) throws SQLException, IOException, PageException {
+	/**
+	 * Execute the ormSettings.sqlScript file against the given datasource, if configured.
+	 * Called after buildSessionFactory() so HBM2DDL_AUTO has finished schema creation.
+	 */
+	public static void runSqlScript(ORMConfiguration ormConf, DataSource ds) throws SQLException, IOException, PageException {
 		Resource sqlScript = ORMConfigurationUtil.getSqlScript(ormConf, ds.getName());
-		if (sqlScript != null && sqlScript.isFile()) {
-			BufferedReader br = CommonUtil.toBufferedReader(sqlScript, (Charset) null);
-			String line;
-			StringBuilder sql = new StringBuilder();
-			String str;
-			Statement stat = null;
-			PageContext pc = CFMLEngineFactory.getInstance().getThreadPageContext();
-			DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds, user, pass, true);
-			try {
+		if (sqlScript == null || !sqlScript.isFile()) return;
 
-				stat = dc.getConnection().createStatement();
+		PageContext pc = CFMLEngineFactory.getInstance().getThreadPageContext();
+		DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds, null, null, true);
+		try (BufferedReader br = CommonUtil.toBufferedReader(sqlScript, (Charset) null)) {
+			Statement stat = dc.getConnection().createStatement();
+			try {
+				String line;
+				StringBuilder sql = new StringBuilder();
 				while ((line = br.readLine()) != null) {
 					line = line.trim();
 					if (line.startsWith("//") || line.startsWith("--")) continue;
 					if (line.endsWith(";")) {
 						sql.append(line.substring(0, line.length() - 1));
-						str = sql.toString().trim();
+						String str = sql.toString().trim();
 						if (str.length() > 0) stat.execute(str);
 						sql = new StringBuilder();
 					}
@@ -167,10 +168,8 @@ public class HibernateSessionFactory {
 						sql.append(line).append(" ");
 					}
 				}
-				str = sql.toString().trim();
-				if (str.length() > 0) {
-					stat.execute(str);
-				}
+				String str = sql.toString().trim();
+				if (str.length() > 0) stat.execute(str);
 			}
 			finally {
 				CFMLEngineFactory.getInstance().getDBUtil().closeSilent(stat);

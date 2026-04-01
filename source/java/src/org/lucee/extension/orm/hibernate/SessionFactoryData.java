@@ -245,6 +245,15 @@ public class SessionFactoryData {
 		}
 
 		factories.put(datasSourceName, sf);
+
+		// Execute sqlScript AFTER buildSessionFactory so HBM2DDL_AUTO has finished creating/dropping tables
+		try {
+			HibernateSessionFactory.runSqlScript(getORMConfiguration(), dsc.ds);
+		}
+		catch (Exception e) {
+			throw new RuntimeException("Failed to execute ORM sqlScript", e);
+		}
+
 		return sf;
 	}
 
