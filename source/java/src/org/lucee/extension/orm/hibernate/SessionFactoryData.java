@@ -285,11 +285,21 @@ public class SessionFactoryData {
 	 * Reset the session factory and clear all known configuration.
 	 */
 	public void reset() {
-		// Release connections from idle sessions immediately. Sessions with active
-		// transactions are only invalidated — the owning thread will roll back and
-		// close on its next ORM operation or at end of request.
+		// Signal all sessions to stop — threads mid-query will clean up their own
+		// sessions when they next touch ORM.
 		for ( HibernateORMSession session : activeSessions ) {
-			session.releaseIdleAndInvalidateActive();
+			session.invalidateAll();
+		}
+
+		// Wait for in-flight queries to finish before closing factories.
+		long deadline = System.currentTimeMillis() + 5000;
+		while ( System.currentTimeMillis() < deadline ) {
+			boolean anyOpen = false;
+			for ( HibernateORMSession session : activeSessions ) {
+				if ( session.hasOpenSessions() ) { anyOpen = true; break; }
+			}
+			if ( !anyOpen ) break;
+			try { Thread.sleep( 50 ); } catch ( InterruptedException e ) { Thread.currentThread().interrupt(); break; }
 		}
 		activeSessions.clear();
 

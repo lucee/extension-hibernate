@@ -135,6 +135,10 @@ public class HibernateORMSession implements ORMSession {
 	 * private Session session(){ return _session; }
 	 */
 
+	// Note: several callers (getRawSession, getRawSessionFactory, getTransaction) pass null as pc.
+	// This is safe as long as the session already exists in the map. If lazy creation is needed
+	// (line 151), null pc will NPE in createSession. In practice, these methods are called from
+	// Lucee core after ORM init, so the session should always exist.
 	private Session getSession(PageContext pc, Key datasSourceName) throws PageException {
 		return getSessionAndConn(pc, datasSourceName).getSession(pc);
 	}
@@ -739,20 +743,17 @@ public class HibernateORMSession implements ORMSession {
 	 * active sessions cross-thread because that could release a JDBC connection while the owning
 	 * thread is mid-flush, causing connection pool corruption.
 	 */
-	void releaseIdleAndInvalidateActive() {
+	void invalidateAll() {
 		for (SessionAndConn sac : sessions.values()) {
-			try {
-				if (sac.isOpen() && !sac.hasActiveTransaction()) {
-					sac.close( null );
-				}
-				else {
-					sac.invalidate();
-				}
-			}
-			catch (Exception e) {
-				// swallow — best-effort cleanup during reload
-			}
+			sac.invalidate();
 		}
+	}
+
+	boolean hasOpenSessions() {
+		for (SessionAndConn sac : sessions.values()) {
+			if (sac.isOpen()) return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -1001,6 +1002,9 @@ public class HibernateORMSession implements ORMSession {
 
 	@Override
 	public boolean isValid() {
+		// With lazy session opening, sessions starts empty. Returning true here seems correct
+		// (no sessions yet = valid) but causes Lucee to reuse sessions across apps that haven't
+		// initialized ORM, breaking LDEV0613/LDEV1984. Needs investigation before changing.
 		if (sessions.size() == 0) return false;
 		Iterator<SessionAndConn> it = sessions.values().iterator();
 
