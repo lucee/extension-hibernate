@@ -20,7 +20,7 @@ if ( sink.getNoInsert() != "thedefault" ) throw( message="noinsert default: expe
 entitySave( sink );
 ormFlush();
 entityReload( sink );
-if ( !isNull( sink.getNoInsert() ) && len( sink.getNoInsert() ) ) throw( message="noinsert after insert: expected null/empty, got #sink.getNoInsert()#" );
+if ( sink.getNoInsert() != "thedefault" ) throw( message="noinsert after reload: expected thedefault, got #sink.getNoInsert()#" );
 
 // insert=false: can update after insert
 sink.setNoInsert( "valuetoinsert" );

@@ -10,6 +10,7 @@ import org.lucee.extension.orm.hibernate.util.CommonUtil;
 import org.lucee.extension.orm.hibernate.HibernatePageException;
 
 import lucee.runtime.Component;
+import lucee.runtime.component.Property;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.type.Collection.Key;
 
@@ -52,9 +53,29 @@ public final class CFCSetter implements Setter {
 	public void set(Object trg, Object value, SessionFactoryImplementor factory) throws HibernateException {
 		try {
 			Component cfc = CommonUtil.toComponent(trg);
+			if ( value == null ) {
+				Object defaultValue = getPropertyDefault( cfc );
+				if ( defaultValue != null ) {
+					value = defaultValue;
+				}
+			}
 			cfc.getComponentScope().set(key, value);
 		} catch (PageException pe) {
 			throw new HibernatePageException(pe);
 		}
+	}
+
+	/**
+	 * Look up the default value for this property from the CFC metadata.
+	 */
+	private Object getPropertyDefault( Component cfc ) {
+		Property[] props = cfc.getProperties( true, false, false, false );
+		String keyStr = key.getString();
+		for ( Property prop : props ) {
+			if ( keyStr.equalsIgnoreCase( prop.getName() ) ) {
+				return prop.getDefault();
+			}
+		}
+		return null;
 	}
 }
