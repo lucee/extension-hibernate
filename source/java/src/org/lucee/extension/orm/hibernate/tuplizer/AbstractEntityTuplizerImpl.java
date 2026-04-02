@@ -25,6 +25,7 @@ import org.lucee.extension.orm.hibernate.tuplizer.accessors.CFCGetter;
 import org.lucee.extension.orm.hibernate.tuplizer.accessors.CFCSetter;
 import org.lucee.extension.orm.hibernate.tuplizer.proxy.CFCHibernateProxyFactory;
 
+import lucee.commons.io.log.Log;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.loader.util.Util;
 import lucee.runtime.Component;
@@ -85,12 +86,18 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 						}
 					}
 					catch (Exception e) {
+						Log log = CommonUtil.getORMLog();
+						if ( log != null ) log.log( Log.LEVEL_WARN, "hibernate",
+							"failed to resolve generator type for property [" + name + "], defaulting to [string]", e );
 					}
 				}
 				try {
 					value = HibernateCaster.toHibernateValue(CFMLEngineFactory.getInstance().getThreadPageContext(), value, type);
 				}
 				catch (PageException pe) {
+					Log log = CommonUtil.getORMLog();
+					if ( log != null ) log.log( Log.LEVEL_WARN, "hibernate",
+						"failed to convert value for property [" + name + "] to type [" + type + "], using raw value", pe );
 				}
 
 				map.put(name, value);

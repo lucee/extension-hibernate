@@ -19,6 +19,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "entityToQuery with non-entity gives helpful error", function() {
+				var result = _InternalRequest( template: "#uri()#/badEntityToQuery.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}

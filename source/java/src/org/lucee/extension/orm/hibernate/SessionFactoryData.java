@@ -107,7 +107,7 @@ public class SessionFactoryData {
 		CFCInfo info = getCFC(HibernateCaster.getEntityName(cfc), null);
 		if (info != null) return info;
 
-		throw ExceptionUtil.createException(this, null, "there is no mapping definition for component [" + cfc.getAbsName() + "]", "");
+		throw ExceptionUtil.createException(this, null, "There is no mapping definition for component [" + cfc.getAbsName() + "]", "");
 	}
 
 	public List<String> getEntityNames() {
@@ -141,7 +141,7 @@ public class SessionFactoryData {
 				if (HibernateCaster.getEntityName(cfc).equalsIgnoreCase(entityName)) return unique ? (Component) cfc.duplicate(false) : cfc;
 			}
 		}
-		throw ExceptionUtil.createException((ORMSession) null, null, "entity [" + entityName + "] does not exist", "");
+		throw ExceptionUtil.createException((ORMSession) null, null, "Entity [" + entityName + "] does not exist", "");
 	}
 
 	public Component getEntityByCFCName(String cfcName, boolean unique) throws PageException {
@@ -186,8 +186,8 @@ public class SessionFactoryData {
 			return unique ? (Component) cfc.duplicate(false) : cfc;
 		}
 
-		throw ExceptionUtil.createException((ORMSession) null, null, "entity [" + name + "] " + (Util.isEmpty(cfcName) ? "" : "with cfc name [" + cfcName + "] ")
-				+ "does not exist, existing  entities are [" + CFMLEngineFactory.getInstance().getListUtil().toList(names, ", ") + "]", "");
+		throw ExceptionUtil.createException((ORMSession) null, null, "Entity [" + name + "] " + (Util.isEmpty(cfcName) ? "" : "with cfc name [" + cfcName + "] ")
+				+ "does not exist, existing entities are [" + CFMLEngineFactory.getInstance().getListUtil().toList(names, ", ") + "]", "");
 
 	}
 
@@ -228,7 +228,7 @@ public class SessionFactoryData {
 	public SessionFactory buildSessionFactory(Key datasSourceName) {
 		// Key key=eng.getCreationUtil().createKey(ds.getName());
 		DataSourceConfig dsc = getConfiguration(datasSourceName);
-		if (dsc == null) throw new RuntimeException("cannot build factory because there is no configuration"); // this should never
+		if (dsc == null) throw new RuntimeException("Cannot build factory because there is no configuration"); // this should never
 																												// happen
 
 		Thread thread = Thread.currentThread();

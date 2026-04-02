@@ -29,6 +29,7 @@ import org.hibernate.query.Query;
 import org.hibernate.query.internal.ParameterMetadataImpl;
 import org.hibernate.type.Type;
 
+import lucee.commons.io.log.Log;
 import lucee.commons.lang.types.RefBoolean;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.loader.util.Util;
@@ -115,7 +116,7 @@ public class HibernateORMSession implements ORMSession {
 		if (sac == null) {
 			CFMLEngineFactory.getInstance().getExceptionUtil().similarKeyMessage(sessions.keySet().toArray(new Key[sessions.size()]), datasSourceName.getString(), "datasource",
 					"datasources", null, true);
-			throw ExceptionUtil.createException(data, null, "there is no Session for the datasource [" + datasSourceName + "]", null);
+			throw ExceptionUtil.createException(data, null, "There is no Session for the datasource [" + datasSourceName + "]", null);
 		}
 		Session s = sac.getSession(pc);
 		if (!s.isOpen() || !s.isConnected()) {
@@ -442,7 +443,7 @@ public class HibernateORMSession implements ORMSession {
 			Key dsn = CommonUtil.toKey(info.getDataSource().getName());
 			return getSession(pc, dsn).getSessionFactory();
 		}
-		throw ExceptionUtil.createException(data, null, "entity [" + entityName + "] not found", null);
+		throw ExceptionUtil.createException(data, null, "Entity [" + entityName + "] not found", null);
 	}
 
 	private String correctCaseEntityName(String entityName) {
@@ -498,6 +499,9 @@ public class HibernateORMSession implements ORMSession {
 					return __executeQuery(pc, s, dsn, hql, CommonUtil.toArray((Argument) params), unique, queryOptions);
 				}
 				catch (Exception e) {
+					Log log = CommonUtil.getORMLog();
+					if ( log != null ) log.log( Log.LEVEL_DEBUG, "hibernate",
+						"HQL query param fallback (struct->array) also failed for [" + hql + "]", e );
 				}
 			}
 			throw qe;
@@ -518,7 +522,7 @@ public class HibernateORMSession implements ORMSession {
 			if (obj != null) {
 				int max = CommonUtil.toIntValue(obj, -1);
 				if (max < 0)
-					throw ExceptionUtil.createException(this, null, "option [maxresults] has an invalid value [" + obj + "], value should be a number bigger or equal to 0", null);
+					throw ExceptionUtil.createException(this, null, "Option [maxresults] has an invalid value [" + obj + "], value should be a number >= 0", null);
 				query.setMaxResults(max);
 			}
 			// offset
@@ -526,14 +530,14 @@ public class HibernateORMSession implements ORMSession {
 			if (obj != null) {
 				int off = CommonUtil.toIntValue(obj, -1);
 				if (off < 0)
-					throw ExceptionUtil.createException(this, null, "option [offset] has an invalid value [" + obj + "], value should be a number bigger or equal to 0", null);
+					throw ExceptionUtil.createException(this, null, "Option [offset] has an invalid value [" + obj + "], value should be a number >= 0", null);
 				query.setFirstResult(off);
 			}
 			// readonly
 			obj = options.get("readonly", null);
 			if (obj != null) {
 				Boolean ro = CommonUtil.toBoolean(obj, null);
-				if (ro == null) throw ExceptionUtil.createException(this, null, "option [readonly] has an invalid value [" + obj + "], value should be a boolean value", null);
+				if (ro == null) throw ExceptionUtil.createException(this, null, "Option [readonly] has an invalid value [" + obj + "], value should be a boolean", null);
 				query.setReadOnly(ro.booleanValue());
 			}
 			// timeout
@@ -544,7 +548,7 @@ public class HibernateORMSession implements ORMSession {
 				else to = CommonUtil.toIntValue(obj, -1);
 
 				if (to < 0)
-					throw ExceptionUtil.createException(this, null, "option [timeout] has an invalid value [" + obj + "], value should be a number bigger or equal to 0", null);
+					throw ExceptionUtil.createException(this, null, "Option [timeout] has an invalid value [" + obj + "], value should be a number >= 0", null);
 				query.setTimeout(to);
 			}
 		}
@@ -581,7 +585,7 @@ public class HibernateORMSession implements ORMSession {
 						name = (String) names.get(e.getKey(), null);
 						if (name == null) continue; // param not needed will be ignored
 						type = meta.getNamedParameterDescriptor(name).getExpectedType();
-						if (type==null)	throw ExceptionUtil.createException(this, null, "couldn't get type for ORM parameter [" + e.getKey() 
+						if (type==null)	throw ExceptionUtil.createException(this, null, "Could not get type for ORM parameter [" + e.getKey() 
 							+ "], entity names are case sensitive!" , null);
 						
 						obj = HibernateCaster.toSQL(type, obj, isArray);
@@ -747,7 +751,7 @@ public class HibernateORMSession implements ORMSession {
 		Object obj = null;
 		try {
 			ClassMetadata metaData = sess.getSessionFactory().getClassMetadata(name);
-			if (metaData == null) throw ExceptionUtil.createException(this, null, "could not load meta information for entity [" + name + "]", null);
+			if (metaData == null) throw ExceptionUtil.createException(this, null, "Could not load meta information for entity [" + name + "]", null);
 			Serializable oId = CommonUtil.toSerializable(CommonUtil.castTo(pc, metaData.getIdentifierType().getReturnedClass(), id));
 			obj = sess.get(name, oId);
 		}
@@ -891,7 +895,7 @@ public class HibernateORMSession implements ORMSession {
 					if (parts.length > 1) {
 						if (parts[1].equalsIgnoreCase("desc")) isDesc = true;
 						else if (!parts[1].equalsIgnoreCase("asc")) {
-							throw ExceptionUtil.createException((ORMSession) null, null, "invalid order direction defintion [" + parts[1] + "]", "valid values are [asc, desc]");
+							throw ExceptionUtil.createException((ORMSession) null, null, "Invalid order direction definition [" + parts[1] + "]", "valid values are [asc, desc]");
 						}
 
 					}

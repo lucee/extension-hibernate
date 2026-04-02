@@ -20,6 +20,7 @@ import org.hibernate.type.ComponentType;
 import org.hibernate.type.Type;
 
 import lucee.Info;
+import lucee.commons.io.log.Log;
 import lucee.commons.io.res.Resource;
 import lucee.loader.engine.CFMLEngine;
 import lucee.loader.engine.CFMLEngineFactory;
@@ -134,7 +135,7 @@ public class HibernateUtil {
 	public static String validateColumnName(ClassMetadata metaData, String name) throws PageException {
 		String res = validateColumnName(metaData, name, null);
 		if (res != null) return res;
-		throw ExceptionUtil.createException((ORMSession) null, null, "invalid name, there is no property with name [" + name + "] in the entity [" + metaData.getEntityName() + "]",
+		throw ExceptionUtil.createException((ORMSession) null, null, "Invalid name, there is no property with name [" + name + "] in the entity [" + metaData.getEntityName() + "]",
 				"valid properties names are [" + CommonUtil.toList(metaData.getPropertyNames(), ", ") + "]");
 
 	}
@@ -326,6 +327,9 @@ public class HibernateUtil {
 			}
 		}
 		catch (Exception e) {
+			Log log = CommonUtil.getORMLog();
+			if ( log != null ) log.log( Log.LEVEL_DEBUG, "hibernate",
+				"failed to look up table [" + tableName + "] from database metadata", e );
 		}
 		finally {
 			CommonUtil.closeEL(tables);

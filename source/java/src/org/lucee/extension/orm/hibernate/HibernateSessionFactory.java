@@ -221,6 +221,9 @@ public class HibernateSessionFactory {
 				ext = HibernateCaster.getEntityName(parent);
 			}
 			catch (Exception e) {
+				Log log = CommonUtil.getORMLog();
+				if ( log != null ) log.log( Log.LEVEL_WARN, "hibernate",
+					"failed to resolve parent entity [" + ext + "] for entity [" + HibernateCaster.getEntityName( value.getCFC() ) + "]", e );
 			}
 
 			ext = HibernateUtil.id(CommonUtil.last(ext, ".").trim());

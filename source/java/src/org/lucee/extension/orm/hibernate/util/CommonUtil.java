@@ -31,6 +31,7 @@ import org.lucee.extension.orm.hibernate.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import lucee.commons.io.log.Log;
 import lucee.commons.io.res.Resource;
 import lucee.commons.lang.types.RefBoolean;
 import lucee.loader.engine.CFMLEngineFactory;
@@ -902,6 +903,20 @@ public class CommonUtil {
 
 	public static Config config() {
 		return pc().getConfig();
+	}
+
+	/**
+	 * Get the ORM log from the current thread's PageContext, or null if unavailable.
+	 */
+	public static Log getORMLog() {
+		try {
+			PageContext pc = CFMLEngineFactory.getInstance().getThreadPageContext();
+			if ( pc != null ) return pc.getConfig().getLog( "orm" );
+		}
+		catch ( Exception e ) {
+			// no log available
+		}
+		return null;
 	}
 
 	public static void closeEL(OutputStream os) {

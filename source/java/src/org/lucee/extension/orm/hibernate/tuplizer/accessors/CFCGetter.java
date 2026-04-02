@@ -71,6 +71,7 @@ public class CFCGetter implements Getter {
 			// TODO better impl
 			return HibernateUtil.getORMEngine(CommonUtil.pc());
 		} catch (PageException e) {
+			// engine not available in this context — caller handles null
 		}
 
 		return null;

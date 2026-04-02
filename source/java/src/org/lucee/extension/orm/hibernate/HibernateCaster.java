@@ -86,9 +86,10 @@ public class HibernateCaster {
 			try {
 				Struct md = cfc.getMetaData(CommonUtil.pc());
 				name = CommonUtil.toString(md.get(CommonUtil.ENTITY_NAME), null);
-
 			}
-			catch (PageException pe) {}
+			catch (PageException pe) {
+				// both metadata paths failed — will fall through to getName(cfc) below
+			}
 		}
 
 		if (!Util.isEmpty(name)) {
@@ -112,7 +113,7 @@ public class HibernateCaster {
 		int c = cascade(cascade, -1);
 		if (c != -1) return c;
 		throw ExceptionUtil.createException(session, null,
-				"invalid cascade defintion [" + cascade + "], valid values are [all,all-delete-orphan,delete,delete-orphan,refresh,save-update]", null);
+				"Invalid cascade definition [" + cascade + "], valid values are [all, all-delete-orphan, delete, delete-orphan, refresh, save-update]", null);
 	}
 
 	public static int cascade(String cascade, int defaultValue) {
@@ -141,7 +142,7 @@ public class HibernateCaster {
 	public static int collectionType(ORMSession session, String strCollectionType) throws PageException {
 		int ct = collectionType(strCollectionType, -1);
 		if (ct != -1) return ct;
-		throw ExceptionUtil.createException(session, null, "invalid collectionType defintion [" + strCollectionType + "], valid values are [array,struct]", null);
+		throw ExceptionUtil.createException(session, null, "Invalid collectionType definition [" + strCollectionType + "], valid values are [array, struct]", null);
 	}
 
 	public static int collectionType(String strCollectionType, int defaultValue) {
@@ -270,7 +271,7 @@ public class HibernateCaster {
 
 	public static String toHibernateType(ORMSession session, String type) throws PageException {
 		String res = toHibernateType(type, null);
-		if (res == null) throw ExceptionUtil.createException(session, null, "the type [" + type + "] is not supported", null);
+		if (res == null) throw ExceptionUtil.createException(session, null, "The type [" + type + "] is not supported", null);
 		return res;
 	}
 
@@ -509,7 +510,22 @@ public class HibernateCaster {
 		Query qry = null;
 		// a single entity
 		if (!CommonUtil.isArray(obj)) {
-			qry = toQuery(pc, session, HibernateCaster.toComponent(obj), name, null, 1, 1);
+			Component cfc;
+			try {
+				cfc = HibernateCaster.toComponent(obj);
+			}
+			catch (PageException e) {
+				String typeName;
+				if (obj == null) typeName = "null";
+				else if (CommonUtil.isStruct(obj)) typeName = "struct";
+				else if (CommonUtil.isArray(obj)) typeName = "array";
+				else typeName = obj.getClass().getSimpleName();
+				PageException pe = ExceptionUtil.createException(session, null,
+					"entityToQuery() expected an ORM entity or array of entities, received [" + typeName + "]", null);
+				pe.initCause( e );
+				throw pe;
+			}
+			qry = toQuery(pc, session, cfc, name, null, 1, 1);
 		}
 
 		// a array of entities
@@ -527,8 +543,8 @@ public class HibernateCaster {
 		}
 
 		if (qry == null) {
-			if (!Util.isEmpty(name)) throw ExceptionUtil.createException(session, null, "there is no entity inheritance that match the name [" + name + "]", null);
-			throw ExceptionUtil.createException(session, null, "cannot create query", null);
+			if (!Util.isEmpty(name)) throw ExceptionUtil.createException(session, null, "There is no entity inheritance that matches the name [" + name + "]", null);
+			throw ExceptionUtil.createException(session, null, "Cannot create query", null);
 		}
 		return qry;
 	}
@@ -589,7 +605,7 @@ public class HibernateCaster {
 		}
 		// check
 		else if (engine.getMode() == ORMEngine.MODE_STRICT) {
-			if (!qry.getName().equals(getEntityName(cfc))) throw ExceptionUtil.createException(session, null, "can only merge entities of the same kind to a query", null);
+			if (!qry.getName().equals(getEntityName(cfc))) throw ExceptionUtil.createException(session, null, "Can only merge entities of the same kind to a query", null);
 		}
 
 		// populate
@@ -628,7 +644,7 @@ public class HibernateCaster {
 
 	private static Query inheritance(PageContext pc, HibernateORMSession session, Query qry, Component parent, Component child, String entityName) throws PageException {
 		if (getEntityName(child).equalsIgnoreCase(entityName)) return populateQuery(pc, session, child, qry);
-		return inheritance(pc, session, child, qry, entityName);// MUST geh ACF auch so tief?
+		return inheritance(pc, session, child, qry, entityName);// does ACF also recurse this deep?
 	}
 
 	/**

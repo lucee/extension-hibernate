@@ -20,6 +20,7 @@ package org.lucee.extension.orm.hibernate.util;
 
 import java.util.ArrayList;
 
+import lucee.commons.io.log.Log;
 import lucee.loader.util.Util;
 import lucee.runtime.Component;
 import lucee.runtime.PageContext;
@@ -271,7 +272,7 @@ public class ORMUtil {
 		Object datasource = pc.getApplicationContext().getORMDataSource();
 
 		if (datasource == null) {
-			throw ExceptionUtil.createException("missing datasource definition in Application.cfc/cfapplication");
+			throw ExceptionUtil.createException("Missing datasource definition in Application.cfc/cfapplication");
 		}
 		return datasource instanceof DataSource ? (DataSource) datasource : pc.getDataSource(CommonUtil.toString(datasource));
 	}
@@ -320,6 +321,9 @@ public class ORMUtil {
 			}
 		}
 		catch (Exception e) {
+			Log log = CommonUtil.getORMLog();
+			if ( log != null ) log.log( Log.LEVEL_DEBUG, "hibernate",
+				"failed to resolve datasource from entity metadata, falling back to default datasource", e );
 		}
 
 		return getDefaultDataSource(pc, defaultValue);
@@ -374,6 +378,9 @@ public class ORMUtil {
 			}
 		}
 		catch (PageException e) {
+			Log log = CommonUtil.getORMLog();
+			if ( log != null ) log.log( Log.LEVEL_DEBUG, "hibernate",
+				"failed to resolve datasource name from entity metadata, falling back to default datasource", e );
 		}
 
 		DataSource ds = getDefaultDataSource(pc, null);
