@@ -273,7 +273,7 @@ public class HibernateORMEngine implements ORMEngine {
 			DataSource ds = CommonUtil.getDataSource(pc, cfc);
 
 			if (ormConf.autogenmap()) {
-				data.reset();
+				data.reset(); // clears tableInfo cache; safe here because factories/sessions aren't built yet
 				pc.addPageSource(cfc.getPageSource(), true);
 				//
 				/**

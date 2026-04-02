@@ -87,6 +87,7 @@ public class ExceptionUtil {
 			setAdditional.invoke(pe, new Object[] { name, value });
 		}
 		catch (Exception e) {
+			// reflection failure — additional info won't be attached but not critical
 		}
 	}
 

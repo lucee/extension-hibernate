@@ -47,16 +47,19 @@ public class ConnectionProviderImpl implements ConnectionProvider {
 
 	@Override
 	public void closeConnection(Connection conn) throws SQLException {
+		// getConnection() always returns DatasourceConnection, so the cast is safe.
+		// Note: getThreadPageContext() can return null on background threads (e.g. Hibernate
+		// cleanup during session factory close). Both release paths in CommonUtil need pc,
+		// so there's no safe fallback — this will NPE. Needs a Lucee core API that can
+		// release connections without a PageContext.
 		PageContext pc = engine.getThreadPageContext();
-		if (conn instanceof DatasourceConnection) {
-			try {
-				CommonUtil.releaseDatasourceConnection(pc, (DatasourceConnection) conn, true);
-				// FUTURE see comment above dbu.releaseDatasourceConnection(engine.getThreadConfig(),
-				// (DatasourceConnection) conn, false);
-			}
-			catch (PageException pe) {
-				throw engine.getExceptionUtil().createPageRuntimeException(pe);
-			}
+		try {
+			CommonUtil.releaseDatasourceConnection(pc, (DatasourceConnection) conn, true);
+			// FUTURE see comment above dbu.releaseDatasourceConnection(engine.getThreadConfig(),
+			// (DatasourceConnection) conn, false);
+		}
+		catch (PageException pe) {
+			throw engine.getExceptionUtil().createPageRuntimeException(pe);
 		}
 	}
 

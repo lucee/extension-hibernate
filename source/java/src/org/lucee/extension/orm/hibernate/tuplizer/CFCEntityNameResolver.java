@@ -30,7 +30,7 @@ public class CFCEntityNameResolver implements EntityNameResolver {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		return getClass().equals(obj.getClass());
+		return obj != null && getClass().equals(obj.getClass());
 	}
 
 	/**

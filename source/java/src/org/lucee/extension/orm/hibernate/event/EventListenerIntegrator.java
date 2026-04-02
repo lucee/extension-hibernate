@@ -377,7 +377,9 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 	}
 
 	private boolean isRelationshipField(Property prop) {
-		Struct meta = (Struct) prop.getMetaData();
+		Object raw = prop.getMetaData();
+		if (!(raw instanceof Struct)) return false;
+		Struct meta = (Struct) raw;
 		String fieldType = CommonUtil.toString(meta.get(CommonUtil.FIELDTYPE, null), null);
 		return fieldType != null && CFConstants.Relationships.isRelationshipType(fieldType);
 	}

@@ -55,7 +55,7 @@ public class EntityNew extends BIF {
 			return session.create( pc, name );
 
 		Component entity = session.create( pc, name );
-		setPropeties( pc, entity, properties, false );
+		setProperties( pc, entity, properties, false );
 		return entity;
 
 	}
@@ -72,7 +72,7 @@ public class EntityNew extends BIF {
 	 *
 	 * @throws PageException
 	 */
-	public static void setPropeties( PageContext pc, Component c, Struct properties, boolean ignoreNotExisting )
+	public static void setProperties( PageContext pc, Component c, Struct properties, boolean ignoreNotExisting )
 	    throws PageException {
 		if ( properties == null )
 			return;

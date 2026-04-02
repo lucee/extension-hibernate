@@ -104,7 +104,7 @@ public class LuceeJBossLogger extends Logger {
 	protected void doLogf( Level level, String loggerClassName, String format, Object[] parameters, Throwable thrown ) {
 		if ( !isEnabled( level ) )
 			return;
-		String text = parameters == null ? String.format( format ) : String.format( format, parameters );
+		String text = parameters == null ? format : String.format( format, parameters );
 		Log log = getLuceeLog();
 		if ( log == null )
 			return;

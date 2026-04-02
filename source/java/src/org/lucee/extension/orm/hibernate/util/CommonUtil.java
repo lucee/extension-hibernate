@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.hibernate.JDBCException;
-import org.hibernate.exception.ConstraintViolationException;
 import org.lucee.extension.orm.hibernate.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -80,6 +78,10 @@ public class CommonUtil {
 	// private static final Class<?>[] REL_CONN = new Class[] { PageContext.class,
 	// DatasourceConnection.class };
 	// releaseConnection(pageContext, dc);
+	// identity sentinel for isSimpleValue() — must be new String() to avoid the intern pool,
+	// so that != identity comparison reliably detects when castToString() returned the default
+	@SuppressWarnings("all")
+	private static final String CAST_SENTINEL = new String("");
 	private static Charset _charset;
 
 	public static Charset _UTF8;
@@ -425,26 +427,7 @@ public class CommonUtil {
 	}
 
 	public static PageException toPageException(Throwable t) {
-		PageException pe = caster().toPageException(t);
-		if (t instanceof org.hibernate.HibernateException) {
-			org.hibernate.HibernateException he = (org.hibernate.HibernateException) t;
-			Throwable cause = he.getCause();
-			if (cause != null) {
-				pe = caster().toPageException(cause);
-				ExceptionUtil.setAdditional(pe, CommonUtil.createKey("hibernate exception"), t);
-			}
-		}
-		if (t instanceof JDBCException) {
-			JDBCException je = (JDBCException) t;
-			ExceptionUtil.setAdditional(pe, CommonUtil.createKey("sql"), je.getSQL());
-		}
-		if (t instanceof ConstraintViolationException) {
-			ConstraintViolationException cve = (ConstraintViolationException) t;
-			if (!Util.isEmpty(cve.getConstraintName())) {
-				ExceptionUtil.setAdditional(pe, CommonUtil.createKey("constraint name"), cve.getConstraintName());
-			}
-		}
-		return pe;
+		return ExceptionUtil.toPageException(t);
 	}
 
 	public static Serializable toSerializable(Object obj) throws PageException {
@@ -530,7 +513,7 @@ public class CommonUtil {
 		else if (o instanceof Date)
 			return true;
 		else if (o instanceof Castable) {
-			return ((Castable) o).castToString("this is a unique string") != "this is a unique string";
+			return ((Castable) o).castToString(CAST_SENTINEL) != CAST_SENTINEL;
 
 		} else if (o instanceof Clob)
 			return true;
@@ -678,7 +661,7 @@ public class CommonUtil {
 		}
 
 		public void addItems(SQLItem item) {
-
+			// no-op: this impl is SQL-string-only, no parameterised items
 		}
 
 		@Override
@@ -886,11 +869,11 @@ public class CommonUtil {
 
 	public static Writer getWriter(OutputStream os, Charset cs) {
 		if (cs == null) cs = getCharset();
-		return new BufferedWriter(new OutputStreamWriter(os, getCharset()));
+		return new BufferedWriter(new OutputStreamWriter(os, cs));
 	}
 
 	public static BufferedReader toBufferedReader(Resource res, Charset charset) throws IOException {
-		return toBufferedReader(getReader(res, (Charset) null));
+		return toBufferedReader(getReader(res, charset));
 	}
 
 	public static boolean equalsComplexEL(Object left, Object right) {

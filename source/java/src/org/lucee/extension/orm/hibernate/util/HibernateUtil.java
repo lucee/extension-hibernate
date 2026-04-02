@@ -174,19 +174,21 @@ public class HibernateUtil {
 			Collection.Key name;
 
 			// get all columns
-			ResultSet res = md.getColumns(dbName, null, tableName, null);
-			while (res.next()) {
-				name = CommonUtil.createKey(res.getString("COLUMN_NAME"));
-				properties.setEL(name, CommonUtil.createProperty(name.getString(), res.getString("TYPE_NAME")));
+			try (ResultSet res = md.getColumns(dbName, null, tableName, null)) {
+				while (res.next()) {
+					name = CommonUtil.createKey(res.getString("COLUMN_NAME"));
+					properties.setEL(name, CommonUtil.createProperty(name.getString(), res.getString("TYPE_NAME")));
+				}
 			}
 
 			// ids
-			res = md.getPrimaryKeys(null, null, tableName);
-			Property p;
-			while (res.next()) {
-				name = CommonUtil.createKey(res.getString("COLUMN_NAME"));
-				p = (Property) properties.get(name, null);
-				if (p != null) p.getDynamicAttributes().setEL(CommonUtil.FIELDTYPE, "id");
+			try (ResultSet res = md.getPrimaryKeys(null, null, tableName)) {
+				Property p;
+				while (res.next()) {
+					name = CommonUtil.createKey(res.getString("COLUMN_NAME"));
+					p = (Property) properties.get(name, null);
+					if (p != null) p.getDynamicAttributes().setEL(CommonUtil.FIELDTYPE, "id");
+				}
 			}
 
 			// MUST foreign-key relation
@@ -379,7 +381,7 @@ public class HibernateUtil {
 	}
 
 	public static boolean isApplicationName( String name ) {
-		return name.toLowerCase().equalsIgnoreCase( "application.cfc" );
+		return name.equalsIgnoreCase( "application.cfc" );
 	}
 
 	public static boolean isApplicationName(PageContext pc, String name) {

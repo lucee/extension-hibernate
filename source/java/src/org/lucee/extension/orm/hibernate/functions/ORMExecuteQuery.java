@@ -46,9 +46,9 @@ public class ORMExecuteQuery extends BIF {
 	private static final int	MAX_ARGUMENTS	= 4;
 
 	/**
-	 * Used in `ORMQueryExecute()` to ensure that "too many args" error messages have the correct method name.
+	 * Returns the function name for error messages. Overridden by ORMQueryExecute.
 	 */
-	protected String			functionName	= "ORMExecuteQuery";
+	protected String getFunctionName() { return "ORMExecuteQuery"; }
 
 	public static Object call( PageContext pc, String hql ) throws PageException {
 		return _call( pc, hql, null, false, null );
@@ -129,6 +129,6 @@ public class ORMExecuteQuery extends BIF {
 			return call( pc, cast.toString( args[ 0 ] ), args[ 1 ], cast.toBoolean( args[ 2 ], false ), queryOptions );
 		}
 
-		throw engine.getExceptionUtil().createFunctionException( pc, this.functionName, MIN_ARGUMENTS, MAX_ARGUMENTS, args.length );
+		throw engine.getExceptionUtil().createFunctionException( pc, getFunctionName(), MIN_ARGUMENTS, MAX_ARGUMENTS, args.length );
 	}
 }

@@ -96,6 +96,10 @@ public class HibernateORMTransaction implements ORMTransaction {
 			}
 		}
 		else {
+			// Note: this condition is effectively dead code. begin() and commit() on this wrapper
+			// are no-ops, so the Hibernate transaction status is never COMMITTED here.
+			// The real work is session.flush() below. Do not "fix" to check ACTIVE — that would
+			// change behaviour by actually committing the underlying Hibernate transaction.
 			if (trans.getStatus() == TransactionStatus.COMMITTED) {
 				trans.commit();
 			}

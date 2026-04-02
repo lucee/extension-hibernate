@@ -52,20 +52,22 @@ public class DBSchemaLoader {
 			Collection.Key	name;
 
 			// get all columns
-			ResultSet		res	= dbMeta.getColumns( dbName, null, tableName, null );
-			while ( res.next() ) {
-				name = CommonUtil.createKey( res.getString( "COLUMN_NAME" ) );
-				properties.setEL( name, CommonUtil.createProperty( name.getString(), res.getString( "TYPE_NAME" ) ) );
+			try ( ResultSet res = dbMeta.getColumns( dbName, null, tableName, null ) ) {
+				while ( res.next() ) {
+					name = CommonUtil.createKey( res.getString( "COLUMN_NAME" ) );
+					properties.setEL( name, CommonUtil.createProperty( name.getString(), res.getString( "TYPE_NAME" ) ) );
+				}
 			}
 
 			// ids
-			res = dbMeta.getPrimaryKeys( null, null, tableName );
-			Property p;
-			while ( res.next() ) {
-				name	= CommonUtil.createKey( res.getString( "COLUMN_NAME" ) );
-				p		= ( Property ) properties.get( name, null );
-				if ( p != null )
-					p.getDynamicAttributes().setEL( CommonUtil.FIELDTYPE, "id" );
+			try ( ResultSet res = dbMeta.getPrimaryKeys( null, null, tableName ) ) {
+				Property p;
+				while ( res.next() ) {
+					name	= CommonUtil.createKey( res.getString( "COLUMN_NAME" ) );
+					p		= ( Property ) properties.get( name, null );
+					if ( p != null )
+						p.getDynamicAttributes().setEL( CommonUtil.FIELDTYPE, "id" );
+				}
 			}
 
 			// @TODO: foreign-key relation

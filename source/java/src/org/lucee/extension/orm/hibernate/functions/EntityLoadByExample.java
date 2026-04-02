@@ -33,7 +33,7 @@ import lucee.loader.engine.CFMLEngine;
  */
 public class EntityLoadByExample extends BIF {
 
-	private static final int	MIN_ARGUMENTS	= 2;
+	private static final int	MIN_ARGUMENTS	= 1;
 	private static final int	MAX_ARGUMENTS	= 3;
 
 	public static Object call( PageContext pc, Object sampleEntity ) throws PageException {

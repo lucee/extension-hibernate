@@ -29,6 +29,7 @@ public class HibernatePageException extends HibernateException implements IPageE
 	 */
 	public HibernatePageException(PageException pe) {
 		super(pe.getMessage());
+		initCause(pe);
 		this.pe = pe;
 	}
 

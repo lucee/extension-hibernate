@@ -51,7 +51,10 @@ public class CFCGetter implements Getter {
 	@Override
 	public Object get(Object trg) throws HibernateException {
 		try {
-			// MUST cache this, perhaps when building xml
+			// PERF: this.type is already set in the constructor — all the session/factory/metadata
+		// lookups below (lines 56-62) just re-resolve the same Type. Could use this.type directly
+		// for a significant perf win on entity graphs with many properties. Needs testing to confirm
+		// the constructor type always matches the live metadata type.
 			PageContext pc = CommonUtil.pc();
 			ORMSession session = pc.getORMSession(true);
 			Component cfc = CommonUtil.toComponent(trg);

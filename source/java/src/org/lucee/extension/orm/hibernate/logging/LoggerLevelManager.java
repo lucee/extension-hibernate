@@ -29,11 +29,16 @@ public class LoggerLevelManager {
 	/**
 	 * Per-category severity thresholds using standard ordering.
 	 * A message is enabled if its severity >= the category's threshold.
+	 *
+	 * WARNING: these are static/global — shared across all apps in the JVM.
+	 * If two apps have different ormSettings (logSQL, logLevel, etc.), the last
+	 * one to call configure() wins. Needs per-app keying to fix properly.
 	 */
 	private static final ConcurrentHashMap<String, Integer>	thresholds		= new ConcurrentHashMap<>();
 
 	/**
 	 * Default threshold before configure() is called.
+	 * Same global caveat as thresholds above.
 	 */
 	private static volatile int								defaultThreshold = Severity.ERROR;
 

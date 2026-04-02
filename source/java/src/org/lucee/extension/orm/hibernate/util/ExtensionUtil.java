@@ -44,6 +44,8 @@ public class ExtensionUtil {
 				version = version.substring( 0, dot );
 			}
 		}
+		// strip non-numeric suffixes like -ea, +35, etc.
+		version = version.replaceAll( "\\D.*", "" );
 		return Integer.parseInt( version );
 	}
 }

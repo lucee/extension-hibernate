@@ -229,7 +229,7 @@ public class HBMCreator {
 	}
 
 	private static Property[] getProperties(PageContext pc, Component cfc, DatasourceConnection dc, Struct meta, boolean isClass, boolean recursivePersistentMappedSuperclass,
-			SessionFactoryData data) throws PageException, PageException {
+			SessionFactoryData data) throws PageException {
 		Property[] _props;
 		if (recursivePersistentMappedSuperclass) {
 			_props = CommonUtil.getProperties(cfc, true, true, true, true);
@@ -963,7 +963,7 @@ public class HBMCreator {
 			// sql-type
 			str = toString(cfc, prop, meta, "sqltype", data);
 			if (!Util.isEmpty(str, true)) {
-				if ((str == "varchar" || str == "nvarchar") && length != null) {
+				if (("varchar".equals(str) || "nvarchar".equals(str)) && length != null) {
 					str += "(" + length + ")";
 				}
 				column.setAttribute("sql-type", str);
@@ -1293,7 +1293,7 @@ public class HBMCreator {
 						// linktable
 						String currLinkTable = CommonUtil.toString(meta.get(LINK_TABLE, null), null);
 						String othLinkTable = CommonUtil.toString(m.get(LINK_TABLE, null), null);
-						if (currLinkTable.equals(othLinkTable)) {
+						if (currLinkTable != null && currLinkTable.equals(othLinkTable)) {
 							// cfc name
 							String cfcName = CommonUtil.toString(m.get(CFC, null), null);
 							if (cfc.equalTo(cfcName)) {
@@ -1546,8 +1546,7 @@ public class HBMCreator {
 			strategy = strategy.trim().toLowerCase();
 			if ("read-only".equals(strategy) || "nonstrict-read-write".equals(strategy) || "read-write".equals(strategy) || "transactional".equals(strategy)) {
 				Element cache = doc.createElement("cache");
-				CommonUtil.setFirst(el, cache);
-				el.appendChild(cache);
+				CommonUtil.setFirst(el, cache); // cache must be first child per Hibernate DTD
 				cache.setAttribute("usage", strategy);
 				String name = toString(cfc, prop, meta, "cacheName", data);
 				if (!Util.isEmpty(name, true)) {
@@ -1712,7 +1711,7 @@ public class HBMCreator {
 			else if ("many-to-many".equals(name) || "key-many-to-one".equals(name)) {
 				if (b != null) x2x.setAttribute("lazy", b.booleanValue() ? "proxy" : "false");
 				else if ("proxy".equalsIgnoreCase(str)) x2x.setAttribute("lazy", "proxy");
-				throw invalidValue(cfc, prop, "lazy", str, "true,false,proxy", data);
+				else throw invalidValue(cfc, prop, "lazy", str, "true,false,proxy", data);
 
 			}
 
