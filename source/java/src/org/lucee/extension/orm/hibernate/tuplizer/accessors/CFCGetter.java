@@ -5,10 +5,8 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import org.hibernate.HibernateException;
-import org.hibernate.SessionFactory;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
-import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.LazyInitializer;
 import org.hibernate.property.access.spi.Getter;
@@ -19,11 +17,8 @@ import org.lucee.extension.orm.hibernate.HibernateORMEngine;
 import org.lucee.extension.orm.hibernate.HibernatePageException;
 import org.lucee.extension.orm.hibernate.util.HibernateUtil;
 
-import lucee.loader.engine.CFMLEngineFactory;
 import lucee.runtime.Component;
-import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
-import lucee.runtime.orm.ORMSession;
 import lucee.runtime.type.Collection.Key;
 
 public class CFCGetter implements Getter {
@@ -51,19 +46,7 @@ public class CFCGetter implements Getter {
 	@Override
 	public Object get(Object trg) throws HibernateException {
 		try {
-			// PERF: this.type is already set in the constructor — all the session/factory/metadata
-		// lookups below (lines 56-62) just re-resolve the same Type. Could use this.type directly
-		// for a significant perf win on entity graphs with many properties. Needs testing to confirm
-		// the constructor type always matches the live metadata type.
-			PageContext pc = CommonUtil.pc();
-			ORMSession session = pc.getORMSession(true);
 			Component cfc = CommonUtil.toComponent(trg);
-			String dsn = CFMLEngineFactory.getInstance().getORMUtil().getDataSourceName(pc, cfc);
-			String name = HibernateCaster.getEntityName(cfc);
-			SessionFactory sf = (SessionFactory) session.getRawSessionFactory(dsn);
-			ClassMetadata metaData = sf.getClassMetadata(name);
-			Type type = HibernateUtil.getPropertyType(metaData, key.getString());
-
 			Object rtn = cfc.getComponentScope().get(key, null);
 			// LDEV-1992: don't trigger lazy init on uninitialized proxies — Hibernate
 			// handles them natively during merge/flush
@@ -71,7 +54,7 @@ public class CFCGetter implements Getter {
 				LazyInitializer li = ((HibernateProxy) rtn).getHibernateLazyInitializer();
 				if (li.isUninitialized()) return rtn;
 			}
-			return HibernateCaster.toSQL(type, rtn, null);
+			return HibernateCaster.toSQL(this.type, rtn, null);
 		} catch (PageException pe) {
 			throw new HibernatePageException(pe);
 		}
