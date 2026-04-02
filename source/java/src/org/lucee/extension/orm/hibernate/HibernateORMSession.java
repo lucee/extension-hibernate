@@ -194,9 +194,12 @@ public class HibernateORMSession implements ORMSession {
 					s.flush();
 				}
 				catch (Exception e) {
-				} // we do this because of a Bug in Lucee that keeps session object in case of an exception for future
-					// request, this session then fail to flush, because the underlaying datasource is not defined in
-					// the current application.cfc.
+					// Lucee bug: keeps session object after exception for future requests,
+					// this session then fails to flush because the underlying datasource
+					// is not defined in the current application.cfc.
+					Log log = CommonUtil.getORMLog();
+					if ( log != null ) log.log( Log.LEVEL_DEBUG, "hibernate", "flushAll: ignoring stale session flush failure", e );
+				}
 			}
 		}
 	}
@@ -424,14 +427,22 @@ public class HibernateORMSession implements ORMSession {
 	public void evictEntity(PageContext pc, String entityName, String id) throws PageException {
 		entityName = correctCaseEntityName(entityName);
 
-		Iterator<SessionAndConn> it = sessions.values().iterator();
-		SessionAndConn sac;
-		while (it.hasNext()) {
-			sac = it.next();
-			SessionFactory f = sac.getSession(pc).getSessionFactory();
-			if (id == null) f.getCache().evictEntityRegion(entityName);
-			else f.getCache().evictEntity(entityName, CommonUtil.toSerializable(id));
+		SessionFactory f = getSessionFactoryForEntity( pc, entityName );
+		if (id == null) f.getCache().evictEntityRegion(entityName);
+		else f.getCache().evictEntity(entityName, CommonUtil.toSerializable(id));
+	}
+
+	/**
+	 * Look up which datasource owns the given entity and return that datasource's SessionFactory.
+	 * Fixes LDEV-2092: evict methods must target the correct SessionFactory, not iterate all.
+	 */
+	private SessionFactory getSessionFactoryForEntity(PageContext pc, String entityName) throws PageException {
+		CFCInfo info = data.getCFC(entityName, null);
+		if (info != null) {
+			Key dsn = CommonUtil.toKey(info.getDataSource().getName());
+			return getSession(pc, dsn).getSessionFactory();
 		}
+		throw ExceptionUtil.createException(data, null, "entity [" + entityName + "] not found", null);
 	}
 
 	private String correctCaseEntityName(String entityName) {
@@ -454,14 +465,9 @@ public class HibernateORMSession implements ORMSession {
 	public void evictCollection(PageContext pc, String entityName, String collectionName, String id) throws PageException {
 		String role = entityName + "." + collectionName;
 
-		Iterator<SessionAndConn> it = sessions.values().iterator();
-		SessionAndConn sac;
-		while (it.hasNext()) {
-			sac = it.next();
-			SessionFactory f = sac.getSession(pc).getSessionFactory();
-			if (id == null) f.getCache().evictCollectionRegion(role);
-			else f.getCache().evictCollection(role, CommonUtil.toSerializable(id));
-		}
+		SessionFactory f = getSessionFactoryForEntity( pc, entityName );
+		if (id == null) f.getCache().evictCollectionRegion(role);
+		else f.getCache().evictCollection(role, CommonUtil.toSerializable(id));
 	}
 
 	@Override

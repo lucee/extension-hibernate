@@ -127,7 +127,8 @@ public class ConfigurationBuilder {
         Resource cacheConfig = null;
         if (cacheProvider != null && cacheProvider.toLowerCase().indexOf("ehcache") != -1) {
             CFMLEngine eng = CFMLEngineFactory.getInstance();
-            String varName = eng.getCastUtil().toVariableName(applicationName, applicationName);
+            String dsName = datasource != null ? datasource.getName() : "";
+            String varName = eng.getCastUtil().toVariableName(applicationName + dsName, applicationName + dsName);
             String xml;
             if (cc == null || !cc.isFile()) {
                 cacheConfig = eng.getResourceUtil().getTempDirectory().getRealResource("ehcache/" + varName + ".xml");
