@@ -38,6 +38,7 @@ thread action="join" name="#arrayToList( threadNames )#" timeout="30000";
 
 // Collect results — NPEs are the bug, other errors during reload are tolerable
 npeCount = 0;
+npeDetails = [];
 for ( tName in threadNames ) {
 	if ( structKeyExists( cfthread[ tName ], "error" ) ) {
 		err = cfthread[ tName ].error;
@@ -45,12 +46,14 @@ for ( tName in threadNames ) {
 		stack = err.stacktrace ?: "";
 		if ( findNoCase( "NullPointerException", msg ) || findNoCase( "NullPointerException", stack ) ) {
 			npeCount++;
+			npeDetails.append( "[#tName#] #msg# --- #stack#" );
+			systemOutput(stack, true);
 		}
 	}
 }
 
 if ( npeCount > 0 ) {
-	throw( message="ORMReload caused #npeCount# NullPointerException(s) in concurrent threads" );
+	throw( message="ORMReload caused #npeCount# NullPointerException(s) in concurrent threads: #chr(10)##arrayToList( npeDetails, chr(10) )#" );
 }
 
 echo( "ok" );
