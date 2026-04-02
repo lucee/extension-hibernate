@@ -48,11 +48,11 @@ public class SessionFactoryData {
 	 */
 	public List<Component> tmpList;
 
-	private final Map<Key, DataSource> sources = new HashMap<Key, DataSource>();
-	private final Map<Key, Map<String, CFCInfo>> cfcs = new HashMap<Key, Map<String, CFCInfo>>();
-	private final Map<Key, DataSourceConfig> configurations = new HashMap<Key, DataSourceConfig>();
-	private final Map<Key, SessionFactory> factories = new HashMap<Key, SessionFactory>();
-	private final Map<Key, QueryPlanCache> queryPlanCaches = new HashMap<Key, QueryPlanCache>();
+	private final Map<Key, DataSource> sources = new ConcurrentHashMap<Key, DataSource>();
+	private final Map<Key, Map<String, CFCInfo>> cfcs = new ConcurrentHashMap<Key, Map<String, CFCInfo>>();
+	private final Map<Key, DataSourceConfig> configurations = new ConcurrentHashMap<Key, DataSourceConfig>();
+	private final Map<Key, SessionFactory> factories = new ConcurrentHashMap<Key, SessionFactory>();
+	private final Map<Key, QueryPlanCache> queryPlanCaches = new ConcurrentHashMap<Key, QueryPlanCache>();
 
 	private final ORMConfiguration ormConf;
 	private NamingStrategy namingStrategy;
@@ -330,8 +330,7 @@ public class SessionFactoryData {
 		DataSource ds = info.getDataSource();
 		Key dsn = CommonUtil.toKey(ds.getName());
 
-		Map<String, CFCInfo> map = cfcs.get(dsn);
-		if (map == null) cfcs.put(dsn, map = new HashMap<String, CFCInfo>());
+		Map<String, CFCInfo> map = cfcs.computeIfAbsent(dsn, k -> new ConcurrentHashMap<String, CFCInfo>());
 		map.put(HibernateUtil.id(entityName), info);
 		sources.put(dsn, ds);
 	}

@@ -82,9 +82,13 @@ public class HibernateORMEngine implements ORMEngine {
 
 	@Override
 	public boolean reload(PageContext pc, boolean force) throws PageException {
-		if (force || !isInitializedForApplication(pc.getApplicationContext().getName())) {
-			buildSessionFactoryData(pc);
-			return false;
+		String appName = pc.getApplicationContext().getName();
+		if (force || !isInitializedForApplication(appName)) {
+			synchronized (this) {
+				if (force || !isInitializedForApplication(appName)) {
+					buildSessionFactoryData(pc);
+				}
+			}
 		}
 		return false;
 	}
@@ -114,11 +118,16 @@ public class HibernateORMEngine implements ORMEngine {
 	 * @throws PageException
 	 */
 	private SessionFactoryData getOrBuildSessionFactoryData(PageContext pc) throws PageException {
-		if (!isInitializedForApplication(pc.getApplicationContext().getName())) {
-			SessionFactoryData data = buildSessionFactoryData(pc);
-			data.init();
+		String appName = pc.getApplicationContext().getName();
+		if (!isInitializedForApplication(appName)) {
+			synchronized (this) {
+				if (!isInitializedForApplication(appName)) {
+					SessionFactoryData data = buildSessionFactoryData(pc);
+					data.init();
+				}
+			}
 		}
-		return getSessionFactory(pc.getApplicationContext().getName());
+		return getSessionFactory(appName);
 	}
 
 	/**
