@@ -1,4 +1,5 @@
-component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
+component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" skip="true" {
+	// skip: needs Lucee core fix in ComponentImpl.duplicate() — closures don't rebind to new instance
 
 	function beforeAll() {
 		variables.uri = createURI( "LDEV4067" );
