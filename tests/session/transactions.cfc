@@ -34,6 +34,21 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "transaction end() commits active transaction", function() {
+				var result = _InternalRequest( template: "#uri()#/endAfterCommit.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "entityDelete within transaction block", function() {
+				var result = _InternalRequest( template: "#uri()#/deleteInTransaction.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "entityDelete array within transaction block", function() {
+				var result = _InternalRequest( template: "#uri()#/deleteArrayInTransaction.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}

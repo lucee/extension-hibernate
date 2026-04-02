@@ -34,6 +34,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "many-to-many: lazy loading with linktable", function() {
+				var result = _InternalRequest( template: "#uri()#/manyToMany.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}

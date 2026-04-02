@@ -10,5 +10,8 @@ component {
 	function onRequestStart() {
 		queryExecute( "DELETE FROM Auto" );
 		queryExecute( "DELETE FROM Dealership" );
+		try { queryExecute( "DELETE FROM student_course" ); } catch( any e ) {}
+		try { queryExecute( "DELETE FROM Student" ); } catch( any e ) {}
+		try { queryExecute( "DELETE FROM Course" ); } catch( any e ) {}
 	}
 }
