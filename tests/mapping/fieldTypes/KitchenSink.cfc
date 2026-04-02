@@ -21,5 +21,8 @@ component persistent="true" {
 	property name="emptydefault" notnull="true"    default="";
 	property name="dbdefault"   ormtype="string"   dbdefault="''";
 	property name="expireDate"  notnull="false"    ormtype="timestamp" default="";
+	property name="varcharCol"  sqltype="varchar"  length="50";
+	property name="nvarcharCol" sqltype="nvarchar" length="100";
+	property name="blobData"    ormtype="serializable" length="4000";
 
 }

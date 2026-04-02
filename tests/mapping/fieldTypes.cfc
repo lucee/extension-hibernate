@@ -24,6 +24,16 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "sqltype varchar/nvarchar with length attribute", function() {
+				var result = _InternalRequest( template: "#uri()#/sqltypeLength.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "ormtype serializable stores and retrieves complex values", function() {
+				var result = _InternalRequest( template: "#uri()#/serializableType.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}

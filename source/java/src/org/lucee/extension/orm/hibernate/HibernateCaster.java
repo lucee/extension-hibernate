@@ -177,9 +177,9 @@ public class HibernateCaster {
 		type = toHibernateType(type, type);
 		if ("long".equals(type)) return Types.BIGINT;
 		if ("binary".equals(type)) return Types.BINARY;
-		if ("boolean".equals(type)) return Types.BIT;
+		if ("boolean".equals(type)) return Types.BIT; // intentionally BIT not BOOLEAN for CFML compatibility
 		if ("blob".equals(type)) return Types.BLOB;
-		if ("boolean".equals(type)) return Types.BOOLEAN;
+		// if ("boolean".equals(type)) return Types.BOOLEAN; // unreachable, kept for reference
 		if ("character".equals(type)) return Types.CHAR;
 		if ("clob".equals(type)) return Types.CLOB;
 		if ("date".equals(type)) return Types.DATE;
@@ -188,7 +188,7 @@ public class HibernateCaster {
 		if ("double".equals(type)) return Types.DOUBLE;
 		if ("float".equals(type)) return Types.FLOAT;
 		if ("integer".equals(type)) return Types.INTEGER;
-		if ("binary".equals(type)) return Types.VARBINARY;
+		// if ("binary".equals(type)) return Types.VARBINARY; // unreachable, matched above as BINARY
 		if ("string".equals(type)) return Types.VARCHAR;
 		if ("short".equals(type)) return Types.SMALLINT;
 		if ("time".equals(type)) return Types.TIME;
@@ -284,11 +284,14 @@ public class HibernateCaster {
 		type = Util.replace(type, "java.sql.", "", true);
 
 		// return same value
+		// Note: several types appear multiple times below — only the first match runs.
+		// Duplicates are kept commented for reference so future readers know they were
+		// intentional (added by different authors over time) rather than missing.
 		if ("long".equals(type)) return type;
-		if ("binary".equals(type)) return type;
-		if ("boolean".equals(type)) return type;
+		if ("binary".equals(type)) return type;     // first match wins; dupes below are dead
+		if ("boolean".equals(type)) return type;     // first match wins; dupe below is dead
 		if ("blob".equals(type)) return "binary";
-		if ("boolean".equals(type)) return type;
+		// if ("boolean".equals(type)) return type;  // unreachable, matched at line above
 		if ("character".equals(type)) return type;
 		if ("clob".equals(type)) return "text";
 		if ("date".equals(type)) return type;
@@ -296,15 +299,15 @@ public class HibernateCaster {
 		if ("double".equals(type)) return type;
 		if ("float".equals(type)) return type;
 		if ("integer".equals(type)) return type;
-		if ("binary".equals(type)) return type;
-		if ("string".equals(type)) return type;
+		// if ("binary".equals(type)) return type;   // unreachable, matched above
+		if ("string".equals(type)) return type;      // first match wins; dupe below is dead
 		if ("big_integer".equals(type)) return type;
 		if ("short".equals(type)) return type;
 		if ("time".equals(type)) return type;
 		if ("timestamp".equals(type)) return type;
 		if ("byte".equals(type)) return type;
-		if ("binary".equals(type)) return type;
-		if ("string".equals(type)) return type;
+		// if ("binary".equals(type)) return type;   // unreachable, matched above
+		// if ("string".equals(type)) return type;   // unreachable, matched above
 		if ("text".equals(type)) return type;
 		if ("calendar".equals(type)) return type;
 		if ("calendar_date".equals(type)) return type;
@@ -321,11 +324,11 @@ public class HibernateCaster {
 		if ("imm_binary".equals(type)) return type;
 
 		// return different value
-		if ("bigint".equals(type)) return "long";
+		if ("bigint".equals(type)) return "long";    // first match wins; maps to JDBC BIGINT. Dupe below mapped to "big_integer" but never runs.
 		if ("bit".equals(type)) return "boolean";
 
-		if ("int".equals(type)) return "integer";
-		if ("char".equals(type)) return "character";
+		if ("int".equals(type)) return "integer";    // first match wins; dupe below is dead
+		if ("char".equals(type)) return "character"; // first match wins; dupe below is dead
 
 		if ("bool".equals(type)) return "boolean";
 		if ("yes-no".equals(type)) return "yes_no";
@@ -334,28 +337,28 @@ public class HibernateCaster {
 		if ("true-false".equals(type)) return "true_false";
 		if ("truefalse".equals(type)) return "true_false";
 		if ("true_false".equals(type)) return "true_false";
-		if ("varchar".equals(type)) return "string";
+		if ("varchar".equals(type)) return "string"; // first match wins; dupe below is dead
 		if ("big-decimal".equals(type)) return "big_decimal";
 		if ("bigdecimal".equals(type)) return "big_decimal";
 		if ("java.math.bigdecimal".equals(type)) return "big_decimal";
 		if ("big-integer".equals(type)) return "big_integer";
 		if ("biginteger".equals(type)) return "big_integer";
-		if ("bigint".equals(type)) return "big_integer";
+		// if ("bigint".equals(type)) return "big_integer"; // unreachable, matched above as "long"
 		if ("java.math.biginteger".equals(type)) return "big_integer";
 		if ("byte[]".equals(type)) return "binary";
 		if ("serializable".equals(type)) return "serializable";
 
 		if ("datetime".equals(type)) return "timestamp";
-		if ("numeric".equals(type)) return "double";
+		if ("numeric".equals(type)) return "double"; // first match wins; dupe below is dead
 		if ("number".equals(type)) return "double";
-		if ("numeric".equals(type)) return "double";
-		if ("char".equals(type)) return "character";
+		// if ("numeric".equals(type)) return "double";    // unreachable, matched above
+		// if ("char".equals(type)) return "character";     // unreachable, matched above
 		if ("nchar".equals(type)) return "character";
 		if ("decimal".equals(type)) return "double";
 		if ("eurodate".equals(type)) return "timestamp";
 		if ("usdate".equals(type)) return "timestamp";
-		if ("int".equals(type)) return "integer";
-		if ("varchar".equals(type)) return "string";
+		// if ("int".equals(type)) return "integer";        // unreachable, matched above
+		// if ("varchar".equals(type)) return "string";     // unreachable, matched above
 		if ("nvarchar".equals(type)) return "string";
 
 		return defaultValue;
@@ -419,7 +422,7 @@ public class HibernateCaster {
 		if ("currency".equals(type)) return value;
 
 		if ("imm_serializable".equals(type)) return value;
-		if ("serializable".equals(type)) return "serializable";
+		if ("serializable".equals(type)) return value;
 
 		return value;
 	}
