@@ -1172,6 +1172,9 @@ public class HBMCreator {
 		b = toBoolean(cfc, meta, "optimisticlock", data);
 		if (b != null && !b.booleanValue()) el.setAttribute("optimistic-lock", "false");
 
+		// lazy
+		setLazy(cfc, prop, meta, el, data);
+
 	}
 
 	private static void setBeforeJoin(Element clazz, Element el) {
