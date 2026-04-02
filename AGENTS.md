@@ -69,7 +69,7 @@ When a run fails, download all the logs to a temp dir and grep that
 
 - **EventListenerIntegrator**: Hibernate event → CFC event bridge. Entity events fire before global (LDEV-4561). `persistEntityChangesToState()` syncs CFC mutations back to Hibernate state.
 - **CHECK_NULLABILITY=false**: Hibernate's built-in null check is disabled so entity `preInsert`/`preUpdate` handlers can set missing values before our EventListenerIntegrator runs the check.
-- **Logging**: JBoss Logging → Lucee bridge (`LuceeJBossLoggerProvider`). Configured via ormSettings: `logSQL`, `logParams`, `logCache`, `logLevel`.
+- **Logging**: JBoss Logging → Lucee bridge (`LuceeJBossLoggerProvider`). Configured via ormSettings: `logSQL`, `logParams`, `logCache`, `formatSQL`. See `LOGGING.md`.
 - **ConnectionProviderImpl**: Single connection per session via Lucee's datasource pool. No double-borrow (LDEV-6156).
 
 ## Package Layout (matches Ortus structure)

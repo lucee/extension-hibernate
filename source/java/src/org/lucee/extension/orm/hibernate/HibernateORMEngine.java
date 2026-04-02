@@ -169,7 +169,7 @@ public class HibernateORMEngine implements ORMEngine {
 		Log log = pc.getConfig().getLog( "orm" );
 		OrmLoggingSettings logSettings = OrmLoggingSettings.load( pc, ormConf );
 		LoggerLevelManager.configure( log, logSettings.logSQL, logSettings.logParams,
-		    logSettings.logCache, logSettings.logLevel );
+		    logSettings.logCache, logSettings.logVerbose );
 
 		SessionFactoryData data = new SessionFactoryData(this, ormConf);
 		setSessionFactory(applicationName, data);
@@ -230,7 +230,7 @@ public class HibernateORMEngine implements ORMEngine {
 			if (data.getConfiguration(e.getKey()) != null) continue;
 
 			try {
-				data.setConfiguration(log, e.getValue(), data.getDataSource(e.getKey()), null, null, appContext == null ? "" : appContext.getName());
+				data.setConfiguration(log, e.getValue(), data.getDataSource(e.getKey()), null, null, appContext == null ? "" : appContext.getName(), logSettings.formatSQL);
 			}
 			catch (Exception ex) {
 				throw CommonUtil.toPageException(ex);

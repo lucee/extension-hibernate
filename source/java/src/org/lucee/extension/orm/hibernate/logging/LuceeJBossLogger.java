@@ -9,8 +9,9 @@ import lucee.commons.io.log.Log;
 /**
  * JBoss Logging Logger that delegates directly to Lucee's native Log interface.
  *
- * Uses {@link LoggerLevelManager} for isEnabled() checks (the muzzle) with standard severity ordering,
- * and passes Lucee's level constants to log.log() so Log4j2 maps them correctly.
+ * Uses {@link LoggerLevelManager#isEnabled} to check whether this category is enabled
+ * for the current request's application context (the muzzle). The Lucee Log instance
+ * then applies its own level filtering (the pipe).
  */
 public class LuceeJBossLogger extends Logger {
 
@@ -26,32 +27,6 @@ public class LuceeJBossLogger extends Logger {
 	private String getSource() {
 		int dot = name.lastIndexOf( '.' );
 		return dot >= 0 ? name.substring( dot + 1 ) : name;
-	}
-
-	private Log getLuceeLog() {
-		return LuceeJBossLoggerProvider.getLuceeLog();
-	}
-
-	/**
-	 * Map JBoss Level to standard severity for isEnabled() checks.
-	 */
-	private static int toStandardSeverity( Level level ) {
-		if ( level != null )
-			switch ( level ) {
-				case TRACE :
-					return Severity.TRACE;
-				case DEBUG :
-					return Severity.DEBUG;
-				case INFO :
-					return Severity.INFO;
-				case WARN :
-					return Severity.WARN;
-				case ERROR :
-					return Severity.ERROR;
-				case FATAL :
-					return Severity.FATAL;
-			}
-		return Severity.ERROR;
 	}
 
 	/**
@@ -78,9 +53,7 @@ public class LuceeJBossLogger extends Logger {
 
 	@Override
 	public boolean isEnabled( Level level ) {
-		if ( getLuceeLog() == null )
-			return false;
-		return LoggerLevelManager.isEnabled( name, toStandardSeverity( level ) );
+		return LoggerLevelManager.isEnabled( name );
 	}
 
 	@Override
@@ -90,7 +63,7 @@ public class LuceeJBossLogger extends Logger {
 		String text = parameters == null || parameters.length == 0
 		    ? String.valueOf( message )
 		    : MessageFormat.format( String.valueOf( message ), parameters );
-		Log log = getLuceeLog();
+		Log log = LoggerLevelManager.getLuceeLog();
 		if ( log == null )
 			return;
 		int luceeLevel = toLuceeLevel( level );
@@ -105,7 +78,7 @@ public class LuceeJBossLogger extends Logger {
 		if ( !isEnabled( level ) )
 			return;
 		String text = parameters == null ? format : String.format( format, parameters );
-		Log log = getLuceeLog();
+		Log log = LoggerLevelManager.getLuceeLog();
 		if ( log == null )
 			return;
 		int luceeLevel = toLuceeLevel( level );

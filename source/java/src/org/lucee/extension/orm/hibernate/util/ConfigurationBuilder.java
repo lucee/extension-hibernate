@@ -43,6 +43,7 @@ public class ConfigurationBuilder {
     private String applicationName;
     private DataSource datasource;
     private String xmlMappings;
+    private boolean formatSQL;
     private Log log;
 
     /**
@@ -183,10 +184,10 @@ public class ConfigurationBuilder {
         // Enable Hibernate's current session context
         configuration.setProperty(AvailableSettings.CURRENT_SESSION_CONTEXT_CLASS, "thread")
 
-                // Echo all executed SQL to stdout
-                .setProperty(AvailableSettings.SHOW_SQL, ormConf.logSQL() ? "true" : "false")
-                // formatting of SQL logged to the console
-                .setProperty(AvailableSettings.FORMAT_SQL, ormConf.logSQL() ? "true" : "false")
+                // SQL logging is handled by the JBoss Logging bridge, not stdout
+                .setProperty(AvailableSettings.SHOW_SQL, "false")
+                // Pretty-print SQL in the log (has a performance cost per statement)
+                .setProperty(AvailableSettings.FORMAT_SQL, formatSQL ? "true" : "false")
                 // Specifies whether secondary caching should be enabled
                 .setProperty(AvailableSettings.USE_SECOND_LEVEL_CACHE,
                         ormConf.secondaryCacheEnabled() ? "true" : "false")
@@ -255,6 +256,11 @@ public class ConfigurationBuilder {
 
     public ConfigurationBuilder withApplicationName(String applicationName) {
         this.applicationName = applicationName;
+        return this;
+    }
+
+    public ConfigurationBuilder withFormatSQL(boolean formatSQL) {
+        this.formatSQL = formatSQL;
         return this;
     }
 
