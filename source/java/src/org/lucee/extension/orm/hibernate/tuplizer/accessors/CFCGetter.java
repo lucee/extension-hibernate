@@ -9,6 +9,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.proxy.LazyInitializer;
 import org.hibernate.property.access.spi.Getter;
 import org.hibernate.type.Type;
 import org.lucee.extension.orm.hibernate.util.CommonUtil;
@@ -60,6 +62,12 @@ public class CFCGetter implements Getter {
 			Type type = HibernateUtil.getPropertyType(metaData, key.getString());
 
 			Object rtn = cfc.getComponentScope().get(key, null);
+			// LDEV-1992: don't trigger lazy init on uninitialized proxies — Hibernate
+			// handles them natively during merge/flush
+			if (rtn instanceof HibernateProxy) {
+				LazyInitializer li = ((HibernateProxy) rtn).getHibernateLazyInitializer();
+				if (li.isUninitialized()) return rtn;
+			}
 			return HibernateCaster.toSQL(type, rtn, null);
 		} catch (PageException pe) {
 			throw new HibernatePageException(pe);

@@ -29,6 +29,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "LDEV-1992: entityMerge after ormClearSession with lazy relationships", function() {
+				var result = _InternalRequest( template: "#uri()#/mergeAfterClear.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}
