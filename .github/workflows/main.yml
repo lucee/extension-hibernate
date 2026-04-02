@@ -10,10 +10,6 @@ on:
         description: 'Deploy to Maven Central'
         type: boolean
         default: false
-      luceeVersions:
-        description: 'JSON array of Lucee versions to test'
-        required: false
-        default: '[ "6.2/snapshot/light", "7.0/snapshot/light", "7.1/snapshot/light" ]'
 
 jobs:
   build:
@@ -59,7 +55,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lucee: ${{ fromJSON(inputs.luceeVersions || '[ "6.2/snapshot/light", "7.0/snapshot/light", "7.1/snapshot/light"]') }}
+        include:
+          - java: '11'
+            lucee: '6.2/snapshot/light'
+          - java: '11'
+            lucee: '7.0/snapshot/light'
+          - java: '21'
+            lucee: '6.2/snapshot/light'
+          - java: '21'
+            lucee: '7.0/snapshot/light'
+          - java: '21'
+            lucee: '7.1/snapshot/light'
+          - java: '25'
+            lucee: '7.1/snapshot/light'
     services:
       mysql:
         image: mysql:8.0
@@ -100,10 +108,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Set up JDK 11
+      - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v5
         with:
-          java-version: '11'
+          java-version: ${{ matrix.java }}
           distribution: 'temurin'
 
       - name: Cache Maven packages
