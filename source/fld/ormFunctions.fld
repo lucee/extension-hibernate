@@ -89,7 +89,7 @@ The following options to customize the output (only used when second argument is
 	<function>
 		<name>EntityLoadByPK</name>
 		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.EntityLoadByPK</class>
-		<description>Loads and returns an array of objects for given primary key.</description>
+		<description>Loads and returns the entity for the given primary key, or null if not found.</description>
 		<argument>
 			<name>name</name>
 			<type>string</type>
@@ -145,7 +145,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 	<function>
 		<name>EntityMerge</name>
 		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.EntityMerge</class>
-		<description>Attaches given entity to current ORM session</description>
+		<description>Attaches the given entity to the current ORM session.</description>
 		<argument>
 			<name>entity</name>
 			<type>any</type>
@@ -183,7 +183,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 	<function>
 		<name>EntityNameArray</name>
 		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.EntityNameArray</class>
-		<description>return all loaded entities as array</description>
+		<description>Returns all loaded entity names as an array.</description>
 		<return>
 			<type>array</type>
 		</return>
@@ -193,7 +193,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 	<function>
 		<name>EntityNameList</name>
 		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.EntityNameList</class>
-		<description>return all loaded entities as string list</description>
+		<description>Returns all loaded entity names as a delimited string list.</description>
 		<argument>
 			<name>delimiter</name>
 			<type>string</type>
@@ -275,27 +275,27 @@ EntitySave(entity, [forceInsert])</description>
 			<name>hql</name>
 			<type>string</type>
 			<required>yes</required>
-			<description></description>
+			<description>The HQL query string to execute.</description>
 		</argument>
 		<argument>
 			<name>paramsOrUnique</name>
 			<alias>params</alias>
 			<type>any</type>
 			<required>no</required>
-			<description></description>
+			<description>Struct of named parameters, array of positional parameters, or boolean unique flag.</description>
 		</argument>
 		<argument>
 			<name>uniqueOrQueryOptions</name>
 			<alias>unique</alias>
 			<type>any</type>
 			<required>no</required>
-			<description></description>
+			<description>Boolean unique flag (if params provided) or struct of query options.</description>
 		</argument>
 		<argument>
 			<name>queryOptions</name>
 			<type>any</type>
 			<required>no</required>
-			<description></description>
+			<description>Struct of query options: maxResults, offset, cacheable, cacheName, timeout, datasource.</description>
 		</argument>
 		<return>
 			<type>any</type>
@@ -311,27 +311,27 @@ EntitySave(entity, [forceInsert])</description>
 			<name>hql</name>
 			<type>string</type>
 			<required>yes</required>
-			<description></description>
+			<description>The HQL query string to execute.</description>
 		</argument>
 		<argument>
 			<name>paramsOrUnique</name>
 			<alias>params</alias>
 			<type>any</type>
 			<required>no</required>
-			<description></description>
+			<description>Struct of named parameters, array of positional parameters, or boolean unique flag.</description>
 		</argument>
 		<argument>
 			<name>uniqueOrQueryOptions</name>
 			<alias>unique</alias>
 			<type>any</type>
 			<required>no</required>
-			<description></description>
+			<description>Boolean unique flag (if params provided) or struct of query options.</description>
 		</argument>
 		<argument>
 			<name>queryOptions</name>
 			<type>any</type>
 			<required>no</required>
-			<description></description>
+			<description>Struct of query options: maxResults, offset, cacheable, cacheName, timeout, datasource.</description>
 		</argument>
 		<return>
 			<type>any</type>
@@ -346,7 +346,7 @@ EntitySave(entity, [forceInsert])</description>
 			<name>datasource</name>
 			<type>string</type>
 			<required>no</required>
-			<description>datasource used for the session, if nor defined the datasource defined in application.cfc/cfapplication is used.</description>
+			<description>datasource used for the session, if not defined, the datasource defined in Application.cfc is used.</description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -361,7 +361,7 @@ EntitySave(entity, [forceInsert])</description>
 			<name>datasource</name>
 			<type>string</type>
 			<required>no</required>
-			<description>datasource used for the session, if nor defined the datasource defined in application.cfc/cfapplication is used.</description>
+			<description>datasource used for the session, if not defined, the datasource defined in Application.cfc is used.</description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -371,7 +371,7 @@ EntitySave(entity, [forceInsert])</description>
 	<function>
 		<name>ORMCloseAllSessions</name>
 		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMCloseAllSessions</class>
-		<description>Closes all ORM session.</description>
+		<description>Closes all ORM sessions.</description>
 		<return>
 			<type>void</type>
 		</return>
@@ -380,26 +380,25 @@ EntitySave(entity, [forceInsert])</description>
 	<function>
 		<name>ORMEvictCollection</name>
 		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMEvictCollection</class>
-		<description>This will remove all the entries with the specified relation/collection name in the specified component. 
-ormEvictCollection(componentName,relationName,[id])</description>
+		<description>Evicts all cached entries for the specified collection/relationship on the given entity from the second-level cache.</description>
 
 		<argument>
 			<name>entityName</name>
 			<type>String</type>
 			<required>yes</required>
-			<description></description>
+			<description>Name of the entity that owns the collection.</description>
 		</argument>
 		<argument>
 			<name>collectionName</name>
 			<type>String</type>
 			<required>yes</required>
-			<description></description>
+			<description>Name of the collection/relationship property to evict.</description>
 		</argument>
 		<argument>
 			<name>primaryKey</name>
 			<type>String</type>
 			<required>no</required>
-			<description></description>
+			<description>Primary key of a specific entity instance. If omitted, evicts the collection for all instances.</description>
 		</argument>
 
 		<return>
@@ -410,20 +409,19 @@ ormEvictCollection(componentName,relationName,[id])</description>
 	<function>
 		<name>ORMEvictEntity</name>
 		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMEvictEntity</class>
-		<description>This will remove all the entries for the specified component name from the entity cache.
-ormEvictEntity(componentName,[id])</description>
+		<description>Evicts all cached entries for the specified entity from the second-level cache.</description>
 
 		<argument>
 			<name>entityName</name>
 			<type>String</type>
 			<required>yes</required>
-			<description></description>
+			<description>Name of the entity to evict from cache.</description>
 		</argument>
 		<argument>
 			<name>primaryKey</name>
 			<type>String</type>
 			<required>no</required>
-			<description></description>
+			<description>Primary key of a specific entity instance. If omitted, evicts all instances of this entity.</description>
 		</argument>
 
 		<return>
@@ -434,21 +432,19 @@ ormEvictEntity(componentName,[id])</description>
 	<function>
 		<name>ORMEvictQueries</name>
 		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMEvictQueries</class>
-		<description>This will remove all the queries from the named query cache. 
-If name is not specified, all queries from default cache will be removed.
-ormEvictQueries([cacheName])</description>
+		<description>Evicts all queries from the named query cache. If cacheName is not specified, evicts the default query cache.</description>
 		<argument>
 			<name>cacheName</name>
 			<alias>cache,region</alias>
 			<type>String</type>
 			<required>no</required>
-			<description></description>
+			<description>Name of the query cache region to evict. If omitted, evicts the default query cache.</description>
 		</argument>
 		<argument>
 			<name>datasource</name>
 			<type>string</type>
 			<required>no</required>
-			<description>datasource used for the session, if nor defined the datasource defined in application.cfc/cfapplication is used.</description>
+			<description>datasource used for the session, if not defined, the datasource defined in Application.cfc is used.</description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -463,7 +459,7 @@ ormEvictQueries([cacheName])</description>
 			<name>datasource</name>
 			<type>string</type>
 			<required>no</required>
-			<description>datasource used for the session, if nor defined the datasource defined in application.cfc/cfapplication is used.</description>
+			<description>datasource used for the session, if not defined, the datasource defined in Application.cfc is used.</description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -571,12 +567,12 @@ ormEvictQueries([cacheName])</description>
 	<function>
 		<name>ORMGetSession</name>
 		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMGetSession</class>
-		<description>Returns the current ORM session</description>
+		<description>Returns the current ORM session.</description>
 		<argument>
 			<name>datasource</name>
 			<type>string</type>
 			<required>no</required>
-			<description>datasource used for the session, if nor defined the datasource defined in application.cfc/cfapplication is used.</description>
+			<description>datasource used for the session, if not defined, the datasource defined in Application.cfc is used.</description>
 		</argument>
 		<return>
 			<type>object</type>
@@ -586,12 +582,12 @@ ormEvictQueries([cacheName])</description>
 	<function>
 		<name>ORMGetSessionFactory</name>
 		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMGetSessionFactory</class>
-		<description>Returns ORM session factory instance</description>
+		<description>Returns the Hibernate SessionFactory for the given datasource.</description>
 		<argument>
 			<name>datasource</name>
 			<type>string</type>
 			<required>no</required>
-			<description>datasource used for the session, if nor defined the datasource defined in application.cfc/cfapplication is used.</description>
+			<description>datasource used for the session, if not defined, the datasource defined in Application.cfc is used.</description>
 		</argument>
 		<return>
 			<type>object</type>
@@ -601,7 +597,7 @@ ormEvictQueries([cacheName])</description>
 	<function>
 		<name>ORMReload</name>
 		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMReload</class>
-		<description>Returns ORM session factory instance</description>
+		<description>Reinitializes ORM for the application. Rebuilds all entity mappings and the Hibernate SessionFactory. Active idle sessions are closed and their connections released; sessions with in-flight transactions are invalidated for cleanup by their owning thread. Intended for development use only.</description>
 		<return>
 			<type>void</type>
 		</return>
