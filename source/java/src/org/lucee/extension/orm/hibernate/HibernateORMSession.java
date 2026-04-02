@@ -58,10 +58,9 @@ public class HibernateORMSession implements ORMSession {
 		private SessionFactory factory;
 		private volatile boolean invalidated;
 
-		public SessionAndConn(PageContext pc, SessionFactory factory, DataSource ds) {
+		public SessionAndConn(SessionFactory factory, DataSource ds) {
 			this.d = ds;
 			this.factory = factory;
-			getSession(pc);
 		}
 
 		public Session getSession(PageContext pc) {
@@ -130,12 +129,6 @@ public class HibernateORMSession implements ORMSession {
 	public HibernateORMSession(PageContext pc, SessionFactoryData data) throws PageException {
 		this.data = data;
 		data.registerSession( this );
-		// this.dc=dc;
-		DataSource[] sources = data.getDataSources();
-
-		for (int i = 0; i < sources.length; i++) {
-			createSession(pc, data.getFactory(CommonUtil.toKey(sources[i].getName())), sources[i]);
-		}
 	}
 
 	/*
@@ -149,9 +142,13 @@ public class HibernateORMSession implements ORMSession {
 	private SessionAndConn getSessionAndConn(PageContext pc, Key datasSourceName) throws PageException {
 		SessionAndConn sac = sessions.get(datasSourceName);
 		if (sac == null) {
-			CFMLEngineFactory.getInstance().getExceptionUtil().similarKeyMessage(sessions.keySet().toArray(new Key[sessions.size()]), datasSourceName.getString(), "datasource",
-					"datasources", null, true);
-			throw ExceptionUtil.createException(data, null, "There is no Session for the datasource [" + datasSourceName + "]", null);
+			// lazy session creation — only open when the datasource is actually used
+			SessionFactory factory = data.getFactory(datasSourceName);
+			if (factory == null) {
+				throw ExceptionUtil.createException(data, null, "There is no ORM configuration for the datasource [" + datasSourceName + "]", null);
+			}
+			DataSource ds = data.getDataSource(datasSourceName);
+			sac = createSession(pc, factory, ds);
 		}
 		Session s = sac.getSession(pc);
 		if (!s.isOpen() || !s.isConnected()) {
@@ -204,12 +201,12 @@ public class HibernateORMSession implements ORMSession {
      *
      * @throws PageException
      */
-	Session createSession(PageContext pc, SessionFactory factory, DataSource ds) throws PageException {
-		SessionAndConn sac = new SessionAndConn(pc, factory, ds);
+	SessionAndConn createSession(PageContext pc, SessionFactory factory, DataSource ds) throws PageException {
+		SessionAndConn sac = new SessionAndConn(factory, ds);
 
 		sessions.put(CommonUtil.toKey(ds.getName()), sac);
-        sac.getSession(pc).setHibernateFlushMode(FlushMode.MANUAL);
-		return sac.getSession(pc);
+		sac.getSession(pc).setHibernateFlushMode(FlushMode.MANUAL);
+		return sac;
 	}
 
 	@Override

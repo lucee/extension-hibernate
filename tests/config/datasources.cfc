@@ -19,6 +19,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "lazy session opening — second datasource session created on demand", function() {
+				var result = _InternalRequest( template: "#uri()#/lazySession.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 			it( title: "ORMFlushAll() flushes all datasource sessions", skip: !hasORMFlushAll(), body: function() {
 				var result = _InternalRequest( template: "#uri()#/flushAll.cfm" );
 				expect( trim( result.filecontent ) ).toBe( "ok" );

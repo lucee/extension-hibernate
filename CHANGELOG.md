@@ -27,6 +27,7 @@ See [BREAKING-CHANGES.md](BREAKING-CHANGES.md) for behaviour changes that may af
 - Invalid `collectionType` attribute on relationships was silently ignored — now validated at ORM init
 - Invalid `ormtype` values produced a Java ClassCastException at the DB layer — now validated at HBM generation with entity/property context
 - `entityToQuery()` with a non-entity gave a generic Lucee cast error — now throws with ORM context and chains the original exception
+- Multiple datasource connection overhead — sessions are now opened lazily per datasource instead of eagerly for all datasources on every request
 - ~15 empty catch blocks across the codebase now log to `orm.log` instead of silently swallowing exceptions
 - Fixed typos in error messages: "defintion" → "definition", "terminate" → "determine"
 - All error messages now start with a capital letter
