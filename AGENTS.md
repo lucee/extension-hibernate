@@ -35,6 +35,16 @@ aprint.o("debug message: " + someValue);
 
 **WARNING**: Do not use `aprint` inside event listeners (`onPreInsert`, `onPreUpdate`, etc.) — it can cause `StackOverflowError` if the output triggers ORM operations. Use CFML `systemOutput()` in test `.cfm` files instead.
 
+## running tests
+
+all these batch files take test name as the first argument, so you can just run one test if needed for quick turn arounds
+
+`./test7.bat <testfilter>` just runs with 7.0
+`./test.bat <testfilter>` runs with 6.2, 7.0 and 7.1 (Slower)
+`./testJar.bat <path-to-lucee.jar>` runs with a custom Lucee JAR build
+
+use test7.bat for initial dev, use test.bat to check finally
+
 ## Test Approach
 
 Tests use the `_InternalRequest` pattern with isolated `Application.cfc` per test group.

@@ -1,0 +1,13 @@
+component {
+	this.name = "test-generators-#hash( getCurrentTemplatePath() )#";
+	this.datasource = server.getDatasource( "h2", server._getTempDir( "orm-generators" ) );
+	this.ormEnabled = true;
+	this.ormSettings = {
+		dbcreate: "dropcreate",
+		cfclocation: [ getDirectoryFromPath( getCurrentTemplatePath() ) ]
+	};
+
+	function onRequestStart() {
+		ormReload();
+	}
+}
