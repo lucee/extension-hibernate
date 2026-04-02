@@ -16,6 +16,11 @@ Always pipe output to a file under `/test-output`.
 - Build + test: `test.bat` (runs `mvn package` then script-runner)
 - Build requires Java 11+
 
+## Accesing JIRA
+
+to read a jira ticket like https://luceeserver.atlassian.net/browse/LDEV-4339
+rewrite it as xml https://luceeserver.atlassian.net/si/jira.issueviews:issue-xml/LDEV-4339/LDEV-4339.xml
+
 ## Debugging
 
 Use `aprint.o()` for debug output in Java code — NOT `System.out.println()`.
@@ -47,6 +52,8 @@ Follows the crypto extension pattern: build → test (matrix) → deploy (manual
 - Lucee versions: 7.0/snapshot/light, 7.1/snapshot/light
 - MySQL service container for DB tests
 - Deploy only via `workflow_dispatch` with `deploy=true`
+
+When a run fails, download all the logs to a temp dir and grep that
 
 ## Key Architecture
 
