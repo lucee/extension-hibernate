@@ -2,18 +2,21 @@
 // OOE-15 / LDEV-305: ID property without explicit ormtype + generator="native"
 // Should use integer type, not double. "Bad identifier type: double" = bug.
 
+// Save a new entity — if the ID mapped as "double", Hibernate throws
+// "Bad identifier type: double" during schema generation or flush
 entity = entityNew( "NativeIdEntity" );
 entity.setName( "test" );
 entitySave( entity );
 ormFlush();
 
+// Native generator should produce an auto-incremented integer ID
 if ( entity.getId() <= 0 )
-	throw( message="expected auto-generated ID > 0, got #entity.getId()#" );
+	throw( message="Expected auto-generated ID > 0, got [#entity.getId()#]" );
 
-// Verify round-trip
+// Round-trip: verify the entity persisted and can be loaded by PK
 loaded = entityLoadByPK( "NativeIdEntity", entity.getId() );
 if ( loaded.getName() != "test" )
-	throw( message="expected name=test, got #loaded.getName()#" );
+	throw( message="Expected name [test], got [#loaded.getName()#]" );
 
 echo( "ok" );
 </cfscript>
