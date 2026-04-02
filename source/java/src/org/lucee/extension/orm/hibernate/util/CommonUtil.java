@@ -988,7 +988,7 @@ public class CommonUtil {
 	}
 
 	public static TimeZone toTimeZone(Object value, Object obj) throws PageException {
-		return caster().toTimeZone(obj);
+		return caster().toTimeZone(value);
 	}
 
 	public static Character toCharacter(Object value) throws PageException {

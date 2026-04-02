@@ -1,8 +1,13 @@
 <cfscript>
 // timezone default
 sink = entityNew( "KitchenSink", { id: createUUID() } );
-if ( sink.getTimezone() != "America/Los_Angelos" ) throw( message="timezone default: expected America/Los_Angelos, got #sink.getTimezone()#" );
-// timezone round-trip is H2/JVM-dependent — skipping persistence test
+if ( sink.getTimezone() != "America/Los_Angeles" ) throw( message="timezone default: expected America/Los_Angeles, got #sink.getTimezone()#" );
+// timezone round-trip (OOE-10 fix)
+sink.setTimezone( "Europe/London" );
+entitySave( sink );
+ormFlush();
+entityReload( sink );
+if ( sink.getTimezone() != "Europe/London" ) throw( message="timezone persist: expected Europe/London, got #sink.getTimezone()#" );
 
 // string
 sink2 = entityNew( "KitchenSink", { id: createUUID() } );

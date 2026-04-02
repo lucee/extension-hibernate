@@ -8,7 +8,7 @@ component persistent="true" {
 
 	property name="notnullable" ormtype="string"  notnull="true" default="foo";
 	property name="nullable"    ormtype="string"  notnull="false";
-	property name="timezone"    ormtype="timezone" default="America/Los_Angelos";
+	property name="timezone"    ormtype="timezone" default="America/Los_Angeles";
 	property name="string"      ormtype="string"   default="johnwhish" length="9";
 	property name="integer"     ormtype="integer"  default="12303";
 	property name="int"         ormtype="integer"  default="12404";
