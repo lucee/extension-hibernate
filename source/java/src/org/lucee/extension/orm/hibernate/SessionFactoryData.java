@@ -8,10 +8,13 @@ import org.lucee.extension.orm.hibernate.util.HibernateUtil;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.cfg.Configuration;
 import org.hibernate.SessionFactory;
@@ -59,9 +62,23 @@ public class SessionFactoryData {
 
 	private EventListenerIntegrator eventListenerIntegrator = new EventListenerIntegrator();
 
+	/**
+	 * Track active HibernateORMSession instances so we can close them during reset(),
+	 * releasing their borrowed connections before the SessionFactory is closed.
+	 */
+	private final Set<HibernateORMSession> activeSessions = ConcurrentHashMap.newKeySet();
+
 	public SessionFactoryData(HibernateORMEngine engine, ORMConfiguration ormConf) {
 		this.engine = engine;
 		this.ormConf = ormConf;
+	}
+
+	public void registerSession( HibernateORMSession session ) {
+		activeSessions.add( session );
+	}
+
+	public void deregisterSession( HibernateORMSession session ) {
+		activeSessions.remove( session );
 	}
 
 	public ORMConfiguration getORMConfiguration() {
@@ -268,6 +285,14 @@ public class SessionFactoryData {
 	 * Reset the session factory and clear all known configuration.
 	 */
 	public void reset() {
+		// Release connections from idle sessions immediately. Sessions with active
+		// transactions are only invalidated — the owning thread will roll back and
+		// close on its next ORM operation or at end of request.
+		for ( HibernateORMSession session : activeSessions ) {
+			session.releaseIdleAndInvalidateActive();
+		}
+		activeSessions.clear();
+
 		configurations.clear();
 		Iterator<SessionFactory> it = factories.values().iterator();
 		while (it.hasNext()) {

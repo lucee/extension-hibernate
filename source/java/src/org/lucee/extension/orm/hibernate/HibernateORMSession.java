@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
@@ -55,6 +56,7 @@ public class HibernateORMSession implements ORMSession {
 		private Session s;
 		private final DataSource d;
 		private SessionFactory factory;
+		private volatile boolean invalidated;
 
 		public SessionAndConn(PageContext pc, SessionFactory factory, DataSource ds) {
 			this.d = ds;
@@ -63,13 +65,39 @@ public class HibernateORMSession implements ORMSession {
 		}
 
 		public Session getSession(PageContext pc) {
-			if (s == null || !s.isOpen()) s = factory.openSession();
+			if (invalidated) {
+				close(pc);
+				throw new IllegalStateException(
+					"ORM session unavailable — the session factory has been closed, likely by ORMReload() on another thread"
+				);
+			}
+			if (s == null || !s.isOpen()) {
+				if (factory == null || factory.isClosed()) {
+					throw new IllegalStateException(
+						"ORM session unavailable — the session factory has been closed, likely by ORMReload() on another thread"
+					);
+				}
+				s = factory.openSession();
+			}
 			return s;
+		}
+
+		/**
+		 * Mark this session for cleanup. The owning thread will close and release
+		 * the connection on its next ORM operation or at end of request.
+		 * Safe to call from any thread.
+		 */
+		public void invalidate() {
+			invalidated = true;
 		}
 
 		public void close(PageContext pc) {
 			try {
 				if (s != null && s.isOpen()) {
+					Transaction tx = s.getTransaction();
+					if (tx != null && tx.isActive()) {
+						tx.rollback();
+					}
 					s.close();
 				}
 			}
@@ -85,16 +113,23 @@ public class HibernateORMSession implements ORMSession {
 			return s != null && s.isOpen();
 		}
 
+		public boolean hasActiveTransaction() {
+			if (s == null || !s.isOpen()) return false;
+			Transaction tx = s.getTransaction();
+			return tx != null && tx.isActive();
+		}
+
 		public DataSource getDataSource() {
 			return d;
 		}
 	}
 
 	private SessionFactoryData data;
-	private Map<Key, SessionAndConn> sessions = new HashMap<Key, SessionAndConn>();
+	private final Map<Key, SessionAndConn> sessions = new ConcurrentHashMap<>();
 
 	public HibernateORMSession(PageContext pc, SessionFactoryData data) throws PageException {
 		this.data = data;
+		data.registerSession( this );
 		// this.dc=dc;
 		DataSource[] sources = data.getDataSources();
 
@@ -682,6 +717,7 @@ public class HibernateORMSession implements ORMSession {
 
 	@Override
 	public void closeAll(PageContext pc) throws PageException {
+		data.deregisterSession( this );
 		Exception first = null;
 		for (SessionAndConn sac : sessions.values()) {
 			try {
@@ -691,7 +727,35 @@ public class HibernateORMSession implements ORMSession {
 				if (first == null) first = e;
 			}
 		}
+		sessions.clear();
 		if (first != null) throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(first);
+	}
+
+	/**
+	 * Release connections from idle sessions and invalidate active ones.
+	 *
+	 * Called from {@link SessionFactoryData#reset()} during ORMReload() — must not throw.
+	 *
+	 * Idle sessions (no active transaction) are closed immediately to release their borrowed
+	 * connection. Active sessions (mid-transaction) are marked as invalidated — the owning thread
+	 * will roll back and close on its next ORM operation or at end of request. We do NOT close
+	 * active sessions cross-thread because that could release a JDBC connection while the owning
+	 * thread is mid-flush, causing connection pool corruption.
+	 */
+	void releaseIdleAndInvalidateActive() {
+		for (SessionAndConn sac : sessions.values()) {
+			try {
+				if (sac.isOpen() && !sac.hasActiveTransaction()) {
+					sac.close( null );
+				}
+				else {
+					sac.invalidate();
+				}
+			}
+			catch (Exception e) {
+				// swallow — best-effort cleanup during reload
+			}
+		}
 	}
 
 	@Override

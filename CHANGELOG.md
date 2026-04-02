@@ -8,6 +8,7 @@ See [BREAKING-CHANGES.md](BREAKING-CHANGES.md) for behaviour changes that may af
 
 ### Bug Fixes
 
+- [LDEV-119](https://luceeserver.atlassian.net/browse/LDEV-119) — `ORMReload()` leaked connections and caused NPE under concurrent load. Sessions are now tracked, idle sessions closed before factory teardown, mid-transaction sessions invalidated for safe cleanup by owning thread
 - [LDEV-6156](https://luceeserver.atlassian.net/browse/LDEV-6156) — Fixed connection leak: removed dead reconnect code that borrowed a second connection per session
 - [LDEV-6225](https://luceeserver.atlassian.net/browse/LDEV-6225) — JAXB compatibility for Java 17+
 - [LDEV-6044](https://luceeserver.atlassian.net/browse/LDEV-6044) — Removed unused `xml-apis` from `Require-Bundle` (caused conflicts)
