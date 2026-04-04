@@ -79,13 +79,18 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
-			it( "transactionCommit is currently a no-op for ORM (facade baseline)", function() {
+			it( "LDEV-6206: transactionCommit creates durable checkpoint", function() {
 				var result = _InternalRequest( template: "#uri()#/facadeIsNoOp.cfm" );
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
 			it( "ORM outside transaction block auto-commits", function() {
 				var result = _InternalRequest( template: "#uri()#/ormOutsideTransaction.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "LDEV-6207: isWithinORMTransaction() detects Hibernate transaction state", function() {
+				var result = _InternalRequest( template: "#uri()#/isWithinORMTransaction.cfm" );
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 

@@ -32,6 +32,7 @@ thread name="t1" action="run" {
 		thread.errorMsg = e.message;
 		thread.errorDetail = structKeyExists( e, "detail" ) ? e.detail : "";
 		thread.errorType = structKeyExists( e, "type" ) ? e.type : "";
+		systemOutput( serializeJson( var=e, compact=false ), true );
 	}
 }
 
@@ -55,6 +56,7 @@ thread name="t2" action="run" {
 		thread.errorMsg = e.message;
 		thread.errorDetail = structKeyExists( e, "detail" ) ? e.detail : "";
 		thread.errorType = structKeyExists( e, "type" ) ? e.type : "";
+		systemOutput( serializeJson( var=e, compact=false ), true );
 	}
 }
 
@@ -68,14 +70,17 @@ t2 = cfthread[ "t2" ];
 deadlockMsg = "";
 deadlockDetail = "";
 deadlockType = "";
+deadlockStacktrace = "";
 if ( t1.result == "error" ) {
 	deadlockMsg = t1.errorMsg;
 	deadlockDetail = t1.errorDetail;
 	deadlockType = t1.errorType;
+	deadlockStacktrace = t1.stacktrace;
 } else if ( t2.result == "error" ) {
 	deadlockMsg = t2.errorMsg;
 	deadlockDetail = t2.errorDetail;
 	deadlockType = t2.errorType;
+	deadlockStacktrace = t2.stacktrace;
 }
 
 // Output for the test to inspect
@@ -84,4 +89,7 @@ echo( "t2=#t2.result#" & chr( 10 ) );
 echo( "msg=#deadlockMsg#" & chr( 10 ) );
 echo( "detail=#deadlockDetail#" & chr( 10 ) );
 echo( "type=#deadlockType#" & chr( 10 ) );
+
+// dump to console
+systemOutput( "DEADLOCK TEST: t1=#t1.result# t2=#t2.result#", true );
 </cfscript>

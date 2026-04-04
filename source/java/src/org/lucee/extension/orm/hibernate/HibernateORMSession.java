@@ -311,7 +311,7 @@ public class HibernateORMSession implements ORMSession {
 			while (it.hasNext()) {
 				Entry<Key, List<Component>> e = it.next();
 				Transaction trans = getSession(pc, e.getKey()).getTransaction();
-				if (trans.isActive()) trans.begin();
+				if (!trans.isActive()) trans.begin();
 				else trans = null;
 
 				try {

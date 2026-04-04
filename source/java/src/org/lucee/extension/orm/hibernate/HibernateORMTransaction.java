@@ -7,7 +7,10 @@ import org.hibernate.resource.transaction.spi.TransactionStatus;
 import lucee.runtime.orm.ORMTransaction;
 
 /**
- * Hibernate Transaction wrapper object. Useful for opening, closing, and general management of a single transaction.
+ * Hibernate Transaction wrapper object. Manages begin/commit/rollback of a real Hibernate
+ * transaction, mapped from CFML's &lt;cftransaction&gt; block.
+ *
+ * <p>Lucee core calls these methods in order: begin() → [user code] → commit()/rollback() → end()
  */
 public class HibernateORMTransaction implements ORMTransaction {
 
@@ -18,13 +21,6 @@ public class HibernateORMTransaction implements ORMTransaction {
 
 	/**
 	 * Constructor. Does NOT open a Hibernate transaction at this time.
-	 * <p>
-	 * To open a Hibernate transaction, call begin() after this method:
-	 *
-	 * <pre>
-	 * HibernateORMTransaction tx = new HibernateORMTransaction(session, true);
-	 * tx.begin();
-	 * </pre>
 	 *
 	 * @param session
 	 *            Hibernate session to open a transaction on
@@ -37,33 +33,38 @@ public class HibernateORMTransaction implements ORMTransaction {
 	}
 
 	/**
-	 * Open or acquire a Transaction for the current session.
-	 * <p>
-	 * Will flush the current session if autoManage is enabled.
+	 * Open a real Hibernate transaction on the current session.
 	 *
-	 * @see org.hibernate.SharedSessionContract#getTransaction()
+	 * <p>Flushes pending changes first if autoManage is enabled, then begins a Hibernate transaction.
 	 */
 	@Override
 	public void begin() {
 		if (autoManage) {
-			// FlushM
-			// FlushModeType fm = session.getFlushMode();
-			// FlushMode hfm = session.getHibernateFlushMode();
-
 			session.flush();
 		}
 		trans = session.getTransaction();
-
+		trans.begin();
 	}
 
 	/**
-	 * Commit the transaction.
+	 * Commit the current Hibernate transaction.
 	 *
-	 * Just kidding... right now this method does nothing.
+	 * <p>Flushes the session to push pending changes to the DB, then commits the transaction.
+	 * A new transaction is begun immediately so subsequent ORM operations in the same
+	 * cftransaction block remain transactional.
+	 *
+	 * <p>Skips if rollback has been requested — Lucee core calls commit() via doAfterBody()
+	 * even after transactionRollback(), so we must not override the rollback decision.
 	 */
 	@Override
 	public void commit() {
-		// do nothing
+		if (doRollback) return;
+		session.flush();
+		trans.commit();
+		// start a new transaction — Lucee core may continue with more ORM operations
+		// in the same cftransaction block after transactionCommit()
+		trans = session.getTransaction();
+		trans.begin();
 	}
 
 	/**
@@ -79,33 +80,24 @@ public class HibernateORMTransaction implements ORMTransaction {
 	/**
 	 * Wrap up the transaction.
 	 * <ul>
-	 * <li>Will roll back if rollback() called.
-	 * <li>Will commit if transaction already committed. ??
-	 * <li>May flush the session or clear the session depending on transaction state and autoManage settings.
-	 * <li>(currently) closes the session on execution. (See LDEV-4017)
+	 * <li>Will roll back if rollback() was called, and clear the session if autoManage.
+	 * <li>Will flush and commit if the transaction is still active.
 	 * </ul>
 	 */
 	@Override
 	public void end() {
-		// try was removed in ortus branch
-		
 		if (doRollback) {
-			trans.rollback();
+			if (trans.getStatus() == TransactionStatus.ACTIVE) {
+				trans.rollback();
+			}
 			if (autoManage) {
 				session.clear();
 			}
 		}
-		else {
-			// Note: this condition is effectively dead code. begin() and commit() on this wrapper
-			// are no-ops, so the Hibernate transaction status is never COMMITTED here.
-			// The real work is session.flush() below. Do not "fix" to check ACTIVE — that would
-			// change behaviour by actually committing the underlying Hibernate transaction.
-			if (trans.getStatus() == TransactionStatus.COMMITTED) {
-				trans.commit();
-			}
+		else if (trans.getStatus() == TransactionStatus.ACTIVE) {
 			session.flush();
+			trans.commit();
 		}
-
 	}
 
 	/**

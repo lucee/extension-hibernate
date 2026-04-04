@@ -92,15 +92,57 @@ public class ExceptionUtil {
 	}
 
 	public static PageException toPageException( Throwable t ) {
-		PageException pe = CFMLEngineFactory.getInstance().getCastUtil().toPageException( t );
+		Throwable original = t;
+
+		// unwrap JPA PersistenceException to get to the Hibernate/JDBC cause
+		// With a real Hibernate transaction (LDEV-6206), exceptions are wrapped in
+		// javax.persistence.PersistenceException (e.g. OptimisticLockException)
+		// before reaching us
+		if ( t instanceof javax.persistence.PersistenceException && t.getCause() != null ) {
+			t = t.getCause();
+		}
+
+		PageException pe;
 		if ( t instanceof org.hibernate.HibernateException ) {
 			org.hibernate.HibernateException he = ( org.hibernate.HibernateException ) t;
 			Throwable cause = he.getCause();
 			if ( cause != null ) {
-				pe = CFMLEngineFactory.getInstance().getCastUtil().toPageException( cause );
-				setAdditional( pe, CommonUtil.createKey( "hibernate exception" ), t );
+				// use the root DB exception for the message, create a proper DatabaseException
+				pe = CFMLEngineFactory.getInstance().getExceptionUtil()
+					.createDatabaseException( cause.getMessage() );
+				try {
+					pe.initCause( original );
+				}
+				catch ( IllegalStateException ise ) {
+					// cause already set
+				}
+			}
+			else {
+				pe = CFMLEngineFactory.getInstance().getExceptionUtil()
+					.createDatabaseException( he.getMessage() );
+				try {
+					pe.initCause( original );
+				}
+				catch ( IllegalStateException ise ) {
+					// cause already set
+				}
+			}
+			setAdditional( pe, CommonUtil.createKey( "hibernate exception" ), t );
+		}
+		else if ( t instanceof java.sql.SQLException ) {
+			pe = CFMLEngineFactory.getInstance().getExceptionUtil()
+				.createDatabaseException( t.getMessage() );
+			try {
+				pe.initCause( original );
+			}
+			catch ( IllegalStateException ise ) {
+				// cause already set
 			}
 		}
+		else {
+			pe = CFMLEngineFactory.getInstance().getCastUtil().toPageException( t );
+		}
+
 		if ( t instanceof org.hibernate.JDBCException ) {
 			org.hibernate.JDBCException je = ( org.hibernate.JDBCException ) t;
 			setAdditional( pe, CommonUtil.createKey( "sql" ), je.getSQL() );
