@@ -57,6 +57,10 @@ all these batch files take test name as the first argument, so you can just run 
 
 use test7.bat for initial dev, use test.bat to check finally
 
+## H2 limitations
+
+Do NOT use H2 for transaction tests — H2's transaction isolation behaviour differs from real databases. Transaction tests (isolation, rollback-after-flush, mixed ORM+SQL, error rollback) belong in `tests/db/mysql/` and `tests/db/postgres/`. H2 tests in `tests/session/transactions/` are basic plumbing smoke tests only.
+
 ## Test Approach
 
 Tests use the `_InternalRequest` pattern with isolated `Application.cfc` per test group.

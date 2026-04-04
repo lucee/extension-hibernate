@@ -20,7 +20,8 @@ coreHasBug = ( uCase( isoWithOrm ) contains "SERIAL" && !( uCase( defaultIso ) c
 
 if ( coreHasBug ) {
 	// core bug present — skip, nothing the extension can do
-	echo( "ok" ); // LDEV-6203: core forces SERIALIZABLE [#isoWithOrm#], DB default [#defaultIso#] — waiting for core fix
+	systemOutput( "LDEV-6203 EXPECTED: core forces [#isoWithOrm#], DB default [#defaultIso#], needs 7.1 core fix", true );
+	echo( "ok" );
 	abort;
 }
 
