@@ -21,6 +21,7 @@ import lucee.runtime.config.Config;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.listener.ApplicationContext;
 import lucee.runtime.util.TemplateUtil;
+import lucee.commons.io.log.Log;
 
 /**
  * I assist with finding persistent components to map as Hibernate entitites within the given CFML application.
@@ -166,10 +167,11 @@ public class EntityFinder {
 						}
 					}
 				} catch ( PageException e ) {
-					// @TODO: Regardless of the failOnError setting, log those errors.
 					if ( this.failOnError )
 						throw e;
-					// e.printStackTrace();
+					Log log = CommonUtil.getORMLog();
+					if ( log != null )
+						log.log( Log.LEVEL_WARN, "hibernate", "Skipping CFC [" + res.getName() + "]: " + e.getMessage() );
 				}
 			}
 		}

@@ -5,16 +5,16 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 	}
 	
 	function afterAll() {
-		if (!notHasMssql()) {
+		if (!notHasMysql()) {
 			queryExecute( sql="DROP TABLE IF EXISTS test4150", options: {
 				datasource: server.getDatasource("mysql")
-			}); 
+			});
 		}
 	}
 
 	function run( testResults, testBox ) {
 		describe("Testcase for LDEV-4150",  function() {
-			it( title="checking length property value to sqltype=varchar on ORM Entity", skip="#notHasMssql()#",  body=function( currentSpec ) {
+			it( title="checking length property value to sqltype=varchar on ORM Entity", skip="#notHasMysql()#",  body=function( currentSpec ) {
 				local.result = _InternalRequest(
 						template : "#uri#\LDEV4150.cfm"
 				).filecontent;
@@ -23,7 +23,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 		});
 	}
 
-	private function notHasMssql() {
+	private function notHasMysql() {
 		return structCount(server.getDatasource("mysql")) == 0;
 	}
 
