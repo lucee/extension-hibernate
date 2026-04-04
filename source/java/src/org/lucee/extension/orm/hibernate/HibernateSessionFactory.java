@@ -11,6 +11,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.hibernate.boot.MetadataSources;
+import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
@@ -124,6 +126,71 @@ public class HibernateSessionFactory {
 			update.setHaltOnError(false);
 			update.execute(enumSet, metadataSources.buildMetadata());
 			printError(log, data, update.getExceptions(), true);
+		}
+	}
+
+	/**
+	 * Auto-detect and set default catalog/schema from JDBC metadata if not already configured.
+	 *
+	 * Hibernate's SchemaUpdate uses DatabaseMetaData.getTables() to find existing tables.
+	 * When default_catalog/default_schema are not set, it passes empty strings as filters
+	 * (AbstractInformationExtractorImpl lines 527, 552), which on some databases (H2 v2)
+	 * returns no results — causing SchemaUpdate to silently generate no DDL.
+	 *
+	 * NOT CURRENTLY CALLED — blocked by two issues:
+	 * 1. HHH-10882: Hibernate 5.6 doesn't flow DEFAULT_CATALOG/DEFAULT_SCHEMA through
+	 *    to the AbstractInformationExtractorImpl.getTables() call, so setting them doesn't
+	 *    actually fix the empty-string filter problem.
+	 * 2. Setting DEFAULT_CATALOG on the Configuration's Properties leaks into the session
+	 *    factory's SQL generation, prefixing all table names with the catalog (e.g. DB.foo),
+	 *    which breaks MySQL/MSSQL. A Properties copy doesn't fully isolate because the
+	 *    ServiceRegistry builder may mutate the input map.
+	 *
+	 * The real fix is patching Hibernate's AbstractInformationExtractorImpl to use null
+	 * instead of "" when no catalog/schema filter is configured. Since we ship a shaded
+	 * Hibernate jar, this could be done as a direct patch.
+	 *
+	 * @see <a href="https://hibernate.atlassian.net/browse/HHH-10882">HHH-10882</a>
+	 */
+	private static void ensureDefaultCatalogAndSchema(java.util.Properties props, Log log) {
+		String existingCatalog = (String) props.get(AvailableSettings.DEFAULT_CATALOG);
+		String existingSchema = (String) props.get(AvailableSettings.DEFAULT_SCHEMA);
+		if ( !Util.isEmpty(existingCatalog, true) && !Util.isEmpty(existingSchema, true) ) {
+			return;
+		}
+
+		Object cpObj = props.get("hibernate.connection.provider_class");
+		if ( !(cpObj instanceof ConnectionProvider) ) return;
+
+		ConnectionProvider cp = (ConnectionProvider) cpObj;
+		try {
+			Connection conn = cp.getConnection();
+			try {
+				// DatasourceConnection wraps the real JDBC connection — unwrap to get
+				// reliable getCatalog()/getSchema() which may not be delegated
+				Connection raw = conn;
+				if ( conn instanceof DatasourceConnection ) {
+					raw = ((DatasourceConnection) conn).getConnection();
+				}
+				if ( Util.isEmpty(existingCatalog, true) ) {
+					String catalog = raw.getCatalog();
+					if ( !Util.isEmpty(catalog, true) ) {
+						props.setProperty(AvailableSettings.DEFAULT_CATALOG, catalog);
+						log.log(Log.LEVEL_DEBUG, "hibernate", "Auto-detected default catalog [" + catalog + "] for schema tools");
+					}
+				}
+				if ( Util.isEmpty(existingSchema, true) ) {
+					String schema = raw.getSchema();
+					if ( !Util.isEmpty(schema, true) ) {
+						props.setProperty(AvailableSettings.DEFAULT_SCHEMA, schema);
+						log.log(Log.LEVEL_DEBUG, "hibernate", "Auto-detected default schema [" + schema + "] for schema tools");
+					}
+				}
+			} finally {
+				cp.closeConnection(conn);
+			}
+		} catch (Exception e) {
+			log.log(Log.LEVEL_WARN, "hibernate", "Failed to auto-detect default catalog/schema: " + e.getMessage());
 		}
 	}
 

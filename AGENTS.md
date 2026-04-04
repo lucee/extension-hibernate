@@ -35,6 +35,18 @@ aprint.o("debug message: " + someValue);
 
 **WARNING**: Do not use `aprint` inside event listeners (`onPreInsert`, `onPreUpdate`, etc.) — it can cause `StackOverflowError` if the output triggers ORM operations. Use CFML `systemOutput()` in test `.cfm` files instead.
 
+## Verbose Hibernate logging
+
+To see Hibernate's internal logging (schema tools, session lifecycle, etc.):
+
+1. Set `logVerbose: true` in `this.ormSettings` — enables the extension's muzzle for all Hibernate categories
+2. Set the orm log to TRACE level via `configImport` in beforeAll() (see `tests/logging/logging.cfc` for the pattern)
+3. Set `LUCEE_LOGGING_FORCE_APPENDER=console` in the test bat file to redirect orm.log to console output
+
+Both logVerbose (muzzle) and trace level (pipe) must be set — one without the other won't produce output.
+
+Use the marker pattern from `tests/logging/logging.cfc` to find relevant log sections: write a UUID marker via `cflog(log:"orm")`, then read the orm.log file and extract everything after the marker.
+
 ## running tests
 
 all these batch files take test name as the first argument, so you can just run one test if needed for quick turn arounds
