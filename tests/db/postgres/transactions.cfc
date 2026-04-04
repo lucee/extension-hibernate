@@ -34,6 +34,61 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "transaction end() commits active transaction", function() {
+				var result = _InternalRequest( template: "#uri()#/endAfterCommit.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "entityDelete within transaction block", function() {
+				var result = _InternalRequest( template: "#uri()#/deleteInTransaction.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "entityDelete array within transaction block", function() {
+				var result = _InternalRequest( template: "#uri()#/deleteArrayInTransaction.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "LDEV-6203: ORM does not force SERIALIZABLE on regular queryExecute connections", function() {
+				var result = _InternalRequest( template: "#uri()#/isolationLeakToQueryExecute.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "mixed ORM + queryExecute commit and rollback together", function() {
+				var result = _InternalRequest( template: "#uri()#/mixedOrmAndQuery.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "rollback reverts flushed ORM changes (LDEV-966 regression)", function() {
+				var result = _InternalRequest( template: "#uri()#/rollbackAfterFlush.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "rollback reverts multiple sequential flushes", function() {
+				var result = _InternalRequest( template: "#uri()#/rollbackMultipleFlushes.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "commit then rollback — commit survives, rollback reverts rest", function() {
+				var result = _InternalRequest( template: "#uri()#/commitThenRollback.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "exception mid-transaction rolls back all changes", function() {
+				var result = _InternalRequest( template: "#uri()#/errorMidTransaction.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "transactionCommit is currently a no-op for ORM (facade baseline)", function() {
+				var result = _InternalRequest( template: "#uri()#/facadeIsNoOp.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "ORM outside transaction block auto-commits", function() {
+				var result = _InternalRequest( template: "#uri()#/ormOutsideTransaction.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}

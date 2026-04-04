@@ -2,7 +2,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	function run( testResults, testBox ) {
 
-		describe( "ORM transactions", function() {
+		describe( "ORM transactions [H2 — basic plumbing only]", function() {
 
 			it( "can roll back entire transaction", function() {
 				var result = _InternalRequest( template: "#uri()#/rollback.cfm" );
@@ -24,16 +24,6 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
-			it( "transaction with isolation=serializable", function() {
-				var result = _InternalRequest( template: "#uri()#/isolationSerializable.cfm" );
-				expect( trim( result.filecontent ) ).toBe( "ok" );
-			});
-
-			it( "transaction with isolation=read_committed", function() {
-				var result = _InternalRequest( template: "#uri()#/isolationReadCommitted.cfm" );
-				expect( trim( result.filecontent ) ).toBe( "ok" );
-			});
-
 			it( "transaction end() commits active transaction", function() {
 				var result = _InternalRequest( template: "#uri()#/endAfterCommit.cfm" );
 				expect( trim( result.filecontent ) ).toBe( "ok" );
@@ -46,6 +36,16 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 			it( "entityDelete array within transaction block", function() {
 				var result = _InternalRequest( template: "#uri()#/deleteArrayInTransaction.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "transactionCommit is currently a no-op for ORM (facade baseline)", function() {
+				var result = _InternalRequest( template: "#uri()#/facadeIsNoOp.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "ORM outside transaction block auto-commits", function() {
+				var result = _InternalRequest( template: "#uri()#/ormOutsideTransaction.cfm" );
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
