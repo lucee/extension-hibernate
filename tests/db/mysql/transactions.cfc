@@ -94,6 +94,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "LDEV-6205: cftransaction isolation is honoured by ORM connection", function() {
+				var result = _InternalRequest( template: "#uri()#/isolationHonouredByORM.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}

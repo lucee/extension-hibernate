@@ -573,6 +573,16 @@ EntitySave(entity, [forceInsert])</description>
 		</return>
 	</function>
 
+	<!-- GetORMTransactionIsolation -->
+	<function>
+		<name>GetORMTransactionIsolation</name>
+		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.GetORMTransactionIsolation</class>
+		<description>Returns the JDBC transaction isolation level from the ORM session's connection as a string (e.g. "serializable"). Returns "" if no ORM session is active. Matches the convention of the core getTransactionIsolation() BIF.</description>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+
 	<!-- ORMGetSession -->
 	<function>
 		<name>ORMGetSession</name>

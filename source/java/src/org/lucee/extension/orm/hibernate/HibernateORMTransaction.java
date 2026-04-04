@@ -1,9 +1,14 @@
 package org.lucee.extension.orm.hibernate;
 
+import java.lang.reflect.Method;
+import java.sql.Connection;
+
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.resource.transaction.spi.TransactionStatus;
 
+import lucee.loader.engine.CFMLEngineFactory;
+import lucee.runtime.PageContext;
 import lucee.runtime.orm.ORMTransaction;
 
 /**
@@ -14,10 +19,15 @@ import lucee.runtime.orm.ORMTransaction;
  */
 public class HibernateORMTransaction implements ORMTransaction {
 
+	// Cached reflection lookup for DatasourceManagerImpl.getIsolation() (Lucee 7.1+).
+	private static volatile Method getIsolationMethod;
+	private static volatile boolean getIsolationLookedUp;
+
 	private Transaction trans;
 	private Session session;
 	private boolean doRollback;
 	private boolean autoManage;
+	private int isolation = Connection.TRANSACTION_NONE;
 
 	/**
 	 * Constructor. Does NOT open a Hibernate transaction at this time.
@@ -36,6 +46,8 @@ public class HibernateORMTransaction implements ORMTransaction {
 	 * Open a real Hibernate transaction on the current session.
 	 *
 	 * <p>Flushes pending changes first if autoManage is enabled, then begins a Hibernate transaction.
+	 * If the surrounding cftransaction specifies an isolation level, applies it to the JDBC
+	 * connection via session.doWork() before any ORM queries execute.
 	 */
 	@Override
 	public void begin() {
@@ -44,6 +56,49 @@ public class HibernateORMTransaction implements ORMTransaction {
 		}
 		trans = session.getTransaction();
 		trans.begin();
+
+		isolation = getTransactionIsolation();
+		applyIsolation();
+	}
+
+	/**
+	 * Apply the cached isolation level to the Hibernate JDBC connection via session.doWork().
+	 * No-op when isolation is TRANSACTION_NONE (no explicit isolation specified).
+	 */
+	private void applyIsolation() {
+		if (isolation != Connection.TRANSACTION_NONE) {
+			session.doWork( conn -> conn.setTransactionIsolation( isolation ) );
+		}
+	}
+
+	/**
+	 * Read the isolation level from the current cftransaction via DatasourceManagerImpl.getIsolation().
+	 * Returns TRANSACTION_NONE if not available (no cftransaction, older Lucee without getIsolation()).
+	 * The Method is resolved once and cached for the lifetime of the classloader.
+	 */
+	private int getTransactionIsolation() {
+		try {
+			if (!getIsolationLookedUp) {
+				try {
+					PageContext pc = CFMLEngineFactory.getInstance().getThreadPageContext();
+					if (pc != null) {
+						getIsolationMethod = pc.getDataSourceManager().getClass().getMethod( "getIsolation" );
+					}
+				}
+				catch (NoSuchMethodException e) {
+					// older Lucee without getIsolation() — leave method null
+				}
+				getIsolationLookedUp = true;
+			}
+			if (getIsolationMethod == null) return Connection.TRANSACTION_NONE;
+
+			PageContext pc = CFMLEngineFactory.getInstance().getThreadPageContext();
+			if (pc == null) return Connection.TRANSACTION_NONE;
+			return (int) getIsolationMethod.invoke( pc.getDataSourceManager() );
+		}
+		catch (Exception e) {
+			return Connection.TRANSACTION_NONE;
+		}
 	}
 
 	/**
@@ -65,6 +120,7 @@ public class HibernateORMTransaction implements ORMTransaction {
 		// in the same cftransaction block after transactionCommit()
 		trans = session.getTransaction();
 		trans.begin();
+		applyIsolation();
 	}
 
 	/**
