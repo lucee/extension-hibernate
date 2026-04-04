@@ -563,6 +563,16 @@ EntitySave(entity, [forceInsert])</description>
 			<type>array</type>
 		</return>
 	</function>
+	<!-- IsWithinORMTransaction -->
+	<function>
+		<name>IsWithinORMTransaction</name>
+		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.IsWithinORMTransaction</class>
+		<description>Returns true if a Hibernate ORM transaction is currently active on any ORM datasource. Safe to call when ORM is not configured — returns false.</description>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+
 	<!-- ORMGetSession -->
 	<function>
 		<name>ORMGetSession</name>
