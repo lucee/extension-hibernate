@@ -32,9 +32,16 @@ See [BREAKING-CHANGES.md](BREAKING-CHANGES.md) for behaviour changes that may af
 - Fixed typos in error messages: "defintion" → "definition", "terminate" → "determine"
 - All error messages now start with a capital letter
 
+### Transaction Fixes
+
+- [LDEV-6234](https://luceeserver.atlassian.net/browse/LDEV-6234) — `cftransaction` now manages real Hibernate transactions. `begin()` calls `trans.begin()`, `commit()` flushes and commits, `end()` commits or rolls back active transactions. Fixed inverted condition in bulk delete. JPA exceptions unwrapped to `DatabaseException` with full cause chain
+- [LDEV-6205](https://luceeserver.atlassian.net/browse/LDEV-6205) — `cftransaction isolation=` is now honoured for ORM connections (Lucee 7.1+ only). On older versions, isolation is not applied (same as before)
+
 ### New Features
 
 - [LDEV-6159](https://luceeserver.atlassian.net/browse/LDEV-6159) — Native ORM logging into `orm.log` (when configured at server level), replacing SLF4J/Logback with Lucee native logging. New ormSettings: `logSQL`, `logParams`, `logCache`, `logLevel`
+- [LDEV-6207](https://luceeserver.atlassian.net/browse/LDEV-6207) — `isWithinORMTransaction()` BIF. Returns true when a Hibernate transaction is active
+- `GetORMTransactionIsolation()` BIF — returns the ORM connection's JDBC isolation level as a string (e.g. "serializable"). Matches the core `getTransactionIsolation()` convention
 - `ORMFlushAll()` BIF — flush all datasource ORM sessions
 - `ORMIndex()`, `ORMIndexPurge()`, `ORMSearch()`, `ORMSearchOffline()` stub BIFs (Hibernate Search not supported — throw informative errors instead of "function not found")
 
