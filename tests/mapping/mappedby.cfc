@@ -2,13 +2,14 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	function run( testResults, testBox ) {
 
-		describe( "mappedby attribute [H2]", function() {
+		describe( "mappedby attribute — one-to-one unique FK association [H2]", function() {
 
-			// BUG: mappedby="team" throws "property [team] not found on entity [Team]"
-			// Hibernate looks for the property on the wrong entity (parent instead of child).
-			// Needs investigation — may be a HBMCreator bug or a CFML ORM limitation.
-			// TODO: verify ACF behaviour with mappedby
-			xit( "one-to-many with mappedby loads children without fkcolumn on parent side", function() {
+			// CFML ORM's mappedby is NOT JPA's mappedBy.
+			// It means "the FK references this property in the target CFC".
+			// Used for one-to-one unique FK associations where the non-FK side
+			// needs to navigate back to the FK side.
+			// See: Adobe docs "Unique Foreign Key association" section
+			it( "one-to-one with mappedby resolves from both sides", function() {
 				var result = _InternalRequest( template: "#uri()#/mappedbyRoundTrip.cfm" );
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});

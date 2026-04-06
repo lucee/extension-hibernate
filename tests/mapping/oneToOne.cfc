@@ -14,6 +14,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "one-to-one with lazy=no-proxy loads on access", function() {
+				var result = _InternalRequest( template: "#uri()#/oneToOneNoProxy.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}

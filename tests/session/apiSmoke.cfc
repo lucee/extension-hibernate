@@ -59,6 +59,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "session is open and tracks saved entities", function() {
+				var result = _InternalRequest( template: "#uri()#/sessionStartsOnCRUD.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}
