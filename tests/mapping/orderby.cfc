@@ -9,6 +9,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "one-to-many orderby attribute sorts tracks by position DESC", function() {
+				var result = _InternalRequest( template: "#uri()#/orderbyDesc.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}

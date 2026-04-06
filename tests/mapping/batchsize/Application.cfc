@@ -7,4 +7,9 @@ component {
 		savemapping: true,
 		cfclocation: [ getDirectoryFromPath( getCurrentTemplatePath() ) ]
 	};
+
+	function onRequestStart() {
+		queryExecute( "DELETE FROM BS_Book" );
+		queryExecute( "DELETE FROM BS_Publisher" );
+	}
 }
