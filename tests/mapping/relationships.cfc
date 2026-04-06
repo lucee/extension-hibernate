@@ -39,6 +39,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "one-to-many flush: no ConcurrentModificationException with multiple children", function() {
+				var result = _InternalRequest( template: "#uri()#/oneToManyFlush.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}

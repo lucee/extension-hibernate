@@ -49,6 +49,16 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "ORMGetSession() returns native Hibernate session with metadata API", function() {
+				var result = _InternalRequest( template: "#uri()#/nativeSession.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "session.isDirty() and session.getIdentifier() detect changes", function() {
+				var result = _InternalRequest( template: "#uri()#/dirtyProperties.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}

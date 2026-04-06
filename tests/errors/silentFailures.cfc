@@ -32,6 +32,40 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( msg ).toInclude( "score" );
 			});
 
+			it( "bad fetch value throws error with property context", function() {
+				try {
+					var result = _InternalRequest( template: "#uri()#/badFetchValue/test.cfm" );
+					var msg = trim( result.filecontent );
+				} catch ( any e ) {
+					var msg = e.message;
+				}
+				expect( msg ).notToInclude( "SILENT" );
+				expect( msg ).toInclude( "fetch" );
+				expect( msg ).toInclude( "bogus" );
+			});
+
+			it( "bad lazy value throws error with property context", function() {
+				try {
+					var result = _InternalRequest( template: "#uri()#/badLazyValue/test.cfm" );
+					var msg = trim( result.filecontent );
+				} catch ( any e ) {
+					var msg = e.message;
+				}
+				expect( msg ).notToInclude( "SILENT" );
+				expect( msg ).toInclude( "lazy" );
+				expect( msg ).toInclude( "bogus" );
+			});
+
+			it( "collection without elementtype throws error at init", function() {
+				try {
+					var result = _InternalRequest( template: "#uri()#/missingElementType/test.cfm" );
+					var msg = trim( result.filecontent );
+				} catch ( any e ) {
+					var msg = e.message;
+				}
+				expect( msg ).notToInclude( "SILENT" );
+			});
+
 		});
 
 	}

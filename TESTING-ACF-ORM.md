@@ -95,8 +95,26 @@ box server start
 box server status
 ```
 
+## Error handling tip
+
+ACF returns empty 500 responses when ORM init fails. Always add an `onError` handler to your Application.cfc:
+
+```cfml
+function onError( e ) {
+	writeOutput( "APPLICATION ERROR: #e.message#<br>#e.detail#<br>" );
+	if ( structKeyExists( e, "cause" ) && !isNull( e.cause ) ) {
+		writeOutput( "CAUSE: #e.cause.message#<br>" );
+	}
+	writeDump( var: e, output: "console" );
+}
+```
+
+Without this, you get a blank page and no clue what went wrong.
+
 ## Existing test apps
 
 - `test-output/acf-ldev4121/` — property defaults vs DB NULLs (port 9121)
 - `test-output/acf-ldev4339/` — ORM sessions in threads (port 9339)
 - `test-output/acf-ldev4067/` — closures/lambdas in ORM entities (port 9067) — PASSES on ACF
+- `test-output/acf-mappedby/` — mappedby attribute (port 9501) — FAILS on ACF same as Lucee: "property named team must exist in CFC Team"
+- `test-output/acf-flush-before-sql/` — entitySave auto-flush before queryExecute (port 9502) — ACF does NOT auto-flush, same as Lucee

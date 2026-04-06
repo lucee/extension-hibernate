@@ -24,6 +24,16 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "saving entity referencing unsaved transient throws error", function() {
+				var result = _InternalRequest( template: "#uri()#/transientReference.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "two objects with same PK in session throws on flush", function() {
+				var result = _InternalRequest( template: "#uri()#/duplicateIdentifier.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}
