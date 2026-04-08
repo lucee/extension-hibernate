@@ -15,8 +15,8 @@
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
         <build.timestamp>${maven.build.timestamp}</build.timestamp>
         <bundlename>org.lucee.hibernate.extension</bundlename>
-        <release.url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</release.url>
-        <snapshot.url>https://oss.sonatype.org/content/repositories/snapshots/</snapshot.url>
+        <release.url>https://central.sonatype.com/api/v1/publisher/deployments/download/</release.url>
+        <snapshot.url>https://central.sonatype.com/repository/maven-snapshots/</snapshot.url>
     </properties>
 
     <scm>
@@ -25,17 +25,6 @@
         <developerConnection>scm:git:git@github.com:lucee/extension-hibernate.git</developerConnection>
         <tag>${project.version}</tag>
     </scm>
-
-    <distributionManagement>
-        <repository>
-            <id>ossrh</id>
-            <url>${release.url}</url>
-        </repository>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>${snapshot.url}</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <licenses>
         <license>
@@ -144,6 +133,15 @@
         <repository>
             <id>terracotta</id>
             <url>https://repo.terracotta.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>sonatype-central-snapshots</id>
+            <name>Sonatype Central Snapshots</name>
+            <url>https://central.sonatype.com/repository/maven-snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
         </repository>
     </repositories>
 
@@ -351,40 +349,15 @@
                 </executions>
             </plugin>
 
-            <!-- Deploy -->
+            <!-- Central Publishing -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>3.1.2</version>
-                <executions>
-                    <execution>
-                        <id>default-deploy</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>deploy-file</goal>
-                        </goals>
-                        <configuration>
-                            <file>${project.build.directory}/${project.artifactId}-${project.version}.lex</file>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>${project.artifactId}</artifactId>
-                            <version>${project.version}</version>
-                            <repositoryId>ossrh</repositoryId>
-                            <url>${snapshot.url}</url>
-                            <packaging>lex</packaging>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.13</version>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.10.0</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <publishingServerId>ossrh</publishingServerId>
+                    <autoPublish>true</autoPublish>
                 </configuration>
             </plugin>
         </plugins>
