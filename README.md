@@ -4,6 +4,16 @@
 
 Built using [Hibernate ORM 5.6](https://hibernate.org/orm/)
 
+Install via Lucee Admin, or pin in your environment:
+
+```bash
+# Lucee 7.0+ (Maven coordinates, auto-updates to latest snapshot)
+LUCEE_EXTENSIONS=org.lucee:hibernate-extension:5.6.15.10-SNAPSHOT
+
+# Lucee 6.2 (extension GUID, pinned version)
+LUCEE_EXTENSIONS=FAD1E8CB-4F45-4184-86359145767C29DE;version=5.6.15.10-SNAPSHOT
+```
+
 ## History
 
 1. **Lucee core (Hibernate 3.5)** — ORM was originally built into Lucee core
