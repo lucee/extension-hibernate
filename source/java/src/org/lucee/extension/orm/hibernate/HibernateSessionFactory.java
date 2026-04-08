@@ -138,6 +138,47 @@ public class HibernateSessionFactory {
 			update.execute(enumSet, metadataSources.buildMetadata());
 			printError(log, data, update.getExceptions(), true);
 		}
+		else if (/* ORMConfiguration.DBCREATE_VALIDATE */5 == ormConf.getDbCreate()) {
+			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "validate");
+			Metadata metadata = metadataSources.buildMetadata();
+			// Hibernate 5.6's SchemaValidator silently passes when catalog/schema are null
+			// (HHH-10882). Do our own JDBC-based table existence check instead.
+			validateSchema(metadata, serviceRegistry);
+		}
+	}
+
+	/**
+	 * JDBC-based schema validation. Checks that every physical table in the Hibernate metadata
+	 * actually exists in the database. Works around Hibernate 5.6's SchemaValidator silently
+	 * passing when default_catalog/default_schema are null (HHH-10882).
+	 */
+	private static void validateSchema(Metadata metadata, ServiceRegistry serviceRegistry) throws SQLException {
+		ConnectionProvider cp = serviceRegistry.getService(ConnectionProvider.class);
+		Connection conn = cp.getConnection();
+		try {
+			java.sql.DatabaseMetaData dbMeta = conn.getMetaData();
+			String catalog = conn.getCatalog();
+			for (org.hibernate.boot.model.relational.Namespace ns : metadata.getDatabase().getNamespaces()) {
+				for (org.hibernate.mapping.Table table : ns.getTables()) {
+					if (!table.isPhysicalTable()) continue;
+					String tableName = table.getName();
+					java.sql.ResultSet rs = dbMeta.getTables(catalog, null, tableName, new String[] { "TABLE" });
+					try {
+						if (!rs.next()) {
+							throw new org.hibernate.tool.schema.spi.SchemaManagementException(
+								"Schema-validation: missing table [" + tableName + "]"
+							);
+						}
+					}
+					finally {
+						rs.close();
+					}
+				}
+			}
+		}
+		finally {
+			cp.closeConnection(conn);
+		}
 	}
 
 	/**

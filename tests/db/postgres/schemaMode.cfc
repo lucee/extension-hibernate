@@ -33,11 +33,16 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 			it( "validate throws on schema mismatch", function() {
 				try { queryExecute( "DROP TABLE IF EXISTS Item", {}, { datasource: variables.ds } ); } catch( any e ) {}
-				var result = _InternalRequest(
-					template: "#uri()#/validate.cfm",
-					url: { dbcreate: "validate" }
-				);
-				expect( trim( result.filecontent ) ).toBe( "ok" );
+				try {
+					var result = _InternalRequest(
+						template: "#uri()#/validate.cfm",
+						url: { dbcreate: "validate" }
+					);
+					var msg = trim( result.filecontent );
+				} catch ( any e ) {
+					var msg = e.message;
+				}
+				expect( msg ).toInclude( "missing table" );
 			});
 
 		});
