@@ -170,7 +170,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: [build, test]
-    if: github.event_name == 'workflow_dispatch' && inputs.deploy
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/5.6'
     steps:
       - uses: actions/checkout@v6
 
