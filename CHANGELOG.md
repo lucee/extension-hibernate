@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.6 (unreleased)
+## 5.6.15.10
 
 Forked from Lucee 5.4 extension. Upgraded Hibernate 5.4 → 5.6, major code modernisation. Incorporates work from the [Ortus Hibernate extension](https://github.com/ortus-solutions/extension-hibernate), including `persistEntityChangesToState` for entity event mutation support and the `ConfigurationBuilder` pattern.
 
@@ -26,7 +26,9 @@ See [BREAKING-CHANGES.md](BREAKING-CHANGES.md) for behaviour changes that may af
 - `onEvict` global event handler wasn't receiving the entity
 - Invalid `collectionType` attribute on relationships was silently ignored — now validated at ORM init
 - Invalid `ormtype` values produced a Java ClassCastException at the DB layer — now validated at HBM generation with entity/property context
+- `ormtype="serializable"` returned the literal string representation instead of the deserialized value
 - `entityToQuery()` with a non-entity gave a generic Lucee cast error — now throws with ORM context and chains the original exception
+- OOE-10 — timezone property bug fix, corrected "Los_Angelos" typo to "Los_Angeles"
 - Multiple datasource connection overhead — sessions are now opened lazily per datasource instead of eagerly for all datasources on every request
 - ~15 empty catch blocks across the codebase now log to `orm.log` instead of silently swallowing exceptions
 - Fixed typos in error messages: "defintion" → "definition", "terminate" → "determine"
@@ -39,13 +41,16 @@ See [BREAKING-CHANGES.md](BREAKING-CHANGES.md) for behaviour changes that may af
 
 ### New Features
 
-- [LDEV-6159](https://luceeserver.atlassian.net/browse/LDEV-6159) — Native ORM logging into `orm.log` (when configured at server level), replacing SLF4J/Logback with Lucee native logging. New ormSettings: `logSQL`, `logParams`, `logCache`, `logLevel`
+- [LDEV-6159](https://luceeserver.atlassian.net/browse/LDEV-6159) — Native ORM logging into `orm.log` (when configured at server level), replacing SLF4J/Logback with Lucee native logging. New ormSettings: `logSQL`, `logParams`, `logCache`, `logVerbose`
 - [LDEV-6207](https://luceeserver.atlassian.net/browse/LDEV-6207) — `isWithinORMTransaction()` BIF. Returns true when a Hibernate transaction is active
 - `GetORMTransactionIsolation()` BIF — returns the ORM connection's JDBC isolation level as a string (e.g. "serializable"). Matches the core `getTransactionIsolation()` convention
 - `ORMFlushAll()` BIF — flush all datasource ORM sessions
+- [LDEV-6239](https://luceeserver.atlassian.net/browse/LDEV-6239) — `dbcreate="validate"` mode — checks every mapped table exists at startup, throws on mismatch *(requires Lucee 7.0.4+)*
 - `ORMIndex()`, `ORMIndexPurge()`, `ORMSearch()`, `ORMSearchOffline()` stub BIFs (Hibernate Search not supported — throw informative errors instead of "function not found")
 
-### Internal
+### Internal / Quality
+
+- Thread safety: double-checked locking on session factory init, ConcurrentHashMap for all shared maps
 
 - Hibernate 5.4.33 → 5.6.15
 - Migrated build from Ant to Maven (shaded fat jar)
