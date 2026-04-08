@@ -323,6 +323,7 @@
                     </descriptors>
                     <finalName>${project.artifactId}-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
+                    <attach>false</attach>
                 </configuration>
             </plugin>
 
@@ -334,7 +335,7 @@
                 <executions>
                     <execution>
                         <id>attach-lex</id>
-                        <phase>package</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>attach-artifact</goal>
                         </goals>
