@@ -4,7 +4,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 		describe( "dbcreate=validate [MySQL]", function() {
 
-			it( title="baseline: dropcreate creates schema, entity round-trips", skip="#notHasMysql()#", body=function() {
+			it( title="baseline: dropcreate creates schema, entity round-trips", skip="#notHasMysql() || notSupported()#", body=function() {
 				var result = _InternalRequest(
 					template: "#uri()#/test.cfm",
 					urls: { dbcreate: "dropcreate" }
@@ -13,7 +13,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 			});
 
 			// LDEV-6239: dbcreate="validate" must reject entities mapped to non-existent tables
-			it( title="validate mode rejects entity mapped to non-existent table", skip="#notHasMysql()#", body=function() {
+			it( title="validate mode rejects entity mapped to non-existent table", skip="#notHasMysql() || notSupported()#", body=function() {
 				// first, ensure some schema exists via dropcreate
 				_InternalRequest(
 					template: "#uri()#/test.cfm",
@@ -42,6 +42,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	private string function uri() {
 		return getDirectoryFromPath( contractPath( getCurrentTemplatePath() ) ) & "schemaValidate";
+	}
+
+	private boolean function notSupported() {
+		return !server.checkVersionGTE( server.lucee.version, 7, 0, 4, 8 );
 	}
 
 }

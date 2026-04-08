@@ -31,7 +31,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
-			it( "validate throws on schema mismatch", function() {
+			it( title="validate throws on schema mismatch", skip=notSupported(), body=function() {
 				try { queryExecute( "DROP TABLE IF EXISTS Item", {}, { datasource: variables.ds } ); } catch( any e ) {}
 				try {
 					var result = _InternalRequest(
@@ -55,6 +55,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	private boolean function notHasPostgres() {
 		return isEmpty( server.getDatasource( "postgres" ) );
+	}
+
+	private boolean function notSupported() {
+		return !server.checkVersionGTE( server.lucee.version, 7, 0, 4, 8 );
 	}
 
 }

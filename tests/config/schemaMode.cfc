@@ -25,7 +25,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
-			it( "validate throws on schema mismatch", function() {
+			it( title="validate throws on schema mismatch", skip=notSupported(), body=function() {
 				try {
 					var result = _InternalRequest(
 						template: "#uri()#/validate.cfm",
@@ -44,6 +44,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	private string function uri() {
 		return getDirectoryFromPath( contractPath( getCurrentTemplatePath() ) ) & "schemaMode";
+	}
+
+	private boolean function notSupported() {
+		return !server.checkVersionGTE( server.lucee.version, 7, 0, 4, 8 );
 	}
 
 }
