@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.lucee</groupId>
     <artifactId>hibernate-extension</artifactId>
-    <version>5.6.15.10-SNAPSHOT</version>
+    <version>5.6.15.11-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Hibernate Extension</name>
 
@@ -271,6 +271,9 @@
                                         <Bundle-SymbolicName>${bundlename}</Bundle-SymbolicName>
                                         <Bundle-Version>${project.version}</Bundle-Version>
                                         <Built-Date>${build.timestamp}</Built-Date>
+                                        <!-- Required: Hibernate's Version.getVersionString() reads this at runtime.
+                                             Without it, the shaded jar reports [WORKING] instead of the real version. -->
+                                        <Implementation-Version>5.6.15.Final</Implementation-Version>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>

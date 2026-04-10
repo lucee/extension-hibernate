@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.6.15.11
+
+### Bug Fixes
+
+- [LDEV-6241](https://luceeserver.atlassian.net/browse/LDEV-6241) — `Version.getVersionString()` returned `[WORKING]` instead of `5.6.15.Final` because the shaded jar manifest was missing `Implementation-Version`. This broke cbORM's version-dependent code paths (SQLHelper, isDirty, criteria projections)
+
 ## 5.6.15.10
 
 Forked from Lucee 5.4 extension. Upgraded Hibernate 5.4 → 5.6, major code modernisation. Incorporates work from the [Ortus Hibernate extension](https://github.com/ortus-solutions/extension-hibernate), including `persistEntityChangesToState` for entity event mutation support and the `ConfigurationBuilder` pattern.
