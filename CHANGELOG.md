@@ -1,5 +1,16 @@
 # Changelog
 
+## 5.6.15.12
+
+### Performance
+
+- [LDEV-6253](https://luceeserver.atlassian.net/browse/LDEV-6253) — ORM flush 61% faster: replaced `Util.replace()` with `String.replace()` in type conversion hot path (zero-alloc on no match), cached resolved SQL type in `CFCGetter` constructor to eliminate repeated string parsing during dirty checking
+
+### Improvements
+
+- Concurrent ORM init race condition: added static lock for `SessionFactory` construction on Lucee 6.2/7.0 (fixed in core on 7.1+)
+- Event listener method cache: cache which event methods exist per entity to avoid repeated `ComponentImpl.get()` lookups on every Hibernate event
+
 ## 5.6.15.11
 
 ### Bug Fixes
