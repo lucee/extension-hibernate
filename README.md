@@ -8,10 +8,10 @@ Install via Lucee Admin, or pin in your environment:
 
 ```bash
 # Lucee 7.0+ (Maven coordinates, auto-updates to latest snapshot)
-LUCEE_EXTENSIONS=org.lucee:hibernate-extension:5.6.15.10-SNAPSHOT
+LUCEE_EXTENSIONS=org.lucee:hibernate-extension:5.6.15.12-SNAPSHOT
 
 # Lucee 6.2 (extension GUID, pinned version)
-LUCEE_EXTENSIONS=FAD1E8CB-4F45-4184-86359145767C29DE;version=5.6.15.10-SNAPSHOT
+LUCEE_EXTENSIONS=FAD1E8CB-4F45-4184-86359145767C29DE;version=5.6.15.12-SNAPSHOT
 ```
 
 ## History
@@ -24,7 +24,7 @@ LUCEE_EXTENSIONS=FAD1E8CB-4F45-4184-86359145767C29DE;version=5.6.15.10-SNAPSHOT
 
 ## Lucee Compatibility
 
-- **Lucee 6.2+** — full support for core ORM functionality
+- **Lucee 6.2.5.48+** — full support for core ORM functionality
 - **Lucee 7.0.4+** — adds `dbcreate` modes: `create`, `create-drop`, `validate`
 - **Lucee 7.1+** — adds `cftransaction` isolation level support for ORM
 
