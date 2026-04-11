@@ -279,9 +279,9 @@ public class HibernateCaster {
 	// calendar: A type mapping for a Calendar object that represents a datetime.
 	public static String toHibernateType(String type, String defaultValue) {
 		type = type.trim().toLowerCase();
-		type = Util.replace(type, "java.lang.", "", true);
-		type = Util.replace(type, "java.util.", "", true);
-		type = Util.replace(type, "java.sql.", "", true);
+		type = type.replace("java.lang.", "");
+		type = type.replace("java.util.", "");
+		type = type.replace("java.sql.", "");
 
 		// return same value
 		// Note: several types appear multiple times below — only the first match runs.
@@ -464,7 +464,7 @@ public class HibernateCaster {
 	 * @return
 	 * @throws PageException
 	 */
-	private static Object toSQL(int sqlType, Object value, RefBoolean isArray) throws PageException {
+	public static Object toSQL(int sqlType, Object value, RefBoolean isArray) throws PageException {
 		if (sqlType == Types.OTHER && value instanceof PersistentCollection) {
 			return value;
 		}

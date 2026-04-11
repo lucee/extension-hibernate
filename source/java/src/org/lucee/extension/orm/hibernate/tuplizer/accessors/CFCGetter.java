@@ -2,6 +2,7 @@ package org.lucee.extension.orm.hibernate.tuplizer.accessors;
 
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.sql.Types;
 import java.util.Map;
 
 import org.hibernate.HibernateException;
@@ -26,10 +27,11 @@ public class CFCGetter implements Getter {
 	private Key key;
 	private Type type;
 	private String entityName;
+	private final int sqlType;
 
 	/**
 	 * Constructor of the class
-	 * 
+	 *
 	 * @param key
      *            Persistent property name
 	 * @param type
@@ -41,6 +43,7 @@ public class CFCGetter implements Getter {
 		this.key = CommonUtil.createKey(key);
 		this.type = type;
 		this.entityName = entityName;
+		this.sqlType = type != null ? HibernateCaster.toSQLType(type.getName(), Types.OTHER) : Types.OTHER;
 	}
 
 	@Override
@@ -54,7 +57,7 @@ public class CFCGetter implements Getter {
 				LazyInitializer li = ((HibernateProxy) rtn).getHibernateLazyInitializer();
 				if (li.isUninitialized()) return rtn;
 			}
-			return HibernateCaster.toSQL(this.type, rtn, null);
+			return HibernateCaster.toSQL(this.sqlType, rtn, null);
 		} catch (PageException pe) {
 			throw new HibernatePageException(pe);
 		}
