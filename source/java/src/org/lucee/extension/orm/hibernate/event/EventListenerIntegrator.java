@@ -1,8 +1,10 @@
 package org.lucee.extension.orm.hibernate.event;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.HibernateException;
 import org.hibernate.boot.Metadata;
@@ -85,6 +87,22 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 	public static final Key ON_DELETE     = CommonUtil.createKey( "onDelete" );
 	public static final Key ON_DIRTY_CHECK = CommonUtil.createKey( "onDirtyCheck" );
 	public static final Key ON_EVICT      = CommonUtil.createKey( "onEvict" );
+
+	/**
+	 * All entity/global event method keys we check for on components.
+	 */
+	private static final Key[] EVENT_METHODS = new Key[] {
+		PRE_INSERT, POST_INSERT, PRE_UPDATE, POST_UPDATE,
+		PRE_DELETE, POST_DELETE, PRE_LOAD, POST_LOAD,
+		ON_FLUSH, ON_AUTO_FLUSH, ON_CLEAR, ON_DELETE,
+		ON_DIRTY_CHECK, ON_EVICT
+	};
+
+	/**
+	 * Cache of which event methods exist on each entity/component class, keyed by entity name.
+	 * Populated on first event per entity; the CFC method set is fixed for the SessionFactory lifetime.
+	 */
+	private final ConcurrentHashMap<String, Set<Key>> entityMethodCache = new ConcurrentHashMap<>();
 
 	/**
 	 * The EventHandler CFC defined in the application's `this.ormSettings.eventHandler`.
@@ -323,11 +341,23 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 	 *
 	 * @return true if method found
 	 */
-	public static boolean componentHasMethod(Component comp, Collection.Key methodName) {
-		return comp.get(methodName, null) instanceof UDF;
+	/**
+	 * Check if the given component has a method matching the given name, using a per-entity cache
+	 * to avoid repeated ComponentImpl.get() → StaticScope._get() lookups on every event.
+	 */
+	private boolean componentHasMethod(Component comp, Collection.Key methodName) {
+		String entityName = HibernateCaster.getEntityName(comp);
+		Set<Key> methods = entityMethodCache.computeIfAbsent(entityName, k -> {
+			Set<Key> found = new HashSet<>();
+			for (Key candidate : EVENT_METHODS) {
+				if (comp.get(candidate, null) instanceof UDF) found.add(candidate);
+			}
+			return found;
+		});
+		return methods.contains(methodName);
 	}
 
-	private static void _fireOnComponent(Component cfc, Key name, Object... args) {
+	private void _fireOnComponent(Component cfc, Key name, Object... args) {
 		if (!componentHasMethod(cfc, name)) {
 			return;
 		}

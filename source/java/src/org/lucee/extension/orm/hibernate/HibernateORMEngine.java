@@ -37,6 +37,17 @@ public class HibernateORMEngine implements ORMEngine {
 
 	private Map<String, SessionFactoryData> factories = new ConcurrentHashMap<String, SessionFactoryData>();
 
+	/**
+	 * Static lock for ORM init — Lucee 6.2 and 7.0 ConfigImpl.getORMEngine() can create
+	 * multiple HibernateORMEngine instances concurrently for the same application (no
+	 * synchronization on the put). Using a static lock ensures only one thread builds the
+	 * session factory at a time, even across duplicate engine instances.
+	 *
+	 * Fixed in Lucee 7.1 (synchronized via SystemUtil.createToken) — can be removed when
+	 * minimum Lucee version is 7.1+.
+	 */
+	private static final Object INIT_LOCK = new Object();
+
 	static {
 		// LDEV-4276 LDEV-6225
 		// JAXB context factory property name differs by JVM version; on Java 17+ the old name causes NPEs
@@ -84,7 +95,7 @@ public class HibernateORMEngine implements ORMEngine {
 	public boolean reload(PageContext pc, boolean force) throws PageException {
 		String appName = pc.getApplicationContext().getName();
 		if (force || !isInitializedForApplication(appName)) {
-			synchronized (this) {
+			synchronized (INIT_LOCK) {
 				if (force || !isInitializedForApplication(appName)) {
 					buildSessionFactoryData(pc);
 				}
@@ -120,7 +131,7 @@ public class HibernateORMEngine implements ORMEngine {
 	private SessionFactoryData getOrBuildSessionFactoryData(PageContext pc) throws PageException {
 		String appName = pc.getApplicationContext().getName();
 		if (!isInitializedForApplication(appName)) {
-			synchronized (this) {
+			synchronized (INIT_LOCK) {
 				if (!isInitializedForApplication(appName)) {
 					SessionFactoryData data = buildSessionFactoryData(pc);
 					data.init();
