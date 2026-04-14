@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.lucee</groupId>
     <artifactId>hibernate-extension</artifactId>
-    <version>5.6.15.13-SNAPSHOT</version>
+    <version>5.6.15.14-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Hibernate Extension</name>
 
@@ -112,6 +112,15 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.36</version>
+        </dependency>
+
+        <!-- Bean Validation API (Hibernate 5.6's TypeSafeActivator has hard javax.validation
+             imports — Lucee 7+ exposes jakarta.validation via boot delegation, Hibernate
+             thinks BV is available, then fails loading the javax classes) -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.1.0.Final</version>
         </dependency>
 
         <!-- JAXB (needed for Hibernate XML mapping) -->
