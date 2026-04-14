@@ -95,6 +95,10 @@ public class HibernateORMEngine implements ORMEngine {
 	public boolean reload(PageContext pc, boolean force) throws PageException {
 		String appName = pc.getApplicationContext().getName();
 		if (force || !isInitializedForApplication(appName)) {
+			if ( force ) {
+				Log log = CommonUtil.getORMLog( pc );
+				if ( log != null ) log.log( Log.LEVEL_DEBUG, "hibernate", "ormReload() for application [" + appName + "]" );
+			}
 			synchronized (INIT_LOCK) {
 				if (force || !isInitializedForApplication(appName)) {
 					buildSessionFactoryData(pc);
@@ -186,10 +190,17 @@ public class HibernateORMEngine implements ORMEngine {
 
 		// Configure ORM logging BEFORE Hibernate classes load, so level filtering is active
 		// from the start.
-		Log log = pc.getConfig().getLog( "orm" );
+		Log log = CommonUtil.getORMLog( pc );
 		OrmLoggingSettings logSettings = OrmLoggingSettings.load( pc, ormConf );
 		LoggerLevelManager.configure( log, logSettings.logSQL, logSettings.logParams,
 		    logSettings.logCache, logSettings.logVerbose );
+
+		if ( log != null ) {
+			log.log( Log.LEVEL_DEBUG, "hibernate",
+				"ORM initializing for application [" + applicationName + "], dbcreate [" + dbCreateLabel( ormConf.getDbCreate() ) + "]" );
+			String dbCreateWarning = OrmLoggingSettings.checkDbCreate( pc, ormConf.getDbCreate() );
+			if ( dbCreateWarning != null ) log.log( Log.LEVEL_WARN, "hibernate", dbCreateWarning );
+		}
 
 		SessionFactoryData data = new SessionFactoryData(this, ormConf);
 		setSessionFactory(applicationName, data);
@@ -266,6 +277,9 @@ public class HibernateORMEngine implements ORMEngine {
 
 			data.buildSessionFactory(e.getKey());
 		}
+
+		if ( log != null ) log.log( Log.LEVEL_DEBUG, "hibernate",
+			"ORM initialized [" + data.sizeCFCs() + "] entities for application [" + applicationName + "], " + logSettings );
 
 		return data;
 	}
@@ -402,6 +416,18 @@ public class HibernateORMEngine implements ORMEngine {
 			return cfc;
 		}
 		return null;
+	}
+
+	private static String dbCreateLabel( int dbCreate ) {
+		switch ( dbCreate ) {
+			case ORMConfiguration.DBCREATE_NONE: return "none";
+			case ORMConfiguration.DBCREATE_DROP_CREATE: return "dropcreate";
+			case ORMConfiguration.DBCREATE_UPDATE: return "update";
+			case 3: return "create";
+			case 4: return "create-drop";
+			case 5: return "validate";
+			default: return "unknown(" + dbCreate + ")";
+		}
 	}
 }
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 5.6.15.13
+
+### Improvements
+
+- ORM logging now respects application-level `this.logs` overrides (Lucee 7.0+). Each application can independently control the orm log level without affecting other apps on the server
+- Added lifecycle logging at DEBUG level: "ORM initializing", "ORM initialized" (with entity count and settings), and "ormReload()" messages
+
 ## 5.6.15.12
 
 ### Performance
