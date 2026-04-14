@@ -1,0 +1,3 @@
+<cfscript>
+echo( "ok" );
+</cfscript>

@@ -64,6 +64,16 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "getStatistics() returns entity and collection counts", function() {
+				var result = _InternalRequest( template: "#uri()#/statisticsCounts.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "getDialect() returns the active SQL dialect", function() {
+				var result = _InternalRequest( template: "#uri()#/getDialect.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}

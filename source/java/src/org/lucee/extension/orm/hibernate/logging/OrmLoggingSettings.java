@@ -91,6 +91,33 @@ public class OrmLoggingSettings {
 		return null;
 	}
 
+	/**
+	 * Check if the raw dbcreate string from this.ormSettings was silently defaulted to "none"
+	 * by the Lucee loader (6.2 doesn't support create/create-drop/validate).
+	 *
+	 * @return a warning message if there's a mismatch, or null if everything is fine.
+	 */
+	public static String checkDbCreate( PageContext pc, int resolvedDbCreate ) {
+		Struct ormSettings = getOrmSettingsStruct( pc );
+		if ( ormSettings == null ) return null;
+
+		Key KEY_DB_CREATE = CommonUtil.createKey( "dbcreate" );
+		String raw = CommonUtil.toString( ormSettings.get( KEY_DB_CREATE, null ), null );
+		if ( raw == null || raw.trim().isEmpty() ) return null;
+
+		raw = raw.trim().toLowerCase();
+		// These are the values that all Lucee versions understand
+		if ( "none".equals( raw ) || "update".equals( raw ) || "dropcreate".equals( raw ) || "drop-create".equals( raw ) )
+			return null;
+
+		// If the resolved value is NONE but the raw value isn't one of the known strings,
+		// the loader silently defaulted it
+		if ( resolvedDbCreate == 0 )
+			return "Unsupported dbcreate value [" + raw + "] for this Lucee version, defaulting to [none]";
+
+		return null;
+	}
+
 	@Override
 	public String toString() {
 		return String.format( "OrmLoggingSettings[logSQL=%s, logParams=%s, logCache=%s, formatSQL=%s, logVerbose=%s]",

@@ -888,13 +888,46 @@ public class CommonUtil {
 		return pc().getConfig();
 	}
 
+	// Cached reflection lookup for ApplicationContext.getLog(String) (Lucee 7.0+).
+	private static volatile Method	appContextGetLog;
+	private static volatile boolean	appContextGetLogResolved = false;
+
+	/**
+	 * Get the ORM log from the given PageContext, respecting application-level
+	 * this.logs overrides before falling back to server config.
+	 */
+	public static Log getORMLog( PageContext pc ) {
+		if ( pc != null ) {
+			// Try application-level this.logs first (Lucee 7.0+ only)
+			if ( !appContextGetLogResolved ) {
+				try {
+					appContextGetLog = pc.getApplicationContext().getClass().getMethod( "getLog", String.class );
+				}
+				catch ( Exception e ) {
+					// Lucee 6.2 — method doesn't exist
+				}
+				appContextGetLogResolved = true;
+			}
+			if ( appContextGetLog != null ) {
+				try {
+					Log log = ( Log ) appContextGetLog.invoke( pc.getApplicationContext(), "orm" );
+					if ( log != null ) return log;
+				}
+				catch ( Exception e ) {
+					// fall through to server config
+				}
+			}
+			return pc.getConfig().getLog( "orm" );
+		}
+		return null;
+	}
+
 	/**
 	 * Get the ORM log from the current thread's PageContext, or null if unavailable.
 	 */
 	public static Log getORMLog() {
 		try {
-			PageContext pc = CFMLEngineFactory.getInstance().getThreadPageContext();
-			if ( pc != null ) return pc.getConfig().getLog( "orm" );
+			return getORMLog( CFMLEngineFactory.getInstance().getThreadPageContext() );
 		}
 		catch ( Exception e ) {
 			// no log available
