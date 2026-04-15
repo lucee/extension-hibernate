@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.6.15.15
+
+- [LDEV-6267](https://luceeserver.atlassian.net/browse/LDEV-6267) — Relocate shaded `net.sf.ehcache` classes to `org.lucee.extension.orm.hibernate.shaded.net.sf.ehcache` to prevent `ClassCastException` when the ehcache Lucee extension is also installed. Both extensions loaded the same ehcache classes from different OSGi `BundleClassLoader` instances
+
 ## 5.6.15.14
 
 - [OOE-28](https://ortussolutions.atlassian.net/browse/OOE-28) — `NoClassDefFoundError: javax/validation/ValidatorFactory` on Lucee 7+. Lucee 7 exposes `jakarta.validation` via OSGi boot delegation, causing Hibernate's `BeanValidationIntegrator` to think Bean Validation is available — but `TypeSafeActivator` has hard `javax.validation` imports which then fail. Fixed by shading `javax.validation:validation-api` into the extension jar. This was masked locally because script-runner's `pom-jakarta.xml` was missing `jakarta.jakartaee-api`, making its classpath a subset of the real Lucee runtime
