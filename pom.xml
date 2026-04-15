@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.lucee</groupId>
     <artifactId>hibernate-extension</artifactId>
-    <version>5.6.15.14-SNAPSHOT</version>
+    <version>5.6.15.15-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Hibernate Extension</name>
 
@@ -286,6 +286,16 @@
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
+                            <!-- Relocate ehcache classes to a private namespace so they never
+                                 conflict with the ehcache Lucee extension's OSGi-exported copy.
+                                 Without this, both bundles have net.sf.ehcache.* classes loaded by
+                                 different BundleClassLoaders → ClassCastException. -->
+                            <relocations>
+                                <relocation>
+                                    <pattern>net.sf.ehcache</pattern>
+                                    <shadedPattern>org.lucee.extension.orm.hibernate.shaded.net.sf.ehcache</shadedPattern>
+                                </relocation>
+                            </relocations>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
                     </execution>
