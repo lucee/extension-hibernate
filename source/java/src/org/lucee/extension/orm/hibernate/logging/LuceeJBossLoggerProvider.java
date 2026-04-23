@@ -13,7 +13,7 @@ import lucee.commons.io.log.Log;
  *
  * Discovered via META-INF/services/org.jboss.logging.LoggerProvider (ServiceLoader).
  * This bypasses SLF4J entirely for Hibernate's own logging, going straight from
- * JBoss Logging -> Lucee's orm.log.
+ * JBoss Logging -&gt; Lucee's orm.log.
  *
  * The Lucee Log instance is managed per-request by {@link LoggerLevelManager}.
  */
