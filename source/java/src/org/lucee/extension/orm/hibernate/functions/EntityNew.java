@@ -62,8 +62,8 @@ public class EntityNew extends BIF {
 
 	/**
 	 *
-	 * @TODO: Move this to a reusable EntityPopulator? Do we populate entities anywhere else?
-	 * @TODO: Either drop ignoreNotExisting argument, or implement a 'true' condition. This is always `false`, currently.
+	 * TODO: Move this to a reusable EntityPopulator? Do we populate entities anywhere else?
+	 * TODO: Either drop ignoreNotExisting argument, or implement a 'true' condition. This is always {@code false}, currently.
 	 *
 	 * @param pc                Lucee PageContext
 	 * @param c                 The new entity Component

@@ -47,22 +47,8 @@ public class ConfigurationBuilder {
     private Log log;
 
     /**
-     * Build out Hibernate configuration using the application's `this.ormSettings`, datasource, and generated mappings.
-     *
-     * @param log
-     *            Lucee logger object, configured for the ORM log
-     * @param mappings
-     *            Mapping XML document as a string
-     * @param ds
-     *            Datasource to operate on
-     * @param user
-     *            Username for the configured datasource
-     * @param pass
-     *            Password for the configured datasource
-     * @param data
-     *            The extension {@link org.lucee.extension.orm.hibernate.SessionFactoryData}
-     * @param applicationName
-     *            Application name
+     * Build out Hibernate configuration using the application's {@code this.ormSettings}, datasource, and generated mappings.
+     * Use the builder setter methods to configure log, mappings, datasource, credentials, data, and application name before calling.
      *
      * @return Hibernate Configuration object
      *

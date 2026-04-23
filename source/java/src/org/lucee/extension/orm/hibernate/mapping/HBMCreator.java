@@ -47,14 +47,14 @@ public class HBMCreator {
 	/**
 	 * Hibernate DOCTYPE mapping ID
 	 *
-	 * @see https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects
+	 * @see <a href="https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects">Hibernate User Guide</a>
 	 */
 	public static final String HIBERNATE_3_PUBLIC_ID = "-//Hibernate/Hibernate Mapping DTD 3.0//EN";
 
 	/**
 	 * Hibernate doctype reference
 	 *
-	 * @see https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects
+	 * @see <a href="https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects">Hibernate User Guide</a>
 	 */
 	// public static final String HIBERNATE_3_SYSTEM_ID = "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd";
 	public static final String HIBERNATE_3_SYSTEM_ID = "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd";
@@ -62,7 +62,7 @@ public class HBMCreator {
 	/**
 	 * Full XML doctype for Hibernate mappings
 	 *
-	 * @see https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects
+	 * @see <a href="https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#schema-generation-database-objects">Hibernate User Guide</a>
 	 */
 	public static final String HIBERNATE_3_DOCTYPE_DEFINITION = "<!DOCTYPE hibernate-mapping PUBLIC \""
 			+ HIBERNATE_3_PUBLIC_ID + "\" \"" + HIBERNATE_3_SYSTEM_ID + "\">";
@@ -1962,7 +1962,7 @@ public class HBMCreator {
 	 *         since the epoch (00:00:00 GMT, January 1, 1970), or <code>0L</code> if the file does not exist or if an
 	 *         I/O error occurs
 	 *
-	 * @see lucee.commons.io.res.Resource#lastModified();
+	 * @see lucee.commons.io.res.Resource#lastModified()
 	 */
 	public static long getMappingLastModified(Component cfc) {
 		Resource res = getMappingResource(cfc);
@@ -1987,7 +1987,7 @@ public class HBMCreator {
 	}
 
 	/**
-	 * Get the opening of a Hibernate mapping XML file, including <xml> tag and DOCTYPE declaration
+	 * Get the opening of a Hibernate mapping XML file, including {@code <?xml?>} tag and DOCTYPE declaration
 	 */
 	public static String getXMLOpen() {
 		StringBuilder xml = new StringBuilder();
@@ -1998,14 +1998,14 @@ public class HBMCreator {
 	}
 
 	/**
-	 * Strip the open/close tags (i.e. `<xml>`, `<!DOCTYPE>`, `<hibernate-mapping>`) from an hbm.xml file.
+	 * Strip the open/close tags (i.e. {@code <?xml?>}, {@code <!DOCTYPE>}, {@code <hibernate-mapping>}) from an hbm.xml file.
 	 * <p>
-	 * Useful for assembling multiple entities into a single `<hibernate-mapping>` element for sending to Hibernate.
+	 * Useful for assembling multiple entities into a single {@code <hibernate-mapping>} element for sending to Hibernate.
 	 *
 	 * @param xml
 	 *            XML string from which to strip open and close tags
 	 *
-	 * @return an XML string with the DOCTYPE, `<xml>` and `<hibernate-mapping>` elements removed
+	 * @return an XML string with the DOCTYPE, {@code <?xml?>} and {@code <hibernate-mapping>} elements removed
 	 */
 	public static String stripXMLOpenClose(String xml) {
 		return xml.replaceAll("<\\?xml[^>]+>", "").replaceAll("<!DOCTYPE[^>]+>", "").replaceAll("</?hibernate-mapping>",

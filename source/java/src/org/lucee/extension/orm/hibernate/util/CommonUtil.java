@@ -496,7 +496,7 @@ public class CommonUtil {
 	 * Blatantly copied from Lucee core because it's not in the Lucee loader, so we don't have access to run it without
 	 * reflection.
 	 *
-	 * @link https://github.com/lucee/Lucee/blob/6.0/core/src/main/java/lucee/runtime/op/Decision.java#L964
+	 * @see <a href="https://github.com/lucee/Lucee/blob/6.0/core/src/main/java/lucee/runtime/op/Decision.java#L964">Lucee core Decision.java</a>
 	 *
 	 * @param o
 	 *            Value to compare
@@ -1039,7 +1039,7 @@ public class CommonUtil {
 	 * <p>
 	 * Blatantly copied from the Lucee core, since we don't have access to this method without reflection.
 	 *
-	 * @link https://github.com/lucee/Lucee/blob/6.0/core/src/main/java/lucee/commons/lang/StringUtil.java#L870
+	 * @see <a href="https://github.com/lucee/Lucee/blob/6.0/core/src/main/java/lucee/commons/lang/StringUtil.java#L870">Lucee core StringUtil.java</a>
 	 *
 	 * @param str
 	 *            string to check first char
@@ -1057,7 +1057,7 @@ public class CommonUtil {
 	 * <p>
 	 * Blatantly copied from the Lucee core, since we don't have access to this method without reflection.
 	 *
-	 * @link https://github.com/lucee/Lucee/blob/6.0/core/src/main/java/lucee/commons/lang/StringUtil.java#L870
+	 * @see <a href="https://github.com/lucee/Lucee/blob/6.0/core/src/main/java/lucee/commons/lang/StringUtil.java#L870">Lucee core StringUtil.java</a>
 	 *
 	 * @param str
 	 *            string to check first char

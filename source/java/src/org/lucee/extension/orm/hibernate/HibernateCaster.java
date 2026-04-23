@@ -429,10 +429,10 @@ public class HibernateCaster {
 
 	/**
 	 * translate CFMl specific types to Hibernate/SQL specific types
-	 * 
-	 * @param engine
+	 *
 	 * @param ci
 	 * @param value
+	 * @param isArray
 	 * @return
 	 * @throws PageException
 	 */
@@ -442,10 +442,10 @@ public class HibernateCaster {
 
 	/**
 	 * translate CFMl specific types to Hibernate/SQL specific types
-	 * 
-	 * @param engine
+	 *
 	 * @param type
 	 * @param value
+	 * @param isArray
 	 * @return
 	 * @throws PageException
 	 */
@@ -457,10 +457,10 @@ public class HibernateCaster {
 
 	/**
 	 * translate CFMl specific type to SQL specific types
-	 * 
-	 * @param engine
+	 *
 	 * @param sqlType
 	 * @param value
+	 * @param isArray
 	 * @return
 	 * @throws PageException
 	 */

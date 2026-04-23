@@ -222,8 +222,8 @@ public final class CFConstants {
 	}
 
 	/**
-	 * @TODO: Move this into some CFConstants class, or somewhere that both HBMCreator and HibernateCaster can reference it.
-	 * @TODO: @nextMajorRelease, Migrate to Map.of() or Map.ofEntries in Java 9+
+	 * TODO: Move this into some CFConstants class, or somewhere that both HBMCreator and HibernateCaster can reference it.
+	 * TODO: @nextMajorRelease, Migrate to Map.of() or Map.ofEntries in Java 9+
 	 */
 	public static class Relationships {
 

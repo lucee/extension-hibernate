@@ -78,7 +78,7 @@ public class XMLUtil {
      * @param document
      *            The root element of an XML document.
      *
-     * @return a fully-formed and formatted XML string. Does not append or prepend <xml> tags or DOCTYPE, etc.
+     * @return a fully-formed and formatted XML string. Does not append or prepend {@code <xml>} tags or DOCTYPE, etc.
      *
      * @throws PageException
      */
