@@ -74,6 +74,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "legacy SessionFactory metadata API (getDialect, getClassMetadata, getCollectionMetadata)", function() {
+				var result = _InternalRequest( template: "#uri()#/legacyShim.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}
