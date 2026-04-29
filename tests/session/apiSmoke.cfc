@@ -79,6 +79,16 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "EntityPersister.getSubclassPropertyName(int) resolves index to property name", function() {
+				var result = _InternalRequest( template: "#uri()#/persisterPropertyByIndex.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "session.getEntityName( transient ) throws TransientObjectException", function() {
+				var result = _InternalRequest( template: "#uri()#/transientEntityName.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}
