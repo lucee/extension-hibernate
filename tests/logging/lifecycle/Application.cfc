@@ -6,7 +6,10 @@ component {
 	this.ormSettings = {
 		dbcreate: "dropcreate",
 		cfclocation: [ getDirectoryFromPath( getCurrentTemplatePath() ) ],
-		logSQL: false
+		logSQL: url.logSQL ?: false,
+		logParams: url.logParams ?: false,
+		logCache: url.logCache ?: false,
+		logVerbose: url.logVerbose ?: false
 	};
 
 }

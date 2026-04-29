@@ -333,6 +333,38 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 		});
 
+		describe( "Per-request logging config refresh", function() {
+
+			it( "second request without ormReload picks up new logSQL setting", function() {
+				var appId = createUUID();
+
+				// Request 1: logSQL=true → cold start initialises SF, marker A then INSERT logged
+				var markerOn = "MARKER_PERSIST_ON_#createUUID()#";
+				var resultOn = _InternalRequest(
+					template: "#lifecycleUri()#/index.cfm",
+					url: { appId: appId, logSQL: true, marker: markerOn }
+				);
+				expect( trim( resultOn.filecontent ) ).toBe( "ok" );
+				var logOn = lCase( getLogAfterMarker( markerOn ) );
+				systemOutput( "LOG PERSIST ON: [#logOn#]", true );
+				expect( logOn ).toInclude( "insert" );
+
+				// Request 2: same appId (SF reused, no ormReload), logSQL=false this time
+				// Bug pre-fix: ThreadLocal still has logSQL=true from request 1, so INSERT is logged anyway
+				// Post-fix: HibernateORMSession constructor reconfigures per request, INSERT not logged
+				var markerOff = "MARKER_PERSIST_OFF_#createUUID()#";
+				var resultOff = _InternalRequest(
+					template: "#lifecycleUri()#/index.cfm",
+					url: { appId: appId, logSQL: false, marker: markerOff }
+				);
+				expect( trim( resultOff.filecontent ) ).toBe( "ok" );
+				var logOff = lCase( getLogAfterMarker( markerOff ) );
+				systemOutput( "LOG PERSIST OFF: [#logOff#]", true );
+				expect( logOff ).notToInclude( "insert" );
+			});
+
+		});
+
 		describe( "Per-application logging isolation", function() {
 
 			it( "app with logSQL=true logs SQL, app with logSQL=false does not", function() {
