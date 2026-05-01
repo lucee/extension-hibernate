@@ -1,8 +1,10 @@
 <cfscript>
-// Adam Tuttle 2019 reported that Lucee rejects fully-qualified CFC paths in
-// relationship cfc="..." attributes (e.g. cfc="orm.ems.Person"), requiring bare
-// names instead. This test exercises the dotted form via a /dotted mapping
-// configured in Application.cfc, asserting the relationship resolves correctly.
+// LDEV-1697 (related): exercises cfc="dotted.Garage" via a /dotted mapping
+// declared in this directory's Application.cfc. The test passes in isolation —
+// what fails is the PARENT relationships/Application.cfc whose cfclocation
+// recurses into dottedCfcPath/entities/ and pulls Vehicle/Garage into a context
+// where /dotted isn't mapped. Disabled at the runner level until Lucee's
+// EntityFinder honours nested Application.cfc boundaries.
 
 garage = entityNew( "Garage", { id: createUUID(), name: "Downtown Auto" } );
 entitySave( garage );

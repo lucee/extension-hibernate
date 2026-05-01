@@ -44,7 +44,12 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
-			it( "many-to-one with dotted cfc path resolves via Application mapping", function() {
+			// disabled — see LDEV-1697 (related): the parent relationships/Application.cfc has
+			// cfclocation: [ relationships/ ] which recurses into dottedCfcPath/entities/ and
+			// pulls Vehicle/Garage into the parent context, where /dotted isn't mapped.
+			// Breaks every other test in this bundle. Local pass is SF-cache fluke; CI fails
+			// every matrix cell. Re-enable when EntityFinder honours Application.cfc boundaries.
+			xit( "many-to-one with dotted cfc path resolves via Application mapping", function() {
 				var result = _InternalRequest( template: "#uri()#/dottedCfcPath/test.cfm" );
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
