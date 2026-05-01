@@ -44,6 +44,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "many-to-one with dotted cfc path resolves via Application mapping", function() {
+				var result = _InternalRequest( template: "#uri()#/dottedCfcPath/test.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 		});
 
 	}
