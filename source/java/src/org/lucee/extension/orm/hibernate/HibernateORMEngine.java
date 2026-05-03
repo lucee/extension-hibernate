@@ -211,7 +211,7 @@ public class HibernateORMEngine implements ORMEngine {
 			// arr=null;
 			synchronized (data) {
 
-				data.tmpList = HibernateSessionFactory.loadComponents(pc, this, ormConf);
+				data.tmpList = new EntityFinder(ormConf.getCfcLocations(), !ormConf.skipCFCWithError()).loadComponents(pc);
 				data.clearCFCs();
 
 				// load entities
