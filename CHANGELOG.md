@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.6.15.16
+
+- [LDEV-1697](https://luceeserver.atlassian.net/browse/LDEV-1697) — Overlapping `ormSettings.cfclocation` entries (parent + child directory) registered the same CFC twice and triggered an ambiguity error. Now deduped by canonical file path, matching ACF behaviour
+- ORM logging settings (`logSQL`, `logParams`, `logCache`, `logVerbose`) now refresh per-request in the `HibernateORMSession` ctor, so changes to `this.logs` apply without `ormReload()`
+
 ## 5.6.15.15
 
 - [LDEV-6267](https://luceeserver.atlassian.net/browse/LDEV-6267) — Relocate shaded `net.sf.ehcache` classes to `org.lucee.extension.orm.hibernate.shaded.net.sf.ehcache` to prevent `ClassCastException` when the ehcache Lucee extension is also installed. Both extensions loaded the same ehcache classes from different OSGi `BundleClassLoader` instances
