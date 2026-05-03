@@ -370,7 +370,8 @@ public class HibernateSessionFactory {
 
 		ResourceFilter filter = en.getResourceUtil().getExtensionResourceFilter(ext, true);
 		List<Component> components = new ArrayList<Component>();
-		loadComponents(pc, engine, components, ormConf.getCfcLocations(), filter, ormConf);
+		Set<String> visited = new HashSet<String>();
+		loadComponents(pc, engine, components, ormConf.getCfcLocations(), filter, ormConf, visited);
 		return components;
 	}
 
@@ -392,8 +393,8 @@ public class HibernateSessionFactory {
 	 *
 	 * @throws PageException
 	 */
-	private static void loadComponents(PageContext pc, HibernateORMEngine engine, List<Component> components, Resource[] reses, ResourceFilter filter, ORMConfiguration ormConf)
-			throws PageException {
+	private static void loadComponents(PageContext pc, HibernateORMEngine engine, List<Component> components, Resource[] reses, ResourceFilter filter, ORMConfiguration ormConf,
+			Set<String> visited) throws PageException {
 		Mapping[] mappings = createFileMappings(pc, reses);
 		ApplicationContext ac = pc.getApplicationContext();
 		Mapping[] existing = ac.getComponentMappings();
@@ -408,7 +409,7 @@ public class HibernateSessionFactory {
 				if (reses[i] != null && reses[i].isDirectory()) {
 					tmp[0] = mappings[i];
 					ac.setComponentMappings(tmp);
-					loadComponents(pc, engine, mappings[i], components, reses[i], filter, ormConf);
+					loadComponents(pc, engine, mappings[i], components, reses[i], filter, ormConf, visited);
 				}
 			}
 		}
@@ -439,7 +440,7 @@ public class HibernateSessionFactory {
 	 * @throws PageException
 	 */
 	private static void loadComponents(PageContext pc, HibernateORMEngine engine, Mapping cfclocation, List<Component> components, Resource res, ResourceFilter filter,
-			ORMConfiguration ormConf) throws PageException {
+			ORMConfiguration ormConf, Set<String> visited) throws PageException {
 		if (res == null) return;
 
 		if (res.isDirectory()) {
@@ -447,16 +448,17 @@ public class HibernateSessionFactory {
 
 			// first load all files
 			for (int i = 0; i < children.length; i++) {
-				if (children[i].isFile()) loadComponents(pc, engine, cfclocation, components, children[i], filter, ormConf);
+				if (children[i].isFile()) loadComponents(pc, engine, cfclocation, components, children[i], filter, ormConf, visited);
 			}
 
 			// and then invoke subfiles
 			for (int i = 0; i < children.length; i++) {
-				if (children[i].isDirectory()) loadComponents(pc, engine, cfclocation, components, children[i], filter, ormConf);
+				if (children[i].isDirectory()) loadComponents(pc, engine, cfclocation, components, children[i], filter, ormConf, visited);
 			}
 		}
 		else if (res.isFile()) {
 			if (!HibernateUtil.isApplicationName(pc, res.getName())) {
+				if (!visited.add(canonicalKey(res))) return;
 				try {
 
 					// MUST still a bad solution
@@ -490,6 +492,15 @@ public class HibernateSessionFactory {
 					// e.printStackTrace();
 				}
 			}
+		}
+	}
+
+	private static String canonicalKey(Resource res) {
+		try {
+			return res.getCanonicalPath();
+		}
+		catch (IOException e) {
+			return res.getAbsolutePath();
 		}
 	}
 
