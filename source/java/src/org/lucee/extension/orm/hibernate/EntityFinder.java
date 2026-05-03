@@ -1,7 +1,10 @@
 package org.lucee.extension.orm.hibernate;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.lucee.extension.orm.hibernate.util.CommonUtil;
 import org.lucee.extension.orm.hibernate.util.HibernateUtil;
@@ -61,6 +64,15 @@ public class EntityFinder {
 	 */
 	private ResourceFilter	filter;
 
+	/**
+	 * Tracks canonical paths already loaded so overlapping cfclocation entries
+	 * (e.g. parent + child directory) don't register the same file twice.
+	 *
+	 * LDEV-1697: without this dedup, Hibernate raises an ambiguity error when
+	 * the same physical CFC is reached through more than one cfclocation entry.
+	 */
+	private Set<String>		visited;
+
 	public EntityFinder( Resource[] locations, Boolean failOnError ) {
 		this.locations		= locations;
 		this.failOnError	= failOnError;
@@ -80,6 +92,7 @@ public class EntityFinder {
 	public List<Component> loadComponents( PageContext pc ) throws PageException {
 
 		List<Component> components = new ArrayList<>();
+		this.visited = new HashSet<>();
 		loadComponents( pc, components );
 		return components;
 	}
@@ -154,6 +167,8 @@ public class EntityFinder {
 			}
 		} else if ( res.isFile() ) {
 			if ( !HibernateUtil.isApplicationName( res.getName() ) ) {
+				if ( !this.visited.add( canonicalKey( res ) ) )
+					return;
 				try {
 					PageSource	ps	= getPageSource( pc, cfclocation, res );
 
@@ -219,6 +234,14 @@ public class EntityFinder {
 			mappings[ i ] = CommonUtil.createMapping( config, "/", resources[ i ].getAbsolutePath() );
 		}
 		return mappings;
+	}
+
+	private String canonicalKey( Resource res ) {
+		try {
+			return res.getCanonicalPath();
+		} catch ( IOException e ) {
+			return res.getAbsolutePath();
+		}
 	}
 
 	private String getFilenameNoExtension( String filename, String defaultValue ) {
