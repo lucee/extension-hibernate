@@ -318,14 +318,13 @@ public class HibernateSessionFactory {
 		StringBuilder mappings = new StringBuilder();
 		String ext = value.getCFC().getExtends();
 		if (!Util.isEmpty(ext)) {
-			try {
-				Component parent = data.getEntityByCFCName(ext, false);
+			// LDEV-6340: mappedSuperClass / persistent="false" / non-CFC parents
+			// legitimately aren't registered as entities — their properties get
+			// inlined by HBMCreator.loadForeignCFC during HBM generation, so
+			// there's no parent <class> to prepend here. Don't throw, don't log.
+			Component parent = data.getEntityByCFCName(ext, false, null);
+			if (parent != null) {
 				ext = HibernateCaster.getEntityName(parent);
-			}
-			catch (Exception e) {
-				Log log = CommonUtil.getORMLog();
-				if ( log != null ) log.log( Log.LEVEL_WARN, "hibernate",
-					"failed to resolve parent entity [" + ext + "] for entity [" + HibernateCaster.getEntityName( value.getCFC() ) + "]", e );
 			}
 
 			ext = HibernateUtil.id(CommonUtil.last(ext, ".").trim());

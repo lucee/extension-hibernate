@@ -161,6 +161,53 @@ public class SessionFactoryData {
 		throw ExceptionUtil.createException((ORMSession) null, null, "Entity [" + entityName + "] does not exist", "");
 	}
 
+	/**
+	 * Non-throwing overload — returns {@code defaultValue} when the CFC isn't
+	 * registered as an entity (e.g. {@code mappedSuperClass="true"} or
+	 * {@code persistent="false"} parents). Use this when "parent isn't an
+	 * entity" is a legitimate state, not an error (LDEV-6340).
+	 */
+	public Component getEntityByCFCName(String cfcName, boolean unique, Component defaultValue) {
+		String name = cfcName;
+		int pointIndex = cfcName.lastIndexOf('.');
+		if (pointIndex != -1) {
+			name = cfcName.substring(pointIndex + 1);
+		}
+		else cfcName = null;
+
+		Component cfc;
+
+		if (hasTempCFCs()) {
+			Iterator<Component> it2 = tmpList.iterator();
+			while (it2.hasNext()) {
+				cfc = it2.next();
+				if (HibernateUtil.isEntity(ormConf, cfc, cfcName, name))
+					return unique ? (Component) cfc.duplicate(false) : cfc;
+			}
+		}
+		else {
+			Iterator<Map<String, CFCInfo>> it = cfcs.values().iterator();
+			Map<String, CFCInfo> _cfcs;
+			while (it.hasNext()) {
+				_cfcs = it.next();
+				Iterator<CFCInfo> _it = _cfcs.values().iterator();
+				while (_it.hasNext()) {
+					cfc = _it.next().getCFC();
+					if (HibernateUtil.isEntity(ormConf, cfc, cfcName, name))
+						return unique ? (Component) cfc.duplicate(false) : cfc;
+				}
+			}
+		}
+
+		CFCInfo info = getCFC(name, null);
+		if (info != null) {
+			cfc = info.getCFC();
+			return unique ? (Component) cfc.duplicate(false) : cfc;
+		}
+
+		return defaultValue;
+	}
+
 	public Component getEntityByCFCName(String cfcName, boolean unique) throws PageException {
 		String name = cfcName;
 		int pointIndex = cfcName.lastIndexOf('.');

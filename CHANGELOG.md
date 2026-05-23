@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.6.15.17
+
+- [LDEV-6340](https://luceeserver.atlassian.net/browse/LDEV-6340) — Entities extending a `mappedSuperClass="true"` parent no longer log `failed to resolve parent entity` warnings on every SessionFactory build. Mapped superclasses aren't entities, so "parent not registered" is the expected state, not an error
+
 ## 5.6.15.16
 
 - [LDEV-1697](https://luceeserver.atlassian.net/browse/LDEV-1697) — Overlapping `ormSettings.cfclocation` entries (parent + child directory) registered the same CFC twice and triggered an ambiguity error. Now deduped by canonical file path, matching ACF behaviour
