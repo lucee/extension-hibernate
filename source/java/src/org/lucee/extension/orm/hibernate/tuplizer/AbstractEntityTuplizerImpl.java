@@ -79,16 +79,9 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 				// generator
 				if (meta != null && CommonUtil.isAnyType(type)) {
 					type = "string";
-					try {
-						String gen = CommonUtil.toString(meta.get("generator", null), null);
-						if (!Util.isEmpty(gen)) {
-							type = HBMCreator.getDefaultTypeForGenerator(gen, "string");
-						}
-					}
-					catch (Exception e) {
-						Log log = CommonUtil.getORMLog();
-						if ( log != null ) log.log( Log.LEVEL_WARN, "hibernate",
-							"failed to resolve generator type for property [" + name + "], defaulting to [string]", e );
+					String gen = CommonUtil.toString(meta.get("generator", null), null);
+					if (!Util.isEmpty(gen)) {
+						type = HBMCreator.getDefaultTypeForGenerator(gen, "string");
 					}
 				}
 				try {

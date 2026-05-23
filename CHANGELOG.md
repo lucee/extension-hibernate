@@ -4,6 +4,7 @@
 
 - [LDEV-6340](https://luceeserver.atlassian.net/browse/LDEV-6340) — Entities extending a `mappedSuperClass="true"` parent no longer log `failed to resolve parent entity` warnings on every SessionFactory build. Mapped superclasses aren't entities, so "parent not registered" is the expected state, not an error
 - [LDEV-1697](https://luceeserver.atlassian.net/browse/LDEV-1697) — Tightened entity resolution for `cfc="ns.Name"` references: a dotted ref now requires the matching `/ns` mapping to be declared in the current application. Previously a silent simple-name fallback resolved any registered `Name` entity regardless of namespace — iteration-order-dependent (passed on Windows, failed on Linux). The new throw on unresolvable refs names the source CFC and property: `Cannot resolve entity reference [ns.Name] on property [foo] of [...]`. Matches ACF behaviour
+- [LDEV-6342](https://luceeserver.atlassian.net/browse/LDEV-6342) — Fail fast on three silent-failure sites: HBM file write, dead tuplizer catch, Dialect `printStackTrace`
 
 ## 5.6.15.16
 
