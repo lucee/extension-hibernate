@@ -9,6 +9,7 @@ import org.apache.felix.framework.BundleWiringImpl.BundleClassLoader;
 import org.lucee.extension.orm.hibernate.util.CommonUtil;
 import org.osgi.framework.Bundle;
 
+import lucee.commons.io.log.Log;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.loader.util.Util;
 import lucee.runtime.db.DataSource;
@@ -33,7 +34,7 @@ public class Dialect {
 			// List all XML files in the OSGI-INF directory and below
 			ListUtil util = CFMLEngineFactory.getInstance().getListUtil();
 			Enumeration<URL> e = b.findEntries("org/hibernate/dialect", "*.class", true);
-			String path;
+			String path = null;
 			while (e.hasMoreElements()) {
 				try {
 					path = e.nextElement().getPath();
@@ -58,12 +59,18 @@ public class Dialect {
 					}
 				}
 				catch (Exception exx) {
-					exx.printStackTrace();
+					// expected — dialects can have missing transitive deps across Hibernate versions
+					Log log = CommonUtil.getORMLog();
+					if ( log != null ) log.log( Log.LEVEL_DEBUG, "hibernate",
+						"Skipping dialect class [" + path + "] that failed to load during OSGi scan", exx );
 				}
 			}
 		}
 		catch (Exception ex) {
-			ex.printStackTrace();
+			// total scan failure — registered set limited to the hardcoded list below
+			Log log = CommonUtil.getORMLog();
+			if ( log != null ) log.log( Log.LEVEL_WARN, "hibernate",
+				"Failed to scan OSGi bundle for Hibernate dialect classes; falling back to hardcoded list", ex );
 		}
 
 		dialects.setEL(CommonUtil.createKey("CUBRID"), "org.hibernate.dialect.CUBRIDDialect");
@@ -150,12 +157,13 @@ public class Dialect {
 
 	/**
 	 * Get the Hibernate dialect for the given Datasource
-	 * 
+	 *
 	 * @param ds
 	 *            - Datasource object to check dialect on
 	 *
 	 * @return the string dialect value, like "org.hibernate.dialect.PostgreSQLDialect"
 	 */
+	// currently unused
 	public static String getDialect(DataSource ds) {
 		String name = ds.getClassDefinition().getClassName();
 		if ("net.sourceforge.jtds.jdbc.Driver".equalsIgnoreCase(name)) {

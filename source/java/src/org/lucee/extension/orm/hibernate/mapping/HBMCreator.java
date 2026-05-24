@@ -1928,15 +1928,17 @@ public class HBMCreator {
 	 * @param xml
 	 *            Fully-formed hibernate mapping XML
 	 */
-	public static void saveMapping(Component cfc, String xml) {
+	public static void saveMapping(Component cfc, String xml) throws PageException {
 		Resource res = getMappingResource(cfc);
 		if (res != null) {
 			try {
 				CommonUtil.write(res, xml, CommonUtil.UTF8(), false);
 			} catch (Exception e) {
-				Log log = CommonUtil.getORMLog();
-				if ( log != null ) log.log( Log.LEVEL_ERROR, "hibernate",
-					"failed to write HBM mapping file [" + res + "] for entity [" + HibernateCaster.getEntityName( cfc ) + "]", e );
+				PageException pe = ExceptionUtil.createException( (SessionFactoryData) null, cfc,
+					"Failed to write HBM mapping file [" + res + "] for entity [" + HibernateCaster.getEntityName( cfc ) + "]",
+					null );
+				pe.initCause( e );
+				throw pe;
 			}
 		}
 	}
