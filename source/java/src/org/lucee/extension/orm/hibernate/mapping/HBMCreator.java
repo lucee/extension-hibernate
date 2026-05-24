@@ -1532,7 +1532,13 @@ public class HBMCreator {
 
 			str = toString(cfc, prop, meta, "cfc", cfcRequired, data);
 			if (!Util.isEmpty(str, true)) {
-				Component _cfc = data.getEntityByCFCName(str, false);
+				Component _cfc = data.getEntityByCFCName(str, false, null);
+				if (_cfc == null) {
+					throw ExceptionUtil.createException( data, cfc,
+						"Cannot resolve entity reference [" + str + "] on property [" + prop.getName()
+							+ "] of [" + cfc.getPageSource().getComponentName() + "]",
+						null );
+				}
 				str = HibernateCaster.getEntityName(_cfc);
 				el.setAttribute("entity-name", str);
 			}
