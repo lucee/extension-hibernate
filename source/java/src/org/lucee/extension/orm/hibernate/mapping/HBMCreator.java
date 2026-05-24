@@ -730,8 +730,7 @@ public class HBMCreator {
 		if (!Util.isEmpty(str, true)) column.setAttribute("length", str);
 
 		// type
-		String type = getType(info, cfc, prop, meta, getDefaultTypeForGenerator(generator, foreignCFC, data), data);
-		// print.o(prop.getName()+":"+type+"::"+getDefaultTypeForGenerator(generator,foreignCFC));
+		String type = getType(info, cfc, prop, meta, getDefaultTypeForGenerator(generator, foreignCFC, cfc, prop, data), data);
 		if (!Util.isEmpty(type)) id.setAttribute("type", type);
 
 		// unsaved-value
@@ -740,40 +739,38 @@ public class HBMCreator {
 
 	}
 
-	private static String getDefaultTypeForGenerator(String generator, StringBuilder foreignCFC, SessionFactoryData data) {
+	private static String getDefaultTypeForGenerator(String generator, StringBuilder foreignCFC, Component sourceCFC, Property sourceProp, SessionFactoryData data) throws PageException {
 		String value = getDefaultTypeForGenerator(generator, null);
 		if (value != null) return value;
 
 		if ("foreign".equalsIgnoreCase(generator)) {
 			if (!Util.isEmpty(foreignCFC.toString())) {
-				try {
-					Component cfc = data.getEntityByCFCName(foreignCFC.toString(), false);
-					if (cfc != null) {
-						Property[] ids = getIds(cfc, cfc.getProperties(true, false, false, false), null, true, data);
-						if (ids != null && ids.length > 0) {
-							Property id = ids[0];
-							id.getDynamicAttributes();
-							Struct meta = id.getDynamicAttributes();
-							if (meta != null) {
-								String type = CommonUtil.toString(meta.get(TYPE, null));
-
-								if (!Util.isEmpty(type) && (!type.equalsIgnoreCase("any") && !type.equalsIgnoreCase("object"))) {
-									return type;
-								}
-
-								String g = CommonUtil.toString(meta.get(GENERATOR, null));
-								if (!Util.isEmpty(g)) {
-									return getDefaultTypeForGenerator(g, foreignCFC, data);
-								}
-
-							}
+				// Non-throwing lookup (LDEV-6340). null means the target CFC isn't a
+				// registered entity — a config error we surface immediately rather than
+				// swallowing and defaulting to "string", which produces a varchar id
+				// column that can't FK-constrain to the parent's integer id (LDEV-6343).
+				Component cfc = data.getEntityByCFCName(foreignCFC.toString(), false, null);
+				if (cfc == null) {
+					throw ExceptionUtil.createException( data, sourceCFC,
+						"Generator [foreign] on property [" + sourceProp.getName()
+						+ "] of entity [" + HibernateCaster.getEntityName( sourceCFC )
+						+ "] references CFC [" + foreignCFC + "] which is not a registered entity",
+						null );
+				}
+				Property[] ids = getIds(cfc, cfc.getProperties(true, false, false, false), null, true, data);
+				if (ids != null && ids.length > 0) {
+					Property id = ids[0];
+					Struct meta = id.getDynamicAttributes();
+					if (meta != null) {
+						String type = CommonUtil.toString(meta.get(TYPE, null));
+						if (!Util.isEmpty(type) && (!type.equalsIgnoreCase("any") && !type.equalsIgnoreCase("object"))) {
+							return type;
+						}
+						String g = CommonUtil.toString(meta.get(GENERATOR, null));
+						if (!Util.isEmpty(g)) {
+							return getDefaultTypeForGenerator(g, foreignCFC, sourceCFC, sourceProp, data);
 						}
 					}
-				}
-				catch (Exception e) {
-					Log log = CommonUtil.getORMLog();
-					if ( log != null ) log.log( Log.LEVEL_WARN, "hibernate",
-						"failed to resolve type for foreign generator referencing [" + foreignCFC + "], defaulting to [string]", e );
 				}
 			}
 			return "string";
@@ -865,7 +862,35 @@ public class HBMCreator {
 
 			if (sct.containsKey(PROPERTY)) {
 				String p = CommonUtil.toString(sct.get(PROPERTY), null);
-				if (!Util.isEmpty(p)) foreignCFC.append(p);
+				if (!Util.isEmpty(p)) {
+					// Resolve the named property's cfc= attribute → the target entity for
+					// the foreign-generator chain. Pre-fix this appended the property name
+					// itself, which never matched any registered entity (LDEV-6343).
+					Property targetProp = null;
+					Property[] all = cfc.getProperties(true, false, false, false);
+					if (all != null) {
+						for (int i = 0; i < all.length; i++) {
+							if (all[i].getName().equalsIgnoreCase(p)) { targetProp = all[i]; break; }
+						}
+					}
+					if (targetProp == null) {
+						throw ExceptionUtil.createException( data, cfc,
+							"Generator [foreign] on property [" + prop.getName()
+							+ "] of entity [" + HibernateCaster.getEntityName( cfc )
+							+ "] references property [" + p + "] which does not exist on this entity",
+							null );
+					}
+					Struct targetMeta = targetProp.getDynamicAttributes();
+					String targetCFC = targetMeta != null ? CommonUtil.toString(targetMeta.get(CFC, null), null) : null;
+					if (Util.isEmpty(targetCFC)) {
+						throw ExceptionUtil.createException( data, cfc,
+							"Generator [foreign] on property [" + prop.getName()
+							+ "] of entity [" + HibernateCaster.getEntityName( cfc )
+							+ "] references property [" + p + "] which has no [cfc] attribute (not a relation property)",
+							null );
+					}
+					foreignCFC.append(targetCFC);
+				}
 			}
 
 		}
