@@ -199,12 +199,6 @@ public class SessionFactoryData {
 			}
 		}
 
-		CFCInfo info = getCFC(name, null);
-		if (info != null) {
-			cfc = info.getCFC();
-			return unique ? (Component) cfc.duplicate(false) : cfc;
-		}
-
 		return defaultValue;
 	}
 
@@ -224,12 +218,11 @@ public class SessionFactoryData {
 			while (it2.hasNext()) {
 				cfc = it2.next();
 				names.add(cfc.getName());
-				if (HibernateUtil.isEntity(ormConf, cfc, cfcName, name)) // if(cfc.equalTo(name))
+				if (HibernateUtil.isEntity(ormConf, cfc, cfcName, name))
 					return unique ? (Component) cfc.duplicate(false) : cfc;
 			}
 		}
 		else {
-			// search cfcs
 			Iterator<Map<String, CFCInfo>> it = cfcs.values().iterator();
 			Map<String, CFCInfo> _cfcs;
 			while (it.hasNext()) {
@@ -238,16 +231,10 @@ public class SessionFactoryData {
 				while (_it.hasNext()) {
 					cfc = _it.next().getCFC();
 					names.add(cfc.getName());
-					if (HibernateUtil.isEntity(ormConf, cfc, cfcName, name)) // if(cfc.instanceOf(name))
+					if (HibernateUtil.isEntity(ormConf, cfc, cfcName, name))
 						return unique ? (Component) cfc.duplicate(false) : cfc;
 				}
 			}
-		}
-
-		CFCInfo info = getCFC(name, null);
-		if (info != null) {
-			cfc = info.getCFC();
-			return unique ? (Component) cfc.duplicate(false) : cfc;
 		}
 
 		throw ExceptionUtil.createException((ORMSession) null, null, "Entity [" + name + "] " + (Util.isEmpty(cfcName) ? "" : "with cfc name [" + cfcName + "] ")
