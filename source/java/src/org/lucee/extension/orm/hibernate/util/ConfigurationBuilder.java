@@ -11,6 +11,7 @@ import java.util.Properties;
 import org.hibernate.MappingException;
 import org.hibernate.boot.registry.BootstrapServiceRegistry;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
+import org.hibernate.boot.registry.classloading.internal.ClassLoaderServiceImpl;
 import org.hibernate.cache.ehcache.internal.EhcacheRegionFactory;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
@@ -58,6 +59,7 @@ public class ConfigurationBuilder {
      */
     public Configuration build() throws SQLException, IOException, PageException {
         BootstrapServiceRegistry bootstrapRegistry = new BootstrapServiceRegistryBuilder()
+                .applyClassLoaderService(new CachingClassLoaderService(new ClassLoaderServiceImpl()))
                 .applyIntegrator(this.eventListener).build();
         this.configuration = new Configuration(bootstrapRegistry);
 

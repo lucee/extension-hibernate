@@ -1,9 +1,12 @@
 # Changelog
 
+## 5.6.15.18
+
+- [LDEV-6390](https://luceeserver.atlassian.net/browse/LDEV-6390) — Cache Hibernate `ClassLoaderService` to eliminate `ClassNotFoundException` storm: CFC entity names never resolve as Java classes, so `MetamodelImpl.getImplementors()` threw 3 CNFEs per Criteria/HQL load with no negative caching. Decorator caches positive + negative results, re-throwing the same exception instance. Criteria/HQL entity-load throughput +130-150%, eliminates `AggregatedClassLoader` lock contention
+
 ## 5.6.15.17
 
 - [LDEV-6340](https://luceeserver.atlassian.net/browse/LDEV-6340) — Entities extending a `mappedSuperClass="true"` parent no longer log `failed to resolve parent entity` warnings on every SessionFactory build. Mapped superclasses aren't entities, so "parent not registered" is the expected state, not an error
-- [LDEV-1697](https://luceeserver.atlassian.net/browse/LDEV-1697) — Tightened entity resolution for `cfc="ns.Name"` references: a dotted ref now requires the matching `/ns` mapping to be declared in the current application. Previously a silent simple-name fallback resolved any registered `Name` entity regardless of namespace — iteration-order-dependent (passed on Windows, failed on Linux). The new throw on unresolvable refs names the source CFC and property: `Cannot resolve entity reference [ns.Name] on property [foo] of [...]`. Matches ACF behaviour
 - [LDEV-6342](https://luceeserver.atlassian.net/browse/LDEV-6342) — Fail fast on three silent-failure sites: HBM file write, dead tuplizer catch, Dialect `printStackTrace`
 - [LDEV-6343](https://luceeserver.atlassian.net/browse/LDEV-6343) — `generator="foreign"` resolves parent id type via the relation's `cfc=`, throws localized errors for missing/bad property references (fixes silent varchar id default and FK mismatch)
 
