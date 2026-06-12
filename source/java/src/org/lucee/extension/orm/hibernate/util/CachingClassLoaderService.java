@@ -12,7 +12,7 @@ import org.hibernate.boot.registry.classloading.spi.ClassLoaderService;
 import org.hibernate.boot.registry.classloading.spi.ClassLoadingException;
 
 /**
- * Decorates a {@link ClassLoaderService} with a positive + negative cache around
+ * Decorates a {@link ClassLoaderService} with a negative cache around
  * {@link #classForName(String)}.
  *
  * Hibernate's {@code MetamodelImpl.getImplementors(entityName)} calls
@@ -22,16 +22,24 @@ import org.hibernate.boot.registry.classloading.spi.ClassLoadingException;
  * costing both the per-throw stacktrace construction and contention on the inner
  * {@code AggregatedClassLoader} monitor.
  *
- * The cache stores the resolved {@code Class} for hits and the original
- * {@code ClassLoadingException} for misses. On subsequent misses the cached exception
- * instance is re-thrown so the stacktrace is constructed once per name, not per call.
- * Hibernate's downstream behaviour is unchanged: same return value on hit, same
- * exception type on miss → same {@code return new String[]{ className }} fall-back.
+ * The cache stores the original {@code ClassLoadingException} for misses, keyed by
+ * class name. On subsequent calls for the same name the cached exception instance is
+ * re-thrown so the stacktrace is constructed once per name, not per call.
+ *
+ * <p><b>Hits are deliberately NOT cached.</b> Hibernate already maintains positive
+ * caches downstream ({@code MetamodelImpl.knownValidImports}, {@code implementorsCache});
+ * caching resolved {@code Class<?>} objects here would pin them to whichever bundle
+ * classloader resolved them. After a Felix bundle refresh (extension hot-swap), the
+ * cached {@code Class} survives in memory but its defining loader is disposed,
+ * causing downstream Hibernate operations that touch it to fail with
+ * "bundle wiring is no longer valid".
+ *
+ * The cached exception is safe across bundle refresh — re-throwing a frozen exception
+ * doesn't invoke methods on any class referenced by its stack trace.
  */
 public class CachingClassLoaderService implements ClassLoaderService {
 
 	private final ClassLoaderService delegate;
-	private final ConcurrentMap<String, Class<?>> hits = new ConcurrentHashMap<>();
 	private final ConcurrentMap<String, ClassLoadingException> misses = new ConcurrentHashMap<>();
 
 	public CachingClassLoaderService(ClassLoaderService delegate) {
@@ -40,18 +48,12 @@ public class CachingClassLoaderService implements ClassLoaderService {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> Class<T> classForName(String className) {
-		Class<?> hit = hits.get(className);
-		if (hit != null) return (Class<T>) hit;
-
 		ClassLoadingException miss = misses.get(className);
 		if (miss != null) throw miss;
 
 		try {
-			Class<T> resolved = delegate.classForName(className);
-			hits.put(className, resolved);
-			return resolved;
+			return delegate.classForName(className);
 		}
 		catch (ClassLoadingException e) {
 			misses.putIfAbsent(className, e);
@@ -97,7 +99,6 @@ public class CachingClassLoaderService implements ClassLoaderService {
 
 	@Override
 	public void stop() {
-		hits.clear();
 		misses.clear();
 		delegate.stop();
 	}
