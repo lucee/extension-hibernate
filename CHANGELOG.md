@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.6.15.19
+
+- [LDEV-6390](https://luceeserver.atlassian.net/browse/LDEV-6390) — Fix `bundle wiring for org.lucee.hibernate.extension is no longer valid` regression introduced by 5.6.15.18 when the extension is hot-deployed. `CachingClassLoaderService` no longer caches positive resolutions or pins the Hibernate-extension bundle classloader. Negative cache retained — full perf win preserved
+
 ## 5.6.15.18
 
 - [LDEV-6390](https://luceeserver.atlassian.net/browse/LDEV-6390) — Cache Hibernate `ClassLoaderService` to eliminate `ClassNotFoundException` storm: CFC entity names never resolve as Java classes, so `MetamodelImpl.getImplementors()` threw 3 CNFEs per Criteria/HQL load with no negative caching. Decorator caches positive + negative results, re-throwing the same exception instance. Criteria/HQL entity-load throughput +130-150%, eliminates `AggregatedClassLoader` lock contention

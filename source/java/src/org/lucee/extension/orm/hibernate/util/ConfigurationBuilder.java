@@ -12,6 +12,7 @@ import org.hibernate.MappingException;
 import org.hibernate.boot.registry.BootstrapServiceRegistry;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.boot.registry.classloading.internal.ClassLoaderServiceImpl;
+import org.hibernate.boot.registry.classloading.internal.TcclLookupPrecedence;
 import org.hibernate.cache.ehcache.internal.EhcacheRegionFactory;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
@@ -58,8 +59,15 @@ public class ConfigurationBuilder {
      * @throws PageException
      */
     public Configuration build() throws SQLException, IOException, PageException {
+        // LDEV-6390 follow-up: don't pin the Hibernate-extension bundle classloader.
+        // new ClassLoaderServiceImpl() (no-args) calls ClassLoaderServiceImpl.class.getClassLoader()
+        // which is the Felix BundleClassLoader. Pinning that loader means cached refs survive bundle
+        // refresh but their wiring goes invalid → "bundle wiring no longer valid" on subsequent ops.
+        // Match Hibernate's default instead (empty providedClassLoaders, TCCL fallback) so lookups
+        // dynamically route through Lucee's EnvClassLoader → current OSGi wiring.
         BootstrapServiceRegistry bootstrapRegistry = new BootstrapServiceRegistryBuilder()
-                .applyClassLoaderService(new CachingClassLoaderService(new ClassLoaderServiceImpl()))
+                .applyClassLoaderService(new CachingClassLoaderService(
+                        new ClassLoaderServiceImpl(java.util.Collections.emptyList(), TcclLookupPrecedence.AFTER)))
                 .applyIntegrator(this.eventListener).build();
         this.configuration = new Configuration(bootstrapRegistry);
 
