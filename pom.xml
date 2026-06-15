@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.lucee</groupId>
     <artifactId>hibernate-extension</artifactId>
-    <version>3.5.6.2-SNAPSHOT</version>
+    <version>3.5.6.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Hibernate Extension</name>
 
@@ -14,7 +14,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <id>FAD1E8CB-4F45-4184-86359145767C29DE</id>
-        <image>https://raw.githubusercontent.com/lucee/extension-hibernate/master/source/images/logo.png</image>
+        <image>https://raw.githubusercontent.com/lucee/extension-hibernate/5.6/source/images/logo.png</image>
         <buildDate>${maven.build.timestamp}</buildDate>
         <bundlename>org.lucee.hibernate.extension</bundlename>
         <luceeCoreVersion>5.0.0.157</luceeCoreVersion>
