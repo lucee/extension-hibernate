@@ -5,9 +5,9 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-import org.apache.felix.framework.BundleWiringImpl.BundleClassLoader;
 import org.lucee.extension.orm.hibernate.util.CommonUtil;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleReference;
 
 import lucee.commons.io.log.Log;
 import lucee.loader.engine.CFMLEngineFactory;
@@ -28,8 +28,9 @@ public class Dialect {
 	static {
 
 		try {
-			BundleClassLoader bcl = (BundleClassLoader) org.hibernate.dialect.SybaseDialect.class.getClassLoader();
-			Bundle b = bcl.getBundle();
+			// the OSGi API instead of the classes of the framework, Lucee 9 relocates the framework
+			ClassLoader bcl = org.hibernate.dialect.SybaseDialect.class.getClassLoader();
+			Bundle b = ((BundleReference) bcl).getBundle();
 
 			// List all XML files in the OSGI-INF directory and below
 			ListUtil util = CFMLEngineFactory.getInstance().getListUtil();

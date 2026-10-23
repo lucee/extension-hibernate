@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.6.15.21
+
+- [LDEV-6627](https://luceeserver.atlassian.net/browse/LDEV-6627) — Find the bundle of the Hibernate class loader with the OSGi API (`org.osgi.framework.BundleReference`) instead of casting to Felix's internal `BundleClassLoader`. Lucee 9 ships Felix relocated (`lucee.shaded.felix`), so the Felix class is not available under its old name anymore and the ORM failed with `NoClassDefFoundError: org/apache/felix/framework/BundleWiringImpl$BundleClassLoader`. Works on all Lucee versions
+
 ## 5.6.15.19
 
 - [LDEV-6390](https://luceeserver.atlassian.net/browse/LDEV-6390) — Fix `bundle wiring for org.lucee.hibernate.extension is no longer valid` regression introduced by 5.6.15.18 when the extension is hot-deployed. `CachingClassLoaderService` no longer caches positive resolutions or pins the Hibernate-extension bundle classloader. Negative cache retained — full perf win preserved
