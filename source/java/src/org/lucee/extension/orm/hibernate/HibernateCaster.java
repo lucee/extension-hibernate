@@ -591,16 +591,12 @@ public class HibernateCaster {
 				}
 
 				name = HibernateUtil.validateColumnName(md, properties[i].getName(), null);
-				// if(columnsInfo!=null)ci=(ColumnInfo) columnsInfo.get(name,null);
-				// else ci=null;
+				// LDEV-2453: not mapped by hibernate (e.g. a property of a non persistent base component)
+				if (name == null) continue;
 				names.append(name);
-				if (name != null) {
-
-					t = HibernateCaster.toSQLType(HibernateUtil.getPropertyType(md, name).getName(), NULL);
-					if (t == NULL) types.append("object");
-					else types.append(CFMLEngineFactory.getInstance().getDBUtil().toStringType(t));
-				}
-				else types.append("object");
+				t = HibernateCaster.toSQLType(HibernateUtil.getPropertyType(md, name).getName(), NULL);
+				if (t == NULL) types.append("object");
+				else types.append(CFMLEngineFactory.getInstance().getDBUtil().toStringType(t));
 			}
 
 			qry = CommonUtil.createQuery(names, types, 0, getEntityName(cfc));
