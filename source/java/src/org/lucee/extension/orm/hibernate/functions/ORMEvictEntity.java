@@ -18,12 +18,15 @@
  **/
 package org.lucee.extension.orm.hibernate.functions;
 
+import org.lucee.extension.orm.hibernate.util.HibernateUtil;
 import org.lucee.extension.orm.hibernate.util.ORMUtil;
 
 import lucee.loader.util.Util;
 import lucee.runtime.PageContext;
+import lucee.runtime.Component;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMSession;
+import lucee.runtime.type.Struct;
 import lucee.runtime.util.Cast;
 import lucee.runtime.ext.function.BIF;
 import lucee.loader.engine.CFMLEngineFactory;
@@ -57,8 +60,14 @@ public class ORMEvictEntity extends BIF {
 
 		if ( args.length == 1 )
 			return call( pc, cast.toString( args[ 0 ] ) );
-		if ( args.length == 2 )
+		if ( args.length == 2 ) {
+			// LDEV-2121: a struct holds the values of a composite primary key
+			if ( args[ 1 ] instanceof Struct && !( args[ 1 ] instanceof Component ) ) {
+				HibernateUtil.getORMSession( pc, true ).evictEntity( pc, cast.toString( args[ 0 ] ), args[ 1 ] );
+				return null;
+			}
 			return call( pc, cast.toString( args[ 0 ] ), cast.toString( args[ 1 ] ) );
+		}
 
 		throw engine.getExceptionUtil().createFunctionException( pc, "ORMEvictEntity", MIN_ARGUMENTS, MAX_ARGUMENTS, args.length );
 	}

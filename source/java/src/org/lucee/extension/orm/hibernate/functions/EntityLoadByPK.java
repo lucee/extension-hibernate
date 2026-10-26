@@ -1,11 +1,14 @@
 package org.lucee.extension.orm.hibernate.functions;
 
 import org.lucee.extension.orm.hibernate.util.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.HibernateUtil;
 import org.lucee.extension.orm.hibernate.util.ORMUtil;
 
 import lucee.runtime.PageContext;
+import lucee.runtime.Component;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.orm.ORMSession;
+import lucee.runtime.type.Struct;
 import lucee.runtime.util.Cast;
 import lucee.runtime.ext.function.BIF;
 import lucee.loader.engine.CFMLEngineFactory;
@@ -24,6 +27,9 @@ public class EntityLoadByPK extends BIF {
 	}
 
 	public static Object call( PageContext pc, String name, Object oID, boolean unique ) throws PageException {
+		// LDEV-2121: a struct holds the values of a composite primary key
+		if ( oID instanceof Struct && !( oID instanceof Component ) )
+			return HibernateUtil.getORMSession( pc, true ).load( pc, name, oID );
 		ORMSession	session	= ORMUtil.getSession( pc );
 		String		id;
 		if ( CommonUtil.isBinary( oID ) )

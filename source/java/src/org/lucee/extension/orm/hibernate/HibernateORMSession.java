@@ -30,6 +30,7 @@ import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.query.Query;
 import org.hibernate.query.internal.ParameterMetadataImpl;
+import org.hibernate.type.CompositeType;
 import org.hibernate.type.Type;
 
 import lucee.commons.io.log.Log;
@@ -470,11 +471,47 @@ public class HibernateORMSession implements ORMSession {
 
 	@Override
 	public void evictEntity(PageContext pc, String entityName, String id) throws PageException {
+		evictEntity(pc, entityName, (Object) id);
+	}
+
+	public void evictEntity(PageContext pc, String entityName, Object id) throws PageException {
 		entityName = correctCaseEntityName(entityName);
 
 		SessionFactory f = getSessionFactoryForEntity( pc, entityName );
 		if (id == null) f.getCache().evictEntityRegion(entityName);
+		else if (isCompositeIdStruct(id)) {
+			// LDEV-2121: a struct holds the values of a composite primary key
+			ClassMetadata metaData = f.getClassMetadata(entityName);
+			if (metaData == null) throw ExceptionUtil.createException(this, null, "Could not load meta information for entity [" + entityName + "]", null);
+			f.getCache().evictEntity(entityName, toCompositeId(pc, metaData, entityName, (Struct) id));
+		}
 		else f.getCache().evictEntity(entityName, CommonUtil.toSerializable(id));
+	}
+
+	private static boolean isCompositeIdStruct(Object id) {
+		return id instanceof Struct && !(id instanceof Component);
+	}
+
+	/**
+	 * Converts a struct containing the values of a composite primary key into the identifier used by
+	 * Hibernate for that entity.
+	 */
+	private Serializable toCompositeId(PageContext pc, ClassMetadata metaData, String entityName, Struct sct) throws PageException {
+		Type idType = metaData.getIdentifierType();
+		if (!(idType instanceof CompositeType)) throw ExceptionUtil.createException(this, null,
+				"Entity [" + entityName + "] does not have a composite primary key, the primary key can not be defined as a struct", null);
+		CompositeType compositeType = (CompositeType) idType;
+		String[] names = compositeType.getPropertyNames();
+		Type[] types = compositeType.getSubtypes();
+		HashMap<String, Object> id = new HashMap<String, Object>();
+		Object value;
+		for (int i = 0; i < names.length; i++) {
+			value = sct.get(CommonUtil.createKey(names[i]), null);
+			if (value == null) throw ExceptionUtil.createException(this, null, "Missing value for the primary key property [" + names[i] + "] of entity [" + entityName
+					+ "], the composite primary key consists of the properties [" + String.join(", ", names) + "]", null);
+			id.put(names[i], CommonUtil.castTo(pc, types[i].getReturnedClass(), value));
+		}
+		return id;
 	}
 
 	/**
@@ -822,7 +859,10 @@ public class HibernateORMSession implements ORMSession {
 		try {
 			ClassMetadata metaData = sess.getSessionFactory().getClassMetadata(name);
 			if (metaData == null) throw ExceptionUtil.createException(this, null, "Could not load meta information for entity [" + name + "]", null);
-			Serializable oId = CommonUtil.toSerializable(CommonUtil.castTo(pc, metaData.getIdentifierType().getReturnedClass(), id));
+			Serializable oId;
+			// LDEV-2121: a struct holds the values of a composite primary key
+			if (isCompositeIdStruct(id)) oId = toCompositeId(pc, metaData, name, (Struct) id);
+			else oId = CommonUtil.toSerializable(CommonUtil.castTo(pc, metaData.getIdentifierType().getReturnedClass(), id));
 			obj = sess.get(name, oId);
 		}
 		catch (Exception e) {
