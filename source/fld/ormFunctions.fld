@@ -100,7 +100,7 @@ The following options to customize the output (only used when second argument is
 			<name>id</name>
 			<type>any</type>
 			<required>yes</required>
-			<description>The primary key value of the entity that must be loaded</description>
+			<description>The primary key value of the entity that must be loaded. For a composite primary key, pass a struct containing the value of each key property.</description>
 		</argument>
 		<argument>
 			<name>unique</name>
@@ -419,9 +419,9 @@ EntitySave(entity, [forceInsert])</description>
 		</argument>
 		<argument>
 			<name>primaryKey</name>
-			<type>String</type>
+			<type>any</type>
 			<required>no</required>
-			<description>Primary key of a specific entity instance. If omitted, evicts all instances of this entity.</description>
+			<description>Primary key of a specific entity instance. For a composite primary key, pass a struct containing the value of each key property. If omitted, evicts all instances of this entity.</description>
 		</argument>
 
 		<return>
