@@ -555,7 +555,8 @@ public class HibernateCaster {
 	private static Query toQuery(PageContext pc, HibernateORMSession session, Component cfc, String entityName, Query qry, int rowcount, int row) throws PageException {
 		// inheritance mapping
 		if (!Util.isEmpty(entityName)) {
-			// String cfcName = toComponentName(HibernateCaster.toComponent(pc, entityName));
+			// LDEV-2859: the name of the entity itself
+			if (getEntityName(cfc).equalsIgnoreCase(entityName)) return populateQuery(pc, session, cfc, qry);
 			return inheritance(pc, session, cfc, qry, entityName);
 		}
 		return populateQuery(pc, session, cfc, qry);
