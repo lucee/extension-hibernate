@@ -328,7 +328,9 @@ public class HibernateSessionFactory {
 			}
 
 			ext = HibernateUtil.id(CommonUtil.last(ext, ".").trim());
-			if (!done.contains(ext)) {
+			// LDEV-91: a parent that is not an entity (e.g. mappedSuperClass) can have the same
+			// file name as the child, then the name lookup resolves to the child itself
+			if (!done.contains(ext) && !ext.equals(key)) {
 				v = data.getCFC(ext, null);
 				if (v != null) {
 					mappings.append(HBMCreator.stripXMLOpenClose(assembleMappingForCFC(ext, v, done, data)));
