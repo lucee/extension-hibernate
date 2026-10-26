@@ -137,6 +137,7 @@ public class SessionFactoryData {
 				names.add(HibernateCaster.getEntityName(_it.next().getCFC()));
 			}
 		}
+		names.sort(String.CASE_INSENSITIVE_ORDER);
 		return names;
 	}
 
@@ -237,6 +238,7 @@ public class SessionFactoryData {
 			}
 		}
 
+		names.sort(String.CASE_INSENSITIVE_ORDER);
 		throw ExceptionUtil.createException((ORMSession) null, null, "Entity [" + name + "] " + (Util.isEmpty(cfcName) ? "" : "with cfc name [" + cfcName + "] ")
 				+ "does not exist, existing entities are [" + CFMLEngineFactory.getInstance().getListUtil().toList(names, ", ") + "]", "");
 
