@@ -10,11 +10,17 @@ import org.lucee.extension.orm.hibernate.util.CommonUtil;
 import org.lucee.extension.orm.hibernate.HibernatePageException;
 
 import lucee.runtime.Component;
+import lucee.runtime.PageContext;
 import lucee.runtime.component.Property;
 import lucee.runtime.exp.PageException;
 import lucee.runtime.type.Collection.Key;
+import lucee.runtime.type.Struct;
+import lucee.runtime.type.scope.Variables;
 
 public final class CFCSetter implements Setter {
+
+	private static final String EXPRESSION_DEFAULT_CLASS = "lucee.runtime.component.ExpressionDefault";
+	private static final Key KEY_DEFAULT = CommonUtil.createKey( "default" );
 
 	private Key key;
 	private Type type;
@@ -68,14 +74,38 @@ public final class CFCSetter implements Setter {
 	/**
 	 * Look up the default value for this property from the CFC metadata.
 	 */
-	private Object getPropertyDefault( Component cfc ) {
+	private Object getPropertyDefault( Component cfc ) throws PageException {
 		Property[] props = cfc.getProperties( true, false, false, false );
 		String keyStr = key.getString();
 		for ( Property prop : props ) {
 			if ( keyStr.equalsIgnoreCase( prop.getName() ) ) {
-				return prop.getDefault();
+				String literal = prop.getDefault();
+				if ( literal != null ) return literal;
+				return evaluateExpressionDefault( cfc, prop );
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * LDEV-6303: a default given as an expression (default="#now()#") has no static value,
+	 * {@link Property#getDefault()} returns null for it. The metadata holds the source of the
+	 * expression, it is evaluated here in the context of the component.
+	 */
+	private static Object evaluateExpressionDefault( Component cfc, Property prop ) throws PageException {
+		Object meta = prop.getMetaData();
+		if ( !( meta instanceof Struct ) ) return null;
+		Object def = ( ( Struct ) meta ).get( KEY_DEFAULT, null );
+		if ( def == null || !EXPRESSION_DEFAULT_CLASS.equals( def.getClass().getName() ) ) return null;
+
+		PageContext pc = CommonUtil.pc();
+		if ( pc == null ) return null;
+		Variables before = pc.variablesScope();
+		pc.setVariablesScope( cfc.getComponentScope() );
+		try {
+			return pc.evaluate( def.toString() );
+		} finally {
+			pc.setVariablesScope( before );
+		}
 	}
 }
