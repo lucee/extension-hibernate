@@ -18,8 +18,17 @@
 	// 1. Load any entity to ensure the session + connection are open
 	entityLoad( "LDEV6129Person" );
 
-	// 2. Get the raw Hibernate SessionImpl
+	// 2. Get the raw Hibernate SessionImpl. ORMGetSession() returns a compat
+	//    proxy on H7+ (see h73-session-shim-spec.md). Class.forName on the
+	//    internal SessionImpl class fails through the OSGi classloader, so
+	//    we pull the delegate from the proxy's InvocationHandler instead.
 	hibSession = ormGetSession();
+	if ( findNoCase( "Proxy", hibSession.getClass().getName() ) ) {
+		handler = createObject( "java", "java.lang.reflect.Proxy" ).getInvocationHandler( hibSession );
+		delegateField = handler.getClass().getDeclaredField( "delegate" );
+		delegateField.setAccessible( true );
+		hibSession = delegateField.get( handler );
+	}
 
 	// 3. Walk the class hierarchy to find the private jdbcCoordinator field
 	coordField = javaCast( "null", "" );

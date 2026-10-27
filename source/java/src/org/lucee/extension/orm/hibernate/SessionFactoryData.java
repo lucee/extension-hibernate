@@ -18,8 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.cfg.Configuration;
 import org.hibernate.SessionFactory;
-import org.hibernate.engine.query.spi.QueryPlanCache;
-import org.hibernate.internal.SessionFactoryImpl;
 import org.lucee.extension.orm.hibernate.event.EventListenerIntegrator;
 import org.lucee.extension.orm.hibernate.jdbc.DataSourceConfig;
 import org.lucee.extension.orm.hibernate.naming.CFCNamingStrategy;
@@ -44,6 +42,15 @@ import lucee.runtime.type.Struct;
 public class SessionFactoryData {
 
 	/**
+	 * Published while Configuration.buildSessionFactory() is running so the CFC representation
+	 * strategy can resolve SFData without going back through HibernateUtil.getORMSession() —
+	 * which would re-enter HibernateORMEngine.init() and trigger a recursive hbm.xml/JAXB parse
+	 * (Hibernate 7.3's UnsavedValueFactory.inferUnsavedIdentifierValue calls EntityInstantiator
+	 * during the build, before the engine is registered as ready).
+	 */
+	public static final ThreadLocal<SessionFactoryData> CURRENT_BUILDING = new ThreadLocal<>();
+
+	/**
 	 * Use during ORM initialization for tracking the in-progress list of Component entities.
 	 */
 	public List<Component> tmpList;
@@ -52,7 +59,6 @@ public class SessionFactoryData {
 	private final Map<Key, Map<String, CFCInfo>> cfcs = new ConcurrentHashMap<Key, Map<String, CFCInfo>>();
 	private final Map<Key, DataSourceConfig> configurations = new ConcurrentHashMap<Key, DataSourceConfig>();
 	private final Map<Key, SessionFactory> factories = new ConcurrentHashMap<Key, SessionFactory>();
-	private final Map<Key, QueryPlanCache> queryPlanCaches = new ConcurrentHashMap<Key, QueryPlanCache>();
 
 	private final ORMConfiguration ormConf;
 	private NamingStrategy namingStrategy;
@@ -87,15 +93,6 @@ public class SessionFactoryData {
 
 	public HibernateORMEngine getEngine() {
 		return engine;
-	}
-
-	public QueryPlanCache getQueryPlanCache(Key datasSourceName) {
-		QueryPlanCache qpc = queryPlanCaches.get(datasSourceName);
-		if (qpc == null) {
-			qpc = ((SessionFactoryImpl) this.getFactory(datasSourceName)).getQueryPlanCache();
-			queryPlanCaches.put(datasSourceName, qpc);
-		}
-		return qpc;
 	}
 
 	public NamingStrategy getNamingStrategy() throws PageException {
@@ -269,11 +266,11 @@ public class SessionFactoryData {
 	}
 
 	public void setConfiguration(Log log, String mappings, DataSource ds, String user, String pass,
-			String applicationContextName, boolean formatSQL) throws PageException, SQLException, IOException {
+			boolean formatSQL) throws PageException, SQLException, IOException {
 
 		Configuration configuration = new ConfigurationBuilder().withDatasource(ds).withDatasourceCreds(user, pass)
 				.withORMConfig(getORMConfiguration()).withEventListener(getEventListenerIntegrator())
-				.withApplicationName(applicationContextName).withXMLMappings(mappings).withFormatSQL(formatSQL)
+				.withXMLMappings(mappings).withFormatSQL(formatSQL)
 				.withLog(log).build();
 		configurations.put(CommonUtil.toKey(ds.getName()), new DataSourceConfig(ds, configuration));
 		HibernateSessionFactory.schemaExport(log, configuration, mappings, ds, user, pass, this);
@@ -289,13 +286,19 @@ public class SessionFactoryData {
 		ClassLoader old = thread.getContextClassLoader();
 		SessionFactory sf;
 		try {
-			// use the core classloader
-			thread.setContextClassLoader(CFMLEngineFactory.getInstance().getClass().getClassLoader());
+			// Use the extension's own classloader so Hibernate's ServiceLoader-based lookups
+			// (JAXB ContextFactory, Caffeine CachingProvider, etc.) can resolve classes shaded
+			// into this jar. Setting it to Lucee core's classloader hid those shaded classes
+			// — which broke hbm.xml parsing in Hibernate 7.x where JAXB 4.x and JCache providers
+			// must be discoverable via the thread context.
+			thread.setContextClassLoader(getClass().getClassLoader());
+			CURRENT_BUILDING.set(this);
 			sf = dsc.config.buildSessionFactory();
 		}
 		finally {
 			// reset
 			thread.setContextClassLoader(old);
+			CURRENT_BUILDING.remove();
 		}
 
 		factories.put(datasSourceName, sf);
@@ -378,6 +381,15 @@ public class SessionFactoryData {
 			if (info != null) return info;
 		}
 		return defaultValue;
+	}
+
+	/**
+	 * Cached CFC template for the given entity, or null if not registered. The returned
+	 * Component is the prototype — callers must duplicate(false) before mutating.
+	 */
+	public Component getEntityTemplate(String entityName) {
+		CFCInfo info = getCFC(entityName, null);
+		return info == null ? null : info.getCFC();
 	}
 
 	public Map<Key, Map<String, CFCInfo>> getCFCs() {

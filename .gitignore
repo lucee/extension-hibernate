@@ -15,3 +15,9 @@ target/*
 *.hbm.xml
 /.claude
 /.vscode
+/.apt_generated_tests/
+/META-INF/
+/workspace/
+/profiles/
+/source/java/bin/
+/lucee-download-cache/

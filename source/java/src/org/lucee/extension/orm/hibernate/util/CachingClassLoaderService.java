@@ -82,8 +82,7 @@ public class CachingClassLoaderService implements ClassLoaderService {
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
-	public <T> T generateProxy(InvocationHandler handler, Class... interfaces) {
+	public <T> T generateProxy(InvocationHandler handler, Class<?>... interfaces) {
 		return delegate.generateProxy(handler, interfaces);
 	}
 

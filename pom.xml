@@ -4,14 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.lucee</groupId>
     <artifactId>hibernate-extension</artifactId>
-    <version>5.6.15.21</version>
+    <version>7.3.2.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Hibernate Extension</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
         <build.timestamp>${maven.build.timestamp}</build.timestamp>
         <id>FAD1E8CB-4F45-4184-86359145767C29DE</id>
@@ -69,45 +69,45 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Hibernate core (pulls antlr, dom4j, hibernate-commons-annotations transitively) -->
+        <!-- Hibernate core 7.3.2 (Jakarta namespace, brings byte-buddy 1.18 transitively).
+             Classmate dropped in 7.3, jboss-transaction exclusion no longer relevant. -->
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.6.15.Final</version>
-            <exclusions>
-                <!-- Use simple JTA, not JBoss spec (needs javax.interceptor) -->
-                <exclusion>
-                    <groupId>org.jboss.spec.javax.transaction</groupId>
-                    <artifactId>jboss-transaction-api_1.2_spec</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>7.3.2.Final</version>
         </dependency>
 
-        <!-- Simple JTA (no javax.interceptor dependency) -->
+        <!-- JCache (JSR-107) provider — Caffeine via Hibernate's hibernate-jcache adapter.
+             Replaces EHCache 2 (gone with hibernate-ehcache in Hibernate 7). See
+             docs: h73-cache-provider-status.md for the decision rationale. -->
         <dependency>
-            <groupId>javax.transaction</groupId>
-            <artifactId>jta</artifactId>
-            <version>1.1</version>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-jcache</artifactId>
+            <version>7.3.2.Final</version>
         </dependency>
-
-        <!-- Hibernate EHCache integration -->
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-ehcache</artifactId>
-            <version>5.6.15.Final</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>net.sf.ehcache</groupId>
-                    <artifactId>ehcache</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>3.1.8</version>
         </dependency>
-
-        <!-- EHCache (Lucee repackaged — specific package structure required) -->
         <dependency>
-            <groupId>net.sf.ehcache.internal</groupId>
-            <artifactId>ehcache-core</artifactId>
-            <version>2.10.9.2</version>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>jcache</artifactId>
+            <version>3.1.8</version>
+        </dependency>
+        <!-- Caffeine pulls these in as compile-scope, but they're annotation-only —
+             scope to provided so they don't bloat the shaded jar. -->
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>checker-qual</artifactId>
+            <version>3.37.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.errorprone</groupId>
+            <artifactId>error_prone_annotations</artifactId>
+            <version>2.21.1</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- SLF4J API (Hibernate depends on it) -->
@@ -117,25 +117,27 @@
             <version>1.7.36</version>
         </dependency>
 
-        <!-- Bean Validation API (Hibernate 5.6's TypeSafeActivator has hard javax.validation
-             imports — Lucee 7+ exposes jakarta.validation via boot delegation, Hibernate
-             thinks BV is available, then fails loading the javax classes) -->
+        <!-- JBoss Logging — runtime in Hibernate 7.3, but our LuceeJBossLogger bridge
+             needs it at compile time. -->
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>1.1.0.Final</version>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <version>3.6.1.Final</version>
         </dependency>
 
-        <!-- JAXB (needed for Hibernate XML mapping) -->
+        <!-- Jakarta XML Binding 4.x — required by Hibernate 7.3's hbm.xml JAXB context.
+             Lucee 7.1 doesn't bundle these, and the old sun.misc.Unsafe workaround in
+             HibernateORMEngine no longer applies (Jakarta 4.x uses ServiceLoader for
+             provider discovery — no system property needed). -->
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>2.3.3</version>
+            <version>4.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>2.3.9</version>
+            <version>4.0.6</version>
         </dependency>
     </dependencies>
 
@@ -168,11 +170,12 @@
                 <filtering>true</filtering>
                 <targetPath>${project.build.directory}/extension-resources</targetPath>
             </resource>
-            <!-- Include META-INF/services in the compiled jar -->
+            <!-- Include META-INF/services + Caffeine HOCON config in the compiled jar -->
             <resource>
                 <directory>source/java/src</directory>
                 <includes>
                     <include>META-INF/services/*</include>
+                    <include>reference.conf</include>
                 </includes>
             </resource>
         </resources>
@@ -302,6 +305,10 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <!-- Concatenate reference.conf from caffeine-jcache + ours so HOCON merging works at runtime -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>reference.conf</resource>
+                                </transformer>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
                                         <Bundle-SymbolicName>${bundlename}</Bundle-SymbolicName>
@@ -309,20 +316,10 @@
                                         <Built-Date>${build.timestamp}</Built-Date>
                                         <!-- Required: Hibernate's Version.getVersionString() reads this at runtime.
                                              Without it, the shaded jar reports [WORKING] instead of the real version. -->
-                                        <Implementation-Version>5.6.15.Final</Implementation-Version>
+                                        <Implementation-Version>7.3.2.Final</Implementation-Version>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
-                            <!-- Relocate ehcache classes to a private namespace so they never
-                                 conflict with the ehcache Lucee extension's OSGi-exported copy.
-                                 Without this, both bundles have net.sf.ehcache.* classes loaded by
-                                 different BundleClassLoaders → ClassCastException. -->
-                            <relocations>
-                                <relocation>
-                                    <pattern>net.sf.ehcache</pattern>
-                                    <shadedPattern>org.lucee.extension.orm.hibernate.shaded.net.sf.ehcache</shadedPattern>
-                                </relocation>
-                            </relocations>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
                     </execution>

@@ -15,23 +15,35 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
+import org.hibernate.LockMode;
 import org.hibernate.NonUniqueResultException;
 import org.hibernate.QueryException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Example;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.engine.query.spi.HQLQueryPlan;
-import org.hibernate.internal.SessionFactoryImpl;
-import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.engine.spi.EntityKey;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.engine.spi.Status;
+import org.hibernate.generator.Generator;
+import org.hibernate.metamodel.model.domain.EntityDomainType;
+import org.hibernate.persister.entity.EntityPersister;
+import org.hibernate.query.ParameterMetadata;
 import org.hibernate.query.Query;
-import org.hibernate.query.internal.ParameterMetadataImpl;
+import org.hibernate.query.QueryParameter;
+import org.hibernate.query.SelectionQuery;
+import org.hibernate.type.BindableType;
 import org.hibernate.type.CompositeType;
 import org.hibernate.type.Type;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import lucee.commons.io.log.Log;
 import lucee.commons.lang.types.RefBoolean;
@@ -343,7 +355,7 @@ public class HibernateORMSession implements ORMSession {
 		if (dsn == null) dsn = CommonUtil.toKey(CommonUtil.getDataSourceName(pc, cfc));
 		data.checkExistent(pc, cfc);
 		try {
-			getSession(pc, dsn).delete(HibernateCaster.getEntityName(cfc), cfc);
+			getSession(pc, dsn).remove(cfc);
 		}
 		catch (Exception e) {
 			throw CommonUtil.toPageException(e);
@@ -378,12 +390,120 @@ public class HibernateORMSession implements ORMSession {
 		 */
 		try {
 			Session session = getSession(pc, dsn);
-			if (forceInsert) session.save(name, cfc);
-			else session.saveOrUpdate(name, cfc);
+			// Hibernate 7.x removed saveOrUpdate/update. The naive replacement
+			// is merge(), but merge returns a NEW attached copy and leaves the
+			// caller's reference detached — which breaks CFML semantics where
+			// entityReload(sink) is called on the same reference after save.
+			// persist() attaches the caller's reference for transient entities.
+			// For already-attached entities it's a no-op (dirty-checking will
+			// flush updates). Detached entities (id set, not in session) are
+			// rare in practice — fall back to merge for them.
+			boolean persisted = false;
+			if (forceInsert) {
+				// Pre-7.3 saveOrUpdate-with-forceInsert (and session.save) tolerated
+				// empty/sentinel ids on entities backed by a generator — the generator
+				// would assign a fresh id at insert. H7 silently drops unsaved-value=""
+				// at ModelBinder.java:623, and persist() rejects any non-null id as
+				// "Detached entity." For generated ids (UUID, sequence, IDENTITY —
+				// anything except `assigned`), an empty-string or null id is the
+				// "please assign me" sentinel — clear it explicitly so persist trusts us.
+				SharedSessionContractImplementor sessionImpl = (SharedSessionContractImplementor) session;
+				EntityPersister persister = ((SessionFactoryImplementor) session.getSessionFactory())
+						.getMappingMetamodel().findEntityDescriptor(name);
+				if (persister != null && persister.getGenerator() != null
+						&& persister.getGenerator().generatesOnInsert()) {
+					Object id = persister.getIdentifier(cfc, sessionImpl);
+					if (id == null || "".equals(String.valueOf(id))) {
+						persister.setIdentifier(cfc, null, sessionImpl);
+					}
+				}
+				session.persist(name, cfc);
+				persisted = true;
+			} else if (session.contains(cfc)) {
+				// already attached — dirty-checking handles updates at flush
+			} else {
+				// H7 removed saveOrUpdate. We replicate it via the same internals that
+				// merge() uses, but WITHOUT the copy-to-new-instance step — the caller's
+				// reference must remain the canonical managed entity so subsequent
+				// entityReload(cfc) / refresh / dirty-check semantics keep working.
+				//
+				// persister.isTransient() returns:
+				//   - TRUE  → entity is new, persist() is correct
+				//   - FALSE → entity is detached, merge it
+				//   - null  → undecidable (this is the common case for assigned-id with
+				//             unsavedvalue="" — H7's HBM parser silently drops empty
+				//             unsaved-value at ModelBinder.java:623, so the persister has
+				//             no strategy and returns null). Issue a snapshot SELECT to
+				//             disambiguate, then either persist (no row) or reattach
+				//             (row exists) by injecting cfc into the persistence context
+				//             as MANAGED with the loaded snapshot.
+				SharedSessionContractImplementor sessionImpl = (SharedSessionContractImplementor) session;
+				EntityPersister persister = ((SessionFactoryImplementor) session.getSessionFactory())
+						.getMappingMetamodel().findEntityDescriptor(name);
+				Boolean isTransient = persister == null ? null : persister.isTransient(cfc, sessionImpl);
+				Object id = persister == null ? null : persister.getIdentifier(cfc, sessionImpl);
+				boolean idLooksSet = id != null && !"".equals(String.valueOf(id));
+
+				if (Boolean.FALSE.equals(isTransient)) {
+					// definitely detached — merge writes through but caller's reference stays detached
+					session.merge(name, cfc);
+				} else if (isTransient == null && idLooksSet && persister != null) {
+					Object[] snapshot = persister.getDatabaseSnapshot(id, sessionImpl);
+					if (snapshot == null) {
+						// row not in DB — INSERT, caller's reference attaches
+						session.persist(name, cfc);
+						persisted = true;
+					} else {
+						// row exists — reattach cfc as MANAGED with the loaded snapshot.
+						// dirty-checking will issue UPDATE on flush against this snapshot.
+						EntityKey key = sessionImpl.generateEntityKey(id, persister);
+						Object dbVersion = null;
+						if (persister.isVersioned()) {
+							int vp = persister.getVersionPropertyIndex();
+							if (vp >= 0 && vp < snapshot.length) dbVersion = snapshot[vp];
+						}
+						sessionImpl.getPersistenceContextInternal().addEntity(
+								cfc, Status.MANAGED, snapshot, key, dbVersion,
+								LockMode.NONE, true, persister, false);
+					}
+				} else {
+					// transient (TRUE) or undecidable with no id — persist; fall back to merge
+					// if Hibernate throws a known detached-entity exception immediately.
+					try {
+						session.persist(name, cfc);
+						persisted = true;
+					} catch (org.hibernate.PersistentObjectException | jakarta.persistence.EntityExistsException pe) {
+						session.merge(name, cfc);
+					}
+				}
+			}
+
+			// Adobe-documented semantic: nativeId/identity-generated entities are
+			// inserted immediately on entitySave so getId() works right after.
+			// Pre-7.3 saveOrUpdate did this implicitly; JPA persist() defers the
+			// insert when not in a transaction (AbstractSaveEventListener.delayIdentityInserts).
+			// Drain the action queue's pending inserts only — narrower than session.flush(),
+			// which would also write dirty updates/deletes/collections.
+			if (persisted && hasOnExecutionGenerator(session, name)) {
+				((org.hibernate.engine.spi.SessionImplementor) session).getActionQueue().executeInserts();
+			}
 		}
 		catch (Exception e) {
 			throw ExceptionUtil.createException(this, null, e);
 		}
+	}
+
+	/**
+	 * True if the entity uses an on-execution (post-insert) id generator like IDENTITY,
+	 * where Hibernate must INSERT to obtain the id. Such entities require an immediate
+	 * flush after persist() so {@code entity.getId()} returns the generated value.
+	 */
+	private static boolean hasOnExecutionGenerator(Session session, String entityName) {
+		EntityPersister persister = ((SessionFactoryImplementor) session.getSessionFactory())
+				.getMappingMetamodel().findEntityDescriptor(entityName);
+		if (persister == null) return false;
+		Generator gen = persister.getGenerator();
+		return gen != null && gen.generatedOnExecution();
 	}
 
     /**
@@ -478,14 +598,14 @@ public class HibernateORMSession implements ORMSession {
 		entityName = correctCaseEntityName(entityName);
 
 		SessionFactory f = getSessionFactoryForEntity( pc, entityName );
-		if (id == null) f.getCache().evictEntityRegion(entityName);
+		if (id == null) f.getCache().evictEntityData(entityName);
 		else if (isCompositeIdStruct(id)) {
 			// LDEV-2121: a struct holds the values of a composite primary key
-			ClassMetadata metaData = f.getClassMetadata(entityName);
+			EntityPersister metaData = ((SessionFactoryImplementor) f).getMappingMetamodel().findEntityDescriptor(entityName);
 			if (metaData == null) throw ExceptionUtil.createException(this, null, "Could not load meta information for entity [" + entityName + "]", null);
-			f.getCache().evictEntity(entityName, toCompositeId(pc, metaData, entityName, (Struct) id));
+			f.getCache().evictEntityData(entityName, toCompositeId(pc, metaData, entityName, (Struct) id));
 		}
-		else f.getCache().evictEntity(entityName, CommonUtil.toSerializable(id));
+		else f.getCache().evictEntityData(entityName, CommonUtil.toSerializable(id));
 	}
 
 	private static boolean isCompositeIdStruct(Object id) {
@@ -496,7 +616,7 @@ public class HibernateORMSession implements ORMSession {
 	 * Converts a struct containing the values of a composite primary key into the identifier used by
 	 * Hibernate for that entity.
 	 */
-	private Serializable toCompositeId(PageContext pc, ClassMetadata metaData, String entityName, Struct sct) throws PageException {
+	private Serializable toCompositeId(PageContext pc, EntityPersister metaData, String entityName, Struct sct) throws PageException {
 		Type idType = metaData.getIdentifierType();
 		if (!(idType instanceof CompositeType)) throw ExceptionUtil.createException(this, null,
 				"Entity [" + entityName + "] does not have a composite primary key, the primary key can not be defined as a struct", null);
@@ -548,8 +668,8 @@ public class HibernateORMSession implements ORMSession {
 		String role = entityName + "." + collectionName;
 
 		SessionFactory f = getSessionFactoryForEntity( pc, entityName );
-		if (id == null) f.getCache().evictCollectionRegion(role);
-		else f.getCache().evictCollection(role, CommonUtil.toSerializable(id));
+		if (id == null) f.getCache().evictCollectionData(role);
+		else f.getCache().evictCollectionData(role, CommonUtil.toSerializable(id));
 	}
 
 	@Override
@@ -635,81 +755,51 @@ public class HibernateORMSession implements ORMSession {
 		}
 
 		// params
+		// Stage 7 spike (Option A): bind without explicit Hibernate Type hints — trust H7.3
+		// SQM type inference + JPA binding-side coercion. CFML entity properties always carry
+		// ormtype declarations, so SQM has full slot-type information from the metamodel. If
+		// specific tests (tests/session/hqlParams) reveal coercion gaps, restore targeted casts.
 		if (params != null) {
-			HQLQueryPlan plan = ((SessionFactoryImpl) session.getSessionFactory()).getQueryPlanCache().getHQLQueryPlan(hql, false, java.util.Collections.EMPTY_MAP);
+			ParameterMetadata meta = query.getParameterMetadata();
 
-			ParameterMetadataImpl meta = plan.getParameterMetadata();
-			Type type;
-			Object obj;
-
-			// struct
+			// struct (named params)
 			if (CommonUtil.isStruct(params)) {
 				Struct sct = CommonUtil.toStruct(params);
-				String name;
-				// fix case-senstive
+				// case-fix: CFML keys are case-insensitive, Hibernate names are case-sensitive.
+				// Map struct keys to actual parameter names declared in the query.
 				Struct names = CommonUtil.createStruct();
-				if (meta != null) {
-					Iterator<String> it = meta.getNamedParameterNames().iterator();
-					while (it.hasNext()) {
-						name = it.next();
-						names.setEL(name, name);
-					}
+				for (String n : meta.getNamedParameterNames()) {
+					names.setEL(n, n);
 				}
 
-				RefBoolean isArray = CommonUtil.createRefBoolean();
 				Iterator<Entry<Key, Object>> it = sct.entryIterator();
-				Entry<Key, Object> e;
 				while (it.hasNext()) {
-					e = it.next();
-					obj = sct.get(e.getKey(), null);
-					if (meta != null) {
-						name = (String) names.get(e.getKey(), null);
-						if (name == null) continue; // param not needed will be ignored
-						type = meta.getNamedParameterDescriptor(name).getExpectedType();
-						if (type==null)	throw ExceptionUtil.createException(this, null, "Could not get type for ORM parameter [" + e.getKey() 
-							+ "], entity names are case sensitive!" , null);
-						
-						obj = HibernateCaster.toSQL(type, obj, isArray);
-						if (isArray.toBooleanValue()) {
-							if (obj instanceof Object[]) query.setParameterList(name, (Object[]) obj, type);
-							else if (obj instanceof List) query.setParameterList(name, (List) obj, type);
-							else query.setParameterList(name, CFMLEngineFactory.getInstance().getCastUtil().toList(obj), type);
-						}
-						else query.setParameter(name, obj, type);
-
-					}
-					else query.setParameter(e.getKey().getString(), obj);
+					Entry<Key, Object> e = it.next();
+					String name = (String) names.get(e.getKey(), null);
+					if (name == null) continue; // unused param — ignored
+					Object value = sct.get(e.getKey(), null);
+					if (value instanceof Object[]) query.setParameterList(name, (Object[]) value);
+					else if (value instanceof java.util.Collection) query.setParameterList(name, (java.util.Collection<?>) value);
+					else query.setParameter(name, coerceForBind(value, meta.findQueryParameter(name), meta));
 				}
 			}
 
-			// array
+			// array (ordinal params)
 			else if (isParamArray) {
 				Array arr = CommonUtil.toArray(params);
 
-				if (meta.getOrdinalParameterCount() > arr.size()) throw ExceptionUtil.createException(this, null,
-						"parameter array is to small [" + arr.size() + "], need [" + meta.getOrdinalParameterCount() + "] elements", null);
+				int ordinalCount = meta.getOrdinalParameterLabels().size();
+				if (ordinalCount > arr.size()) throw ExceptionUtil.createException(this, null,
+						"Parameter array is too small [" + arr.size() + "], need [" + ordinalCount + "] elements", null);
 
-				Iterator it = arr.valueIterator();
+				Iterator<?> it = arr.valueIterator();
 				int idx = 1;
-				SQLItem item;
-				RefBoolean isArray = null;
-
 				while (it.hasNext()) {
-					type = null;
-					obj = it.next();
-					if (obj instanceof SQLItem) {
-						item = (SQLItem) obj;
-						obj = item.getValue();
-					}
-					if (meta != null) {
-						type = meta.getOrdinalParameterExpectedType(idx);
-					}
-
-					if (type != null) query.setParameter(idx, HibernateCaster.toSQL(type, obj, isArray), type);
-					else query.setParameter(idx, obj);
+					Object value = it.next();
+					if (value instanceof SQLItem) value = ((SQLItem) value).getValue();
+					query.setParameter(idx, coerceForBind(value, meta.findQueryParameter(idx), meta));
 					idx++;
 				}
-
 			}
 		}
 
@@ -724,6 +814,29 @@ public class HibernateORMSession implements ORMSession {
 		}
 		// update
 		return Double.valueOf(query.executeUpdate());
+	}
+
+	/**
+	 * H5 contract: callers (cborm dynamic finders, ColdBox controllers) routinely pass
+	 * CFML-typed date strings as HQL parameters and rely on Lucee/Hibernate string-to-date
+	 * autocoercion. H7's JdbcDateJavaType.wrap rejects String inputs outright with
+	 * "argument [X] is not assignable to java.util.Date", so the previous trust-the-engine
+	 * spike (Stage 7) leaves real-world apps broken at the bind site. When the parameter's
+	 * inferred slot type is Date-shaped and the value is a String, coerce up front via
+	 * Lucee's caster so SQM sees a value it can bind. Other types pass through unchanged.
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static Object coerceForBind(Object value, QueryParameter<?> qp, ParameterMetadata meta) throws PageException {
+		if (!(value instanceof String) || qp == null) return value;
+		Class<?> target = qp.getParameterType();
+		if (target == null) {
+			BindableType bt = meta.getInferredParameterType((QueryParameter) qp);
+			if (bt != null) target = bt.getJavaType();
+		}
+		if (target != null && java.util.Date.class.isAssignableFrom(target)) {
+			return CommonUtil.toDate(value, null);
+		}
+		return value;
 	}
 
 	private Object uniqueResult(Query<?> query) throws PageException {
@@ -857,13 +970,13 @@ public class HibernateORMSession implements ORMSession {
 		String name = HibernateCaster.getEntityName(cfc);
 		Object obj = null;
 		try {
-			ClassMetadata metaData = sess.getSessionFactory().getClassMetadata(name);
+			EntityPersister metaData = ((SessionFactoryImplementor) sess.getSessionFactory()).getMappingMetamodel().findEntityDescriptor(name);
 			if (metaData == null) throw ExceptionUtil.createException(this, null, "Could not load meta information for entity [" + name + "]", null);
 			Serializable oId;
 			// LDEV-2121: a struct holds the values of a composite primary key
 			if (isCompositeIdStruct(id)) oId = toCompositeId(pc, metaData, name, (Struct) id);
 			else oId = CommonUtil.toSerializable(CommonUtil.castTo(pc, metaData.getIdentifierType().getReturnedClass(), id));
-			obj = sess.get(name, oId);
+			obj = sess.find(name, oId);
 		}
 		catch (Exception e) {
 			throw CommonUtil.toPageException(e);
@@ -890,41 +1003,51 @@ public class HibernateORMSession implements ORMSession {
 		ComponentScope scope = cfc.getComponentScope();
 		String name = HibernateCaster.getEntityName(cfc);
 		Session sess = getSession(pc, dsn);
-		Object rtn = null;
 
 		try {
-			// trans.begin();
-
-			ClassMetadata metaData = sess.getSessionFactory().getClassMetadata(name);
+			SessionFactoryImplementor sfi = (SessionFactoryImplementor) sess.getSessionFactory();
+			EntityPersister metaData = sfi.getMappingMetamodel().findEntityDescriptor(name);
 			String idName = metaData.getIdentifierPropertyName();
 			Type idType = metaData.getIdentifierType();
 
-			Criteria criteria = sess.createCriteria(name);
+			CriteriaBuilder cb = sess.getCriteriaBuilder();
+			CriteriaQuery<Object> cq = cb.createQuery();
+			EntityDomainType<?> entityType = sfi.getJpaMetamodel().entity(name);
+			Root<?> root = cq.from(entityType);
+			cq.select(root);
+
+			List<Predicate> predicates = new ArrayList<>();
+
+			// Match the identifier if it's set on the example CFC
 			if (!Util.isEmpty(idName)) {
 				Object idValue = scope.get(CommonUtil.createKey(idName), null);
 				if (idValue != null) {
-					criteria.add(Restrictions.eq(idName, HibernateCaster.toSQL(idType, idValue, null)));
+					predicates.add(cb.equal(root.get(idName), HibernateCaster.toSQL(idType, idValue, null)));
 				}
 			}
-			criteria.add(Example.create(cfc));
 
-			// execute
+			// Manual query-by-example: equal predicate for every non-null property other than id/version.
+			// Replaces Hibernate 5.x Example.create() (removed in 7.x).
+			String[] propNames = metaData.getPropertyNames();
+			for (String propName : propNames) {
+				if (propName.equals(idName)) continue;
+				Object value = scope.get(CommonUtil.createKey(propName), null);
+				if (value == null) continue;
+				if (!(value instanceof Component)) {
+					Type propType = HibernateUtil.getPropertyType(metaData, propName, null);
+					value = HibernateCaster.toSQL(propType, value, null);
+				}
+				predicates.add(cb.equal(root.get(propName), value));
+			}
 
-			if (!unique) {
-				rtn = criteria.list();
-			}
-			else {
-				// Map map=(Map) criteria.uniqueResult();
-				rtn = criteria.uniqueResult();
-			}
+			if (!predicates.isEmpty()) cq.where(predicates.toArray(new Predicate[0]));
+
+			SelectionQuery<Object> q = sess.createSelectionQuery(cq);
+			return unique ? q.uniqueResult() : q.getResultList();
 		}
 		catch (Exception e) {
-			// trans.rollback();
 			throw CommonUtil.toPageException(e);
 		}
-		// trans.commit();
-
-		return rtn;
 	}
 
 	private Object load(PageContext pc, String cfcName, Struct filter, Struct options, String order, boolean unique) throws PageException {
@@ -933,103 +1056,87 @@ public class HibernateORMSession implements ORMSession {
 		Session sess = getSession(pc, dsn);
 
 		String name = HibernateCaster.getEntityName(cfc);
-		ClassMetadata metaData = null;
+		SessionFactoryImplementor sfi = (SessionFactoryImplementor) sess.getSessionFactory();
+		EntityPersister metaData = null;
 
-		Object rtn;
 		try {
-			Criteria criteria = sess.createCriteria(name);
+			CriteriaBuilder cb = sess.getCriteriaBuilder();
+			CriteriaQuery<Object> cq = cb.createQuery();
+			EntityDomainType<?> entityType = sfi.getJpaMetamodel().entity(name);
+			Root<?> root = cq.from(entityType);
+			cq.select(root);
 
 			// filter
 			if (filter != null && !filter.isEmpty()) {
-				metaData = sess.getSessionFactory().getClassMetadata(name);
-				Object value;
-				Entry<Key, Object> entry;
+				metaData = sfi.getMappingMetamodel().findEntityDescriptor(name);
+				List<Predicate> predicates = new ArrayList<>();
 				Iterator<Entry<Key, Object>> it = filter.entryIterator();
-				String colName;
 				while (it.hasNext()) {
-					entry = it.next();
-					colName = HibernateUtil.validateColumnName(metaData, CommonUtil.toString(entry.getKey()));
+					Entry<Key, Object> entry = it.next();
+					String colName = HibernateUtil.validateColumnName(metaData, CommonUtil.toString(entry.getKey()));
 					Type type = HibernateUtil.getPropertyType(metaData, colName, null);
-					value = entry.getValue();
+					Object value = entry.getValue();
 					if (!(value instanceof Component)) value = HibernateCaster.toSQL(type, value, null);
-
-					if (value != null) criteria.add(Restrictions.eq(colName, value));
-					else criteria.add(Restrictions.isNull(colName));
+					predicates.add(value != null ? cb.equal(root.get(colName), value) : cb.isNull(root.get(colName)));
 				}
+				if (!predicates.isEmpty()) cq.where(predicates.toArray(new Predicate[0]));
 			}
 
 			// options
 			boolean ignoreCase = false;
+			int offset = 0;
+			int max = -1;
+			Boolean cacheable = null;
+			int timeout = -1;
 			if (options != null && !options.isEmpty()) {
-				// ignorecase
 				Boolean ignorecase = CommonUtil.toBoolean(options.get("ignorecase", null), null);
 				if (ignorecase != null) ignoreCase = ignorecase.booleanValue();
 
-				// offset
-				int offset = CommonUtil.toIntValue(options.get("offset", null), 0);
-				if (offset > 0) criteria.setFirstResult(offset);
-
-				// maxResults
-				int max = CommonUtil.toIntValue(options.get("maxresults", null), -1);
-				if (max > -1) criteria.setMaxResults(max);
-
-				// cacheable
-				Boolean cacheable = CommonUtil.toBoolean(options.get("cacheable", null), null);
-				if (cacheable != null) criteria.setCacheable(cacheable.booleanValue());
-
-				// MUST cacheName ?
-
-				// maxResults
-				int timeout = CommonUtil.toIntValue(options.get("timeout", null), -1);
-				if (timeout > -1) criteria.setTimeout(timeout);
+				offset = CommonUtil.toIntValue(options.get("offset", null), 0);
+				max = CommonUtil.toIntValue(options.get("maxresults", null), -1);
+				cacheable = CommonUtil.toBoolean(options.get("cacheable", null), null);
+				timeout = CommonUtil.toIntValue(options.get("timeout", null), -1);
 			}
 
 			// order
 			if (!Util.isEmpty(order)) {
-				if (metaData == null) metaData = sess.getSessionFactory().getClassMetadata(name);
+				if (metaData == null) metaData = sfi.getMappingMetamodel().findEntityDescriptor(name);
 
 				String[] arr = CommonUtil.toStringArray(order, ",");
 				CommonUtil.trimItems(arr);
-				String[] parts;
-				String col;
-				boolean isDesc;
-				Order _order;
-				// ColumnInfo ci;
+				List<Order> orders = new ArrayList<>();
 				for (int i = 0; i < arr.length; i++) {
-					parts = CommonUtil.toStringArray(arr[i], " \t\n\b\r");
+					String[] parts = CommonUtil.toStringArray(arr[i], " \t\n\b\r");
 					CommonUtil.trimItems(parts);
-					col = parts[0];
-
-					col = HibernateUtil.validateColumnName(metaData, col);
-					isDesc = false;
+					String col = HibernateUtil.validateColumnName(metaData, parts[0]);
+					boolean isDesc = false;
 					if (parts.length > 1) {
 						if (parts[1].equalsIgnoreCase("desc")) isDesc = true;
 						else if (!parts[1].equalsIgnoreCase("asc")) {
 							throw ExceptionUtil.createException((ORMSession) null, null, "Invalid order direction definition [" + parts[1] + "]", "valid values are [asc, desc]");
 						}
-
 					}
-					_order = isDesc ? Order.desc(col) : Order.asc(col);
-					if (ignoreCase) _order.ignoreCase();
-
-					criteria.addOrder(_order);
-
+					Path<?> path = root.get(col);
+					Expression<?> expr = ignoreCase && CharSequence.class.isAssignableFrom(path.getJavaType())
+							? cb.lower(path.as(String.class))
+							: path;
+					orders.add(isDesc ? cb.desc(expr) : cb.asc(expr));
 				}
+				if (!orders.isEmpty()) cq.orderBy(orders);
 			}
 
-			// execute
-			if (!unique) {
-				rtn = HibernateCaster.toCFML(criteria.list());
-			}
-			else {
-				rtn = HibernateCaster.toCFML(criteria.uniqueResult());
-			}
+			SelectionQuery<Object> q = sess.createSelectionQuery(cq);
+			if (offset > 0) q.setFirstResult(offset);
+			if (max > -1) q.setMaxResults(max);
+			if (cacheable != null) q.setCacheable(cacheable.booleanValue());
+			if (timeout > -1) q.setTimeout(timeout);
 
+			Object rtn = unique ? q.uniqueResult() : q.getResultList();
+			return HibernateCaster.toCFML(rtn);
 		}
 		catch (Exception e) {
 			throw CommonUtil.toPageException(e);
 		}
-		return rtn;
 	}
 
 	@Override

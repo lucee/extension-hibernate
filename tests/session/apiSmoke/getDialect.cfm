@@ -1,6 +1,7 @@
 <cfscript>
-// Test getDialect() returns the active SQL dialect
-dialect = ORMGetSessionFactory().getDialect();
+// Hibernate 7 removed SessionFactory.getDialect(); the dialect now lives on
+// JdbcServices, accessed via the SessionFactoryImplementor.
+dialect = ORMGetSessionFactory().getJdbcServices().getDialect();
 
 className = dialect.getClass().getName();
 

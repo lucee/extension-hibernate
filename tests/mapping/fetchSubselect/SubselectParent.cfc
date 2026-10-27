@@ -4,8 +4,7 @@ component persistent="true" table="subselect_parent" accessors="true" {
 	property name="name" ormtype="string" length="50";
 
 	// fetch="subselect" — Hibernate emits one IN-subselect to load all parents'
-	// children when any one parent's collection is touched. Currently rejected by
-	// HBMCreator's fetch validator (allows only "join,select"); see fetchSubselect.cfc.
+	// children when any one parent's collection is touched.
 	property name="children"
 		fieldtype="one-to-many"
 		cfc="SubselectChild"

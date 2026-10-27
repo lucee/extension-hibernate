@@ -1,14 +1,11 @@
 package org.lucee.extension.orm.hibernate.logging;
 
-import java.lang.reflect.Method;
-
-import lucee.runtime.Component;
 import lucee.runtime.PageContext;
-import lucee.runtime.listener.ApplicationContext;
 import lucee.runtime.orm.ORMConfiguration;
 import lucee.runtime.type.Struct;
 
 import org.lucee.extension.orm.hibernate.util.CommonUtil;
+import org.lucee.extension.orm.hibernate.util.ORMConfigurationUtil;
 import lucee.runtime.type.Collection.Key;
 
 /**
@@ -20,7 +17,6 @@ import lucee.runtime.type.Collection.Key;
  */
 public class OrmLoggingSettings {
 
-	private static final Key	KEY_ORM_SETTINGS	= CommonUtil.createKey( "ormSettings" );
 	private static final Key	KEY_LOG_SQL			= CommonUtil.createKey( "logSQL" );
 	private static final Key	KEY_LOG_PARAMS		= CommonUtil.createKey( "logParams" );
 	private static final Key	KEY_LOG_CACHE		= CommonUtil.createKey( "logCache" );
@@ -56,7 +52,7 @@ public class OrmLoggingSettings {
 		boolean	formatSQL	= false;
 		boolean	logVerbose	= false;
 
-		Struct ormSettings = getOrmSettingsStruct( pc );
+		Struct ormSettings = ORMConfigurationUtil.getOrmSettings( pc );
 		if ( ormSettings != null ) {
 			logSQL		= CommonUtil.toBooleanValue( ormSettings.get( KEY_LOG_SQL, logSQL ), logSQL );
 			logParams	= CommonUtil.toBooleanValue( ormSettings.get( KEY_LOG_PARAMS, false ), false );
@@ -69,36 +65,13 @@ public class OrmLoggingSettings {
 	}
 
 	/**
-	 * Try to read the raw ormSettings struct from the Application.cfc component.
-	 *
-	 * Uses reflection to access ModernApplicationContext.getComponent(), then reads
-	 * this.ormSettings from the component's scope. Returns null if anything fails
-	 * (e.g. ClassicApplicationContext, older Lucee version, no ormSettings set).
-	 */
-	private static Struct getOrmSettingsStruct( PageContext pc ) {
-		try {
-			ApplicationContext ac = pc.getApplicationContext();
-			Method getComponent = ac.getClass().getMethod( "getComponent" );
-			Component appCFC = ( Component ) getComponent.invoke( ac );
-			if ( appCFC == null )
-				return null;
-			Object settings = appCFC.get( KEY_ORM_SETTINGS, null );
-			if ( settings instanceof Struct )
-				return ( Struct ) settings;
-		} catch ( Exception e ) {
-			// ClassicApplicationContext or older Lucee version - fall back to defaults
-		}
-		return null;
-	}
-
-	/**
 	 * Check if the raw dbcreate string from this.ormSettings was silently defaulted to "none"
 	 * by the Lucee loader (6.2 doesn't support create/create-drop/validate).
 	 *
 	 * @return a warning message if there's a mismatch, or null if everything is fine.
 	 */
 	public static String checkDbCreate( PageContext pc, int resolvedDbCreate ) {
-		Struct ormSettings = getOrmSettingsStruct( pc );
+		Struct ormSettings = ORMConfigurationUtil.getOrmSettings( pc );
 		if ( ormSettings == null ) return null;
 
 		Key KEY_DB_CREATE = CommonUtil.createKey( "dbcreate" );

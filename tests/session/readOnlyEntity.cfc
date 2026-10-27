@@ -14,14 +14,14 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
-			// xit until Hibernate 7.3 — 5.6 silently lets read-only collections mutate
-			// (the asymmetry 7.3 fixes: scalars honour read-only, collections don't)
-			xit( "collection add on read-only entity does not persist", function() {
+			// Hibernate 7.3 enforces read-only on collections (fixes the H5.6 asymmetry
+			// where scalars honoured read-only but collections silently mutated).
+			it( "collection add on read-only entity does not persist", function() {
 				var result = _InternalRequest( template: "#uri()#/setReadOnlyCollectionAdd.cfm" );
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
-			xit( "collection remove on read-only entity does not persist", function() {
+			it( "collection remove on read-only entity does not persist", function() {
 				var result = _InternalRequest( template: "#uri()#/setReadOnlyCollectionRemove.cfm" );
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});

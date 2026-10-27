@@ -2,7 +2,7 @@ name: Java CI
 
 on:
   push:
-    branches: ['5.6']
+    branches: ['7.x']
   pull_request:
   workflow_dispatch:
     inputs:
@@ -56,10 +56,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - java: '11'
-            lucee: '6.2/snapshot/light'
-          - java: '11'
-            lucee: '7.0/snapshot/light'
           - java: '21'
             lucee: '6.2/snapshot/light'
           - java: '21'
@@ -170,7 +166,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: [build, test]
-    if: github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/5.6'
+    # DISABLED — guarded against accidental deploys. To re-enable, restore:
+    #   if: github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/5.6'
+    if: false
     steps:
       - uses: actions/checkout@v6
 

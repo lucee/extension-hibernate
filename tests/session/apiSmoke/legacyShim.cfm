@@ -55,5 +55,32 @@ if ( !threwForUnknown )
 if ( !findNoCase( "CollectionPersister", errMsg ) && !findNoCase( "could not locate", errMsg ) )
 	throw( message="getCollectionMetadata: expected exception about missing CollectionPersister, got [#errMsg#]" );
 
+// 4) getEntityPersister( name ) — H5 alias for the same lookup as getClassMetadata.
+// Used by cborm SQLHelper / ORMUtilSupport and ColdBox legacy ORM helpers in the
+// wild (verified via gh search code 2026-04-29). H5.6.15 throws MappingException
+// for unknown names, same as getCollectionMetadata; shim must preserve that.
+ep = sf.getEntityPersister( "SmokeEntity" );
+if ( isNull( ep ) )
+	throw( message="getEntityPersister: returned null for SmokeEntity" );
+epIdName = ep.getIdentifierPropertyName();
+if ( epIdName != "id" )
+	throw( message="getEntityPersister: expected identifier property 'id', got [#epIdName#]" );
+epEntityName = ep.getEntityName();
+if ( epEntityName != "SmokeEntity" )
+	throw( message="getEntityPersister: expected entity name 'SmokeEntity', got [#epEntityName#]" );
+
+threwForUnknownEntity = false;
+errMsg = "";
+try {
+	sf.getEntityPersister( "Nonexistent" );
+} catch ( any e ) {
+	threwForUnknownEntity = true;
+	errMsg = e.message;
+}
+if ( !threwForUnknownEntity )
+	throw( message="getEntityPersister: expected throw for unknown entity, got no exception" );
+if ( !findNoCase( "Unknown entity", errMsg ) && !findNoCase( "EntityPersister", errMsg ) )
+	throw( message="getEntityPersister: expected exception mentioning unknown entity, got [#errMsg#]" );
+
 echo( "ok" );
 </cfscript>

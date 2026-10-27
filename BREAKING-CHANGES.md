@@ -1,6 +1,60 @@
 # Breaking Changes
 
-Behaviour changes in 5.6 that may affect existing Lucee applications.
+Behaviour changes that may affect existing Lucee applications.
+
+## Hibernate 5.6 → 7.3.2 (extension 7.0)
+
+### Java 21 required
+
+The extension targets Java 21. Java 11 and 17 are no longer supported.
+
+### Lucee 7.1+ required
+
+Hibernate 7.3's strict JDBC holdability check trips a long-standing bug in Lucee's `DatasourceConnectionImpl.prepareStatement(sql, type, concur)`. Fixed in Lucee 7.1.0.107+ ([LDEV-6291](https://luceeserver.atlassian.net/browse/LDEV-6291)). The extension will not run on earlier Lucee versions.
+
+### HQL identifiers are case-sensitive
+
+Hibernate 7.3's HQL parser is strict on identifier case. Property and entity references must match the case declared in the CFC. HQL like `where userName = :n` against a property `UserName` now throws `Could not interpret path expression`.
+
+**Migration:** Match the case in your HQL to the property/entity declarations. Hibernate 5.x was tolerant; this is now an error.
+
+### Dialect aliases collapsed
+
+H7.3 removed all version-specific dialects (`MySQL8Dialect`, `Oracle12cDialect`, `PostgreSQL10Dialect`, etc.). Version detection is now metadata-driven on a single `MySQLDialect`/`OracleDialect`/`PostgreSQLDialect`/etc.
+
+The extension routes the historical aliases to the new version-agnostic class. 24 community-only dialects (Derby, Firebird, HSQL, Informix, Ingres, etc.) are no longer bundled.
+
+**Migration:** Drop the version suffix from `ormSettings.dialect`. Setting `dialect="MySQL"` is now equivalent to `dialect="MySQL8Dialect"`.
+
+### `<bag>` no longer dedups `select distinct ... join fetch`
+
+CFML `property type="array"` maps to Hibernate `<bag>`. H7 stopped de-duplicating the result list for `select distinct ... join fetch <bag>` queries — duplicates from the join are returned as-is.
+
+**Migration:** Apply distinct in your CFML code, or restructure the query to avoid the join-fetch + distinct combo.
+
+### Read-only enforced on collections
+
+H5.6 honoured `readOnly` on scalar properties but silently mutated read-only collections. H7.3 enforces it on both. Code that wrote to a read-only collection used to silently succeed; it now throws.
+
+**Migration:** Remove `readOnly="true"` from collections you actually write to.
+
+### `scale` not allowed on `ormtype="double"`
+
+H7.3 rejects `scale` on `double`/`float` properties at SF-build time. Pre-7.3 silently accepted it.
+
+**Migration:** Remove the `scale` attribute, or change the type to `big_decimal` (where scale applies).
+
+### `org.hibernate.Criteria` removed
+
+H6+ removed the legacy `org.hibernate.Criteria` API entirely. Only JPA `CriteriaBuilder` remains.
+
+**Migration:** Anyone calling `session.createCriteria()` from CFML directly must rewrite using `session.getCriteriaBuilder()`. CFML BIFs (`entityLoad`, `entityLoadByExample`) are unaffected — they're rebuilt on the JPA API internally.
+
+### EHCache 2 → Caffeine via JCache
+
+The bundled L2 cache provider changed from EHCache 2 to Caffeine via `hibernate-jcache`. Existing `ehcache.xml` configurations are no longer read. Per-region defaults are wired through Caffeine's `reference.conf` (10000 entries, 120s TTL/TTI).
+
+**Migration:** Tune via `reference.conf` overrides if the defaults don't suit. Don't bundle EHCache 3 alongside — single JCache provider per OSGi extension.
 
 ## Property defaults applied on entity load ([LDEV-4121](https://luceeserver.atlassian.net/browse/LDEV-4121))
 

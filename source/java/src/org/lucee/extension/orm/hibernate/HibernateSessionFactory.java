@@ -2,19 +2,16 @@ package org.lucee.extension.orm.hibernate;
 import org.lucee.extension.orm.hibernate.mapping.HBMCreator;
 
 import org.lucee.extension.orm.hibernate.util.CommonUtil;
-import org.lucee.extension.orm.hibernate.util.ExceptionUtil;
 import org.lucee.extension.orm.hibernate.util.HibernateUtil;
 import org.lucee.extension.orm.hibernate.util.ORMConfigurationUtil;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.EnumSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -23,17 +20,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.hibernate.boot.Metadata;
-import org.hibernate.boot.MetadataSources;
 import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
-import org.hibernate.tool.hbm2ddl.SchemaExport.Action;
-import org.hibernate.tool.hbm2ddl.SchemaUpdate;
-import org.hibernate.tool.schema.TargetType;
 
 import lucee.commons.io.log.Log;
 import lucee.commons.io.res.Resource;
@@ -75,122 +64,47 @@ public class HibernateSessionFactory {
 			throws PageException, SQLException, IOException {
 		ORMConfiguration ormConf = data.getORMConfiguration();
 
-		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
-
-		MetadataSources metadataSources = new MetadataSources(serviceRegistry);
-		metadataSources.addInputStream(new ByteArrayInputStream(xmlMappings.getBytes("UTF-8")));
-		EnumSet<TargetType> enumSet = EnumSet.of(TargetType.DATABASE);
-
-		if (ORMConfiguration.DBCREATE_NONE == ormConf.getDbCreate()) {
-			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "none");
-			return;
-		}
-		else if (ORMConfiguration.DBCREATE_DROP_CREATE == ormConf.getDbCreate()) {
-			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create");
-			Metadata metadata = metadataSources.buildMetadata();
-			// DROP phase — errors are expected (objects may not exist yet, dialects vary
-			// on IF EXISTS support). Log but never throw.
-			SchemaExport drop = new SchemaExport();
-			drop.setHaltOnError(false);
-			drop.execute(enumSet, Action.DROP, metadata);
-			printError(log, data, drop.getExceptions(), false);
-			// CREATE phase — errors here are real failures.
-			SchemaExport create = new SchemaExport();
-			create.setHaltOnError(false);
-			create.execute(enumSet, Action.CREATE, metadata);
-			printError(log, data, create.getExceptions(), true);
-		}
-		else if (/* ORMConfiguration.DBCREATE_CREATE */3 == ormConf.getDbCreate()) {
-			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create-only");
-			SchemaExport export = new SchemaExport();
-			export.setHaltOnError(false);
-			export.execute(enumSet, Action.CREATE, metadataSources.buildMetadata());
-			printError(log, data, export.getExceptions(), true);
-		}
-		else if (/* ORMConfiguration.DBCREATE_CREATE_DROP */4 == ormConf.getDbCreate()) {
-			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create-drop");
-			Metadata metadata = metadataSources.buildMetadata();
-			// DROP phase — errors are expected.
-			SchemaExport drop = new SchemaExport();
-			drop.setHaltOnError(false);
-			drop.execute(enumSet, Action.DROP, metadata);
-			printError(log, data, drop.getExceptions(), false);
-			// CREATE phase — errors here are real failures.
-			SchemaExport create = new SchemaExport();
-			create.setHaltOnError(false);
-			create.execute(enumSet, Action.CREATE, metadata);
-			printError(log, data, create.getExceptions(), true);
-		}
-		else if (ORMConfiguration.DBCREATE_UPDATE == ormConf.getDbCreate()) {
-			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "update");
-			SchemaUpdate update = new SchemaUpdate();
-			update.setHaltOnError(false);
-			update.execute(enumSet, metadataSources.buildMetadata());
-			printError(log, data, update.getExceptions(), true);
-		}
-		else if (/* ORMConfiguration.DBCREATE_VALIDATE */5 == ormConf.getDbCreate()) {
-			configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "validate");
-			Metadata metadata = metadataSources.buildMetadata();
-			// Hibernate 5.6's SchemaValidator silently passes when catalog/schema are null
-			// (HHH-10882). Do our own JDBC-based table existence check instead.
-			validateSchema(metadata, serviceRegistry);
-		}
-	}
-
-	/**
-	 * JDBC-based schema validation. Checks that every physical table in the Hibernate metadata
-	 * actually exists in the database. Works around Hibernate 5.6's SchemaValidator silently
-	 * passing when default_catalog/default_schema are null (HHH-10882).
-	 */
-	private static void validateSchema(Metadata metadata, ServiceRegistry serviceRegistry) throws SQLException {
-		ConnectionProvider cp = serviceRegistry.getService(ConnectionProvider.class);
-		Connection conn = cp.getConnection();
-		try {
-			java.sql.DatabaseMetaData dbMeta = conn.getMetaData();
-			String catalog = conn.getCatalog();
-			for (org.hibernate.boot.model.relational.Namespace ns : metadata.getDatabase().getNamespaces()) {
-				for (org.hibernate.mapping.Table table : ns.getTables()) {
-					if (!table.isPhysicalTable()) continue;
-					String tableName = table.getName();
-					java.sql.ResultSet rs = dbMeta.getTables(catalog, null, tableName, new String[] { "TABLE" });
-					try {
-						if (!rs.next()) {
-							throw new org.hibernate.tool.schema.spi.SchemaManagementException(
-								"Schema-validation: missing table [" + tableName + "]"
-							);
-						}
-					}
-					finally {
-						rs.close();
-					}
-				}
-			}
-		}
-		finally {
-			cp.closeConnection(conn);
+		// Hibernate 7 removed the standalone SchemaExport / SchemaUpdate execute() entry points
+		// (the org.hibernate.tool.hbm2ddl package moved out of hibernate-core). We now just set
+		// HBM2DDL_AUTO and let buildSessionFactory() drive schema work via the standard
+		// SchemaManagementTool — same end result, no separate boot-time export pass.
+		switch (ormConf.getDbCreate()) {
+			case ORMConfiguration.DBCREATE_NONE:
+				configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "none");
+				return;
+			case ORMConfiguration.DBCREATE_DROP_CREATE:
+				configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create");
+				return;
+			case 3 /* DBCREATE_CREATE */:
+				configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create-only");
+				return;
+			case 4 /* DBCREATE_CREATE_DROP */:
+				configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "create-drop");
+				return;
+			case ORMConfiguration.DBCREATE_UPDATE:
+				configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "update");
+				return;
+			case 5 /* DBCREATE_VALIDATE */:
+				configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "validate");
+				return;
+			default:
+				return;
 		}
 	}
 
 	/**
 	 * Auto-detect and set default catalog/schema from JDBC metadata if not already configured.
 	 *
-	 * Hibernate's SchemaUpdate uses DatabaseMetaData.getTables() to find existing tables.
-	 * When default_catalog/default_schema are not set, it passes empty strings as filters
-	 * (AbstractInformationExtractorImpl lines 527, 552), which on some databases (H2 v2)
-	 * returns no results — causing SchemaUpdate to silently generate no DDL.
+	 * NOT CURRENTLY CALLED — kept for the embedded warning. If you are tempted to
+	 * call this from schemaExport(): don't. Setting DEFAULT_CATALOG on the Configuration's
+	 * Properties leaks into the session factory's SQL generation, prefixing all table
+	 * names with the catalog (e.g. DB.foo), which breaks MySQL/MSSQL. A Properties copy
+	 * doesn't fully isolate because the ServiceRegistry builder may mutate the input map.
 	 *
-	 * NOT CURRENTLY CALLED — blocked by two issues:
-	 * 1. HHH-10882: Hibernate 5.6 doesn't flow DEFAULT_CATALOG/DEFAULT_SCHEMA through
-	 *    to the AbstractInformationExtractorImpl.getTables() call, so setting them doesn't
-	 *    actually fix the empty-string filter problem.
-	 * 2. Setting DEFAULT_CATALOG on the Configuration's Properties leaks into the session
-	 *    factory's SQL generation, prefixing all table names with the catalog (e.g. DB.foo),
-	 *    which breaks MySQL/MSSQL. A Properties copy doesn't fully isolate because the
-	 *    ServiceRegistry builder may mutate the input map.
-	 *
-	 * The real fix is patching Hibernate's AbstractInformationExtractorImpl to use null
-	 * instead of "" when no catalog/schema filter is configured. Since we ship a shaded
-	 * Hibernate jar, this could be done as a direct patch.
+	 * Original motivation was HHH-10882 (H2 SchemaUpdate silently generating no DDL when
+	 * default_catalog/default_schema were unset). That bug was fixed in Hibernate 7.3,
+	 * so this approach is no longer needed for that case. The SQL-prefix problem is a
+	 * separate Hibernate behaviour and remains.
 	 *
 	 * @see <a href="https://hibernate.atlassian.net/browse/HHH-10882">HHH-10882</a>
 	 */
@@ -234,23 +148,6 @@ public class HibernateSessionFactory {
 		} catch (Exception e) {
 			log.log(Log.LEVEL_WARN, "hibernate", "Failed to auto-detect default catalog/schema: " + e.getMessage());
 		}
-	}
-
-	private static void printError(Log log, SessionFactoryData data, List<Exception> exceptions, boolean throwException) throws PageException {
-		if (exceptions == null || exceptions.isEmpty()) return;
-
-		for (Exception e : exceptions) {
-			log.log(throwException ? Log.LEVEL_ERROR : Log.LEVEL_DEBUG, "hibernate",
-					"schema export" + (throwException ? "" : " (ignored)") + ": " + e.getMessage());
-		}
-
-		if (!throwException) return;
-
-		// throw a clean exception with the message from the first error
-		// (avoid wrapping the deep Hibernate cause chain which can trigger StackOverflow in Lucee's exception serialization)
-		String msg = exceptions.get(0).getMessage();
-		if (msg == null) msg = exceptions.get(0).toString();
-		throw ExceptionUtil.createException(data, null, msg, null);
 	}
 
 	/**

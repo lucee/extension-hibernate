@@ -8,15 +8,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.HibernateException;
 import org.hibernate.boot.Metadata;
+import org.hibernate.boot.spi.BootstrapContext;
 import org.hibernate.engine.internal.Nullability;
 import org.hibernate.engine.internal.Nullability.NullabilityCheckType;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.event.service.spi.EventListenerRegistry;
-import org.hibernate.event.spi.AbstractEvent;
 import org.hibernate.event.spi.AutoFlushEvent;
 import org.hibernate.event.spi.AutoFlushEventListener;
 import org.hibernate.event.spi.ClearEvent;
 import org.hibernate.event.spi.ClearEventListener;
+import org.hibernate.event.spi.DeleteContext;
 import org.hibernate.event.spi.DeleteEvent;
 import org.hibernate.event.spi.DeleteEventListener;
 import org.hibernate.event.spi.DirtyCheckEvent;
@@ -110,8 +111,8 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 	private Component GlobalEventListener;
 
 	@Override
-	public void integrate(Metadata metadata, SessionFactoryImplementor sessionFactory, SessionFactoryServiceRegistry serviceRegistry) {
-		EventListenerRegistry eventListenerRegistry = serviceRegistry.getService(EventListenerRegistry.class);
+	public void integrate(Metadata metadata, BootstrapContext bootstrapContext, SessionFactoryImplementor sessionFactory) {
+		EventListenerRegistry eventListenerRegistry = sessionFactory.getServiceRegistry().getService(EventListenerRegistry.class);
 
 		eventListenerRegistry.prependListeners(EventType.PRE_INSERT, this);
 		eventListenerRegistry.prependListeners(EventType.POST_INSERT, this);
@@ -152,12 +153,6 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 
 
 	@Override
-	public boolean requiresPostCommitHanding(EntityPersister arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public boolean onPreInsert(PreInsertEvent event) {
 		String[] propertyNames = event.getPersister().getEntityMetamodel().getPropertyNames();
 		Struct state = entityStateToStruct(propertyNames, event.getState());
@@ -174,8 +169,8 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 		persistEntityChangesToState(stateValues, propertyNames, entityCFC);
 
 		// Validate nullability after state sync
-		new Nullability(event.getSession())
-		    .checkNullability(stateValues, event.getPersister(), NullabilityCheckType.CREATE);
+		new Nullability(event.getSession(), NullabilityCheckType.CREATE)
+		    .checkNullability(stateValues, event.getPersister());
 
 		return false;
 	}
@@ -216,8 +211,8 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 		persistEntityChangesToState(stateValues, propertyNames, entityCFC);
 
 		// Validate nullability after state sync
-		new Nullability(event.getSession())
-		    .checkNullability(stateValues, event.getPersister(), NullabilityCheckType.CREATE);
+		new Nullability(event.getSession(), NullabilityCheckType.CREATE)
+		    .checkNullability(stateValues, event.getPersister());
 
 		return false;
 	}
@@ -268,7 +263,7 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 	}
 
 	@Override
-	public void onDelete(DeleteEvent event, Set transientEntities) throws HibernateException {
+	public void onDelete(DeleteEvent event, DeleteContext transientEntities) throws HibernateException {
 		Object entity = event.getObject();
 		// TODO: handle transientEntities
 		fireEventOnGlobalListener(ON_DELETE, entity, event, null);
@@ -313,7 +308,7 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 	 * @param data
 	 *            A struct of data to pass to the event
 	 */
-	public void fireEventOnGlobalListener(Key name, Object entity, AbstractEvent event, Struct data) {
+	public void fireEventOnGlobalListener(Key name, Object entity, Object event, Struct data) {
 		if (GlobalEventListener == null) {
 			return;
 		}
@@ -324,7 +319,7 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 	/**
 	 * Fire the event listener UDF, if found, on the entity component.
 	 */
-	public void fireOnEntity(Object entity, Key name, AbstractEvent event, Struct data) {
+	public void fireOnEntity(Object entity, Key name, Object event, Struct data) {
 		Component listener = (entity instanceof Component) ? (Component) entity : CommonUtil.toComponent(entity, null);
 		if (listener != null) {
 			_fireOnComponent(listener, name, data, event);

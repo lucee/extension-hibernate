@@ -6,8 +6,13 @@ import lucee.commons.io.res.Resource;
 import lucee.loader.engine.CFMLEngine;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.loader.util.Util;
+import lucee.runtime.Component;
+import lucee.runtime.PageContext;
 import lucee.runtime.exp.PageException;
+import lucee.runtime.listener.ApplicationContext;
 import lucee.runtime.orm.ORMConfiguration;
+import lucee.runtime.type.Collection.Key;
+import lucee.runtime.type.Struct;
 
 // FUTURE update ORMConfiguration interface
 public class ORMConfigurationUtil {
@@ -119,6 +124,36 @@ public class ORMConfigurationUtil {
 			}
 		}
 		return conf.getSqlScript();
+	}
+
+	private static final Key KEY_ORM_SETTINGS = CommonUtil.createKey("ormSettings");
+
+	/**
+	 * Reads the raw {@code this.ormSettings} struct from the current Application.cfc
+	 * Component. Custom keys (those not in Lucee's standard ORMConfiguration set) survive
+	 * here — {@link ORMConfiguration#toStruct()} only returns recognised keys.
+	 *
+	 * Uses reflection on {@code ModernApplicationContext.getComponent()}; returns null
+	 * for ClassicApplicationContext, older Lucee versions, or applications without
+	 * {@code this.ormSettings} configured.
+	 *
+	 * @param pc the page context for the current request
+	 * @return the raw ormSettings struct, or null if unavailable
+	 */
+	public static Struct getOrmSettings(PageContext pc) {
+		if (pc == null) return null;
+		try {
+			ApplicationContext ac = pc.getApplicationContext();
+			Method getComponent = ac.getClass().getMethod("getComponent");
+			Component appCFC = (Component) getComponent.invoke(ac);
+			if (appCFC == null) return null;
+			Object settings = appCFC.get(KEY_ORM_SETTINGS, null);
+			if (settings instanceof Struct) return (Struct) settings;
+		}
+		catch (Exception e) {
+			// ClassicApplicationContext / older Lucee / no ormSettings — caller falls back
+		}
+		return null;
 	}
 
 	public static void dump(ORMConfiguration ormConf, String name) throws PageException {

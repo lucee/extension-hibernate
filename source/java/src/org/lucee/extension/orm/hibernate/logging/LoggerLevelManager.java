@@ -16,9 +16,11 @@ import lucee.commons.io.log.Log;
 public class LoggerLevelManager {
 
 	private static final String	CAT_SQL		= "org.hibernate.SQL";
-	private static final String	CAT_PARAMS	= "org.hibernate.type.descriptor.sql";
-	private static final String	CAT_CACHE	= "org.hibernate.cache";
-	private static final String	CAT_EHCACHE	= "net.sf.ehcache";
+	// H7 moved logging categories under org.hibernate.orm.* (SubSystemLogging.BASE).
+	// Param binding is org.hibernate.orm.jdbc.bind (JdbcBindingLogging),
+	// L2 cache is org.hibernate.orm.cache (SecondLevelCacheLogger).
+	private static final String	CAT_PARAMS	= "org.hibernate.orm.jdbc.bind";
+	private static final String	CAT_CACHE	= "org.hibernate.orm.cache";
 
 	private static final ThreadLocal<LoggingConfig> currentConfig = new ThreadLocal<>();
 
@@ -85,7 +87,7 @@ public class LoggerLevelManager {
 			return config.logParams;
 		if ( name.equals( CAT_SQL ) )
 			return config.logSQL;
-		if ( name.startsWith( CAT_CACHE ) || name.startsWith( CAT_EHCACHE ) )
+		if ( name.startsWith( CAT_CACHE ) )
 			return config.logCache;
 		// All other Hibernate categories (startup, mapping, session lifecycle, etc.)
 		// require logVerbose. The extension's own logging bypasses this (direct log.log() calls).

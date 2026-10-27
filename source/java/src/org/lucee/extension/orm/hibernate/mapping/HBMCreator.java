@@ -10,6 +10,7 @@ import org.lucee.extension.orm.hibernate.util.ORMConfigurationUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -78,6 +79,33 @@ public class HBMCreator {
 	private static final Collection.Key FIELDTYPE = CommonUtil.createKey("fieldtype");
 	private static final Collection.Key KEY = CommonUtil.createKey("key");
 	private static final Collection.Key TYPE = CommonUtil.createKey("type");
+
+	/**
+	 * Validate and translate cascade tokens before HBM emission. Accepts the 12 cascade tokens
+	 * native to Hibernate 7 plus {@code save-update} (rewritten to {@code persist,merge} for H7
+	 * compat — H7 removed save-update along with the saveOrUpdate operation it referenced).
+	 * Anything outside this allowlist (typos, the never-supported underscore/concat synonyms
+	 * once advertised by HibernateCaster.cascade) is rejected with a Lucee-level error before
+	 * Hibernate sees the mapping.
+	 */
+	private static final String VALID_CASCADE_DISPLAY = "all, all-delete-orphan, save-update, delete, delete-orphan, persist, merge, lock, refresh, replicate, evict, remove, none";
+	private static final Set<String> VALID_CASCADE = new HashSet<>(Arrays.asList(
+		"all", "all-delete-orphan", "save-update", "delete", "delete-orphan",
+		"persist", "merge", "lock", "refresh", "replicate", "evict", "remove", "none"
+	));
+
+	private static String translateCascade(Component cfc, Property prop, String cascade, SessionFactoryData data) throws PageException {
+		String[] tokens = cascade.split(",");
+		StringBuilder out = new StringBuilder(cascade.length() + 16);
+		for (int i = 0; i < tokens.length; i++) {
+			String t = tokens[i].trim().toLowerCase();
+			if (!VALID_CASCADE.contains(t)) throw invalidValue(cfc, prop, "cascade", t, VALID_CASCADE_DISPLAY, data);
+			if (i > 0) out.append(",");
+			if ("save-update".equals(t)) out.append("persist,merge");
+			else out.append(t);
+		}
+		return out.toString();
+	}
 
 	/**
 	 * Generate an XML node tree defining a Hibernate mapping for the given Component
@@ -1704,16 +1732,17 @@ public class HBMCreator {
 
 		// cascade
 		String str = toString(cfc, prop, meta, "cascade", data);
-		if (!Util.isEmpty(str, true)) x2x.setAttribute("cascade", str);
+		if (!Util.isEmpty(str, true)) x2x.setAttribute("cascade", translateCascade(cfc, prop, str, data));
 
 		// fetch
 		str = toString(cfc, prop, meta, "fetch", data);
 		if (!Util.isEmpty(str, true)) {
 			str = str.trim().toLowerCase();
+			String tagName = x2x.getNodeName();
+			boolean isCollection = "bag".equals(tagName) || "set".equals(tagName) || "list".equals(tagName) || "map".equals(tagName);
 			if ("join".equals(str) || "select".equals(str)) x2x.setAttribute("fetch", str);
-			else throw invalidValue(cfc, prop, "fetch", str, "join,select", data);
-			// throw new ORMException("invalid value ["+str+"] for attribute [fetch], valid values are
-			// [join,select]");
+			else if ("subselect".equals(str) && isCollection) x2x.setAttribute("fetch", str);
+			else throw invalidValue(cfc, prop, "fetch", str, isCollection ? "join,select,subselect" : "join,select", data);
 		}
 
 		// lazy

@@ -79,6 +79,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "legacy Session API (save, update, saveOrUpdate, delete, createSQLQuery, getNamedSQLQuery)", function() {
+				var result = _InternalRequest( template: "#uri()#/legacySession.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 			it( "EntityPersister.getSubclassPropertyName(int) resolves index to property name", function() {
 				var result = _InternalRequest( template: "#uri()#/persisterPropertyByIndex.cfm" );
 				expect( trim( result.filecontent ) ).toBe( "ok" );
