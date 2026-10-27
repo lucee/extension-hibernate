@@ -2,7 +2,7 @@
 
 Behaviour changes that may affect existing Lucee applications.
 
-## Hibernate 5.6 → 7.3.2 (extension 7.0)
+## Hibernate 5.6 → 7.4.14 (extension 7.4)
 
 ### Java 21 required
 
@@ -19,7 +19,7 @@ The extension and Hibernate are no longer an OSGi bundle ([LDEV-6735](https://lu
 **Migration:** Pass the Maven coordinate of the installed extension as a struct with a `maven` array:
 
 ```cfml
-createObject( "java", "org.hibernate.Version", { maven: [ "org.lucee:hibernate-extension:7.3.2.0" ] } );
+createObject( "java", "org.hibernate.Version", { maven: [ "org.lucee:hibernate-extension:7.4.14.0" ] } );
 ```
 
 A plain string as third argument is treated as an OSGi bundle name and fails. See the README for reading the installed version from `extensionList()`.

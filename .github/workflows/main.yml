@@ -2,7 +2,7 @@ name: Java CI
 
 on:
   push:
-    branches: ['7.x']
+    branches: ['7.4']
   pull_request:
   workflow_dispatch:
     inputs:
