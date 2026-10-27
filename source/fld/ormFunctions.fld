@@ -14,7 +14,7 @@
 	<!-- EntityDelete -->
 	<function>
 		<name>EntityDelete</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.EntityDelete</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.EntityDelete</class>
 		<description>Deletes the record from the database for the specified entity.
 EntityDelete(entity)</description>
 		<argument>
@@ -31,7 +31,7 @@ EntityDelete(entity)</description>
 	<!-- EntityLoad -->
 	<function>
 		<name>entityLoad</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.EntityLoad</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.EntityLoad</class>
 		<description>Loads and returns an array of entities of the specified entityName.
 EntityLoad (entityName, filterCriteria [,unique]
 EntityLoad(entityName, filterCriteria, sortOrder [, options])</description>
@@ -88,7 +88,7 @@ The following options to customize the output (only used when second argument is
 	<!-- EntityLoadByPK -->
 	<function>
 		<name>EntityLoadByPK</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.EntityLoadByPK</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.EntityLoadByPK</class>
 		<description>Loads and returns the entity for the given primary key, or null if not found.</description>
 		<argument>
 			<name>name</name>
@@ -119,7 +119,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 	<!-- EntityLoadByExample -->
 	<function>
 		<name>EntityLoadByExample</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.EntityLoadByExample</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.EntityLoadByExample</class>
 		<description>Loads and returns an array of objects that match the sample entity.
 entityLoadByExample(sampleEntity,[unique])</description>
 		<argument>
@@ -144,7 +144,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 	<!-- EntityMerge -->
 	<function>
 		<name>EntityMerge</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.EntityMerge</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.EntityMerge</class>
 		<description>Attaches the given entity to the current ORM session.</description>
 		<argument>
 			<name>entity</name>
@@ -160,7 +160,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 	<!-- EntityNew -->
 	<function>
 		<name>EntityNew</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.EntityNew</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.EntityNew</class>
 		<description>Creates a new instance of the persistent CFC with the entity name that you provide.</description>
 		<argument>
 			<name>entityName</name>
@@ -182,7 +182,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 	<!-- EntityNameArray -->
 	<function>
 		<name>EntityNameArray</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.EntityNameArray</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.EntityNameArray</class>
 		<description>Returns all loaded entity names as an array.</description>
 		<return>
 			<type>array</type>
@@ -192,7 +192,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 	<!-- EntityNameList -->
 	<function>
 		<name>EntityNameList</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.EntityNameList</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.EntityNameList</class>
 		<description>Returns all loaded entity names as a delimited string list.</description>
 		<argument>
 			<name>delimiter</name>
@@ -208,7 +208,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 	<!-- EntityReload -->
 	<function>
 		<name>EntityReload</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.EntityReload</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.EntityReload</class>
 		<description>Reloads data for an entity that is already loaded.</description>
 		<argument>
 			<name>entity</name>
@@ -224,7 +224,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 	<!-- EntitySave -->
 	<function>
 		<name>EntitySave</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.EntitySave</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.EntitySave</class>
 		<description>Saves or updates data of the entity and all related entities to the database.
 EntitySave(entity, [forceInsert])</description>
 		<argument>
@@ -247,7 +247,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- EntityToQuery -->
 	<function>
 		<name>EntityToQuery</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.EntityToQuery</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.EntityToQuery</class>
 		<description>Converts the input entity object or the input array of entity objects to a query object.</description>
 		<argument>
 			<name>entity</name>
@@ -269,7 +269,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMExecuteQuery -->
 	<function>
 		<name>ORMExecuteQuery</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMExecuteQuery</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.ORMExecuteQuery</class>
 		<description>Runs the HQL on the default data source specified for the application.</description>
 		<argument>
 			<name>hql</name>
@@ -305,7 +305,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMQueryExecute -->
 	<function>
 		<name>ORMQueryExecute</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMExecuteQuery</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.ORMExecuteQuery</class>
 		<description>Modern alias to ORMExecuteQuery(). Run an HQL query on the default ORM datasource.</description>
 		<argument>
 			<name>hql</name>
@@ -340,7 +340,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMClearSession -->
 	<function>
 		<name>ORMClearSession</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMClearSession</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.ORMClearSession</class>
 		<description>Removes all the entities that are loaded or created in the session. This clears the first level cache and removes the objects that are not yet saved to the database.</description>
 		<argument>
 			<name>datasource</name>
@@ -355,7 +355,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMCloseSession -->
 	<function>
 		<name>ORMCloseSession</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMCloseSession</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.ORMCloseSession</class>
 		<description>Closes the current ORM session.</description>
 		<argument>
 			<name>datasource</name>
@@ -370,7 +370,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMCloseAllSession -->
 	<function>
 		<name>ORMCloseAllSessions</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMCloseAllSessions</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.ORMCloseAllSessions</class>
 		<description>Closes all ORM sessions.</description>
 		<return>
 			<type>void</type>
@@ -379,7 +379,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMEvictCollection -->
 	<function>
 		<name>ORMEvictCollection</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMEvictCollection</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.ORMEvictCollection</class>
 		<description>Evicts all cached entries for the specified collection/relationship on the given entity from the second-level cache.</description>
 
 		<argument>
@@ -408,7 +408,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMEvictEntity -->
 	<function>
 		<name>ORMEvictEntity</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMEvictEntity</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.ORMEvictEntity</class>
 		<description>Evicts all cached entries for the specified entity from the second-level cache.</description>
 
 		<argument>
@@ -431,7 +431,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMEvictQueries -->
 	<function>
 		<name>ORMEvictQueries</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMEvictQueries</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.ORMEvictQueries</class>
 		<description>Evicts all queries from the named query cache. If cacheName is not specified, evicts the default query cache.</description>
 		<argument>
 			<name>cacheName</name>
@@ -453,7 +453,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMFlush -->
 	<function>
 		<name>ORMFlush</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMFlush</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.ORMFlush</class>
 		<description>Flushes the current ORM session. ORMFlush flushes all the pending CRUD operations in that request. Any changes made in the objects, in the current ORM session, are saved to the database.</description>
 		<argument>
 			<name>datasource</name>
@@ -468,7 +468,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMFlushAll -->
 	<function>
 		<name>ORMFlushAll</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMFlushAll</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.ORMFlushAll</class>
 		<description>Flushes all open ORM sessions across all datasources. All pending CRUD operations in every active ORM session are saved to the database.</description>
 		<return>
 			<type>void</type>
@@ -478,7 +478,7 @@ EntitySave(entity, [forceInsert])</description>
 	<function>
 		<name>ORMIndex</name>
 		<status>unimplemented</status>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMIndex</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.ORMIndex</class>
 		<status>unimplemented</status>
 		<description>Indexes the given entity for Hibernate Search. Not supported in Lucee — throws an informative error.</description>
 		<argument>
@@ -494,7 +494,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMIndexPurge (stub — Hibernate Search not supported) -->
 	<function>
 		<name>ORMIndexPurge</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMIndexPurge</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.ORMIndexPurge</class>
 		<status>unimplemented</status>
 		<description>Purges the Hibernate Search index for the given entity. Not supported in Lucee — throws an informative error.</description>
 		<argument>
@@ -510,7 +510,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMSearch (stub — Hibernate Search not supported) -->
 	<function>
 		<name>ORMSearch</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMSearch</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.ORMSearch</class>
 		<status>unimplemented</status>
 		<description>Performs a full-text search on ORM entities using Hibernate Search. Not supported in Lucee — throws an informative error.</description>
 		<argument>
@@ -538,7 +538,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMSearchOffline (stub — Hibernate Search not supported) -->
 	<function>
 		<name>ORMSearchOffline</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMSearchOffline</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.ORMSearchOffline</class>
 		<status>unimplemented</status>
 		<description>Performs an offline full-text search on ORM entities using Hibernate Search. Not supported in Lucee — throws an informative error.</description>
 		<argument>
@@ -566,7 +566,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- IsWithinORMTransaction -->
 	<function>
 		<name>IsWithinORMTransaction</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.IsWithinORMTransaction</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.IsWithinORMTransaction</class>
 		<description>Returns true if a Hibernate ORM transaction is currently active on any ORM datasource. Safe to call when ORM is not configured — returns false.</description>
 		<return>
 			<type>boolean</type>
@@ -576,7 +576,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- GetORMTransactionIsolation -->
 	<function>
 		<name>GetORMTransactionIsolation</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.GetORMTransactionIsolation</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.GetORMTransactionIsolation</class>
 		<description>Returns the JDBC transaction isolation level from the ORM session's connection as a string (e.g. "serializable"). Returns "" if no ORM session is active. Matches the convention of the core getTransactionIsolation() BIF.</description>
 		<return>
 			<type>string</type>
@@ -586,7 +586,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMGetSession -->
 	<function>
 		<name>ORMGetSession</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMGetSession</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.ORMGetSession</class>
 		<description>Returns the current ORM session.</description>
 		<argument>
 			<name>datasource</name>
@@ -601,7 +601,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMGetSessionFactory -->
 	<function>
 		<name>ORMGetSessionFactory</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMGetSessionFactory</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.ORMGetSessionFactory</class>
 		<description>Returns the Hibernate SessionFactory for the given datasource.</description>
 		<argument>
 			<name>datasource</name>
@@ -616,7 +616,7 @@ EntitySave(entity, [forceInsert])</description>
 	<!-- ORMReload -->
 	<function>
 		<name>ORMReload</name>
-		<class bundle-name="org.lucee.hibernate.extension">org.lucee.extension.orm.hibernate.functions.ORMReload</class>
+		<class maven="{maven}">org.lucee.extension.orm.hibernate.functions.ORMReload</class>
 		<description>Reinitializes ORM for the application. Rebuilds all entity mappings and the Hibernate SessionFactory. Active idle sessions are closed and their connections released; sessions with in-flight transactions are invalidated for cleanup by their owning thread. Intended for development use only.</description>
 		<return>
 			<type>void</type>

@@ -1,14 +1,23 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
+	// the extension and Hibernate are Maven libraries, load them through the extension's Maven coordinate
+	private string function hibernateArtifact() {
+		var q = extensionList();
+		loop query=q {
+			if ( q.id == "FAD1E8CB-4F45-4184-86359145767C29DE" ) return "org.lucee:hibernate-extension:" & q.version;
+		}
+		throw( message="hibernate extension [FAD1E8CB-4F45-4184-86359145767C29DE] not found via extensionList()" );
+	}
+
 	function run( testResults, testBox ) {
 
 		describe( "Dialect alias resolution (Hibernate 7.3)", function() {
 
-			var dialectMgr  = createObject( "java", "org.lucee.extension.orm.hibernate.Dialect", "org.lucee.hibernate.extension" );
+			var dialectMgr  = createObject( "java", "org.lucee.extension.orm.hibernate.Dialect", { maven: [ hibernateArtifact() ] } );
 			var classLoader = dialectMgr.getClass().getClassLoader();
 			var hbDialect   = classLoader.loadClass( "org.hibernate.dialect.Dialect" );
 
-			// surviving short names — these should be picked up by the OSGi auto-scan
+			// surviving short names — these should be picked up by the jar scan
 			// of org/hibernate/dialect/*.class in hibernate-core
 			var survivors = {
 				"H2"             : "org.hibernate.dialect.H2Dialect",
@@ -99,12 +108,12 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				"SAPDB", "Teradata", "Teradata14", "TimesTen", "CUBRID", "Cache71"
 			];
 
-			it( "every surviving family resolves via OSGi auto-scan", function() {
+			it( "every surviving family resolves via the jar scan", function() {
 				var failures = [];
 				for ( var name in survivors ) {
 					var resolved = dialectMgr.getDialect( name );
 					if ( isNull( resolved ) ) {
-						arrayAppend( failures, "[#name#] resolved to null — OSGi scan missed it" );
+						arrayAppend( failures, "[#name#] resolved to null — jar scan missed it" );
 					} else if ( resolved != survivors[ name ] ) {
 						arrayAppend( failures, "[#name#] expected [#survivors[ name ]#] got [#resolved#]" );
 					}

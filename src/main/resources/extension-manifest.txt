@@ -6,5 +6,5 @@ name: "${label}"
 description: "${description}"
 start-bundles: false
 release-type: ${releaseType}
-orm: "[{'class':'org.lucee.extension.orm.hibernate.HibernateORMEngine','name':'org.lucee.hibernate.extension','version':'${project.version}'}]"
+orm: "[{'class':'org.lucee.extension.orm.hibernate.HibernateORMEngine','maven':'${project.groupId}:${project.artifactId}:${project.version}'}]"
 lucee-core-version: "${luceeCoreVersion}"

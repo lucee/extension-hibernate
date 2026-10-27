@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Export-Package: org.lucee.extension.orm.hibernate,org.lucee.extension.orm.hibernate.jdbc
-Bundle-ManifestVersion: 2

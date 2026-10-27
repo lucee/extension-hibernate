@@ -1,5 +1,14 @@
 <cfscript>
-// Characterisation test for the OSGi dialect scan in Dialect.java.
+	// the extension and Hibernate are Maven libraries, load them through the extension's Maven coordinate
+	function hibernateArtifact() {
+		var q = extensionList();
+		loop query=q {
+			if ( q.id == "FAD1E8CB-4F45-4184-86359145767C29DE" ) return "org.lucee:hibernate-extension:" & q.version;
+		}
+		throw( message="hibernate extension [FAD1E8CB-4F45-4184-86359145767C29DE] not found via extensionList()" );
+	}
+
+// Characterisation test for the dialect jar scan in Dialect.java.
 // Goal: snapshot what gets registered so we can diff scan-on vs scan-off and decide
 // whether the static-init scan adds anything the hardcoded `dialects.setEL(...)` list
 // doesn't. See LDEV-6342.
@@ -17,7 +26,7 @@
 // declared unsupported). FQCN / simple-class lookups disappearing tells you whether
 // anyone actually relies on those alias forms.
 try {
-	dialectClass = createObject( "java", "org.lucee.extension.orm.hibernate.Dialect" );
+	dialectClass = createObject( "java", "org.lucee.extension.orm.hibernate.Dialect", { maven: [ hibernateArtifact() ] } );
 	dialects = dialectClass.getDialects();
 	keys = structKeyArray( dialects );
 	arraySort( keys, "textnocase" );
