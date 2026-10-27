@@ -23,6 +23,7 @@ import lucee.commons.io.log.Log;
 import lucee.commons.io.res.Resource;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.runtime.Component;
+import lucee.runtime.Page;
 import lucee.runtime.PageContext;
 import lucee.runtime.db.DataSource;
 import lucee.runtime.db.DatasourceConnection;
@@ -31,6 +32,7 @@ import lucee.runtime.listener.ApplicationContext;
 import lucee.runtime.orm.ORMConfiguration;
 import lucee.runtime.orm.ORMEngine;
 import lucee.runtime.orm.ORMSession;
+import lucee.runtime.util.TemplateUtil;
 import lucee.runtime.type.Collection.Key;
 
 public class HibernateORMEngine implements ORMEngine {
@@ -410,12 +412,24 @@ public class HibernateORMEngine implements ORMEngine {
 		if (info != null) {
 			Component cfc = info.getCFC();
 			if (unique) {
-				cfc = (Component) cfc.duplicate(false);
+				cfc = newInstance(pc, cfc);
 				if (cfc.contains(pc, CommonUtil.INIT)) cfc.call(pc, "init", new Object[] {});
 			}
 			return cfc;
 		}
 		return null;
+	}
+
+	/**
+	 * Creates a new instance of the entity component, the same way "new" does: the pseudo-constructor
+	 * runs for the new instance, so closures/lambdas defined there are bound to it (LDEV-4067).
+	 * A (shallow) duplicate of the template would keep closures bound to the template and share
+	 * complex data members like structs with it.
+	 */
+	private static Component newInstance(PageContext pc, Component template) throws PageException {
+		TemplateUtil templateUtil = CFMLEngineFactory.getInstance().getTemplateUtil();
+		Page page = templateUtil.loadPage(pc, template.getPageSource(), false);
+		return templateUtil.loadComponent(pc, page, template.getCallName(), true, true, false, true);
 	}
 
 	private static String dbCreateLabel( int dbCreate ) {
