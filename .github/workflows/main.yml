@@ -34,7 +34,7 @@ jobs:
       lucee_matrix: ${{ steps.lucee-matrix.outputs.MATRIX }}
       publish: ${{ steps.publish.outputs.PUBLISH }}
     steps:
-      # Only pushes and manual runs on master/main, a version branch (1.0, 2.0, 7.x, ...) or release/* may
+      # Only pushes and manual runs on master/main, a version branch (1.0, 2.0, 7.4, ...) or release/* may
       # publish (deploy, s3) or commit (bump). Feature and PR branches only build and test.
       - name: Decide whether this run may publish
         id: publish
@@ -45,7 +45,7 @@ jobs:
           PUBLISH=false
           if [[ "$EVENT" == "push" || "$EVENT" == "workflow_dispatch" ]]; then
             BRANCH="${REF#refs/heads/}"
-            if [[ "$REF" == refs/heads/* ]] && [[ "$BRANCH" == "master" || "$BRANCH" == "main" || "$BRANCH" =~ ^[0-9]+(\.[0-9]+)*(\.x)?$ || "$BRANCH" == release/* ]]; then
+            if [[ "$REF" == refs/heads/* ]] && [[ "$BRANCH" == "master" || "$BRANCH" == "main" || "$BRANCH" =~ ^[0-9]+(\.[0-9]+)*$ || "$BRANCH" == release/* ]]; then
               PUBLISH=true
             fi
           fi
@@ -243,6 +243,10 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
 
+      # the lite .lex resolves its libraries from Maven, where the -SNAPSHOT is not published, so test the full .lex
+      - name: Keep only the full .lex for the tests
+        run: rm -f target/*.lite.lex
+
       - name: Run Lucee Test Suite
         uses: lucee/script-runner@main
         with:
@@ -400,7 +404,7 @@ jobs:
           fi
           printf 'Asset: %s\n' "${FILES[@]}"
 
-          # the release tag is the exact published version (7.3.2.1 or 7.3.2.1-RC), created on this commit
+          # the release tag is the exact published version (7.4.14.1 or 7.4.14.1-RC), created on this commit
           # if it does not exist yet. ALPHA/BETA/RC are pre-releases and never "latest".
           if [[ "$VERSION" == *-* ]]; then
             PRE=(--prerelease --latest=false)
