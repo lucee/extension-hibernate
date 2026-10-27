@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.lucee</groupId>
     <artifactId>hibernate-extension</artifactId>
-    <version>7.3.2.0-SNAPSHOT</version>
+    <version>7.4.14.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Hibernate Extension</name>
 
@@ -68,12 +68,12 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Hibernate core 7.3.2 (Jakarta namespace, brings byte-buddy 1.18 transitively).
+        <!-- Hibernate core 7.4.14 (Jakarta namespace, brings byte-buddy 1.18 transitively).
              Classmate dropped in 7.3, jboss-transaction exclusion no longer relevant. -->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>7.3.2.Final</version>
+            <version>7.4.14.Final</version>
         </dependency>
 
         <!-- JCache (JSR-107) provider — Caffeine via Hibernate's hibernate-jcache adapter.
@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-jcache</artifactId>
-            <version>7.3.2.Final</version>
+            <version>7.4.14.Final</version>
         </dependency>
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
@@ -136,7 +136,7 @@
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>4.0.6</version>
+            <version>4.0.7</version>
         </dependency>
     </dependencies>
 

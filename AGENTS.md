@@ -52,7 +52,7 @@ Use the marker pattern from `tests/logging/logging.cfc` to find relevant log sec
 all these batch files take test name as the first argument, so you can just run one test if needed for quick turn arounds
 
 `./test7.bat <testfilter>` just runs with 7.0
-`./test.bat <testfilter>` runs with 6.2, 7.0 and 7.1 (Slower)
+`./test.bat <testfilter>` runs with 7.0 and 7.1 (Slower)
 `./testJar.bat <path-to-lucee.jar>` runs with a custom Lucee JAR build
 
 use test7.bat for initial dev, use test.bat to check finally

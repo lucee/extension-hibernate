@@ -80,9 +80,44 @@ copy_parent_chain() {
     fi
 }
 
+# Copy the BOMs a POM imports (<scope>import</scope> in dependencyManagement, e.g.
+# hibernate-platform for hibernate-core 7.4) plus their parent chain, so the
+# bundled repository can resolve the managed versions without a download.
+# Imports whose version is a property (e.g. ${version.org.junit}) are skipped.
+copy_imported_boms() {
+    pom_file="$1"
+    tr '\n' ' ' < "$pom_file" | sed 's|</dependency>|</dependency>\n|g' | grep '<scope>import</scope>' | while read dep; do
+        bom_group=$(echo "$dep" | sed -n 's/.*<groupId>\([^<]*\)<\/groupId>.*/\1/p' | head -1)
+        bom_artifact=$(echo "$dep" | sed -n 's/.*<artifactId>\([^<]*\)<\/artifactId>.*/\1/p' | head -1)
+        bom_version=$(echo "$dep" | sed -n 's/.*<version>\([^<]*\)<\/version>.*/\1/p' | head -1)
+        if [ -z "$bom_group" ] || [ -z "$bom_artifact" ] || [ -z "$bom_version" ]; then
+            continue
+        fi
+        case "$bom_version" in *'${'*) continue ;; esac
+        bom_key="${bom_group}__${bom_artifact}__${bom_version}"
+        if is_already_copied "$bom_key"; then
+            continue
+        fi
+        bom_path=$(echo "$bom_group" | tr '.' '/')
+        bom_pom="$M2_REPO/$bom_path/$bom_artifact/$bom_version/$bom_artifact-$bom_version.pom"
+        target_dir="$DEPENDENCY_DIR/$bom_path/$bom_artifact/$bom_version"
+        if [ -f "$bom_pom" ]; then
+            mkdir -p "$target_dir"
+            cp "$bom_pom" "$target_dir/"
+            echo "✓ Copied BOM: $bom_artifact:$bom_version"
+            mark_as_copied "$bom_key"
+            copy_parent_chain "$bom_pom"
+        else
+            echo "✗ BOM NOT FOUND in local repo: $bom_artifact:$bom_version"
+            echo "  Expected at: $bom_pom"
+        fi
+    done
+}
+
 # Find all POM files and process each
 find "$DEPENDENCY_DIR" -name "*.pom" -type f | while read pom; do
     copy_parent_chain "$pom"
+    copy_imported_boms "$pom"
 done
 
 # Clean up tracker file

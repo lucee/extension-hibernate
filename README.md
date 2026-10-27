@@ -1,10 +1,10 @@
 # Lucee Hibernate Extension (ORM)
 
-[![Java CI](https://github.com/lucee/extension-hibernate/actions/workflows/main.yml/badge.svg?branch=7.0)](https://github.com/lucee/extension-hibernate/actions/workflows/main.yml)
+[![Java CI](https://github.com/lucee/extension-hibernate/actions/workflows/main.yml/badge.svg?branch=7.4)](https://github.com/lucee/extension-hibernate/actions/workflows/main.yml)
 
-Built using [Hibernate ORM 7.3.2](https://hibernate.org/orm/) on Java 21.
+Built using [Hibernate ORM 7.4.14](https://hibernate.org/orm/) on Java 21.
 
-> **Heads up:** this is the `7.x` migration branch (Hibernate 7.3.2). The
+> **Heads up:** this is the `7.4` migration branch (Hibernate 7.4.14). The
 > shipping LTS is the `5.6` branch (Hibernate 5.6, Lucee 6.2.5.48+). See
 > [History](#history) below.
 
@@ -12,14 +12,14 @@ Install via Lucee Admin, or pin in your environment:
 
 ```bash
 # Maven coordinates, auto-updates to latest snapshot
-LUCEE_EXTENSIONS=org.lucee:hibernate-extension:7.3.2.0-SNAPSHOT
+LUCEE_EXTENSIONS=org.lucee:hibernate-extension:7.4.14.0-SNAPSHOT
 ```
 
 See [Lucee Compatibility](#lucee-compatibility) for minimum supported versions.
 
 ## History
 
-- **Hibernate 7.3 (branch `7.x`, this branch)** — major upgrade. Hibernate 7 completes the **`javax.persistence` → `jakarta.persistence`** namespace migration (Jakarta Persistence 3.2), requires Java 21, and reshapes large parts of the API surface. Criteria rewritten to JPA `CriteriaBuilder`, schema work moved to `SchemaManager`, EHCache dropped in favour of Caffeine/JCache, dialect aliases collapsed to version-agnostic families, HQL parser is now strict on identifier casing, and several `SessionFactory` metadata APIs were removed (the extension restores a compat shim for cborm/ColdBox/Slatwall). **Not backwards-compatible** — see [BREAKING-CHANGES.md](BREAKING-CHANGES.md). Tracked under [LDEV-6292](https://luceeserver.atlassian.net/browse/LDEV-6292).
+- **Hibernate 7.4 (branch `7.4`, this branch)** — major upgrade. Hibernate 7 completes the **`javax.persistence` → `jakarta.persistence`** namespace migration (Jakarta Persistence 3.2), requires Java 21, and reshapes large parts of the API surface. Criteria rewritten to JPA `CriteriaBuilder`, schema work moved to `SchemaManager`, EHCache dropped in favour of Caffeine/JCache, dialect aliases collapsed to version-agnostic families, HQL parser is now strict on identifier casing, and several `SessionFactory` metadata APIs were removed (the extension restores a compat shim for cborm/ColdBox/Slatwall). **Not backwards-compatible** — see [BREAKING-CHANGES.md](BREAKING-CHANGES.md). Tracked under [LDEV-6292](https://luceeserver.atlassian.net/browse/LDEV-6292).
 - **Hibernate 5.6 (branch `5.6`, current LTS)** — Lucee resumed active development, merging the Ortus work and upgrading 5.4 → 5.6 with native logging, transaction integration, and expanded test coverage. Bug fixes and minor features land here.
 - **Ortus fork** — Ortus Solutions forked the extension, completed the Hibernate 5.4 upgrade, and maintained it.
 - **Lucee 5.4 (beta)** — Lucee began upgrading to Hibernate 5.4 but it only reached beta.
@@ -30,15 +30,36 @@ See [Lucee Compatibility](#lucee-compatibility) for minimum supported versions.
 
 ## Lucee Compatibility
 
-| Lucee line | Minimum patch |
-| ---------- | ------------- |
-| 6.2        | 6.2.7.11      |
-| 7.0        | 7.0.4.27      |
-| 7.1        | 7.1.0.108     |
+Lucee 7.0 or newer is required. The extension declares `luceeCoreVersion: 7.0.4.34` in `build.properties`.
 
-These are the patches that contain the [LDEV-6291](https://luceeserver.atlassian.net/browse/LDEV-6291) fix for `DatasourceConnectionImpl.prepareStatement`, which Hibernate 7.3's strict JDBC holdability check trips on. The extension declares `luceeCoreVersion: 6.2.7.11` in `build.properties`.
+| Lucee line | Minimum release |
+| ---------- | --------------- |
+| 7.0        | 7.0.4.34        |
+| 7.1        | 7.1.0.204       |
 
-Earlier Lucee patches are not supported on this branch — use the `5.6` branch of the extension instead.
+The extension and its libraries are loaded as Maven libraries instead of an OSGi bundle, which needs Lucee 7.0. The minimum releases are the first ones with the [LDEV-6291](https://luceeserver.atlassian.net/browse/LDEV-6291) fix for `DatasourceConnectionImpl.prepareStatement`, which Hibernate 7.3's strict JDBC holdability check trips on.
+
+Lucee 6.2 and earlier Lucee 7 patches are not supported on this branch — use the `5.6` branch of the extension instead.
+
+## Using Hibernate classes from CFML
+
+The extension and Hibernate are Maven libraries, not an OSGi bundle anymore. `createObject("java", "org.hibernate...")` without a Maven coordinate no longer finds Hibernate classes. Pass the Maven coordinate of the installed extension, so you get the same classes the ORM uses:
+
+```cfml
+hibernateVersion = createObject( "java", "org.hibernate.Version", { maven: [ "org.lucee:hibernate-extension:7.4.14.0" ] } );
+writeOutput( hibernateVersion.getVersionString() );
+```
+
+The coordinate has to match the installed extension version. To avoid hard-coding it:
+
+```cfml
+for ( ext in extensionList() ) {
+	if ( ext.id == "FAD1E8CB-4F45-4184-86359145767C29DE" ) hibernateMaven = "org.lucee:hibernate-extension:" & ext.version;
+}
+criteriaBuilder = createObject( "java", "org.hibernate.query.criteria.HibernateCriteriaBuilder", { maven: [ hibernateMaven ] } );
+```
+
+The third argument must be a struct with a `maven` array. A plain string is treated as an OSGi bundle name and fails.
 
 See [Configuration](https://docs.lucee.org/recipes/orm-configuration.html) and [Migration Guide](https://docs.lucee.org/recipes/orm-migration-guide.html) for details.
 
@@ -62,7 +83,7 @@ Full category listing: https://docs.lucee.org/categories/orm.html
 
 See [CHANGELOG.md](CHANGELOG.md) for the full list of bug fixes, new features, and improvements.
 
-See [BREAKING-CHANGES.md](BREAKING-CHANGES.md) for behaviour changes that may affect existing applications — the Hibernate 5.6 → 7.3 jump introduces several.
+See [BREAKING-CHANGES.md](BREAKING-CHANGES.md) for behaviour changes that may affect existing applications — the Hibernate 5.6 → 7.4 jump introduces several.
 
 ## Issues
 
