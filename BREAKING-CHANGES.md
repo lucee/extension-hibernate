@@ -8,9 +8,21 @@ Behaviour changes that may affect existing Lucee applications.
 
 The extension targets Java 21. Java 11 and 17 are no longer supported.
 
-### Lucee 7.1+ required
+### Lucee 7.0.4.34+ required
 
-Hibernate 7.3's strict JDBC holdability check trips a long-standing bug in Lucee's `DatasourceConnectionImpl.prepareStatement(sql, type, concur)`. Fixed in Lucee 7.1.0.107+ ([LDEV-6291](https://luceeserver.atlassian.net/browse/LDEV-6291)). The extension will not run on earlier Lucee versions.
+The extension is loaded as Maven libraries instead of an OSGi bundle ([LDEV-6735](https://luceeserver.atlassian.net/browse/LDEV-6735)), which needs Lucee 7.0. Hibernate 7.3's strict JDBC holdability check also trips a long-standing bug in Lucee's `DatasourceConnectionImpl.prepareStatement(sql, type, concur)`, fixed by [LDEV-6291](https://luceeserver.atlassian.net/browse/LDEV-6291). The first releases with the fix are 7.0.4.34 and 7.1.0.204. Lucee 6.2 stays on the `5.6` branch of the extension.
+
+### `createObject("java", "org.hibernate...")` needs the Maven coordinate
+
+The extension and Hibernate are no longer an OSGi bundle ([LDEV-6735](https://luceeserver.atlassian.net/browse/LDEV-6735)). `createObject("java", "org.hibernate.Version")` without a Maven coordinate fails with `cannot load class through its string name`. The same applies to `org.lucee.extension.orm.hibernate...` classes.
+
+**Migration:** Pass the Maven coordinate of the installed extension as a struct with a `maven` array:
+
+```cfml
+createObject( "java", "org.hibernate.Version", { maven: [ "org.lucee:hibernate-extension:7.3.2.0" ] } );
+```
+
+A plain string as third argument is treated as an OSGi bundle name and fails. See the README for reading the installed version from `extensionList()`.
 
 ### HQL identifiers are case-sensitive
 

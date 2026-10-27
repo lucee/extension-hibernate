@@ -46,7 +46,10 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: orm-lex
-          path: target/*.lex
+          # the lite .lex resolves its libraries from Maven, where the -SNAPSHOT is not published, so test the full .lex
+          path: |
+            target/*.lex
+            !target/*.lite.lex
 
   test:
     runs-on: ubuntu-latest
@@ -56,8 +59,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - java: '21'
-            lucee: '6.2/snapshot/light'
           - java: '21'
             lucee: '7.0/snapshot/light'
           - java: '21'
