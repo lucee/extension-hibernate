@@ -53,8 +53,11 @@ public class CFCGetter implements Getter {
 	@Override
 	public Object get(Object trg) throws HibernateException {
 		try {
-			Component cfc = CommonUtil.toComponent(trg);
-			Object rtn = cfc.getComponentScope().get(key, null);
+			Object rtn;
+			// LDEV-2121: a composite primary key passed in by the caller (entityLoadByPK(), ormEvictEntity())
+			// is a map holding the values of the key properties, not the entity itself
+			if (trg instanceof Map && !(trg instanceof Component)) rtn = getFromMap((Map<?, ?>) trg);
+			else rtn = CommonUtil.toComponent(trg).getComponentScope().get(key, null);
 			// LDEV-1992: don't trigger lazy init on uninitialized proxies — Hibernate
 			// handles them natively during merge/flush
 			if (rtn instanceof HibernateProxy) {
@@ -84,6 +87,15 @@ public class CFCGetter implements Getter {
 		} catch (PageException pe) {
 			throw new HibernatePageException(pe);
 		}
+	}
+
+	private Object getFromMap(Map<?, ?> map) {
+		String name = key.getString();
+		if (map.containsKey(name)) return map.get(name);
+		for (Map.Entry<?, ?> e: map.entrySet()) {
+			if (e.getKey() != null && name.equalsIgnoreCase(e.getKey().toString())) return e.getValue();
+		}
+		return null;
 	}
 
 	public HibernateORMEngine getHibernateORMEngine() {
