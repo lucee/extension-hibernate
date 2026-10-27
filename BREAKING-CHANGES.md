@@ -2,7 +2,7 @@
 
 Behaviour changes that may affect existing Lucee applications.
 
-## Hibernate 5.6 → 7.3.2 (extension 7.0)
+## Hibernate 5.6 → 7.4.14 (extension 7.4)
 
 ### Java 21 required
 
