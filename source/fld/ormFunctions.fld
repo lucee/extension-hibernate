@@ -457,9 +457,9 @@ EntitySave(entity, [forceInsert])</description>
 		<description>Flushes the current ORM session. ORMFlush flushes all the pending CRUD operations in that request. Any changes made in the objects, in the current ORM session, are saved to the database.</description>
 		<argument>
 			<name>datasource</name>
-			<type>string</type>
+			<type>any</type>
 			<required>no</required>
-			<description>datasource used for the session, if not defined, the datasource defined in Application.cfc is used.</description>
+			<description>datasource used for the session. Can also be a comma separated list or an array of datasources, in which case the session of each of them is flushed. If not defined, the datasource defined in Application.cfc is used.</description>
 		</argument>
 		<return>
 			<type>void</type>
