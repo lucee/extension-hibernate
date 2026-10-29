@@ -20,7 +20,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	// LDEV-3657: savepoints with ORM code need the fix in Lucee core
 	private boolean function notSupported() {
-		return !server.checkVersionGTE( server.lucee.version, 7, 1, 3, 40 );
+		return !server.checkVersionGTE( server.lucee.version, 7, 1, 3, 64 );
 	}
 
 	private string function createURI(string calledName){
