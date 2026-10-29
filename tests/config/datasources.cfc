@@ -24,6 +24,31 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				expect( trim( result.filecontent ) ).toBe( "ok" );
 			});
 
+			it( "ORMFlush() accepts a comma separated list of datasources", function() {
+				var result = _InternalRequest( template: "#uri()#/flushList.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "ORMFlush() ignores spaces around the datasource names in a list", function() {
+				var result = _InternalRequest( template: "#uri()#/flushListSpaces.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "ORMFlush() accepts an array of datasources", function() {
+				var result = _InternalRequest( template: "#uri()#/flushArray.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "ORMFlush() with a single datasource or no argument flushes only that datasource", function() {
+				var result = _InternalRequest( template: "#uri()#/flushSingle.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
+			it( "ORMFlush() with an unknown datasource in the list throws before flushing anything", function() {
+				var result = _InternalRequest( template: "#uri()#/flushUnknown.cfm" );
+				expect( trim( result.filecontent ) ).toBe( "ok" );
+			});
+
 			it( title: "ORMFlushAll() flushes all datasource sessions", skip: !hasORMFlushAll(), body: function() {
 				var result = _InternalRequest( template: "#uri()#/flushAll.cfm" );
 				expect( trim( result.filecontent ) ).toBe( "ok" );
