@@ -46,7 +46,10 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: orm-lex
-          path: target/*.lex
+          # the lite .lex resolves its libraries from Maven, where the -SNAPSHOT is not published, so test the full .lex
+          path: |
+            target/*.lex
+            !target/*.lite.lex
 
   test:
     runs-on: ubuntu-latest
@@ -56,10 +59,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - java: '21'
-            lucee: '6.2/snapshot/light'
-            # the 6.2 core tests still use HQL that Hibernate 7.3+ rejects (quoted id literal, wrong identifier case in LDEV1428), the 7.0 tests are adapted and have no tests for 7.1 only features
-            branch: '7.0'
           - java: '21'
             lucee: '7.0/snapshot/light'
             branch: '7.0'

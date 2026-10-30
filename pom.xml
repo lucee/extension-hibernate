@@ -17,7 +17,6 @@
         <id>FAD1E8CB-4F45-4184-86359145767C29DE</id>
         <image>https://raw.githubusercontent.com/lucee/extension-hibernate/5.6/source/images/logo.png</image>
         <buildDate>${maven.build.timestamp}</buildDate>
-        <bundlename>org.lucee.hibernate.extension</bundlename>
         <release.url>https://central.sonatype.com/api/v1/publisher/deployments/download/</release.url>
         <snapshot.url>https://central.sonatype.com/repository/maven-snapshots/</snapshot.url>
     </properties>
@@ -232,7 +231,7 @@
                 <version>3.13.0</version>
             </plugin>
 
-            <!-- 3. Rename manifest, copy FLD -->
+            <!-- 3. Rename manifest -->
             <plugin>
                 <groupId>com.coderplus.maven.plugins</groupId>
                 <artifactId>copy-rename-maven-plugin</artifactId>
@@ -249,126 +248,90 @@
                             <destinationFile>${project.build.directory}/extension-resources/META-INF/MANIFEST.MF</destinationFile>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>copy-fld</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <sourceFile>${project.basedir}/source/fld/ormFunctions.fld</sourceFile>
-                            <destinationFile>${project.build.directory}/extension-resources/flds/ormFunctions.fld</destinationFile>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>rename-lex</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>rename</goal>
-                        </goals>
-                        <configuration>
-                            <sourceFile>${project.build.directory}/${project.artifactId}-${project.version}.zip</sourceFile>
-                            <destinationFile>${project.build.directory}/${project.artifactId}-${project.version}.lex</destinationFile>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
 
-            <!-- 4. Create extension jar with OSGi manifest -->
+            <!-- 4. Create the extension jar, Lucee loads it and its dependencies as Maven libraries -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.4.2</version>
                 <configuration>
                     <archive>
-                        <manifestFile>source/java/src/META-INF/MANIFEST.MF</manifestFile>
                         <manifestEntries>
-                            <Bundle-SymbolicName>${bundlename}</Bundle-SymbolicName>
-                            <Bundle-Version>${project.version}</Bundle-Version>
                             <Built-Date>${build.timestamp}</Built-Date>
                         </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
 
-            <!-- 5. Shade ALL deps into one fat jar (same approach as Ortus) -->
+            <!-- 5. Copy the runtime dependencies in repository layout into the maven folder of the .lex -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <version>3.6.0</version>
                 <executions>
                     <execution>
+                        <id>copy-dependencies</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                                <!-- Concatenate reference.conf from caffeine-jcache + ours so HOCON merging works at runtime -->
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>reference.conf</resource>
-                                </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <manifestEntries>
-                                        <Bundle-SymbolicName>${bundlename}</Bundle-SymbolicName>
-                                        <Bundle-Version>${project.version}</Bundle-Version>
-                                        <Built-Date>${build.timestamp}</Built-Date>
-                                        <!-- Required: Hibernate's Version.getVersionString() reads this at runtime.
-                                             Without it, the shaded jar reports [WORKING] instead of the real version. -->
-                                        <Implementation-Version>7.4.14.Final</Implementation-Version>
-                                    </manifestEntries>
-                                </transformer>
-                            </transformers>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <outputDirectory>${project.build.directory}/extension/maven</outputDirectory>
+                            <includeScope>runtime</includeScope>
+                            <useRepositoryLayout>true</useRepositoryLayout>
+                            <copyPom>true</copyPom>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
-            <!-- 6. Copy fat jar to target/jars/ with bundle name -->
+            <!-- 6. Assemble the .lex (with the maven folder) and the .lite.lex (resolves the libraries from Maven) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>3.1.0</version>
                 <executions>
                     <execution>
-                        <id>copy-extension-jar</id>
+                        <id>assemble-lex</id>
                         <phase>package</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
                         <configuration>
                             <target>
-                                <mkdir dir="${project.build.directory}/jars"/>
-                                <copy file="${project.build.directory}/${project.artifactId}-${project.version}.jar"
-                                      tofile="${project.build.directory}/jars/${bundlename}-${project.version}.jar"/>
+                                <property name="ext" value="${project.build.directory}/extension"/>
+                                <property name="gav" value="${project.groupId}:${project.artifactId}:${project.version}"/>
+                                <property name="artifactDir" value="${ext}/maven/org/lucee/${project.artifactId}/${project.version}"/>
+
+                                <copy todir="${ext}/META-INF">
+                                    <fileset dir="${project.build.directory}/extension-resources/META-INF"/>
+                                    <fileset dir="${project.basedir}/source/images" includes="logo.png"/>
+                                </copy>
+                                <copy file="${project.basedir}/source/fld/ormFunctions.fld" todir="${ext}/flds"/>
+                                <replace file="${ext}/flds/ormFunctions.fld" token="{maven}" value="${gav}"/>
+
+                                <mkdir dir="${artifactDir}"/>
+                                <copy file="${project.build.directory}/${project.artifactId}-${project.version}.jar" todir="${artifactDir}"/>
+                                <copy file="${project.basedir}/.flattened-pom.xml" tofile="${artifactDir}/${project.artifactId}-${project.version}.pom"/>
+                                <exec executable="bash" failonerror="true">
+                                    <arg value="${project.basedir}/copy-parent-poms.sh"/>
+                                    <arg value="${ext}/maven"/>
+                                </exec>
+
+                                <zip destfile="${project.build.directory}/${project.artifactId}-${project.version}.lex">
+                                    <zipfileset dir="${ext}"/>
+                                </zip>
+                                <zip destfile="${project.build.directory}/${project.artifactId}-${project.version}.lite.lex">
+                                    <zipfileset dir="${ext}">
+                                        <exclude name="maven/**"/>
+                                    </zipfileset>
+                                </zip>
                             </target>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!-- 6. Assemble .lex -->
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.7.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/assembly/lex.xml</descriptor>
-                    </descriptors>
-                    <finalName>${project.artifactId}-${project.version}</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <attach>false</attach>
-                </configuration>
             </plugin>
 
             <!-- 7. Attach .lex as artifact -->
@@ -388,6 +351,11 @@
                                 <artifact>
                                     <file>${project.build.directory}/${project.artifactId}-${project.version}.lex</file>
                                     <type>lex</type>
+                                </artifact>
+                                <artifact>
+                                    <file>${project.build.directory}/${project.artifactId}-${project.version}.lite.lex</file>
+                                    <type>lex</type>
+                                    <classifier>lite</classifier>
                                 </artifact>
                             </artifacts>
                         </configuration>
@@ -436,6 +404,7 @@
                                 <configuration>
                                     <files>
                                         <file>${project.build.directory}/${project.artifactId}-${project.version}.lex</file>
+                                        <file>${project.build.directory}/${project.artifactId}-${project.version}.lite.lex</file>
                                     </files>
                                 </configuration>
                             </execution>

@@ -1,20 +1,20 @@
 package org.lucee.extension.orm.hibernate;
 
 import java.lang.reflect.Modifier;
+import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import org.lucee.extension.orm.hibernate.util.CommonUtil;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleReference;
 
 import lucee.commons.io.log.Log;
 import lucee.loader.engine.CFMLEngineFactory;
 import lucee.loader.util.Util;
 import lucee.runtime.db.DataSource;
 import lucee.runtime.type.Struct;
-import lucee.runtime.util.ListUtil;
 
 /**
  * Hibernate Dialect manager
@@ -28,42 +28,37 @@ public class Dialect {
 	static {
 
 		try {
-			// the OSGi API instead of the classes of the framework, Lucee 9 relocates the framework
+			// all dialect classes in the hibernate-core jar, Lucee loads it as a Maven library
 			ClassLoader bcl = org.hibernate.dialect.SybaseDialect.class.getClassLoader();
-			Bundle b = ((BundleReference) bcl).getBundle();
-
-			// List all XML files in the OSGI-INF directory and below
-			ListUtil util = CFMLEngineFactory.getInstance().getListUtil();
-			Enumeration<URL> e = b.findEntries("org/hibernate/dialect", "*.class", true);
-			String path = null;
-			while (e.hasMoreElements()) {
-				try {
-					path = e.nextElement().getPath();
-					if (path.startsWith("/")) path = path.substring(1);
-					else if (path.startsWith("\\")) path = path.substring(1);
-					if (path.endsWith(".class")) path = path.substring(0, path.length() - 6);
-					path = path.replace('/', '.');
-					path = path.replace('\\', '.');
-					String name;
-					Class<?> clazz = bcl.loadClass(path);
-					if (org.hibernate.dialect.Dialect.class.isAssignableFrom(clazz) && !Modifier.isAbstract(clazz.getModifiers())) {
-						dialects.setEL(CommonUtil.createKey(path), path);
-						dialects.setEL(CommonUtil.createKey(CommonUtil.last(path, ".")), path);
-						name = CommonUtil.last(path, ".");
-						dialects.setEL(CommonUtil.createKey(name), path);
-						if (name.endsWith("Dialect")) {
-							name = name.substring(0, name.length() - 7);
+			URL url = bcl.getResource("org/hibernate/dialect/SybaseDialect.class");
+			JarURLConnection conn = (JarURLConnection) url.openConnection();
+			conn.setUseCaches(false);
+			try (JarFile jar = conn.getJarFile()) {
+				Enumeration<JarEntry> e = jar.entries();
+				String path = null;
+				while (e.hasMoreElements()) {
+					path = e.nextElement().getName();
+					if (!path.startsWith("org/hibernate/dialect/") || !path.endsWith(".class")) continue;
+					path = path.substring(0, path.length() - 6).replace('/', '.');
+					try {
+						String name;
+						Class<?> clazz = bcl.loadClass(path);
+						if (org.hibernate.dialect.Dialect.class.isAssignableFrom(clazz) && !Modifier.isAbstract(clazz.getModifiers())) {
+							dialects.setEL(CommonUtil.createKey(path), path);
+							name = CommonUtil.last(path, ".");
 							dialects.setEL(CommonUtil.createKey(name), path);
+							if (name.endsWith("Dialect")) {
+								name = name.substring(0, name.length() - 7);
+								dialects.setEL(CommonUtil.createKey(name), path);
+							}
 						}
-
-						// print.e("dialects.setEL(\"" + name + "\",\"" + path + "\");");
 					}
-				}
-				catch (Exception exx) {
-					// expected — dialects can have missing transitive deps across Hibernate versions
-					Log log = CommonUtil.getORMLog();
-					if ( log != null ) log.log( Log.LEVEL_DEBUG, "hibernate",
-						"Skipping dialect class [" + path + "] that failed to load during OSGi scan", exx );
+					catch (Throwable t) {
+						// expected — dialects can have missing transitive deps across Hibernate versions
+						Log log = CommonUtil.getORMLog();
+						if ( log != null ) log.log( Log.LEVEL_DEBUG, "hibernate",
+							"Skipping dialect class [" + path + "] that failed to load during the jar scan", t );
+					}
 				}
 			}
 		}
@@ -71,12 +66,12 @@ public class Dialect {
 			// total scan failure — registered set limited to the hardcoded list below
 			Log log = CommonUtil.getORMLog();
 			if ( log != null ) log.log( Log.LEVEL_WARN, "hibernate",
-				"Failed to scan OSGi bundle for Hibernate dialect classes; falling back to hardcoded list", ex );
+				"Failed to scan the hibernate-core jar for Hibernate dialect classes; falling back to hardcoded list", ex );
 		}
 
 		// Hibernate 7.3 deleted all version-specific dialect classes; the surviving
 		// per-vendor dialect detects the server version via JDBC metadata at SF build.
-		// The OSGi scan above auto-registers what's actually in the core jar (FQN +
+		// The jar scan above auto-registers what's actually in the core jar (FQN +
 		// simple name + short name). Below: legacy aliases only — historical names
 		// that no longer have a matching class, mapped to their surviving family.
 		// Names from `hibernate-community-dialects` (Derby, Firebird, Informix, Ingres,
@@ -163,7 +158,7 @@ public class Dialect {
 	 * Register a legacy alias under both its short form and its FQN form.
 	 *
 	 * Both <code>"MySQL5InnoDB"</code> and <code>"org.hibernate.dialect.MySQL5InnoDBDialect"</code>
-	 * resolve to the same surviving target. The OSGi auto-scan above only registers FQNs
+	 * resolve to the same surviving target. The jar scan above only registers FQNs
 	 * for classes that still exist in hibernate-core; users migrating from H5 who hard-coded
 	 * the FQN of a since-removed dialect would otherwise see their setting silently dropped.
 	 */

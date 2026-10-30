@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.4.14.0
+
+- [LDEV-6735](https://luceeserver.atlassian.net/browse/LDEV-6735) — The extension and its libraries are loaded as Maven libraries instead of an OSGi bundle. The `.lex` ships the extension jar and its dependencies in a `maven/` folder; an additional `.lite.lex` resolves them from Maven. Minimum Lucee version is now 7.0.4.34 (7.1: 7.1.0.204). **Breaking:** `createObject("java", "org.hibernate...")` needs the Maven coordinate of the extension, e.g. `createObject("java", "org.hibernate.Version", { maven: [ "org.lucee:hibernate-extension:7.4.14.0" ] })`. See [BREAKING-CHANGES.md](BREAKING-CHANGES.md)
+
 ## 5.6.15.21
 
 - [LDEV-6627](https://luceeserver.atlassian.net/browse/LDEV-6627) — Find the bundle of the Hibernate class loader with the OSGi API (`org.osgi.framework.BundleReference`) instead of casting to Felix's internal `BundleClassLoader`. Lucee 9 ships Felix relocated (`lucee.shaded.felix`), so the Felix class is not available under its old name anymore and the ORM failed with `NoClassDefFoundError: org/apache/felix/framework/BundleWiringImpl$BundleClassLoader`. Works on all Lucee versions

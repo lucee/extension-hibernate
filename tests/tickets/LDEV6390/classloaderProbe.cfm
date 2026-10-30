@@ -1,8 +1,12 @@
 <cfscript>
 	// LDEV-6390 probe: what classloader does new ClassLoaderServiceImpl() pin,
 	// and is it different from Lucee's TCCL?
-	clsServiceImpl = createObject( "java", "org.hibernate.boot.registry.classloading.internal.ClassLoaderServiceImpl" );
-	bundleCL = clsServiceImpl.getClass().getClassLoader();
+	// the extension and Hibernate are Maven libraries, take the classloader of the live SessionFactory
+	sf = ORMGetSessionFactory();
+	bundleCL = sf.getClass().getClassLoader();
+	clsServiceImpl = bundleCL.loadClass( "org.hibernate.boot.registry.classloading.internal.ClassLoaderServiceImpl" );
+	if ( !clsServiceImpl.getClassLoader().equals( bundleCL ) )
+		throw( message="ClassLoaderServiceImpl is not defined by the classloader of the SessionFactory" );
 	tccl = createObject( "java", "java.lang.Thread" ).currentThread().getContextClassLoader();
 
 	systemOutput( "", true );
@@ -30,7 +34,6 @@
 	}
 
 	// Live SessionFactory's ClassLoaderService — what does IT delegate to?
-	sf = ORMGetSessionFactory();
 	serviceRegistry = sf.getServiceRegistry();
 	cls = serviceRegistry.getService( bundleCL.loadClass( "org.hibernate.boot.registry.classloading.spi.ClassLoaderService" ) );
 	systemOutput( "  live svc class  : " & cls.getClass().getName(), true );
