@@ -274,16 +274,20 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 				// server is at TRACE (restored by beforeAll / previous finally)
 				// app sets orm log to ERROR via this.logs — app wins, blocks SQL
 				// can't use markers — this.logs ERROR blocks cflog at INFO too
-				var offsetBefore = getLogLength();
-				var result = _InternalRequest(
-					template: "#appLogLevelUri( 'appOverrideError' )#/index.cfm",
-					url: { marker: "APPLOG_ERROR_IGNORED" }
-				);
-				expect( trim( result.filecontent ) ).toBe( "ok" );
-				var logContent = lCase( getLogContentSince( offsetBefore ) );
-				systemOutput( "LOG APP ERROR OVERRIDE: [#logContent#]", true );
-				// app this.logs ERROR overrides server TRACE — SQL blocked
-				expect( logContent ).notToInclude( "insert" );
+				try {
+					var offsetBefore = getLogLength();
+					var result = _InternalRequest(
+						template: "#appLogLevelUri( 'appOverrideError' )#/index.cfm",
+						url: { marker: "APPLOG_ERROR_IGNORED" }
+					);
+					expect( trim( result.filecontent ) ).toBe( "ok" );
+					var logContent = lCase( getLogContentSince( offsetBefore ) );
+					systemOutput( "LOG APP ERROR OVERRIDE: [#logContent#]", true );
+					// app this.logs ERROR overrides server TRACE — SQL blocked
+					expect( logContent ).notToInclude( "insert" );
+				} finally {
+					configureOrmLog();
+				}
 			});
 
 		});
