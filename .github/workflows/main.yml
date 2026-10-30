@@ -256,6 +256,11 @@ jobs:
           luceeVersionQuery: ${{ matrix.lucee.query }}
           extensionDir: ${{ github.workspace }}/target
         env:
+          # Lucee 8.0 on Java 21 deadlocks while loading the installed extensions: ConfigServerImpl.getRHExtensions() waits
+          # for its startBundles tasks (virtual threads) in a synchronized block, a pinned virtual thread on Java 21, while
+          # the parallel test service setup pins every carrier thread (the default parallelism is the number of cores).
+          # Java 24+ no longer pins. More carrier threads give the tasks a thread to run on.
+          JAVA_TOOL_OPTIONS: -Djdk.virtualThreadScheduler.parallelism=16
           testLabels: orm
           testAdditional: ${{ github.workspace }}/tests
           testServices: mysql,mssql,postgres
