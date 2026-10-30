@@ -58,7 +58,8 @@ jobs:
         include:
           - java: '21'
             lucee: '6.2/snapshot/light'
-            branch: '6.2'
+            # the 6.2 core tests still use HQL that Hibernate 7.3+ rejects (quoted id literal, wrong identifier case in LDEV1428), the 7.0 tests are adapted and have no tests for 7.1 only features
+            branch: '7.0'
           - java: '21'
             lucee: '7.0/snapshot/light'
             branch: '7.0'
