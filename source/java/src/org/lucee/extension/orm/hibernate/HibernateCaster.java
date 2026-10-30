@@ -15,7 +15,8 @@ import java.util.List;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.collection.spi.PersistentCollection;
-import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.type.Type;
 
 import lucee.commons.lang.types.RefBoolean;
@@ -107,36 +108,6 @@ public class HibernateCaster {
 		int index = name.lastIndexOf('.');
 		name = name.substring(0, index);
 		return name;
-	}
-
-	public static int cascade(ORMSession session, String cascade) throws PageException {
-		int c = cascade(cascade, -1);
-		if (c != -1) return c;
-		throw ExceptionUtil.createException(session, null,
-				"Invalid cascade definition [" + cascade + "], valid values are [all, all-delete-orphan, delete, delete-orphan, refresh, save-update]", null);
-	}
-
-	public static int cascade(String cascade, int defaultValue) {
-		cascade = cascade.trim().toLowerCase();
-		if ("all".equals(cascade)) return CFConstants.CASCADE_ALL;
-
-		if ("save-update".equals(cascade)) return CFConstants.CASCADE_SAVE_UPDATE;
-		if ("save_update".equals(cascade)) return CFConstants.CASCADE_SAVE_UPDATE;
-		if ("saveupdate".equals(cascade)) return CFConstants.CASCADE_SAVE_UPDATE;
-
-		if ("delete".equals(cascade)) return CFConstants.CASCADE_DELETE;
-
-		if ("delete-orphan".equals(cascade)) return CFConstants.CASCADE_DELETE_ORPHAN;
-		if ("delete_orphan".equals(cascade)) return CFConstants.CASCADE_DELETE_ORPHAN;
-		if ("deleteorphan".equals(cascade)) return CFConstants.CASCADE_DELETE_ORPHAN;
-
-		if ("all-delete-orphan".equals(cascade)) return CFConstants.CASCADE_ALL_DELETE_ORPHAN;
-		if ("all_delete_orphan".equals(cascade)) return CFConstants.CASCADE_ALL_DELETE_ORPHAN;
-		if ("alldeleteorphan".equals(cascade)) return CFConstants.CASCADE_ALL_DELETE_ORPHAN;
-
-		if ("refresh".equals(cascade)) return CFConstants.REFRESH;
-
-		return defaultValue;
 	}
 
 	public static int collectionType(ORMSession session, String strCollectionType) throws PageException {
@@ -571,7 +542,7 @@ public class HibernateCaster {
 		// init
 		if (qry == null) {
 			SessionFactory factory = session.getRawSessionFactory(dsn);
-			ClassMetadata md = factory.getClassMetadata(getEntityName(cfc));
+			EntityPersister md = ((SessionFactoryImplementor) factory).getMappingMetamodel().findEntityDescriptor(getEntityName(cfc));
 			Array names = CommonUtil.createArray();
 			Array types = CommonUtil.createArray();
 			String name;

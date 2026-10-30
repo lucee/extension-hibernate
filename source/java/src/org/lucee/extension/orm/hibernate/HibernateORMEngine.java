@@ -5,7 +5,6 @@ import org.lucee.extension.orm.hibernate.logging.LoggerLevelManager;
 import org.lucee.extension.orm.hibernate.logging.OrmLoggingSettings;
 import org.lucee.extension.orm.hibernate.util.CommonUtil;
 import org.lucee.extension.orm.hibernate.util.ExceptionUtil;
-import org.lucee.extension.orm.hibernate.util.ExtensionUtil;
 import org.lucee.extension.orm.hibernate.util.HibernateUtil;
 
 import java.util.HashMap;
@@ -14,10 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.hibernate.EntityMode;
-import org.hibernate.tuple.entity.EntityTuplizerFactory;
 import org.lucee.extension.orm.hibernate.event.EventListenerIntegrator;
-import org.lucee.extension.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
 
 import lucee.commons.io.log.Log;
 import lucee.commons.io.res.Resource;
@@ -49,12 +45,6 @@ public class HibernateORMEngine implements ORMEngine {
 	private static final Object INIT_LOCK = new Object();
 
 	static {
-		// LDEV-4276 LDEV-6225
-		// JAXB context factory property name differs by JVM version; on Java 17+ the old name causes NPEs
-		String jaxbContextProperty = ExtensionUtil.getJVMVersion() < 11 ? "javax.xml.bind.context.factory"
-				: "javax.xml.bind.JAXBContextFactory";
-		System.setProperty( jaxbContextProperty, "com.sun.xml.bind.v2.ContextFactory" );
-
 		// Force JBoss Logging to use our Lucee bridge (also registered via META-INF/services)
 		System.setProperty("org.jboss.logging.provider", "org.lucee.extension.orm.hibernate.logging.LuceeJBossLoggerProvider");
 	}
@@ -261,7 +251,7 @@ public class HibernateORMEngine implements ORMEngine {
 			if (data.getConfiguration(e.getKey()) != null) continue;
 
 			try {
-				data.setConfiguration(log, e.getValue(), data.getDataSource(e.getKey()), null, null, appContext == null ? "" : appContext.getName(), logSettings.formatSQL);
+				data.setConfiguration(log, e.getValue(), data.getDataSource(e.getKey()), null, null, logSettings.formatSQL);
 			}
 			catch (Exception ex) {
 				throw CommonUtil.toPageException(ex);
@@ -271,9 +261,8 @@ public class HibernateORMEngine implements ORMEngine {
 			 */
 			addEventListeners(pc, data, e.getKey());
 
-			EntityTuplizerFactory tuplizerFactory = data.getConfiguration(e.getKey()).config.getEntityTuplizerFactory();
-			tuplizerFactory.registerDefaultTuplizerClass(EntityMode.MAP, AbstractEntityTuplizerImpl.class);
-			tuplizerFactory.registerDefaultTuplizerClass(EntityMode.POJO, AbstractEntityTuplizerImpl.class);
+			// CFC entity representation is installed via CFCMetadataBuilderInitializer
+			// (META-INF/services hook) — see Stage 3 in h73-migration-status.md.
 
 			data.buildSessionFactory(e.getKey());
 		}

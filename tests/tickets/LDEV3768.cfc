@@ -12,19 +12,22 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
                 expect(trim(result.filecontent)).toBe("true");
             });
 
+            // Scenes 2-4 use lowercase `ant` to query a property declared as `Ant`.
+            // Hibernate 5 was lenient and produced varying messages; Hibernate 7's HQL
+            // parser is strict on identifier case and reports the unresolved path first.
             it( title="ORMExecuteQuery(), HQL with wrong case column name without param", body=function( currentSpec ){
                 local.result = _InternalRequest(
                     template : "#uri#\test.cfm",
                     forms : { Scene = 2 }
                 );
-                expect(trim(result.filecontent)).toInclude("Named parameter not bound"); // it should throw
+                expect(trim(result.filecontent)).toInclude("Could not interpret path expression"); // it should throw
             });
             it( title="ORMExecuteQuery(), HQL with wrong case column name to declare param", body=function( currentSpec ){
                 local.result = _InternalRequest(
                     template : "#uri#\test.cfm",
                     forms : { Scene = 3 }
                 ); // used to NPE
-                expect(trim(result.filecontent)).toInclude("entity names are case sensitive");
+                expect(trim(result.filecontent)).toInclude("Could not interpret path expression");
             });
 
             it( title="ORMExecuteQuery(), HQL with no params", body=function( currentSpec ){
@@ -32,7 +35,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
                     template : "#uri#\test.cfm",
                     forms : { Scene = 4 }
                 );
-                expect(trim(result.filecontent)).toBe("true");
+                expect(trim(result.filecontent)).toInclude("Could not interpret path expression");
             });
         });
     }

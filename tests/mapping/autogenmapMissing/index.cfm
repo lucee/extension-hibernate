@@ -1,7 +1,7 @@
 <cfscript>
     test = new test();
-    test.setName( "Testing" );
+    test.setName( "testing" );
     entitySave( test );
-    result = entityLoadByPK( "test", 1 );
+    result = entityLoadByPK( "test", test.getId() );
     echo( result.getName() );
 </cfscript>

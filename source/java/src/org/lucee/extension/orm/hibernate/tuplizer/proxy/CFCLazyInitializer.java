@@ -2,7 +2,7 @@ package org.lucee.extension.orm.hibernate.tuplizer.proxy;
 
 import java.io.Serializable;
 
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.proxy.AbstractLazyInitializer;
 import org.lucee.extension.orm.hibernate.util.CommonUtil;
 import org.lucee.extension.orm.hibernate.HibernatePageException;
@@ -15,7 +15,7 @@ import lucee.runtime.exp.PageException;
  */
 public class CFCLazyInitializer extends AbstractLazyInitializer implements Serializable {
 
-	CFCLazyInitializer(String entityName, Serializable id, SessionImplementor session) {
+	CFCLazyInitializer(String entityName, Object id, SharedSessionContractImplementor session) {
 		super(entityName, id, session);
 	}
 
@@ -29,8 +29,13 @@ public class CFCLazyInitializer extends AbstractLazyInitializer implements Seria
 	}
 
 	@Override
-	public Class getPersistentClass() {
+	public Class<?> getPersistentClass() {
 		throw new UnsupportedOperationException("dynamic-map entity representation");
+	}
+
+	@Override
+	public Class<?> getImplementationClass() {
+		return Component.class;
 	}
 
 }

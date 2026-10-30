@@ -96,9 +96,9 @@ public class ExceptionUtil {
 
 		// unwrap JPA PersistenceException to get to the Hibernate/JDBC cause
 		// With a real Hibernate transaction (LDEV-6206), exceptions are wrapped in
-		// javax.persistence.PersistenceException (e.g. OptimisticLockException)
+		// jakarta.persistence.PersistenceException (e.g. OptimisticLockException)
 		// before reaching us
-		if ( t instanceof javax.persistence.PersistenceException && t.getCause() != null ) {
+		if ( t instanceof jakarta.persistence.PersistenceException && t.getCause() != null ) {
 			t = t.getCause();
 		}
 

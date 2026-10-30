@@ -6,19 +6,16 @@
  * Phase 2: update with v2 entity (id, name, description), verify old data
  *          survived and new column is usable
  *
- * H2 known broken: Hibernate 5.6 passes "" instead of null to
- * DatabaseMetaData.getTables() when no default_schema is configured (HHH-10882).
- * H2 v2 returns zero tables for empty-string filter, so SchemaUpdate silently
- * generates no DDL. Works correctly on MySQL/PostgreSQL/MSSQL.
+ * HHH-10882 (H2 SchemaUpdate silently generating no DDL when no default_schema
+ * was set) is fixed in Hibernate 7.3 — works correctly on H2/MySQL/PostgreSQL/MSSQL.
  */
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
 
 	function run( testResults, testBox ) {
 
-		// H2: known broken — HHH-10882, empty string vs null in getTables()
 		describe( "dbcreate=update with schema changes (H2)", function() {
 
-			xit( "adding a property updates the schema and preserves data", function() {
+			it( "adding a property updates the schema and preserves data", function() {
 				var setup = _InternalRequest(
 					template: "#uri()#/setup.cfm",
 					url: { phase: 1, db: "h2" }

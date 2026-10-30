@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.hibernate.HibernateException;
-import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.type.ComponentType;
 import org.hibernate.type.Type;
 
@@ -102,7 +102,7 @@ public class HibernateUtil {
 		return keywords.contains(word.trim().toLowerCase());
 	}
 
-	public static Type getPropertyType(ClassMetadata metaData, String name) throws HibernateException {
+	public static Type getPropertyType(EntityPersister metaData, String name) throws HibernateException {
 		try {
 			return metaData.getPropertyType(name);
 		}
@@ -117,7 +117,7 @@ public class HibernateUtil {
 		}
 	}
 
-	public static Type getPropertyType(ClassMetadata metaData, String name, Type defaultValue) {
+	public static Type getPropertyType(EntityPersister metaData, String name, Type defaultValue) {
 		try {
 			return metaData.getPropertyType(name);
 		}
@@ -132,7 +132,7 @@ public class HibernateUtil {
 		}
 	}
 
-	public static String validateColumnName(ClassMetadata metaData, String name) throws PageException {
+	public static String validateColumnName(EntityPersister metaData, String name) throws PageException {
 		String res = validateColumnName(metaData, name, null);
 		if (res != null) return res;
 		throw ExceptionUtil.createException((ORMSession) null, null, "Invalid name, there is no property with name [" + name + "] in the entity [" + metaData.getEntityName() + "]",
@@ -140,7 +140,7 @@ public class HibernateUtil {
 
 	}
 
-	public static String validateColumnName(ClassMetadata metaData, String name, String defaultValue) {
+	public static String validateColumnName(EntityPersister metaData, String name, String defaultValue) {
 		Type type = metaData.getIdentifierType();
 		// composite id
 		if (type.isComponentType()) {

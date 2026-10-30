@@ -18,6 +18,8 @@
  **/
 package org.lucee.extension.orm.hibernate.functions;
 
+import org.hibernate.Session;
+import org.lucee.extension.orm.hibernate.compat.CompatSessionWrapper;
 import org.lucee.extension.orm.hibernate.util.CommonUtil;
 import org.lucee.extension.orm.hibernate.util.ORMUtil;
 
@@ -38,7 +40,8 @@ public class ORMGetSession extends BIF {
 
 	public static Object call( PageContext pc, String datasource ) throws PageException {
 		String dsn = ORMUtil.getDataSource( pc, datasource ).getName();
-		return ORMUtil.getSession( pc ).getRawSession( dsn );
+		Session raw = (Session) ORMUtil.getSession( pc ).getRawSession( dsn );
+		return CompatSessionWrapper.wrap( raw );
 	}
 
 	@Override

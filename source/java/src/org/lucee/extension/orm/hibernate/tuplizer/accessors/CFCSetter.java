@@ -3,7 +3,6 @@ package org.lucee.extension.orm.hibernate.tuplizer.accessors;
 import java.lang.reflect.Method;
 
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.property.access.spi.Setter;
 import org.hibernate.type.Type;
 import org.lucee.extension.orm.hibernate.util.CommonUtil;
@@ -56,7 +55,7 @@ public final class CFCSetter implements Setter {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void set(Object trg, Object value, SessionFactoryImplementor factory) throws HibernateException {
+	public void set(Object trg, Object value) throws HibernateException {
 		try {
 			Component cfc = CommonUtil.toComponent(trg);
 			if ( value == null ) {

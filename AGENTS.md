@@ -12,9 +12,9 @@
 
 Always pipe output to a file under `/test-output`.
 
-- Build: `ant clean`
+- Build: `mvn package`
 - Build + test: `test.bat` (runs `mvn package` then script-runner)
-- Build requires Java 11+
+- Build requires Java 21+
 
 ## Accesing JIRA
 

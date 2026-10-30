@@ -2,7 +2,7 @@ name: Java CI
 
 on:
   push:
-    branches: ['5.6']
+    branches: ['7.4']
   pull_request:
   workflow_dispatch:
     inputs:
@@ -56,18 +56,19 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - java: '11'
-            lucee: '6.2/snapshot/light'
-          - java: '11'
-            lucee: '7.0/snapshot/light'
           - java: '21'
             lucee: '6.2/snapshot/light'
+            # the 6.2 core tests still use HQL that Hibernate 7.3+ rejects (quoted id literal, wrong identifier case in LDEV1428), the 7.0 tests are adapted and have no tests for 7.1 only features
+            branch: '7.0'
           - java: '21'
             lucee: '7.0/snapshot/light'
+            branch: '7.0'
           - java: '21'
             lucee: '7.1/snapshot/light'
+            branch: '7.1'
           - java: '25'
             lucee: '7.1/snapshot/light'
+            branch: '7.1'
     services:
       mysql:
         image: mysql:8.0
@@ -138,6 +139,8 @@ jobs:
         with:
           repository: lucee/lucee
           path: lucee
+          # the tests of the Lucee line under test, a newer line has tests for features an older one does not have (LDEV-3657)
+          ref: ${{ matrix.branch }}
 
       - name: Run Lucee Test Suite
         uses: lucee/script-runner@main
@@ -170,7 +173,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: [build, test]
-    if: github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/5.6'
+    # DISABLED — guarded against accidental deploys. To re-enable, restore:
+    #   if: github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/5.6'
+    if: false
     steps:
       - uses: actions/checkout@v6
 

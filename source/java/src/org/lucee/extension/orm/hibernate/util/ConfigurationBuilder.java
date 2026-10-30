@@ -3,7 +3,6 @@ package org.lucee.extension.orm.hibernate.util;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Properties;
@@ -13,7 +12,7 @@ import org.hibernate.boot.registry.BootstrapServiceRegistry;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.boot.registry.classloading.internal.ClassLoaderServiceImpl;
 import org.hibernate.boot.registry.classloading.internal.TcclLookupPrecedence;
-import org.hibernate.cache.ehcache.internal.EhcacheRegionFactory;
+import org.hibernate.cache.jcache.internal.JCacheRegionFactory;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
@@ -22,9 +21,6 @@ import org.lucee.extension.orm.hibernate.Dialect;
 import org.lucee.extension.orm.hibernate.SessionFactoryData;
 import org.lucee.extension.orm.hibernate.event.EventListenerIntegrator;
 import org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderImpl;
-import org.lucee.extension.orm.hibernate.util.XMLUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import lucee.commons.io.log.Log;
 import lucee.commons.io.res.Resource;
@@ -42,7 +38,6 @@ public class ConfigurationBuilder {
     private Configuration configuration;
     private ORMConfiguration ormConf;
     private SessionFactoryData data;
-    private String applicationName;
     private DataSource datasource;
     private String xmlMappings;
     private boolean formatSQL;
@@ -98,65 +93,39 @@ public class ConfigurationBuilder {
             addProperty(Environment.CONNECTION_PROVIDER, this.connectionProvider);
         }
 
-        // Cache Provider
+        // Cache provider — JCache (JSR-107) via Caffeine. Replaces EHCache 2 (gone in
+         // Hibernate 7). The legacy "EHCache" cacheProvider value is accepted as an
+         // alias and routed to Caffeine; user-supplied ehcache.xml configs (ormSettings.cacheConfig)
+         // are no longer honored — see h73-cache-provider-status.md.
         String cacheProvider = ormConf.getCacheProvider();
-        Class<?> cacheProviderFactory = null;
-
-        if (Util.isEmpty(cacheProvider) || "EHCache".equalsIgnoreCase(cacheProvider)) {
-            cacheProviderFactory = EhcacheRegionFactory.class;
-        }
-        // else if ("JBossCache".equalsIgnoreCase(cacheProvider)) cacheProvider =
-        // "org.hibernate.cache.TreeCacheProvider";
-        // else if ("HashTable".equalsIgnoreCase(cacheProvider)) cacheProvider =
-        // "org.hibernate.cache.HashtableCacheProvider";
-        // else if ("SwarmCache".equalsIgnoreCase(cacheProvider)) cacheProvider =
-        // "org.hibernate.cache.SwarmCacheProvider";
-        // else if ("OSCache".equalsIgnoreCase(cacheProvider)) cacheProvider =
-        // "org.hibernate.cache.OSCacheProvider";
-
-        /// JBossCache -> https://mvnrepository.com/artifact/org.hibernate/hibernate-jbosscache
-        // OSCache -> https://mvnrepository.com/artifact/org.hibernate/hibernate-oscache
-        // SwarmCache -> https://mvnrepository.com/artifact/org.hibernate/hibernate-swarmcache
-
-        Resource cc = ormConf.getCacheConfig();
-
-        // is ehcache
-        Resource cacheConfig = null;
-        if (cacheProvider != null && cacheProvider.toLowerCase().indexOf("ehcache") != -1) {
-            CFMLEngine eng = CFMLEngineFactory.getInstance();
-            String dsName = datasource != null ? datasource.getName() : "";
-            String varName = eng.getCastUtil().toVariableName(applicationName + dsName, applicationName + dsName);
-            String xml;
-            if (cc == null || !cc.isFile()) {
-                cacheConfig = eng.getResourceUtil().getTempDirectory().getRealResource("ehcache/" + varName + ".xml");
-                xml = createEHConfigXML(varName);
-            }
-            // we need to change or set the name
-            else {
-                String b64 = varName + eng.getSystemUtil().hash64b(CommonUtil.toString(cc, (Charset) null));
-                cacheConfig = eng.getResourceUtil().getTempDirectory().getRealResource("ehcache/" + b64 + ".xml");
-                Document doc = CommonUtil.toDocument(cc, null);
-                Element root = doc.getDocumentElement();
-                root.setAttribute("name", b64);
-
-                xml = XMLUtil.toString(root);
-            }
-
-            if (!cacheConfig.isFile()) {
-                cacheConfig.getParentResource().mkdirs();
-                eng.getIOUtil().write(cacheConfig, xml, false, null);
-            }
+        if (!Util.isEmpty(cacheProvider) && "EHCache".equalsIgnoreCase(cacheProvider) && log != null) {
+            log.log(Log.LEVEL_WARN, "hibernate",
+                    "ormSettings.cacheProvider [EHCache] is a legacy alias and now routes to Caffeine via JCache; "
+                            + "update your config to [JCache] to silence this warning. "
+                            + "Custom ehcache.xml configs are no longer supported.");
         }
 
-        // ormConfig
+        // ormConfig — hibernate.cfg.xml-format file. Hibernate 7 dropped configure(Document); only
+        // String / URL / File overloads remain. If the Lucee Resource is file-backed we pass directly;
+        // otherwise (S3 / RAM / etc.) we materialize to a temp file so configure(File) works uniformly.
         Resource conf = ormConf.getOrmConfig();
         if (conf != null) {
             try {
-                Document doc = CommonUtil.toDocument(conf, null);
-                configuration.configure(doc);
+                File configFile;
+                if (conf instanceof File) {
+                    configFile = (File) conf;
+                }
+                else {
+                    CFMLEngine eng = CFMLEngineFactory.getInstance();
+                    Resource temp = eng.getResourceUtil().getTempDirectory().getRealResource(
+                            "hibernate-orm-config-" + System.nanoTime() + ".xml");
+                    eng.getIOUtil().copy(conf, temp);
+                    if (!(temp instanceof File)) throw new IOException("Lucee temp resource is not file-backed [" + temp.getClass().getName() + "]");
+                    configFile = (File) temp;
+                }
+                configuration.configure(configFile);
             } catch (Exception e) {
                 log.log(Log.LEVEL_ERROR, "hibernate", e);
-
             }
         }
 
@@ -187,27 +156,15 @@ public class ConfigurationBuilder {
                 // Specifies whether secondary caching should be enabled
                 .setProperty(AvailableSettings.USE_SECOND_LEVEL_CACHE,
                         ormConf.secondaryCacheEnabled() ? "true" : "false")
-                // Drop and re-create the database schema on startup
-                .setProperty("hibernate.exposeTransactionAwareSessionFactory", "false")
-                // .setProperty("hibernate.hbm2ddl.auto", "create")
-                .setProperty(AvailableSettings.DEFAULT_ENTITY_MODE, "dynamic-map");
+                .setProperty("hibernate.exposeTransactionAwareSessionFactory", "false");
 
         if (ormConf.secondaryCacheEnabled()) {
-            if (cacheConfig != null && cacheConfig.isFile()) {
-                configuration.setProperty(AvailableSettings.CACHE_PROVIDER_CONFIG, cacheConfig.getAbsolutePath());
-                if (cacheConfig instanceof File)
-                    configuration.setProperty("net.sf.ehcache.configurationResourceName",
-                            ((File) cacheConfig).toURI().toURL().toExternalForm());
-                else
-                    throw new IOException("only local configuration files are supported");
-
-            }
-
-            if (cacheProviderFactory != null) {
-                addProperty(AvailableSettings.CACHE_REGION_FACTORY, cacheProviderFactory);
-            }
-            // <property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
-
+            // Hibernate's JCache adapter; Caffeine is the JSR-107 provider on the classpath.
+            // Defaults (max 10000 entries, 120s TTL/TTI) live in classpath:reference.conf
+            // under caffeine.jcache.default.
+            addProperty(AvailableSettings.CACHE_REGION_FACTORY, JCacheRegionFactory.class);
+            configuration.setProperty("hibernate.javax.cache.provider",
+                    "com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider");
             configuration.setProperty(AvailableSettings.USE_QUERY_CACHE, "true");
         }
 
@@ -250,11 +207,6 @@ public class ConfigurationBuilder {
         return this;
     }
 
-    public ConfigurationBuilder withApplicationName(String applicationName) {
-        this.applicationName = applicationName;
-        return this;
-    }
-
     public ConfigurationBuilder withFormatSQL(boolean formatSQL) {
         this.formatSQL = formatSQL;
         return this;
@@ -281,28 +233,4 @@ public class ConfigurationBuilder {
         configuration.addProperties(props);
     }
 
-    /**
-     * Generate an XML-format ehcache config file for the given cache name
-     * <p>
-     * TODO: Add support for diskSpoolBufferSizeMB and clearOnFlush, added in ACF 9.0.1
-     *
-     * @param cacheName
-     *            Name of the cache
-     *
-     * @return XML string with formatting and line breaks
-     */
-    private String createEHConfigXML(String cacheName) {
-        return new StringBuilder().append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>").append("<ehcache")
-                .append("    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"")
-                .append("    xsi:noNamespaceSchemaLocation=\"ehcache.xsd\"")
-                .append("    updateCheck=\"true\" name=\"" + cacheName + "\">")
-                .append("    <diskStore path=\"java.io.tmpdir\"/>").append("    <defaultCache")
-                .append("            maxElementsInMemory=\"10000\"").append("            eternal=\"false\"")
-                .append("            timeToIdleSeconds=\"120\"").append("            timeToLiveSeconds=\"120\"")
-                .append("            maxElementsOnDisk=\"10000000\"")
-                .append("            diskExpiryThreadIntervalSeconds=\"120\"")
-                .append("            memoryStoreEvictionPolicy=\"LRU\">")
-                .append("        <persistence strategy=\"localTempSwap\"/>").append("    </defaultCache>")
-                .append("</ehcache>").toString();
-    }
 }
