@@ -61,10 +61,13 @@ jobs:
         include:
           - java: '21'
             lucee: '7.0/snapshot/light'
+            branch: '7.0'
           - java: '21'
             lucee: '7.1/snapshot/light'
+            branch: '7.1'
           - java: '25'
             lucee: '7.1/snapshot/light'
+            branch: '7.1'
     services:
       mysql:
         image: mysql:8.0
@@ -135,6 +138,8 @@ jobs:
         with:
           repository: lucee/lucee
           path: lucee
+          # the tests of the Lucee line under test, a newer line has tests for features an older one does not have (LDEV-3657)
+          ref: ${{ matrix.branch }}
 
       - name: Run Lucee Test Suite
         uses: lucee/script-runner@main
