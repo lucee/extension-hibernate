@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.6.15.20
+
+- Final release, the first since 5.6.15.15-RC. Includes all changes listed under 5.6.15.16 to 5.6.15.19, which were only ever published as snapshots
+
 ## 5.6.15.19
 
 - [LDEV-6390](https://luceeserver.atlassian.net/browse/LDEV-6390) — Fix `bundle wiring for org.lucee.hibernate.extension is no longer valid` regression introduced by 5.6.15.18 when the extension is hot-deployed. `CachingClassLoaderService` no longer caches positive resolutions or pins the Hibernate-extension bundle classloader. Negative cache retained — full perf win preserved
