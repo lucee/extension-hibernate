@@ -370,7 +370,8 @@ public class HibernateORMSession implements ORMSession {
      * @param obj
      *            Java entity object which maps to a persistent Component
      * @param forceInsert
-     *            force an INSERT. If false, will try a {@link org.hibernate.Session#saveOrUpdate(String, Object)}
+     *            force an INSERT. If false, will try a {@code saveOrUpdate}-style persist/merge
+     *            (Hibernate 7 removed {@code Session#saveOrUpdate}).
      */
 	@Override
 	public void save(PageContext pc, Object obj, boolean forceInsert) throws PageException {
