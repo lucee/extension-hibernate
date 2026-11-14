@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.4.14.2
+
+- Ship Jackson 2.19.4 and set `hibernate.type.json_format_mapper` to Hibernate's Jackson mapper so SessionFactory startup no longer falls through to JSON-B. On Lucee 9.0 the JSON-B API can be visible without a provider (yasson), and Hibernate 7's `JakartaJsonIntegration` static initializer then throws `JSON Binding provider org.eclipse.yasson.JsonBindingProvider not found`, which poisons the class and fails every ORM boot (seen on lucee/Lucee#3778 and #3774 with `LUCEE_BUILD_FAIL_CONFIGURED_SERVICES_FATAL=true`).
+
 ## 7.4.14.0
 
 - [LDEV-6735](https://luceeserver.atlassian.net/browse/LDEV-6735) — The extension and its libraries are loaded as Maven libraries instead of an OSGi bundle. The `.lex` ships the extension jar and its dependencies in a `maven/` folder; an additional `.lite.lex` resolves them from Maven. Minimum Lucee version is now 7.0.4.34 (7.1: 7.1.0.204). **Breaking:** `createObject("java", "org.hibernate...")` needs the Maven coordinate of the extension, e.g. `createObject("java", "org.hibernate.Version", { maven: [ "org.lucee:hibernate-extension:7.4.14.0" ] })`. See [BREAKING-CHANGES.md](BREAKING-CHANGES.md)
