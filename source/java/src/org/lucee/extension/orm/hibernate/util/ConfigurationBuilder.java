@@ -16,6 +16,7 @@ import org.hibernate.cache.jcache.internal.JCacheRegionFactory;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
+import org.hibernate.type.format.jackson.JacksonJsonFormatMapper;
 import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 import org.lucee.extension.orm.hibernate.Dialect;
 import org.lucee.extension.orm.hibernate.SessionFactoryData;
@@ -157,6 +158,16 @@ public class ConfigurationBuilder {
                 .setProperty(AvailableSettings.USE_SECOND_LEVEL_CACHE,
                         ormConf.secondaryCacheEnabled() ? "true" : "false")
                 .setProperty("hibernate.exposeTransactionAwareSessionFactory", "false");
+
+        // Hibernate 7 auto-detects a JSON FormatMapper (oson -> Jackson 2 -> Jackson 3
+        // -> JSON-B) when this setting is unset. On Lucee 9 the JSON-B API can be
+        // visible without a provider (yasson), and JakartaJsonIntegration's static
+        // initializer then throws
+        // "JSON Binding provider org.eclipse.yasson.JsonBindingProvider not found",
+        // which poisons the class for the JVM and prevents the SessionFactory from
+        // starting (lucee/Lucee#3778, #3774). Pin Jackson, which this extension now
+        // ships, so the probe never reaches JSON-B.
+        configuration.setProperty(AvailableSettings.JSON_FORMAT_MAPPER, JacksonJsonFormatMapper.SHORT_NAME);
 
         if (ormConf.secondaryCacheEnabled()) {
             // Hibernate's JCache adapter; Caffeine is the JSR-107 provider on the classpath.

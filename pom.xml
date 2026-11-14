@@ -138,6 +138,18 @@
             <artifactId>jaxb-runtime</artifactId>
             <version>4.0.7</version>
         </dependency>
+
+        <!-- Jackson 2 — Hibernate 7's preferred JSON FormatMapper (version pinned to
+             the same 2.19.4 Hibernate 7.4.14 itself tests against). Without a mapper
+             on the ORM classloader, SessionFactoryOptionsBuilder falls through to
+             JSON-B and JakartaJsonIntegration.<clinit> calls JsonbBuilder.create(),
+             which throws if yasson is not present (Lucee 9.0 CI, lucee/Lucee#3778
+             and #3774). -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.19.4</version>
+        </dependency>
     </dependencies>
 
     <!-- ============================== Repositories ============================== -->
