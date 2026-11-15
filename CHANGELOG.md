@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.6.15.22
+
+- [LDEV-6935](https://luceeserver.atlassian.net/browse/LDEV-6935) — Roll back a leftover Hibernate transaction after a failed flush. A failed flush marked the transaction rollback-only, but `end()` only rolled back an ACTIVE transaction, so the next `transaction{}` in the same request threw "Transaction already active". `ormClearSession()` now also ends a stale rollback-only transaction.
+
 ## 5.6.15.21
 
 - [LDEV-6627](https://luceeserver.atlassian.net/browse/LDEV-6627) — Find the bundle of the Hibernate class loader with the OSGi API (`org.osgi.framework.BundleReference`) instead of casting to Felix's internal `BundleClassLoader`. Lucee 9 ships Felix relocated (`lucee.shaded.felix`), so the Felix class is not available under its old name anymore and the ORM failed with `NoClassDefFoundError: org/apache/felix/framework/BundleWiringImpl$BundleClassLoader`. Works on all Lucee versions
