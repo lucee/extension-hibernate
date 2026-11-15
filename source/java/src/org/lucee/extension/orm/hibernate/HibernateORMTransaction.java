@@ -124,36 +124,58 @@ public class HibernateORMTransaction implements ORMTransaction {
 	}
 
 	/**
-	 * Mark the transaction for rollback.
+	 * Mark the transaction for rollback and roll back the Hibernate transaction if it can still be
+	 * rolled back ({@code ACTIVE}, {@code MARKED_ROLLBACK}, or {@code FAILED_COMMIT}).
 	 *
-	 * Will only execute a rollback on {@link #end()}
+	 * <p>Rolling back immediately matters when a failed flush has already marked the transaction
+	 * rollback-only: leaving it open causes the next {@code transaction{}} in the same request to
+	 * throw "Transaction already active" (LDEV-6935). {@link #end()} still clears the session when
+	 * autoManage is enabled, and is a no-op for the Hibernate transaction once it has been ended.
 	 */
 	@Override
 	public void rollback() {
 		doRollback = true;
+		rollbackIfPossible();
 	}
 
 	/**
 	 * Wrap up the transaction.
 	 * <ul>
-	 * <li>Will roll back if rollback() was called, and clear the session if autoManage.
-	 * <li>Will flush and commit if the transaction is still active.
+	 * <li>Will roll back if rollback() was called, or if the Hibernate transaction was left
+	 * rollback-only (for example after a failed flush), and clear the session if autoManage.
+	 * <li>Will flush and commit if the transaction is still active and no rollback was requested.
 	 * </ul>
 	 */
 	@Override
 	public void end() {
-		if (doRollback) {
-			if (trans.getStatus() == TransactionStatus.ACTIVE) {
-				trans.rollback();
-			}
+		if (doRollback || isRollbackOnly()) {
+			rollbackIfPossible();
 			if (autoManage) {
 				session.clear();
 			}
 		}
-		else if (trans.getStatus() == TransactionStatus.ACTIVE) {
+		else if (trans != null && trans.getStatus() == TransactionStatus.ACTIVE) {
 			session.flush();
 			trans.commit();
 		}
+	}
+
+	/**
+	 * Roll back the Hibernate transaction when its status still allows it ({@code ACTIVE},
+	 * {@code MARKED_ROLLBACK}, or {@code FAILED_COMMIT}).
+	 */
+	private void rollbackIfPossible() {
+		if (trans != null && trans.getStatus().canRollback()) {
+			trans.rollback();
+		}
+	}
+
+	/**
+	 * True when a flush or commit has already marked the Hibernate transaction rollback-only, so
+	 * {@link #end()} must roll it back instead of trying to commit.
+	 */
+	private boolean isRollbackOnly() {
+		return trans != null && trans.getStatus().canRollback() && trans.getStatus() != TransactionStatus.ACTIVE;
 	}
 
 	/**
