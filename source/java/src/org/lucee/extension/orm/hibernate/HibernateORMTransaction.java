@@ -5,6 +5,8 @@ import java.sql.Connection;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.engine.jdbc.spi.JdbcCoordinator;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.resource.transaction.spi.TransactionStatus;
 
 import lucee.loader.engine.CFMLEngineFactory;
@@ -45,12 +47,15 @@ public class HibernateORMTransaction implements ORMTransaction {
 	/**
 	 * Open a real Hibernate transaction on the current session.
 	 *
-	 * <p>Flushes pending changes first if autoManage is enabled, then begins a Hibernate transaction.
+	 * <p>First releases any JDBC connection the session still holds from ORM work done outside a
+	 * transaction, so the Hibernate transaction runs on the cftransaction's connection (LDEV-6941).
+	 * Then flushes pending changes if autoManage is enabled, and begins a Hibernate transaction.
 	 * If the surrounding cftransaction specifies an isolation level, applies it to the JDBC
 	 * connection via session.doWork() before any ORM queries execute.
 	 */
 	@Override
 	public void begin() {
+		releaseHeldConnection();
 		if (autoManage) {
 			session.flush();
 		}
@@ -59,6 +64,31 @@ public class HibernateORMTransaction implements ORMTransaction {
 
 		isolation = getTransactionIsolation();
 		applyIsolation();
+	}
+
+	/**
+	 * Release the JDBC connection the session may still hold from ORM work outside a transaction.
+	 *
+	 * <p>Hibernate releases the connection after a query or load when no transaction is in progress,
+	 * but not after {@code saveOrUpdate()}, {@code refresh()} or {@code flush()}. A session that did
+	 * one of those outside a {@code transaction{}} keeps its connection, and {@code trans.begin()}
+	 * would then start the Hibernate transaction on that connection instead of the one the
+	 * DatasourceManager hands out for the cftransaction. ORM work and {@code queryExecute()} in the
+	 * same block would run as two transactions on two connections (LDEV-6941).
+	 *
+	 * <p>Releasing it here mirrors what Hibernate does itself after an operation outside a transaction
+	 * ({@code SessionImpl.afterOperation()}): the connection goes back through
+	 * {@link org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderImpl#closeConnection} and the
+	 * next acquire gets the cftransaction's connection.
+	 */
+	private void releaseHeldConnection() {
+		if (!(session instanceof SharedSessionContractImplementor)) return;
+		SharedSessionContractImplementor si = (SharedSessionContractImplementor) session;
+		if (si.isTransactionInProgress()) return;
+		JdbcCoordinator jdbc = si.getJdbcCoordinator();
+		if (jdbc.getLogicalConnection().isPhysicallyConnected()) {
+			jdbc.afterTransaction();
+		}
 	}
 
 	/**
