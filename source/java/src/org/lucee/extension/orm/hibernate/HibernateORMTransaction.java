@@ -5,6 +5,8 @@ import java.sql.Connection;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.engine.jdbc.spi.JdbcCoordinator;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.resource.transaction.spi.TransactionStatus;
 
 import lucee.loader.engine.CFMLEngineFactory;
@@ -45,12 +47,15 @@ public class HibernateORMTransaction implements ORMTransaction {
 	/**
 	 * Open a real Hibernate transaction on the current session.
 	 *
-	 * <p>Flushes pending changes first if autoManage is enabled, then begins a Hibernate transaction.
+	 * <p>First releases any JDBC connection the session still holds from ORM work done outside a
+	 * transaction, so the Hibernate transaction runs on the cftransaction's connection (LDEV-6941).
+	 * Then flushes pending changes if autoManage is enabled, and begins a Hibernate transaction.
 	 * If the surrounding cftransaction specifies an isolation level, applies it to the JDBC
 	 * connection via session.doWork() before any ORM queries execute.
 	 */
 	@Override
 	public void begin() {
+		releaseHeldConnection();
 		if (autoManage) {
 			session.flush();
 		}
@@ -59,6 +64,31 @@ public class HibernateORMTransaction implements ORMTransaction {
 
 		isolation = getTransactionIsolation();
 		applyIsolation();
+	}
+
+	/**
+	 * Release the JDBC connection the session may still hold from ORM work outside a transaction.
+	 *
+	 * <p>Hibernate releases the connection after a query or load when no transaction is in progress,
+	 * but not after {@code saveOrUpdate()}, {@code refresh()} or {@code flush()}. A session that did
+	 * one of those outside a {@code transaction{}} keeps its connection, and {@code trans.begin()}
+	 * would then start the Hibernate transaction on that connection instead of the one the
+	 * DatasourceManager hands out for the cftransaction. ORM work and {@code queryExecute()} in the
+	 * same block would run as two transactions on two connections (LDEV-6941).
+	 *
+	 * <p>Releasing it here mirrors what Hibernate does itself after an operation outside a transaction
+	 * ({@code SharedSessionContractImplementor.afterOperation()}): the connection goes back through
+	 * {@link org.lucee.extension.orm.hibernate.jdbc.ConnectionProviderImpl#closeConnection} and the
+	 * next acquire gets the cftransaction's connection.
+	 */
+	private void releaseHeldConnection() {
+		if (!(session instanceof SharedSessionContractImplementor)) return;
+		SharedSessionContractImplementor si = (SharedSessionContractImplementor) session;
+		if (si.isTransactionInProgress()) return;
+		JdbcCoordinator jdbc = si.getJdbcCoordinator();
+		if (jdbc.getLogicalConnection().isPhysicallyConnected()) {
+			jdbc.afterTransaction();
+		}
 	}
 
 	/**
@@ -124,36 +154,58 @@ public class HibernateORMTransaction implements ORMTransaction {
 	}
 
 	/**
-	 * Mark the transaction for rollback.
+	 * Mark the transaction for rollback and roll back the Hibernate transaction if it can still be
+	 * rolled back ({@code ACTIVE}, {@code MARKED_ROLLBACK}, or {@code FAILED_COMMIT}).
 	 *
-	 * Will only execute a rollback on {@link #end()}
+	 * <p>Rolling back immediately matters when a failed flush has already marked the transaction
+	 * rollback-only: leaving it open causes the next {@code transaction{}} in the same request to
+	 * throw "Transaction already active" (LDEV-6935). {@link #end()} still clears the session when
+	 * autoManage is enabled, and is a no-op for the Hibernate transaction once it has been ended.
 	 */
 	@Override
 	public void rollback() {
 		doRollback = true;
+		rollbackIfPossible();
 	}
 
 	/**
 	 * Wrap up the transaction.
 	 * <ul>
-	 * <li>Will roll back if rollback() was called, and clear the session if autoManage.
-	 * <li>Will flush and commit if the transaction is still active.
+	 * <li>Will roll back if rollback() was called, or if the Hibernate transaction was left
+	 * rollback-only (for example after a failed flush), and clear the session if autoManage.
+	 * <li>Will flush and commit if the transaction is still active and no rollback was requested.
 	 * </ul>
 	 */
 	@Override
 	public void end() {
-		if (doRollback) {
-			if (trans.getStatus() == TransactionStatus.ACTIVE) {
-				trans.rollback();
-			}
+		if (doRollback || isRollbackOnly()) {
+			rollbackIfPossible();
 			if (autoManage) {
 				session.clear();
 			}
 		}
-		else if (trans.getStatus() == TransactionStatus.ACTIVE) {
+		else if (trans != null && trans.getStatus() == TransactionStatus.ACTIVE) {
 			session.flush();
 			trans.commit();
 		}
+	}
+
+	/**
+	 * Roll back the Hibernate transaction when its status still allows it ({@code ACTIVE},
+	 * {@code MARKED_ROLLBACK}, or {@code FAILED_COMMIT}).
+	 */
+	private void rollbackIfPossible() {
+		if (trans != null && trans.getStatus().canRollback()) {
+			trans.rollback();
+		}
+	}
+
+	/**
+	 * True when a flush or commit has already marked the Hibernate transaction rollback-only, so
+	 * {@link #end()} must roll it back instead of trying to commit.
+	 */
+	private boolean isRollbackOnly() {
+		return trans != null && trans.getStatus().canRollback() && trans.getStatus() != TransactionStatus.ACTIVE;
 	}
 
 	/**

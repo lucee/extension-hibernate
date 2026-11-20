@@ -1,5 +1,10 @@
 # Changelog
 
+## 7.4.14.3
+
+- [LDEV-6941](https://luceeserver.atlassian.net/browse/LDEV-6941) — `transaction{}` now runs ORM work and `queryExecute()` on the same connection after ORM work outside a transaction. `entitySave()`, `entityReload()` or `ormFlush()` outside a transaction left the Hibernate session holding its JDBC connection, and `begin()` started the Hibernate transaction on that connection instead of the cftransaction's, so the two ran as separate transactions (invisible inserts, lock waits). `begin()` now releases a held connection first.
+- [LDEV-6935](https://luceeserver.atlassian.net/browse/LDEV-6935) — Roll back a leftover Hibernate transaction after a failed flush. A failed flush marked the transaction rollback-only, but `end()` only rolled back an ACTIVE transaction, so the next `transaction{}` in the same request threw "Transaction already active". `ormClearSession()` now also ends a stale rollback-only transaction.
+
 ## 7.4.14.2
 
 - Ship Jackson 2.19.4 and set `hibernate.type.json_format_mapper` to Hibernate's Jackson mapper so SessionFactory startup no longer falls through to JSON-B. On Lucee 9.0 the JSON-B API can be visible without a provider (yasson), and Hibernate 7's `JakartaJsonIntegration` static initializer then throws `JSON Binding provider org.eclipse.yasson.JsonBindingProvider not found`, which poisons the class and fails every ORM boot (seen on lucee/Lucee#3778 and #3774 with `LUCEE_BUILD_FAIL_CONFIGURED_SERVICES_FATAL=true`).
