@@ -22,6 +22,7 @@ import org.hibernate.QueryException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.hibernate.engine.spi.EntityKey;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
@@ -550,10 +551,27 @@ public class HibernateORMSession implements ORMSession {
 	public void clear(PageContext pc, String datasource) throws PageException {
 		Key dsn = CommonUtil.toKey(CommonUtil.getDataSource(pc, datasource).getName());
 
-		getSession(pc, dsn).clear();
+		Session session = getSession(pc, dsn);
+		// LDEV-6935: a failed flush can leave a rollback-only Hibernate transaction open.
+		// Clearing the session alone does not end it, so roll it back first.
+		rollbackStaleTransaction(session);
+		session.clear();
 		/*
 		 * Iterator<Session> it = _sessions.values().iterator(); while(it.hasNext()){ it.next().clear(); }
 		 */
+	}
+
+	/**
+	 * Roll back a leftover rollback-only Hibernate transaction so {@code ormClearSession()} can
+	 * recover the session for later {@code transaction{}} work in the same request (LDEV-6935).
+	 * Leaves an {@code ACTIVE} transaction alone — clearing mid-transaction should not abort it.
+	 */
+	private static void rollbackStaleTransaction(Session session) {
+		if (session == null || !session.isOpen()) return;
+		Transaction trans = session.getTransaction();
+		if (trans != null && trans.getStatus().canRollback() && trans.getStatus() != TransactionStatus.ACTIVE) {
+			trans.rollback();
+		}
 	}
 
 	@Override
