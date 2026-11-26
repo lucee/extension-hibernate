@@ -1,0 +1,31 @@
+// TODO LDEV-6897: skipped until these tests (moved from the Lucee repo) work with the Hibernate 7 extension.
+component skip="true" extends="org.lucee.cfml.test.LuceeTestCase" labels="orm" {
+	function beforeAll(){
+		variables.uri = createURI("LDEV1564");
+	}
+
+	function run( testResults , testBox ) {
+		describe( "Test suite for LDEV-1564", function() {
+			it( title='Checking Transaction with ormEnable=true ', skip=(noOrm() || notHasMsSQL()), body=function( currentSpec ) {
+				local.result = _InternalRequest(
+					template:"#variables.uri#/test.cfm"
+				);
+				expect(local.result.filecontent.trim()).toBe("lucee");
+			});
+
+		});
+	}
+
+	private function notHasMsSQL(){
+		return isEmpty( server.getDatasource( "mssql" ) );
+	}
+
+	private string function createURI(string calledName){
+		var baseURI="/test/#listLast(getDirectoryFromPath(getCurrenttemplatepath()),"\/")#/";
+		return baseURI&""&calledName;
+	}
+
+	private function noOrm() {
+		return ( structCount( server.getTestService("orm") ) eq 0 );
+	}
+}
