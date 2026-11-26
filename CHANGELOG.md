@@ -1,9 +1,13 @@
 # Changelog
 
-## 5.6.15.22
+## 5.6.15.23
 
 - [LDEV-6941](https://luceeserver.atlassian.net/browse/LDEV-6941) — `transaction{}` now runs ORM work and `queryExecute()` on the same connection after ORM work outside a transaction. `entitySave()`, `entityReload()` or `ormFlush()` outside a transaction left the Hibernate session holding its JDBC connection, and `begin()` started the Hibernate transaction on that connection instead of the cftransaction's, so the two ran as separate transactions (invisible inserts, lock waits). `begin()` now releases a held connection first.
 - [LDEV-6935](https://luceeserver.atlassian.net/browse/LDEV-6935) — Roll back a leftover Hibernate transaction after a failed flush. A failed flush marked the transaction rollback-only, but `end()` only rolled back an ACTIVE transaction, so the next `transaction{}` in the same request threw "Transaction already active". `ormClearSession()` now also ends a stale rollback-only transaction.
+
+## 5.6.15.22
+
+Only published as 5.6.15.22-RC, which contains the LDEV-6935 change. That change is included in 5.6.15.23, see above.
 
 ## 5.6.15.21
 
