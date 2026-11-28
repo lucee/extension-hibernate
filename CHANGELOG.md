@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.6.15.24
+
+- [LDEV-7026](https://luceeserver.atlassian.net/browse/LDEV-7026) — A lazy proxy or collection loaded before `transaction{}` and initialized as the first ORM read inside the block failed with `Could not read entity state from ResultSet` / `Operation not allowed after ResultSet closed` (regression in 5.6.15.23). The ORM transaction only began while the load's rows were hydrated, and the LDEV-6941 release in `begin()` closed the ResultSet still being read. The session now joins the `transaction{}` before Hibernate runs the SQL of a load or collection initialization, so the load runs on the transaction's connection, and `begin()` never releases a connection that still has open JDBC resources.
+
 ## 5.6.15.23
 
 - [LDEV-6941](https://luceeserver.atlassian.net/browse/LDEV-6941) — `transaction{}` now runs ORM work and `queryExecute()` on the same connection after ORM work outside a transaction. `entitySave()`, `entityReload()` or `ormFlush()` outside a transaction left the Hibernate session holding its JDBC connection, and `begin()` started the Hibernate transaction on that connection instead of the cftransaction's, so the two ran as separate transactions (invisible inserts, lock waits). `begin()` now releases a held connection first.
