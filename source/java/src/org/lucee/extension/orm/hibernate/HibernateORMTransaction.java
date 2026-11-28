@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.engine.jdbc.spi.JdbcCoordinator;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.resource.jdbc.spi.LogicalConnectionImplementor;
 import org.hibernate.resource.transaction.spi.TransactionStatus;
 
 import lucee.loader.engine.CFMLEngineFactory;
@@ -86,9 +87,12 @@ public class HibernateORMTransaction implements ORMTransaction {
 		SharedSessionContractImplementor si = (SharedSessionContractImplementor) session;
 		if (si.isTransactionInProgress()) return;
 		JdbcCoordinator jdbc = si.getJdbcCoordinator();
-		if (jdbc.getLogicalConnection().isPhysicallyConnected()) {
-			jdbc.afterTransaction();
-		}
+		LogicalConnectionImplementor logical = jdbc.getLogicalConnection();
+		if (!logical.isPhysicallyConnected()) return;
+		// LDEV-7026 a load is still reading from this connection (begin() called while rows are
+		// hydrated); releasing it would close the ResultSet under the load
+		if (logical.getResourceRegistry().hasRegisteredResources()) return;
+		jdbc.afterTransaction();
 	}
 
 	/**

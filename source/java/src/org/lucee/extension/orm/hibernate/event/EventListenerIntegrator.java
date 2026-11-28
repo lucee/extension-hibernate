@@ -133,6 +133,11 @@ public class EventListenerIntegrator implements Integrator, PreInsertEventListen
 		eventListenerRegistry.prependListeners(EventType.CLEAR, this);
 
 		eventListenerRegistry.prependListeners(EventType.DIRTY_CHECK, this);
+
+		// LDEV-7026 join transaction{} before a lazy proxy or collection runs its SQL
+		TransactionJoinListener joinListener = new TransactionJoinListener();
+		eventListenerRegistry.prependListeners(EventType.LOAD, joinListener);
+		eventListenerRegistry.prependListeners(EventType.INIT_COLLECTION, joinListener);
 	}
 
 	@Override
